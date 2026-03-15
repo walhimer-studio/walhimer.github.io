@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Commons - Mark Walhimer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: 'Georgia', serif;
+        }
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 2s;
+            pointer-events: none;
+            max-width: 80%;
+            line-height: 1.6;
+        }
+        #message.show {
+            opacity: 1;
+        }
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+        #info h3 {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="message"></div>
+    <div id="info">
+        <h3>THE COMMONS</h3>
+        <div>A museum is no longer just a building—</div>
+        <div>it is a civic operating system.</div>
+        <div style="margin-top:10px; font-style:italic;">Click to contribute your light</div>
+    </div>
+    <script>
+        // THE COMMONS - Mark Walhimer 2026
+        // Concept: Every click adds a light to a shared cultural space
+        // representing how individual contributions build community
+        
+        let lights = [];
+        let maxLights = 100;
+        let centerPulse = 0;
+        let messagePhase = 0;
+        let messageTimer = 0;
+        
+        const messages = [
+            "Every community begins with a single voice",
+            "Each contribution creates connections",
+            "Together we illuminate understanding",
+            "Culture is built by many, shared by all",
+            "A museum is where we see ourselves"
+        ];
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            colorMode(HSB, 360, 100, 100, 100);
+            
+            // Start with a few seed lights - the founding collection
+            for (let i = 0; i < 5; i++) {
+                addLight(random(width), random(height), true);
+            }
+        }
+        
+        function draw() {
+            background(0, 0, 5);
+            
+            centerPulse += 0.02;
+            
+            // Draw connections between nearby lights
+            stroke(0, 0, 90, 15);
+            strokeWeight(0.5);
+            for (let i = 0; i < lights.length; i++) {
+                for (let j = i + 1; j < lights.length; j++) {
+                    let d = dist(lights[i].x, lights[i].y, lights[j].x, lights[j].y);
+                    if (d < 150) {
+                        let alpha = map(d, 0, 150, 20, 0);
+                        stroke(0, 0, 90, alpha);
+                        line(lights[i].x, lights[i].y, lights[j].x, lights[j].y);
+                    }
+                }
+            }
+            
+            // Draw all lights
+            noStroke();
+            for (let i = lights.length - 1; i >= 0; i--) {
+                let light = lights[i];
+                
+                // Age the light
+                light.age++;
+                light.life--;
+                
+                // Fade in
+                if (light.age < 30) {
+                    light.alpha = map(light.age, 0, 30, 0, light.maxAlpha);
+                }
+                
+                // Fade out at end of life
+                if (light.life < 60) {
+                    light.alpha = map(light.life, 0, 60, 0, light.maxAlpha);
+                }
+                
+                // Remove dead lights
+                if (light.life <= 0) {
+                    lights.splice(i, 1);
+                    continue;
+                }
+                
+                // Subtle drift
+                light.x += light.vx;
+                light.y += light.vy;
+                
+                // Bounce off edges
+                if (light.x < 0 || light.x > width) light.vx *= -1;
+                if (light.y < 0 || light.y > height) light.vy *= -1;
+                
+                // Draw glow
+                let glowSize = light.size * 3;
+                for (let r = glowSize; r > 0; r -= glowSize/5) {
+                    let glowAlpha = map(r, 0, glowSize, light.alpha, 0);
+                    fill(light.hue, light.sat, light.bright, glowAlpha);
+                    ellipse(light.x, light.y, r * 2);
+                }
+                
+                // Draw core
+                fill(light.hue, light.sat, light.bright, light.alpha);
+                ellipse(light.x, light.y, light.size * 2);
+            }
+            
+            // Update message display
+            messageTimer++;
+            if (lights.length > 0 && lights.length % 15 === 0 && messageTimer > 300) {
+                showMessage();
+                messageTimer = 0;
+            }
+        }
+        
+        function addLight(x, y, isSeed = false) {
+            if (lights.length >= maxLights) {
+                lights.shift(); // Remove oldest
+            }
+            
+            // Color varies based on position - creates natural regions
+            let hue = (x / width * 60 + y / height * 60 + 180) % 360;
+            
+            lights.push({
+                x: x,
+                y: y,
+                vx: random(-0.2, 0.2),
+                vy: random(-0.2, 0.2),
+                size: random(3, 8),
+                hue: hue,
+                sat: random(60, 80),
+                bright: random(80, 100),
+                alpha: 0,
+                maxAlpha: isSeed ? 60 : random(40, 80),
+                age: 0,
+                life: isSeed ? 999999 : random(600, 1200) // Seed lights live forever
+            });
+        }
+        
+        function mousePressed() {
+            // Add a light where clicked
+            addLight(mouseX, mouseY);
+            
+            // Create a ripple effect
+            for (let i = 0; i < 3; i++) {
+                let angle = random(TWO_PI);
+                let distance = random(20, 60);
+                let px = mouseX + cos(angle) * distance;
+                let py = mouseY + sin(angle) * distance;
+                setTimeout(() => addLight(px, py), i * 100);
+            }
+        }
+        
+        function showMessage() {
+            let msgElement = document.getElementById('message');
+            msgElement.textContent = messages[messagePhase];
+            msgElement.classList.add('show');
+            
+            setTimeout(() => {
+                msgElement.classList.remove('show');
+            }, 4000);
+            
+            messagePhase = (messagePhase + 1) % messages.length;
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+        
+        // Auto-add occasional lights to keep it alive
+        setInterval(() => {
+            if (lights.length < 30) {
+                addLight(random(width), random(height));
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

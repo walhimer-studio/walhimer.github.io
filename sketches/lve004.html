@@ -1,0 +1,298 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Open Thin-Wall Chamber — Three.js</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+let palette = [310, 330, 20, 35, 210, 270];
+
+let camZ = 900;
+let targetCamZ = 900;
+let camSpeed = 0.45;
+let masterTime = 0;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(1, 1, 1);
+
+const camera = new THREE.PerspectiveCamera(45, 1536 / 864, 1, 5000);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true
+});
+renderer.setSize(1536, 864);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+function random(a, b) {
+  if (Array.isArray(a)) return a[Math.floor(Math.random() * a.length)];
+  return Math.random() * (b - a) + a;
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function hsbToRgb(h, s, v) {
+  h = ((h % 360) + 360) % 360;
+  s /= 100;
+  v /= 100;
+
+  const c = v * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = v - c;
+
+  let r = 0, g = 0, b = 0;
+
+  if (h < 60) {
+    r = c; g = x; b = 0;
+  } else if (h < 120) {
+    r = x; g = c; b = 0;
+  } else if (h < 180) {
+    r = 0; g = c; b = x;
+  } else if (h < 240) {
+    r = 0; g = x; b = c;
+  } else if (h < 300) {
+    r = x; g = 0; b = c;
+  } else {
+    r = c; g = 0; b = x;
+  }
+
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255)
+  };
+}
+
+function makeGradientTexture(h1, h2, sat, bri, horizontal = true) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      const t = horizontal ? x / (canvas.width - 1) : y / (canvas.height - 1);
+      const h = lerp(h1, h2, t);
+      const rgb = hsbToRgb(h, sat, bri);
+      ctx.fillStyle = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function makePlaneMaterial(h1, h2, sat, bri, opacity, horizontal = true) {
+  return new THREE.MeshBasicMaterial({
+    map: makeGradientTexture(h1, h2, sat, bri, horizontal),
+    transparent: true,
+    opacity,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.NormalBlending
+  });
+}
+
+function makeOpenThinWallChamber(w, h, d, wallThickness, hue, sat, bri, opacity) {
+  const group = new THREE.Group();
+
+  const frontOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(hue - 10, hue + 14, sat, bri, opacity * 0.90, true)
+  );
+  frontOuter.position.z = d * 0.5;
+  group.add(frontOuter);
+
+  const frontInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(hue - 6, hue + 18, sat, bri, opacity, true)
+  );
+  frontInner.position.z = d * 0.5 - wallThickness;
+  group.add(frontInner);
+
+  const backOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(hue + 14, hue - 10, sat, bri, opacity * 0.90, true)
+  );
+  backOuter.position.z = -d * 0.5;
+  backOuter.rotation.y = Math.PI;
+  group.add(backOuter);
+
+  const backInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(hue + 18, hue - 6, sat, bri, opacity, true)
+  );
+  backInner.position.z = -d * 0.5 + wallThickness;
+  backInner.rotation.y = Math.PI;
+  group.add(backInner);
+
+  const leftOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(d, h),
+    makePlaneMaterial(hue - 18, hue + 8, sat, bri, opacity * 0.82, true)
+  );
+  leftOuter.position.x = -w * 0.5;
+  leftOuter.rotation.y = -Math.PI / 2;
+  group.add(leftOuter);
+
+  const leftInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(d - wallThickness * 2, h),
+    makePlaneMaterial(hue - 22, hue + 12, sat, bri, opacity * 0.92, true)
+  );
+  leftInner.position.x = -w * 0.5 + wallThickness;
+  leftInner.rotation.y = -Math.PI / 2;
+  group.add(leftInner);
+
+  const rightOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(d, h),
+    makePlaneMaterial(hue + 8, hue - 18, sat, bri, opacity * 0.82, true)
+  );
+  rightOuter.position.x = w * 0.5;
+  rightOuter.rotation.y = Math.PI / 2;
+  group.add(rightOuter);
+
+  const rightInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(d - wallThickness * 2, h),
+    makePlaneMaterial(hue + 12, hue - 22, sat, bri, opacity * 0.92, true)
+  );
+  rightInner.position.x = w * 0.5 - wallThickness;
+  rightInner.rotation.y = Math.PI / 2;
+  group.add(rightInner);
+
+  return group;
+}
+
+const chamber = {
+  x: 0,
+  y: 0,
+  z: 0,
+  w: 360,
+  h: 360,
+  d: 360,
+  thickness: 18,
+  hueA: random(palette),
+  hueB: 0,
+  phase: random(0, Math.PI * 2),
+  driftPhase: random(0, Math.PI * 2),
+  rotationOffset: random(-0.08, 0.08)
+};
+
+chamber.hueB = chamber.hueA + random(-35, 35);
+
+const chamberGroup = new THREE.Group();
+scene.add(chamberGroup);
+
+const wallLayers = [];
+
+const layerCount = 3;
+for (let i = 0; i < layerCount; i++) {
+  const t = i / Math.max(1, layerCount - 1);
+  const scale = 1 + t * 0.16;
+  const hue = lerp(chamber.hueA, chamber.hueB, t);
+  const sat = lerp(92, 68, t);
+  const bri = lerp(100, 86, t);
+  const opacity = lerp(0.24, 0.10, t);
+
+  const layer = makeOpenThinWallChamber(
+    chamber.w * scale,
+    chamber.h * scale,
+    chamber.d * scale,
+    chamber.thickness,
+    hue,
+    sat,
+    bri,
+    opacity
+  );
+
+  chamberGroup.add(layer);
+  wallLayers.push(layer);
+}
+
+function setLayerOpacity(group, value) {
+  group.traverse((obj) => {
+    if (obj.isMesh && obj.material) {
+      const base = obj.userData.baseOpacity ?? obj.material.opacity;
+      obj.material.opacity = base * value;
+    }
+  });
+}
+
+wallLayers.forEach((layer) => {
+  layer.traverse((obj) => {
+    if (obj.isMesh && obj.material) {
+      obj.userData.baseOpacity = obj.material.opacity;
+    }
+  });
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  masterTime += 0.0035;
+
+  targetCamZ -= camSpeed;
+  camZ = lerp(camZ, targetCamZ, 0.04);
+
+  const camX = Math.sin(masterTime * 0.55) * 22 + Math.sin(masterTime * 0.18) * 10;
+  const camY = Math.sin(masterTime * 0.42) * 10;
+  const camTargetZ = camZ - 260;
+
+  camera.position.set(camX, camY, camZ);
+  camera.lookAt(0, 0, camTargetZ);
+
+  const breath = 1 + 0.035 * Math.sin(masterTime * 1.2 + chamber.phase);
+  const driftX = Math.sin(masterTime * 0.45 + chamber.driftPhase) * 18;
+  const driftY = Math.cos(masterTime * 0.38 + chamber.driftPhase) * 12;
+  const rotY = Math.sin(masterTime * 0.24 + chamber.phase) * 0.08 + chamber.rotationOffset;
+
+  chamberGroup.position.set(chamber.x + driftX, chamber.y + driftY, chamber.z);
+  chamberGroup.rotation.y = rotY;
+  chamberGroup.scale.set(breath, breath, breath);
+
+  const breathOpacity = 0.82 + 0.18 * (0.5 + 0.5 * Math.sin(masterTime * 1.2 + chamber.phase));
+
+  wallLayers.forEach((layer, i) => {
+    const localOpacity = breathOpacity * (1 - i * 0.08);
+    setLayerOpacity(layer, localOpacity);
+  });
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener("resize", () => {
+  camera.aspect = 1536 / 864;
+  camera.updateProjectionMatrix();
+  renderer.setSize(1536, 864);
+});
+</script>
+</body>
+</html>
+```

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading the Sky – Mark Walhimer</title>
+  <style>
+    /* Base layout */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #111;
+      background: #ffffff; /* white background */
+      line-height: 1.6;
+    }
+
+    /* Scroll-snap container for full-screen sections */
+    .scroll-container {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Each section fills the viewport and snaps to start */
+    section {
+      scroll-snap-align: start;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+
+    /* Content width */
+    .content {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 0.02em;
+      margin: 0 0 0.25em 0;
+      line-height: 1.15;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin: 0 0 0.5em 0;
+      color: #111;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      margin: 1.5em 0 0.5em;
+      color: #222;
+    }
+
+    p { margin: 0 0 1em 0; }
+    ul { margin: 0 0 1em 1.25em; }
+
+    /* Artwork placeholder */
+    .artwork-slot {
+      border: 1px dashed #bbb;
+      border-radius: 12px;
+      margin: 32px 0;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      font-style: italic;
+      background: #f7f7f7;
+    }
+
+    /* Footer style */
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+      padding: 24px 0 32px;
+    }
+
+    /* Optional section separators for subtle delineation */
+    .section-light { background: #ffffff; }
+    .section-subtle { background: #fcfcfc; }
+
+    /* Make large headings adapt on small screens */
+    @media (max-width: 640px) {
+      h1 { font-size: 2.2rem; }
+      h2 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scroll-container">
+
+    <!-- Full-screen Title Section -->
+    <section class="section-light">
+      <div class="content" style="text-align:center;">
+        <h1>Reading the Sky</h1>
+        <p><em>October 8, 2025</em></p>
+        <p>These notes began as private reflections during a time of rebuilding. They are small constellations — moments of attention, patience, and care that helped me find direction again.</p>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="section-subtle" id="reading-the-sky">
+      <div class="content">
+        <h2>Reading the Sky – companionship in thought</h2>
+        <p>I look for companionship in thought. To me, a real conversation is not a contest of knowledge but a shared act of navigation — two people tracing constellations together, finding new patterns between familiar stars.</p>
+        <p>Some can read the sky by rote, jumping from one known point to the next. I read by connection, by meaning. I pause because I’m feeling for direction, not because I’m lost.</p>
+        <p>What matters to me isn’t impressing or convincing; it’s the moment when another mind joins mine in curiosity and we both see something neither of us saw before.</p>
+        <p>That is friendship, and that is love: learning the sky together.</p>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="section-light" id="gift-of-noticing">
+      <div class="content">
+        <h2>1. The Gift of Noticing – attention as care</h2>
+        <p>I notice small things: the extra bag, a pause before someone speaks, the way light catches a wall. To me, noticing is not intrusion but care — a quiet way of saying I see you.</p>
+        <p>Some people mistake attention for judgment, but it’s only love trying to help the world stay in focus. To notice is to participate in grace.</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="section-subtle" id="intimacy-as-cooperation">
+      <div class="content">
+        <h2>2. Intimacy as Cooperation – connection through shared action</h2>
+        <p>Connection is built in motion: one person holding the door, another carrying the bag. It’s not about control, it’s choreography — shared movement toward ease.</p>
+        <p>Love, in its simplest form, is the instinct to lighten another person’s small burdens without needing applause.</p>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="section-light" id="faith-without-religion">
+      <div class="content">
+        <h2>3. Practicing Faith Without Religion – awareness as sacred practice</h2>
+        <p>I have no creed but awareness. The sacred begins where attention deepens — in the act of listening, in the patience to see someone whole.</p>
+        <p>If holiness exists, it lives in kindness, in curiosity, in every moment we choose to understand before we judge.</p>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="section-subtle" id="work-of-meaning">
+      <div class="content">
+        <h2>4. The Work of Meaning – creation as understanding</h2>
+        <p>I build things — code, exhibits, systems — not to impress but to understand. Each project asks the same question: what does this reveal about being human?</p>
+        <p>Art and science share a discipline: listening until the truth speaks back. Meaning is the only lasting material.</p>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="section-light" id="companionship-in-solitude">
+      <div class="content">
+        <h2>5. Companionship in Solitude – authenticity over pretense</h2>
+        <p>I would rather be alone than counterfeit closeness. Solitude, when honest, is still a conversation — between the self I am and the self I’m becoming.</p>
+        <p>Better to stay with sincerity than share space with pretense. Silence can be faithful company.</p>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="section-subtle" id="compass-of-kindness">
+      <div class="content">
+        <h2>6. The Compass of Kindness – moral direction through gentleness</h2>
+        <p>Some people talk about virtue; others practice it by accident. The compass I trust isn’t doctrine but decency — noticing, helping, staying gentle even when misunderstood.</p>
+        <p>Goodness doesn’t need a name; it’s simply the direction I keep trying to walk.</p>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="section-light" id="architecture-of-listening">
+      <div class="content">
+        <h2>7. The Architecture of Listening</h2>
+        <p>Listening is invisible design. Every good space — museum, classroom, or friendship — depends on proportion: silence enough to let another’s voice ring true.</p>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="section-subtle" id="courage-of-gentleness">
+      <div class="content">
+        <h2>8. The Courage of Gentleness</h2>
+        <p>Gentleness is not weakness; it is skill. It takes strength to stay soft in a hard room, to answer aggression with calm, to build rather than break.</p>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="section-light" id="practice-of-returning">
+      <div class="content">
+        <h2>9. The Practice of Returning</h2>
+        <p>Each night I return — to the museum, to code, to reflection — not to escape the world but to remember it. Work becomes prayer when it steadies the mind and opens the heart.</p>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="section-subtle" id="geometry-of-empathy">
+      <div class="content">
+        <h2>10. The Geometry of Empathy</h2>
+        <p>Empathy isn’t softness; it’s structure — a way of holding space for someone without collapsing your own.</p>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="section-light" id="patience-of-systems">
+      <div class="content">
+        <h2>11. The Patience of Systems</h2>
+        <p>Everything real takes time to reveal itself; patience is the architecture of truth.</p>
+      </div>
+    </section>
+
+</body>
+</html>

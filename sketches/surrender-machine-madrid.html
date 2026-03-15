@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Surrender Machine - Mark Walhimer - Miradas Tangentes</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    canvas { max-height: 100vh; max-width: 100vw; }
+  </style>
+</head>
+<body>
+<script>
+// SURRENDER MACHINE – Madrid Exhibition Version
+// Mark Walhimer - Miradas Tangentes - Siroco ArtLab
+// February 13, 2025
+//
+// Time-based lifecycle (3 minutes):
+// 0:00 - 0:20  White. Nothing.
+// 0:20 - 0:40  Base platform emerges
+// 0:40 - 1:10  Columns rise from platform
+// 1:10 - 1:50  Pulleys appear (frustration)
+// 1:50 - 2:20  Gears manifest (anger) - only because pulleys exist
+// 2:20 - 2:35  Rods connect (ego)
+// 2:35 - 2:50  Full state - everything runs
+// 2:50 - 3:00  Fade to white - surrender
+//
+// Screen: 2160 × 3840 (vertical 9:16) - rendered at 1080x1920 for preview
+
+let parts = [];
+let seed = 12345;
+
+// Lifecycle timing
+let cycleStartTime;
+const CYCLE_DURATION = 180000; // 3 minutes
+
+// Growth progress values (0 to 1)
+let baseProg = 0;
+let columnProg = 0;
+let pulleyProg = 0;
+let gearProg = 0;
+let rodProg = 0;
+let globalAlpha = 1;
+
+// Structure data
+let columnPositions = [];
+
+// Machine parameters
+const scaleFactor = 1.0;
+let baseWidth, baseDepth, baseThickness;
+
+function setup() {
+  // Vertical format: 1080x1920 (half of 2160x3840 for preview)
+  createCanvas(1080, 1920, WEBGL);
+  pixelDensity(1);
+  frameRate(30);
+  angleMode(RADIANS);
+  colorMode(HSB, 360, 100, 100, 100);
+  smooth();
+  
+  cycleStartTime = millis();
+  
+  baseWidth = 500 * scaleFactor;
+  baseDepth = 500 * scaleFactor;
+  baseThickness = 25 * scaleFactor;
+  
+  randomSeed(seed);
+  buildMachineStructure();
+}
+
+function buildMachineStructure() {
+  parts = [];
+  columnPositions = [];
+  
+  randomSeed(seed);
+  
+  // BASE PLATFORMS (pride foundation)
+  parts.push({
+    type: 'base',
+    x: 0, y: 0, z: 0,
+    w: baseWidth, h: baseThickness, d: baseDepth
+  });
+  
+  // Extra platforms
+  for (let i = 0; i < 2; i++) {
+    parts.push({
+      type: 'base',
+      x: random(-50, 50),
+      y: -random(70, 180),
+      z: random(-50, 50),
+      w: baseWidth * random(0.7, 1.0),
+      h: baseThickness * random(0.8, 1.2),
+      d: baseDepth * random(0.7, 1.0)
+    });
+  }
+  
+  // COLUMNS (pride structure)
+  let columnHeight = random(250, 350);
+  let columnRadius = random(12, 20);
+  
+  for (let i = 0; i < 8; i++) {
+    let x = random(-baseWidth * 0.35, baseWidth * 0.35);
+    let z = random(-baseDepth * 0.35, baseDepth * 0.35);
+    let y = -columnHeight / 2 - baseThickness / 2;
+    
+    parts.push({
+      type: 'column',
+      x: x, y: y, z: z,
+      radius: columnRadius,
+      height: columnHeight
+    });
+    
+    columnPositions.push(createVector(x, -columnHeight, z));
+  }
+  
+  // PULLEYS (frustration) - must exist before gears
+  for (let i = 0; i < 25; i++) {
+    if (columnPositions.length < 2) break;
+    let a = random(columnPositions);
+    let b = random(columnPositions);
+    if (a === b) continue;
+    
+    let mid = p5.Vector.add(a, b).mult(0.5);
+    
+    parts.push({
+      type: 'pulley',
+      x: mid.x + random(-30, 30),
+      y: mid.y + random(-60, 60),
+      z: mid.z + random(-30, 30),
+      radius: random(25, 50),
+      thickness: random(10, 18),
+      speed: random([-1, 1]) * random(0.4, 1.0),
+      phase: random(TWO_PI)
+    });
+  }
+  
+  // GEARS (anger) - only exist because pulleys exist
+  for (let i = 0; i < 80; i++) {
+    if (columnPositions.length === 0) break;
+    let anchor = random(columnPositions);
+    
+    let isHorizontal = random() < 0.5;
+    
+    parts.push({
+      type: 'gear',
+      orientation: isHorizontal ? 'horizontal' : 'vertical',
+      x: anchor.x + random(-80, 80),
+      y: anchor.y + random(-150, 150),
+      z: anchor.z + random(-80, 80),
+      radius: random(35, 70),
+      thickness: random(12, 24),
+      teeth: floor(random(8, 16)),
+      speed: random([-1, 1]) * random(0.2, 0.7),
+      phase: random(TWO_PI)
+    });
+  }
+  
+  // RODS (ego) - connect between columns
+  for (let i = 0; i < 12; i++) {
+    if (columnPositions.length < 2) break;
+    let a = random(columnPositions);
+    let b = random(columnPositions);
+    if (a === b) continue;
+    
+    parts.push({
+      type: 'rod',
+      x1: a.x, y1: a.y + random(-50, 50), z1: a.z,
+      x2: b.x, y2: b.y + random(-50, 50), z2: b.z,
+      radius: random(5, 9)
+    });
+  }
+}
+
+function draw() {
+  let now = millis();
+  let cycleTime = now - cycleStartTime;
+  
+  // Loop
+  if (cycleTime >= CYCLE_DURATION) {
+    cycleStartTime = now;
+    cycleTime = 0;
+    randomSeed(seed);
+    seed = floor(random(99999)); // New seed each cycle
+    randomSeed(seed);
+    buildMachineStructure();
+  }
+  
+  let progress = cycleTime / CYCLE_DURATION;
+  
+  // Calculate growth phases
+  // 0.00 - 0.11 : White/emergence
+  // 0.11 - 0.22 : Base platforms grow
+  // 0.22 - 0.39 : Columns rise
+  // 0.39 - 0.56 : Pulleys appear
+  // 0.56 - 0.72 : Gears manifest
+  // 0.72 - 0.80 : Rods connect
+  // 0.80 - 0.94 : Full state
+  // 0.94 - 1.00 : Fade to white
+  
+  baseProg = smoothstep(0.08, 0.22, progress);
+  columnProg = smoothstep(0.18, 0.39, progress);
+  pulleyProg = smoothstep(0.35, 0.56, progress);
+  gearProg = smoothstep(0.50, 0.72, progress);
+  rodProg = smoothstep(0.68, 0.82, progress);
+  
+  // Global fade out at end
+  if (progress > 0.94) {
+    globalAlpha = map(progress, 0.94, 1.0, 1, 0);
+  } else if (progress < 0.06) {
+    globalAlpha = map(progress, 0.0, 0.06, 0, 1);
+  } else {
+    globalAlpha = 1;
+  }
+  
+  // White background
+  background(40, 3, 100);
+  
+  // Lighting
+  ambientLight(70);
+  directionalLight(255, 255, 255, 0.4, -0.5, -1);
+  directionalLight(200, 200, 255, -0.3, 0.3, 1);
+  
+  // Camera - pulled back for vertical format, looking slightly down
+  let camY = -200 + sin(millis() * 0.0003) * 50;
+  let camZ = 900 + cos(millis() * 0.0002) * 100;
+  let camX = sin(millis() * 0.0004) * 150;
+  camera(camX, camY, camZ, 0, -150, 0, 0, 1, 0);
+  
+  // Subtle rotation
+  rotateY(millis() * 0.0001);
+  
+  // Move machine down in frame for vertical composition
+  translate(0, 200, 0);
+  
+  let t = millis() * 0.001;
+  
+  // Draw parts based on their growth progress
+  for (let p of parts) {
+    drawPart(p, t);
+  }
+}
+
+function drawPart(p, t) {
+  let alpha = 0;
+  let scale = 0;
+  
+  if (p.type === 'base') {
+    alpha = baseProg * globalAlpha * 85;
+    scale = easeOutCubic(baseProg);
+  } else if (p.type === 'column') {
+    alpha = columnProg * globalAlpha * 80;
+    scale = easeOutCubic(columnProg);
+  } else if (p.type === 'pulley') {
+    alpha = pulleyProg * globalAlpha * 75;
+    scale = easeOutCubic(pulleyProg);
+  } else if (p.type === 'gear') {
+    alpha = gearProg * globalAlpha * 80;
+    scale = easeOutCubic(gearProg);
+  } else if (p.type === 'rod') {
+    alpha = rodProg * globalAlpha * 70;
+    scale = easeOutCubic(rodProg);
+  }
+  
+  if (alpha < 1 || scale < 0.01) return;
+  
+  push();
+  
+  if (p.type === 'base') {
+    translate(p.x, p.y + p.h/2, p.z);
+    noStroke();
+    gradientFill(p.x, p.y, p.z, 305, 110, alpha, t);
+    box(p.w * scale, p.h * scale, p.d * scale);
+  }
+  
+  else if (p.type === 'column') {
+    translate(p.x, p.y, p.z);
+    rotateX(HALF_PI);
+    noStroke();
+    gradientFill(p.x, p.y, p.z, 320, 90, alpha, t);
+    cylinder(p.radius * scale, p.height * scale);
+  }
+  
+  else if (p.type === 'pulley') {
+    translate(p.x, p.y, p.z);
+    rotateY(p.phase + p.speed * t);
+    noStroke();
+    
+    let outerR = p.radius * scale;
+    let innerR = p.radius * 0.7 * scale;
+    let ringThick = p.thickness * 0.5 * scale;
+    
+    gradientFill(p.x, p.y, p.z, 80, 130, alpha, t);
+    cylinder(outerR, ringThick);
+    
+    push();
+    gradientFill(p.x, p.y, p.z, 200, 90, alpha * 0.8, t);
+    cylinder(innerR, p.thickness * 1.2 * scale);
+    pop();
+  }
+  
+  else if (p.type === 'gear') {
+    translate(p.x, p.y, p.z);
+    
+    if (p.orientation === 'horizontal') {
+      rotateY(p.phase + p.speed * t);
+    } else {
+      rotateX(p.phase + p.speed * t);
+    }
+    
+    noStroke();
+    gradientFill(p.x, p.y, p.z, 15, 140, alpha, t);
+    cylinder(p.radius * scale, p.thickness * scale);
+    
+    // Teeth
+    let toothDepth = p.thickness * 1.1 * scale;
+    let toothWidth = (TWO_PI * p.radius * scale) / (p.teeth * 4.0);
+    let toothHeight = p.radius * 0.12 * scale;
+    
+    for (let i = 0; i < p.teeth; i++) {
+      let a = (TWO_PI * i) / p.teeth;
+      push();
+      
+      if (p.orientation === 'horizontal') {
+        let tx = cos(a) * p.radius * scale;
+        let tz = sin(a) * p.radius * scale;
+        translate(tx, 0, tz);
+        rotateY(a);
+      } else {
+        let ty = cos(a) * p.radius * scale;
+        let tz = sin(a) * p.radius * scale;
+        translate(0, ty, tz);
+        rotateX(a);
+      }
+      
+      gradientFill(p.x, p.y, p.z, 30, 130, alpha, t);
+      box(toothWidth, toothHeight, toothDepth);
+      pop();
+    }
+  }
+  
+  else if (p.type === 'rod') {
+    let a = createVector(p.x1, p.y1, p.z1);
+    let b = createVector(p.x2, p.y2, p.z2);
+    let dir = p5.Vector.sub(b, a);
+    let len = dir.mag() * scale;
+    let mid = p5.Vector.add(a, b).mult(0.5);
+    
+    dir.normalize();
+    let rotY = atan2(dir.x, dir.z);
+    let proj = sqrt(dir.z * dir.z + dir.x * dir.x);
+    let rotX = atan2(-dir.y, proj);
+    
+    translate(mid.x, mid.y, mid.z);
+    rotateY(rotY);
+    rotateX(rotX);
+    
+    noStroke();
+    gradientFill(mid.x, mid.y, mid.z, 210, 160, alpha, t);
+    cylinder(p.radius * scale, len);
+  }
+  
+  pop();
+}
+
+function gradientFill(x, y, z, baseHue, hueSpread, maxAlpha, t) {
+  let nx = constrain(map(x, -500, 500, -1, 1), -1, 1);
+  let ny = constrain(map(y, -500, 500, -1, 1), -1, 1);
+  let nz = constrain(map(z, -500, 500, -1, 1), -1, 1);
+  
+  let posFactor = nx + ny + nz;
+  let timeFactor = sin(t * 0.7 + posFactor * 2.0);
+  
+  let h = baseHue + hueSpread * (0.5 * posFactor + 0.5 * timeFactor);
+  h = ((h % 360) + 360) % 360;
+  
+  let sat = 85;
+  let bri = 95;
+  
+  maxAlpha = min(maxAlpha, 90);
+  let minAlpha = maxAlpha * 0.3;
+  let f = (ny + 1) * 0.5;
+  let alphaVal = lerp(minAlpha, maxAlpha, f);
+  
+  fill(h, sat, bri, alphaVal);
+}
+
+function smoothstep(edge0, edge1, x) {
+  let t = constrain((x - edge0) / (edge1 - edge0), 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
+function easeOutCubic(t) {
+  return 1 - pow(1 - t, 3);
+}
+
+// Testing controls
+function keyPressed() {
+  if (key === 'r') {
+    cycleStartTime = millis();
+    seed = floor(random(99999));
+    randomSeed(seed);
+    buildMachineStructure();
+  }
+  if (key === '1') cycleStartTime = millis(); // Start
+  if (key === '2') cycleStartTime = millis() - 30000; // Columns
+  if (key === '3') cycleStartTime = millis() - 70000; // Pulleys
+  if (key === '4') cycleStartTime = millis() - 100000; // Gears
+  if (key === '5') cycleStartTime = millis() - 130000; // Rods
+  if (key === '6') cycleStartTime = millis() - 160000; // Full
+}
+</script>
+</body>
+</html>

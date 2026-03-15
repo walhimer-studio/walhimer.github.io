@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Partitions - Generative Art</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { 
+      width: 100%; 
+      height: 100%; 
+      background: #000; 
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="artCanvas"></canvas>
+  <script>
+    const originalPartitions = [{"x":0,"y":0,"width":419.44362139917695,"height":107,"gradientConfig":{"type":"text","colors":["#ffffff","#ffffff"],"angle":343.5725308641975,"rotationDirection":1,"textContent":"READING THE SKY______"},"secondLayer":{"enabled":false,"type":"linear","colors":["#949494","#989898"],"angle":270,"rotationDirection":-1,"blendMode":"difference"}},{"x":419.44362139917695,"y":0,"width":263.1158198050207,"height":107,"gradientConfig":{"type":"text","colors":["#ffffff","#ffffff"],"angle":52.199074074074076,"rotationDirection":1,"textContent":"READING THE SKY______"},"secondLayer":{"enabled":false,"type":"linear","colors":["#292929","#292929"],"angle":270,"rotationDirection":-1,"blendMode":"difference"}},{"x":682.5594412041976,"y":0,"width":376.16962336630905,"height":107,"gradientConfig":{"type":"text","colors":["#ffffff"],"angle":262.71296296296293,"rotationDirection":-1,"textContent":"READING THE SKY______"},"secondLayer":{"enabled":false,"type":"linear","colors":["#000000","#4dff00"],"angle":0,"rotationDirection":-1,"blendMode":"difference"}},{"x":1058.7290645705066,"y":0,"width":247.81107020303077,"height":107,"gradientConfig":{"type":"text","colors":["#ffffff","#ffffff","#ffffff"],"angle":77.22993827160494,"rotationDirection":1,"textContent":"READING THE SKY______"},"secondLayer":{"enabled":false,"type":"linear","colors":["#4dff00","#ff00ea"],"angle":180,"rotationDirection":1,"blendMode":"difference"}},{"x":1742.0293183858098,"y":0,"width":177.97068161419008,"height":107,"gradientConfig":{"type":"text","colors":["#ffffff","#ffffff"],"angle":264.7453703703704,"rotationDirection":-1,"textContent":"READING THE SKY______"},"secondLayer":{"enabled":false,"type":"linear","colors":["#989898"],"angle":180,"rotationDirection":1,"blendMode":"difference"}},{"x":1306.5401347735374,"y":0,"width":284.7283091966772,"height":107,"gradientConfig":{"type":"text","colors":["#ffffff","#ffffff"],"angle":240.25925925925927,"rotationDirection":-1,"textContent":"READING THE SKY______"},"secondLayer":{"enabled":false,"type":"linear","colors":["#4dff00","#4dff00"],"angle":180,"rotationDirection":-1,"blendMode":"difference"}},{"x":1591.2684439702145,"y":0,"width":150.76087441559528,"height":107,"gradientConfig":{"type":"text","colors":["#ffffff","#ffffff","#ffffff"],"angle":327.55401234567904,"rotationDirection":1,"textContent":"READING THE SKY______"},"secondLayer":{"enabled":false,"type":"linear","colors":["#ff00ea","#4a4a4a"],"angle":270,"rotationDirection":1,"blendMode":"difference"}}];
+    const config = {"width":1920,"height":107,"animationSpeed":44,"loopDuration":20,"shrinkPercentage":100};
+    
+    const canvas = document.getElementById('artCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let rotation = 0;
+    let lastTime = 0;
+    let offscreenCache = null;
+    let scaleX = 1;
+    let scaleY = 1;
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      scaleX = window.innerWidth / config.width;
+      scaleY = window.innerHeight / config.height;
+      offscreenCache = null;
+    }
+    
+    function scalePartition(p) {
+      return {
+        x: p.x * scaleX,
+        y: p.y * scaleY,
+        width: p.width * scaleX,
+        height: p.height * scaleY,
+        gradientConfig: p.gradientConfig,
+        secondLayer: p.secondLayer
+      };
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    function calculateTextHeight(ctx, text, targetHeight) {
+      let minSize = 1;
+      let maxSize = targetHeight * 2;
+      let fontSize = targetHeight;
+      
+      for (let i = 0; i < 20; i++) {
+        ctx.font = `bold ${fontSize}px Helvetica`;
+        const metrics = ctx.measureText(text);
+        const actualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        
+        if (Math.abs(actualHeight - targetHeight) < 1) break;
+        
+        if (actualHeight < targetHeight) {
+          minSize = fontSize;
+          fontSize = (fontSize + maxSize) / 2;
+        } else {
+          maxSize = fontSize;
+          fontSize = (minSize + fontSize) / 2;
+        }
+      }
+      return fontSize;
+    }
+    
+    function getOffscreenCanvas(width, height) {
+      if (!offscreenCache) {
+        offscreenCache = document.createElement('canvas');
+      }
+      if (offscreenCache.width < width) offscreenCache.width = width;
+      if (offscreenCache.height < height) offscreenCache.height = height;
+      const octx = offscreenCache.getContext('2d');
+      if (octx) octx.clearRect(0, 0, width, height);
+      return offscreenCache;
+    }
+    
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : [0, 0, 0];
+    }
+    
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(x => {
+        const hex = Math.round(x).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('');
+    }
+    
+    function interpolateColor(color1, color2, t) {
+      const rgb1 = hexToRgb(color1);
+      const rgb2 = hexToRgb(color2);
+      return rgbToHex(
+        rgb1[0] + (rgb2[0] - rgb1[0]) * t,
+        rgb1[1] + (rgb2[1] - rgb1[1]) * t,
+        rgb1[2] + (rgb2[2] - rgb1[2]) * t
+      );
+    }
+    
+    function createLinearGradientPattern(ctx, colors, partitionLength) {
+      const offscreenCanvas = document.createElement('canvas');
+      const totalSegments = colors.length * 2;
+      const tileWidth = Math.ceil(partitionLength);
+      
+      offscreenCanvas.width = tileWidth;
+      offscreenCanvas.height = 100;
+      
+      const offscreenCtx = offscreenCanvas.getContext('2d');
+      if (!offscreenCtx) return null;
+      
+      const gradient = offscreenCtx.createLinearGradient(0, 0, tileWidth, 0);
+      const segmentSize = 1 / totalSegments;
+      
+      for (let i = 0; i < colors.length; i++) {
+        gradient.addColorStop(i * 2 * segmentSize, '#000000');
+        gradient.addColorStop((i * 2 + 1) * segmentSize, colors[i]);
+      }
+      gradient.addColorStop(1, '#000000');
+      
+      offscreenCtx.fillStyle = gradient;
+      offscreenCtx.fillRect(0, 0, tileWidth, 100);
+      
+      const pattern = ctx.createPattern(offscreenCanvas, 'repeat');
+      if (!pattern) return null;
+      
+      return { pattern, tileWidth };
+    }
+    
+    function createGradientForLayer(ctx, partition, layerConfig, rotation) {
+      const { type, colors, angle } = layerConfig;
+      const centerX = partition.x + partition.width / 2;
+      const centerY = partition.y + partition.height / 2;
+      let gradient;
+
+      if (type === 'linear') {
+        const angleRad = (angle * Math.PI) / 180;
+        const partitionLength = Math.abs(Math.cos(angleRad)) * partition.width + Math.abs(Math.sin(angleRad)) * partition.height;
+        const halfLength = partitionLength / 2;
+        const startX = centerX - halfLength * Math.cos(angleRad);
+        const startY = centerY - halfLength * Math.sin(angleRad);
+        const endX = centerX + halfLength * Math.cos(angleRad);
+        const endY = centerY + halfLength * Math.sin(angleRad);
+        
+        gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+        
+        const totalSegments = colors.length * 2;
+        const rotationFraction = ((rotation % 360) / 360);
+        const allStops = [];
+        
+        for (let i = 0; i < colors.length; i++) {
+          const blackPos = ((i * 2 / totalSegments - rotationFraction + 1) % 1);
+          const colorPos = (((i * 2 + 1) / totalSegments - rotationFraction + 1) % 1);
+          allStops.push({ position: blackPos, color: '#000000' });
+          allStops.push({ position: colorPos, color: colors[i] });
+        }
+        
+        allStops.sort((a, b) => a.position - b.position);
+        
+        const firstStop = allStops[0];
+        const lastStop = allStops[allStops.length - 1];
+        const totalGap = firstStop.position + (1 - lastStop.position);
+        
+        if (firstStop.position > 0) {
+          const t = (1 - lastStop.position) / totalGap;
+          gradient.addColorStop(0, interpolateColor(lastStop.color, firstStop.color, t));
+        }
+        allStops.forEach(stop => gradient.addColorStop(stop.position, stop.color));
+        if (lastStop.position < 1) {
+          const t = (1 - lastStop.position) / totalGap;
+          gradient.addColorStop(1, interpolateColor(lastStop.color, firstStop.color, t));
+        }
+        return gradient;
+      } else if (type === 'conic') {
+        const normalizedRotation = rotation % 360;
+        const rotationDirection = layerConfig.rotationDirection || 1;
+        gradient = ctx.createConicGradient(((angle + normalizedRotation * rotationDirection) * Math.PI) / 180, centerX, centerY);
+      } else {
+        const maxSize = Math.max(partition.width, partition.height);
+        gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, maxSize);
+      }
+
+      const segmentSize = 1 / (colors.length * 2);
+      colors.forEach((color, i) => {
+        gradient.addColorStop(i * segmentSize * 2, color);
+        gradient.addColorStop(i * segmentSize * 2 + segmentSize, '#000000');
+      });
+      gradient.addColorStop(1, colors[0]);
+      return gradient;
+    }
+    
+    function drawGradientLayer(ctx, partition, layerConfig, rotation, partitionIndex, blendMode) {
+      ctx.globalCompositeOperation = blendMode;
+      
+      const centerX = partition.x + partition.width / 2;
+      const centerY = partition.y + partition.height / 2;
+      const { type, colors, angle } = layerConfig;
+      
+      if (type === 'linear') {
+        const angleRad = (angle * Math.PI) / 180;
+        const partitionLength = Math.abs(Math.cos(angleRad)) * partition.width + Math.abs(Math.sin(angleRad)) * partition.height;
+        const result = createLinearGradientPattern(ctx, colors, partitionLength);
+        
+        if (result) {
+          const { pattern, tileWidth } = result;
+          const maxSize = Math.max(partition.width, partition.height) * 2;
+          
+          if (pattern.setTransform) {
+            const offsetDistance = ((rotation / 360) * tileWidth) % tileWidth;
+            const offsetX = offsetDistance * Math.cos(angleRad);
+            const offsetY = offsetDistance * Math.sin(angleRad);
+            
+            const matrix = new DOMMatrix();
+            matrix.translateSelf(offsetX, offsetY);
+            matrix.rotateSelf(angle);
+            pattern.setTransform(matrix);
+            
+            ctx.fillStyle = pattern;
+            ctx.fillRect(centerX - maxSize, centerY - maxSize, maxSize * 2, maxSize * 2);
+          } else {
+            const gradient = createGradientForLayer(ctx, partition, layerConfig, rotation);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(partition.x, partition.y, partition.width, partition.height);
+          }
+        }
+      } else if (type === 'radial') {
+        const maxSize = Math.max(partition.width, partition.height);
+        const selectedColor = colors[partitionIndex % colors.length];
+        
+        const currentCycle = Math.floor(rotation / 360);
+        const maxIterations = 4;
+        const startCycle = Math.max(0, currentCycle - maxIterations + 1);
+        
+        const offscreen = getOffscreenCanvas(partition.width, partition.height);
+        const offscreenCtx = offscreen.getContext('2d');
+        if (!offscreenCtx) return;
+        
+        offscreenCtx.globalCompositeOperation = 'lighten';
+        const offscreenCenterX = partition.width / 2;
+        const offscreenCenterY = partition.height / 2;
+        
+        for (let cycle = startCycle; cycle <= currentCycle; cycle++) {
+          const cycleAge = rotation / 360 - cycle;
+          const iterationSize = maxSize * cycleAge;
+          
+          if (iterationSize > 0 && iterationSize <= maxSize * maxIterations) {
+            const gradient = offscreenCtx.createRadialGradient(offscreenCenterX, offscreenCenterY, 0, offscreenCenterX, offscreenCenterY, iterationSize);
+            gradient.addColorStop(0, '#000000');
+            gradient.addColorStop(0.5, selectedColor);
+            gradient.addColorStop(1, '#000000');
+            offscreenCtx.fillStyle = gradient;
+            offscreenCtx.fillRect(offscreenCenterX - iterationSize, offscreenCenterY - iterationSize, iterationSize * 2, iterationSize * 2);
+          }
+        }
+        ctx.drawImage(offscreen, partition.x, partition.y);
+      } else if (type === 'text') {
+        const textContent = layerConfig.textContent || '$$$';
+        const xCoord = Math.round(partition.x * 10000);
+        const yCoord = Math.round(partition.y * 10000);
+        const hash = Math.abs((xCoord * 73856093) ^ (yCoord * 19349663));
+        const selectedColor = colors[hash % colors.length];
+        const hash2 = Math.abs((xCoord * 19349663) ^ (yCoord * 73856093));
+        const randomStartOffset = (hash2 % 10000) / 10000;
+        const hash3 = Math.abs((xCoord * 50331653) ^ (yCoord * 25165843));
+        const direction = hash3 % 3;
+        
+        ctx.save();
+        const partCenterX = partition.x + partition.width / 2;
+        const partCenterY = partition.y + partition.height / 2;
+        
+        if (direction === 1) {
+          ctx.translate(partCenterX, partCenterY);
+          ctx.rotate(-Math.PI / 2);
+          ctx.translate(-partCenterX, -partCenterY);
+        } else if (direction === 2) {
+          ctx.translate(partCenterX, partCenterY);
+          ctx.rotate(Math.PI / 2);
+          ctx.translate(-partCenterX, -partCenterY);
+        }
+        
+        const fillDimension = direction === 0 ? partition.height : partition.width;
+        const targetHeight = fillDimension * 0.95;
+        const fontSize = calculateTextHeight(ctx, textContent, targetHeight);
+        ctx.font = `bold ${fontSize}px Helvetica`;
+        ctx.fillStyle = selectedColor;
+        ctx.textBaseline = 'middle';
+        
+        const wordWidth = ctx.measureText(textContent).width;
+        const normalizedRotation = rotation % 360;
+        const scrollProgress = (normalizedRotation / 360 + randomStartOffset) % 1;
+        const scrollOffset = -(scrollProgress * wordWidth) % wordWidth;
+        
+        const scrollDimensionSize = direction === 0 ? partition.width : partition.height;
+        const textY = partition.y + partition.height * 0.55;
+        const textX = partition.x + scrollOffset;
+        const numCopies = Math.ceil(scrollDimensionSize / wordWidth) + 3;
+        
+        for (let i = -1; i < numCopies; i++) {
+          ctx.fillText(textContent, textX + (i * wordWidth), textY);
+        }
+        ctx.restore();
+      } else {
+        ctx.save();
+        const normalizedRotation = rotation % 360;
+        const rotationDirection = layerConfig.rotationDirection || 1;
+        ctx.translate(centerX, centerY);
+        ctx.rotate((normalizedRotation * rotationDirection * Math.PI) / 180);
+        ctx.translate(-centerX, -centerY);
+
+        const gradient = createGradientForLayer(ctx, partition, layerConfig, rotation);
+        ctx.fillStyle = gradient;
+        
+        const maxSize = Math.max(partition.width, partition.height) * 2;
+        ctx.fillRect(centerX - maxSize, centerY - maxSize, maxSize * 2, maxSize * 2);
+        ctx.restore();
+      }
+    }
+    
+    function renderPartitions(rotation) {
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const scale = config.shrinkPercentage / 100;
+      
+      originalPartitions.forEach((originalPartition, partitionIndex) => {
+        const partition = scalePartition(originalPartition);
+        ctx.save();
+        
+        const centerX = partition.x + partition.width / 2;
+        const centerY = partition.y + partition.height / 2;
+        
+        ctx.translate(centerX, centerY);
+        ctx.scale(scale, scale);
+        ctx.translate(-centerX, -centerY);
+        
+        ctx.beginPath();
+        ctx.rect(partition.x, partition.y, partition.width, partition.height);
+        ctx.clip();
+        
+        const primaryLayerConfig = {
+          type: partition.gradientConfig.type,
+          colors: partition.gradientConfig.colors,
+          angle: partition.gradientConfig.angle,
+          rotationDirection: partition.gradientConfig.rotationDirection,
+          textContent: partition.gradientConfig.textContent,
+        };
+        
+        drawGradientLayer(ctx, partition, primaryLayerConfig, rotation, partitionIndex, 'source-over');
+        
+        if (partition.secondLayer.enabled) {
+          const secondLayerConfig = {
+            type: partition.secondLayer.type,
+            colors: partition.secondLayer.colors,
+            angle: partition.secondLayer.angle,
+            rotationDirection: partition.secondLayer.rotationDirection,
+            textContent: partition.secondLayer.textContent,
+          };
+          ctx.save();
+          drawGradientLayer(ctx, partition, secondLayerConfig, rotation, partitionIndex, partition.secondLayer.blendMode);
+          ctx.restore();
+        }
+        
+        ctx.restore();
+      });
+    }
+    
+    function animate(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+      
+      const actualLoopDuration = config.loopDuration / (config.animationSpeed / 50);
+      const degreesPerSecond = 360 / actualLoopDuration;
+      rotation += (deltaTime / 1000) * degreesPerSecond;
+      
+      renderPartitions(rotation);
+      requestAnimationFrame(animate);
+    }
+    
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

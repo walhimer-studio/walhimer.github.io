@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concept 2: Kinetic Language - Hospital Installation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px 30px;
+            border-radius: 2px;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .info-panel h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        .info-panel h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .info-panel p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .specs {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="info-panel">
+        <h2>Kinetic Language</h2>
+        <h3>Healthcare Waiting Area</h3>
+        <p>Positive, healing words rotate and float through space, creating a meditative focal point. The piece uses gentle motion and calming language to create a sense of peace and hope.</p>
+        <div class="specs">
+            <strong>Specs:</strong> Portrait orientation, 1080x1920, HDR display<br>
+            <strong>Environment:</strong> Hospital waiting room, therapy center, wellness clinic
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let time = 0;
+        let words = [];
+
+        const vocabulary = [
+            'BREATHE', 'HOPE', 'HEAL', 'PEACE', 'CALM',
+            'STRENGTH', 'COMFORT', 'CARE', 'LIGHT', 'WELLNESS',
+            'SERENITY', 'GRACE', 'TRUST', 'RESTORE', 'RENEW'
+        ];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initWords();
+        }
+
+        function initWords() {
+            words = [];
+            for (let i = 0; i < 25; i++) {
+                words.push({
+                    text: vocabulary[Math.floor(Math.random() * vocabulary.length)],
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    z: Math.random() * 500,
+                    rotX: Math.random() * Math.PI * 2,
+                    rotY: Math.random() * Math.PI * 2,
+                    rotZ: Math.random() * Math.PI * 2,
+                    speedX: (Math.random() - 0.5) * 0.002,
+                    speedY: (Math.random() - 0.5) * 0.003,
+                    speedRot: (Math.random() - 0.5) * 0.005,
+                    opacity: 0.1 + Math.random() * 0.3,
+                    size: 40 + Math.random() * 80
+                });
+            }
+        }
+
+        function draw() {
+            // Soft fade background
+            ctx.fillStyle = 'rgba(245, 245, 245, 0.08)';
+            ctx.fillRect(0, 0, width, height);
+
+            time += 1;
+
+            // Sort words by z-depth for proper layering
+            words.sort((a, b) => b.z - a.z);
+
+            words.forEach((word) => {
+                // Update position
+                word.x += Math.sin(time * word.speedX) * 0.5;
+                word.y += Math.cos(time * word.speedY) * 0.5;
+                word.rotX += word.speedRot * 0.5;
+                word.rotY += word.speedRot * 0.3;
+                word.rotZ += word.speedRot;
+
+                // Wrap around edges
+                if (word.x < -200) word.x = width + 200;
+                if (word.x > width + 200) word.x = -200;
+                if (word.y < -200) word.y = height + 200;
+                if (word.y > height + 200) word.y = -200;
+
+                // Calculate perspective scale based on z-depth
+                const scale = 300 / (300 + word.z);
+                const projectedSize = word.size * scale;
+
+                ctx.save();
+                ctx.translate(word.x, word.y);
+                
+                // Simulate 3D rotation effect with skewing
+                const skewX = Math.sin(word.rotY) * 0.3;
+                const skewY = Math.sin(word.rotX) * 0.2;
+                ctx.transform(1, skewY, skewX, 1, 0, 0);
+                
+                ctx.scale(scale, scale);
+
+                // Dynamic opacity based on rotation and depth
+                const dynamicOpacity = word.opacity * (0.3 + Math.abs(Math.cos(word.rotZ)) * 0.7);
+                
+                // Color varies slightly with rotation
+                const hue = 200 + Math.sin(word.rotX) * 30;
+                
+                ctx.font = `600 ${projectedSize}px Arial, sans-serif`;
+                ctx.fillStyle = `hsla(${hue}, 30%, 30%, ${dynamicOpacity})`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Add subtle shadow for depth
+                ctx.shadowColor = `rgba(0, 0, 0, ${dynamicOpacity * 0.3})`;
+                ctx.shadowBlur = 10 * scale;
+                ctx.shadowOffsetX = 2 * scale;
+                ctx.shadowOffsetY = 2 * scale;
+                
+                ctx.fillText(word.text, 0, 0);
+
+                ctx.restore();
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        draw();
+    </script>
+</body>
+</html>

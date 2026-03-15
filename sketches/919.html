@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>919 Emergent DNA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 1;
+    }
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto !important;
+      height: auto !important;
+    }
+    #control-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(18, 18, 18, 0.95);
+      border-bottom: 1px solid #333;
+      padding: 16px 20px;
+      z-index: 2;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #76c1ff;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .panel-actions {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      background: #4a9eff;
+      color: #fff;
+    }
+    button.secondary {
+      background: #555;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 16px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9aa4ad;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    input[type="text"] {
+      padding: 8px 10px;
+      background: #222;
+      color: #fff;
+      border: 1px solid #444;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .value {
+      font-size: 12px;
+      color: #d0d7de;
+    }
+    #countdown {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #333;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 16px;
+      z-index: 3;
+    }
+    #countdown.hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="control-panel">
+    <div class="panel-header">
+      <div class="panel-title">919 Emergent DNA</div>
+      <div class="panel-actions">
+        <button id="start-btn">Start</button>
+        <button id="reset-btn" class="secondary">Reset</button>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="control-group">
+        <label for="tokenId">Token ID</label>
+        <input id="tokenId" type="text" value="0x919">
+      </div>
+      <div class="control-group">
+        <label for="lifespan">Lifespan</label>
+        <input id="lifespan" type="range" min="0" max="4" step="1" data-param="lifespan">
+        <div class="value" id="lifespanValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="rotSpeed">Rotation Speed</label>
+        <input id="rotSpeed" type="range" min="0" max="3" step="0.01" data-param="rotSpeed">
+        <div class="value" id="rotSpeedValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="breathSpeed">Breath Speed</label>
+        <input id="breathSpeed" type="range" min="0" max="3" step="0.01" data-param="breathSpeed">
+        <div class="value" id="breathSpeedValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="boxSize">Box Size</label>
+        <input id="boxSize" type="range" min="0.2" max="2" step="0.01" data-param="boxSize">
+        <div class="value" id="boxSizeValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="alphaMin">Alpha Min</label>
+        <input id="alphaMin" type="range" min="0" max="1" step="0.01" data-param="alphaMin">
+        <div class="value" id="alphaMinValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="alphaMax">Alpha Max</label>
+        <input id="alphaMax" type="range" min="0" max="1" step="0.01" data-param="alphaMax">
+        <div class="value" id="alphaMaxValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="saturation">Saturation</label>
+        <input id="saturation" type="range" min="0" max="100" step="1" data-param="saturation">
+        <div class="value" id="saturationValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="brightness">Brightness</label>
+        <input id="brightness" type="range" min="0" max="100" step="1" data-param="brightness">
+        <div class="value" id="brightnessValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="hueSpread">Hue Spread</label>
+        <input id="hueSpread" type="range" min="0" max="360" step="1" data-param="hueSpread">
+        <div class="value" id="hueSpreadValue"></div>
+      </div>
+      <div class="control-group">
+        <label for="bgColor">Background</label>
+        <input id="bgColor" type="range" min="0" max="5" step="1" data-param="bgColor">
+        <div class="value" id="bgColorValue"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+  <div id="countdown" class="hidden"></div>
+
+  <script src="919_surrender_artwork.js"></script>
+  <script>
+    const W = 2160;
+    const H = 3840;
+    const FPS = 30;
+
+    const BG_PRESETS = [
+      { name: "Void", h: 0, s: 0, b: 0 },
+      { name: "Deep Blue", h: 220, s: 40, b: 12 },
+      { name: "Midnight", h: 260, s: 35, b: 10 },
+      { name: "Infra", h: 350, s: 30, b: 14 },
+      { name: "Dusk", h: 30, s: 25, b: 12 },
+      { name: "Fog", h: 200, s: 10, b: 18 }
+    ];
+
+    const LIFESPAN_OPTIONS = [
+      { label: "30s", seconds: 30, maxBoxes: 200 },
+      { label: "1m", seconds: 60, maxBoxes: 400 },
+      { label: "3m", seconds: 180, maxBoxes: 800 },
+      { label: "5m", seconds: 300, maxBoxes: 1200 },
+      { label: "10m", seconds: 600, maxBoxes: 2000 }
+    ];
+
+    const params = {
+      lifespan: 2,
+      rotSpeed: 1.0,
+      breathSpeed: 1.0,
+      boxSize: 1.0,
+      alphaMin: 0.1,
+      alphaMax: 0.8,
+      saturation: 60,
+      brightness: 80,
+      hueSpread: 120,
+      bgColor: 0
+    };
+
+    let seededRandom;
+    let startTime = 0;
+    let hasStarted = false;
+    let isCountingDown = false;
+    let countdownStart = 0;
+    let countdownValue = 3;
+
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    class SeededRandom {
+      constructor(seed) {
+        this.seed = seed % 2147483647;
+        if (this.seed <= 0) this.seed += 2147483646;
+      }
+      random() {
+        this.seed = (this.seed * 16807) % 2147483647;
+        return (this.seed - 1) / 2147483646;
+      }
+    }
+
+    function initSeededRandom() {
+      const tokenId = document.getElementById("tokenId").value.trim() || "0x919";
+      seededRandom = new SeededRandom(hashCode(tokenId));
+    }
+
+    function updateParamFromInput(input) {
+      const key = input.dataset.param;
+      if (!key) return;
+      params[key] = parseFloat(input.value);
+
+      if (params.alphaMin > params.alphaMax) {
+        params.alphaMax = params.alphaMin;
+        document.getElementById("alphaMax").value = params.alphaMax;
+      }
+      updateAllLabels();
+    }
+
+    function updateAllLabels() {
+      document.getElementById("lifespanValue").textContent =
+        LIFESPAN_OPTIONS[Math.floor(params.lifespan)].label;
+      document.getElementById("rotSpeedValue").textContent = params.rotSpeed.toFixed(2);
+      document.getElementById("breathSpeedValue").textContent = params.breathSpeed.toFixed(2);
+      document.getElementById("boxSizeValue").textContent = params.boxSize.toFixed(2);
+      document.getElementById("alphaMinValue").textContent = params.alphaMin.toFixed(2);
+      document.getElementById("alphaMaxValue").textContent = params.alphaMax.toFixed(2);
+      document.getElementById("saturationValue").textContent = Math.round(params.saturation);
+      document.getElementById("brightnessValue").textContent = Math.round(params.brightness);
+      document.getElementById("hueSpreadValue").textContent = Math.round(params.hueSpread);
+      document.getElementById("bgColorValue").textContent =
+        BG_PRESETS[Math.floor(params.bgColor)].name;
+    }
+
+    function setInputDefaults() {
+      document.getElementById("lifespan").value = params.lifespan;
+      document.getElementById("rotSpeed").value = params.rotSpeed;
+      document.getElementById("breathSpeed").value = params.breathSpeed;
+      document.getElementById("boxSize").value = params.boxSize;
+      document.getElementById("alphaMin").value = params.alphaMin;
+      document.getElementById("alphaMax").value = params.alphaMax;
+      document.getElementById("saturation").value = params.saturation;
+      document.getElementById("brightness").value = params.brightness;
+      document.getElementById("hueSpread").value = params.hueSpread;
+      document.getElementById("bgColor").value = params.bgColor;
+      updateAllLabels();
+    }
+
+    function startCountdown() {
+      if (isCountingDown) return;
+      isCountingDown = true;
+      countdownValue = 3;
+      countdownStart = millis();
+      document.getElementById("countdown").classList.remove("hidden");
+    }
+
+    function resetArtwork() {
+      hasStarted = false;
+      isCountingDown = false;
+      document.getElementById("countdown").classList.add("hidden");
+      initSeededRandom();
+      if (typeof initArtwork === "function") initArtwork();
+      if (typeof time !== "undefined") time = 0;
+    }
+
+    function setup() {
+      const c = createCanvas(W, H, WEBGL);
+      c.parent("canvas-container");
+      frameRate(FPS);
+      pixelDensity(1);
+      colorMode(HSB, 360, 100, 100, 255);
+      noStroke();
+
+      initSeededRandom();
+      if (typeof initArtwork === "function") initArtwork();
+      setInputDefaults();
+    }
+
+    function draw() {
+      const bgPreset = BG_PRESETS[Math.floor(params.bgColor)];
+      background(bgPreset.h, bgPreset.s, bgPreset.b);
+
+      const t = millis();
+
+      if (!hasStarted) {
+        if (typeof drawPreview === "function") drawPreview(t);
+      }
+
+      if (isCountingDown) {
+        const elapsed = (t - countdownStart) / 1000;
+        const remaining = 3 - Math.floor(elapsed);
+        if (remaining <= 0) {
+          isCountingDown = false;
+          hasStarted = true;
+          startTime = t;
+          if (typeof time !== "undefined") time = 0;
+          if (typeof initArtwork === "function") initArtwork();
+          document.getElementById("countdown").classList.add("hidden");
+        } else {
+          drawCountdown(remaining);
+        }
+        return;
+      }
+
+      if (hasStarted) {
+        if (typeof updateLifecycle === "function") updateLifecycle(t);
+        if (typeof drawArtwork === "function") drawArtwork();
+      }
+    }
+
+    function drawCountdown(value) {
+      const el = document.getElementById("countdown");
+      el.textContent = "Starting in " + value;
+    }
+
+    document.getElementById("start-btn").addEventListener("click", () => {
+      startCountdown();
+    });
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      resetArtwork();
+    });
+
+    document.querySelectorAll("input[type='range']").forEach((input) => {
+      input.addEventListener("input", () => updateParamFromInput(input));
+    });
+    document.getElementById("tokenId").addEventListener("change", () => {
+      initSeededRandom();
+      if (typeof initArtwork === "function") initArtwork();
+    });
+  </script>
+</body>
+</html>

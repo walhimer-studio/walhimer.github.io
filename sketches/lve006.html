@@ -1,0 +1,405 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Open Thin-Wall Chamber — Three.js</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+let palette = [310, 45, 30, 210, 270];
+
+let camZ = 900;
+let targetCamZ = 900;
+let camSpeed = 0.18;
+let frameCountCustom = 0;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(1, 1, 1);
+
+const camera = new THREE.PerspectiveCamera(45, 1536 / 864, 1, 5000);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true
+});
+renderer.setSize(1536, 864);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+function random(a, b) {
+  if (Array.isArray(a)) return a[Math.floor(Math.random() * a.length)];
+  return Math.random() * (b - a) + a;
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function hsbToRgb(h, s, v) {
+  h = ((h % 360) + 360) % 360;
+  s /= 100;
+  v /= 100;
+
+  const c = v * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = v - c;
+
+  let r = 0, g = 0, b = 0;
+
+  if (h < 60) {
+    r = c; g = x; b = 0;
+  } else if (h < 120) {
+    r = x; g = c; b = 0;
+  } else if (h < 180) {
+    r = 0; g = c; b = x;
+  } else if (h < 240) {
+    r = 0; g = x; b = c;
+  } else if (h < 300) {
+    r = x; g = 0; b = c;
+  } else {
+    r = c; g = 0; b = x;
+  }
+
+  return {
+    r: Math.round((r + m) * 255),
+    g: Math.round((g + m) * 255),
+    b: Math.round((b + m) * 255)
+  };
+}
+
+function makeGradientTexture(h1, h2, sat1, bri1, sat2, bri2, horizontal = true) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      const t = horizontal ? x / (canvas.width - 1) : y / (canvas.height - 1);
+      const h = lerp(h1, h2, t);
+      const s = lerp(sat1, sat2, t);
+      const b = lerp(bri1, bri2, t);
+      const rgb = hsbToRgb(h, s, b);
+      ctx.fillStyle = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function makePlaneMaterial(h1, h2, sat1, bri1, sat2, bri2, opacity, horizontal = true) {
+  return new THREE.MeshBasicMaterial({
+    map: makeGradientTexture(h1, h2, sat1, bri1, sat2, bri2, horizontal),
+    transparent: true,
+    opacity,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.NormalBlending
+  });
+}
+
+function makeOpenThinWallChamber(w, h, d, wallThickness, gradientSet, opacity) {
+  const group = new THREE.Group();
+
+  const frontOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(
+      gradientSet.frontA1, gradientSet.frontA2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity * 0.90, true
+    )
+  );
+  frontOuter.position.z = d * 0.5;
+  group.add(frontOuter);
+
+  const frontInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(
+      gradientSet.frontB1, gradientSet.frontB2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity, true
+    )
+  );
+  frontInner.position.z = d * 0.5 - wallThickness;
+  group.add(frontInner);
+
+  const backOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(
+      gradientSet.backA1, gradientSet.backA2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity * 0.90, true
+    )
+  );
+  backOuter.position.z = -d * 0.5;
+  backOuter.rotation.y = Math.PI;
+  group.add(backOuter);
+
+  const backInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    makePlaneMaterial(
+      gradientSet.backB1, gradientSet.backB2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity, true
+    )
+  );
+  backInner.position.z = -d * 0.5 + wallThickness;
+  backInner.rotation.y = Math.PI;
+  group.add(backInner);
+
+  const leftOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(d, h),
+    makePlaneMaterial(
+      gradientSet.sideA1, gradientSet.sideA2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity * 0.82, true
+    )
+  );
+  leftOuter.position.x = -w * 0.5;
+  leftOuter.rotation.y = -Math.PI / 2;
+  group.add(leftOuter);
+
+  const leftInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(Math.max(20, d - wallThickness * 2), h),
+    makePlaneMaterial(
+      gradientSet.sideB1, gradientSet.sideB2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity * 0.92, true
+    )
+  );
+  leftInner.position.x = -w * 0.5 + wallThickness;
+  leftInner.rotation.y = -Math.PI / 2;
+  group.add(leftInner);
+
+  const rightOuter = new THREE.Mesh(
+    new THREE.PlaneGeometry(d, h),
+    makePlaneMaterial(
+      gradientSet.sideC1, gradientSet.sideC2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity * 0.82, true
+    )
+  );
+  rightOuter.position.x = w * 0.5;
+  rightOuter.rotation.y = Math.PI / 2;
+  group.add(rightOuter);
+
+  const rightInner = new THREE.Mesh(
+    new THREE.PlaneGeometry(Math.max(20, d - wallThickness * 2), h),
+    makePlaneMaterial(
+      gradientSet.sideD1, gradientSet.sideD2,
+      gradientSet.sat1, gradientSet.bri1,
+      gradientSet.sat2, gradientSet.bri2,
+      opacity * 0.92, true
+    )
+  );
+  rightInner.position.x = w * 0.5 - wallThickness;
+  rightInner.rotation.y = Math.PI / 2;
+  group.add(rightInner);
+
+  return group;
+}
+
+function makeLayerGradientSet(h1, h2) {
+  return {
+    frontA1: h1 - 10,
+    frontA2: h2 + 14,
+    frontB1: h1 - 4,
+    frontB2: h2 + 20,
+
+    backA1: h2 + 14,
+    backA2: h1 - 10,
+    backB1: h2 + 20,
+    backB2: h1 - 4,
+
+    sideA1: h1 - 18,
+    sideA2: h2 + 8,
+    sideB1: h1 - 24,
+    sideB2: h2 + 14,
+
+    sideC1: h2 + 8,
+    sideC2: h1 - 18,
+    sideD1: h2 + 14,
+    sideD2: h1 - 24,
+
+    sat1: 94,
+    bri1: 100,
+    sat2: 72,
+    bri2: 88
+  };
+}
+
+const chamber = {
+  x: 0,
+  y: 0,
+  z: 0,
+  hueA: random(palette),
+  hueB: 0,
+  hueC: random(palette),
+  hueD: 0,
+  driftPhase: random(0, Math.PI * 2),
+  rotationOffset: random(-0.08, 0.08),
+  pulseSpeed: random(0.004, 0.008),
+  pulseOffset: random(0, Math.PI * 2)
+};
+
+chamber.hueB = chamber.hueA + random(-35, 35);
+chamber.hueD = chamber.hueC + random(-35, 35);
+
+const chamberGroup = new THREE.Group();
+scene.add(chamberGroup);
+
+const wallLayers = [];
+
+// smallest box = random
+const innerW = random(250, 360);
+const innerH = random(240, 340);
+const innerD = random(250, 360);
+
+// center box = wider
+const middleW = innerW + random(70, 150);
+const middleH = innerH + random(-10, 35);
+const middleD = innerD + random(35, 90);
+
+// larger box = taller
+const outerW = middleW + random(5, 55);
+const outerH = middleH + random(90, 180);
+const outerD = middleD + random(10, 55);
+
+const dimensions = [
+  {
+    w: innerW,
+    h: innerH,
+    d: innerD,
+    opacity: 0.30,
+    thickness: 18,
+    h1: chamber.hueA,
+    h2: chamber.hueB
+  },
+  {
+    w: middleW,
+    h: middleH,
+    d: middleD,
+    opacity: 0.22,
+    thickness: 18,
+    h1: lerp(chamber.hueA, chamber.hueC, 0.5),
+    h2: lerp(chamber.hueB, chamber.hueD, 0.5)
+  },
+  {
+    w: outerW,
+    h: outerH,
+    d: outerD,
+    opacity: 0.15,
+    thickness: 18,
+    h1: chamber.hueC,
+    h2: chamber.hueD
+  }
+];
+
+for (let i = 0; i < dimensions.length; i++) {
+  const dim = dimensions[i];
+  const layer = makeOpenThinWallChamber(
+    dim.w,
+    dim.h,
+    dim.d,
+    dim.thickness,
+    makeLayerGradientSet(dim.h1, dim.h2),
+    dim.opacity
+  );
+
+  chamberGroup.add(layer);
+  wallLayers.push(layer);
+}
+
+function setLayerOpacity(group, value) {
+  group.traverse((obj) => {
+    if (obj.isMesh && obj.material) {
+      const base = obj.userData.baseOpacity ?? obj.material.opacity;
+      obj.material.opacity = base * value;
+    }
+  });
+}
+
+wallLayers.forEach((layer) => {
+  layer.traverse((obj) => {
+    if (obj.isMesh && obj.material) {
+      obj.userData.baseOpacity = obj.material.opacity;
+    }
+  });
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  frameCountCustom++;
+
+  targetCamZ -= camSpeed;
+  camZ = lerp(camZ, targetCamZ, 0.025);
+
+  const camX = Math.sin(frameCountCustom * 0.0016) * 28;
+  const camY = Math.sin(frameCountCustom * 0.0011) * 8 + 50;
+  const camTargetZ = camZ - 100;
+
+  camera.position.set(camX, camY, camZ);
+  camera.lookAt(0, camY, camTargetZ);
+
+  const driftX = Math.sin(frameCountCustom * 0.0015 + chamber.driftPhase) * 10;
+  const driftY = Math.cos(frameCountCustom * 0.0011 + chamber.driftPhase) * 6;
+  const rotY = Math.sin(frameCountCustom * 0.0008 + chamber.pulseOffset) * 0.04 + chamber.rotationOffset * 0.6;
+
+  const pulse = 1 + 0.14 * Math.sin(frameCountCustom * chamber.pulseSpeed + chamber.pulseOffset);
+  const breathOpacity = 0.70 + 0.30 * (0.5 + 0.5 * Math.sin(frameCountCustom * chamber.pulseSpeed + chamber.pulseOffset));
+
+  chamberGroup.position.set(chamber.x + driftX, chamber.y + driftY, chamber.z);
+  chamberGroup.rotation.y = rotY;
+  chamberGroup.scale.set(1, pulse, 1);
+
+  wallLayers.forEach((layer, i) => {
+    const localOpacity = breathOpacity * (1 - i * 0.08);
+    setLayerOpacity(layer, localOpacity);
+  });
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener("resize", () => {
+  camera.aspect = 1536 / 864;
+  camera.updateProjectionMatrix();
+  renderer.setSize(1536, 864);
+});
+</script>
+</body>
+</html>
+```

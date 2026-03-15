@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Radial Gradient Artwork – p5.js WebGL</title>
+  <style>
+    html, body { margin:0; padding:0; background:#fff; height:100%; overflow:hidden; }
+    canvas { display:block; margin:0 auto; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+
+  <script>
+  // Radial Gradient Artwork – P5.js WebGL
+  // 1000×1000 canvas
+  // Symmetrical output
+  // Rectangles remain fixed in size
+  // Only the radial gradient “breathes”
+  // Artwork rotates along the Y axis
+  // Rectangles have depth
+  // NUMBER OF RECTANGLES IS ADJUSTABLE
+
+  let gradientShader;
+
+  // colors
+  let c1, c2, c3;
+
+  // base dimensions
+  let baseW, baseH;
+
+  // rectangles array
+  let rects = [];
+
+  // depth and spacing
+  let depthT;
+  const Z_EPS = 1.0;     // minimal GPU-safe separation
+  const RECT_COUNT = 5;  // <<< ADJUST THIS NUMBER
+
+  const vertShader = `
+  precision highp float;
+  attribute vec3 aPosition;
+  attribute vec2 aTexCoord;
+
+  uniform mat4 uModelViewMatrix;
+  uniform mat4 uProjectionMatrix;
+
+  varying vec2 vTexCoord;
+
+  void main() {
+      vTexCoord = aTexCoord;
+      gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);
+  }
+  `;
+
+  const fragShader = `
+  precision highp float;
+
+  varying vec2 vTexCoord;
+
+  uniform vec3 uC1;
+  uniform vec3 uC2;
+  uniform vec3 uC3;
+  uniform float uTime;
+
+  void main() {
+      vec2 center = vec2(0.5, 0.5);
+
+      // breathing radial gradient
+      float scale = 1.0 + 0.07 * sin(uTime);
+      vec2 uv = center + (vTexCoord - center) * scale;
+
+      float dist = distance(uv, center);
+
+      vec3 color;
+      if (dist < 0.3) {
+          color = mix(uC1, uC2, dist / 0.3);
+      } else {
+          color = mix(uC2, uC3, (dist - 0.3) / 0.4);
+      }
+
+      gl_FragColor = vec4(color, 0.35);
+  }
+  `;
+
+  function setup() {
+      pixelDensity(5);
+      createCanvas(1000, 1000, WEBGL);
+      gradientShader = createShader(vertShader, fragShader);
+      noStroke();
+
+      // colors
+      c1 = hsbToRgb(random(360), 100, 100);
+      c2 = hsbToRgb(random(360), 100, 100);
+      c3 = hsbToRgb(random(360), 100, 100);
+
+      // base dimensions
+      baseW = random(600, 600);
+      baseH = random(6000, 600);
+
+      // depth
+      depthT = random(60, 100);
+
+      // build rectangle stack
+      rects = [];
+      for (let i = 0; i < RECT_COUNT; i++) {
+          let w = baseW * random(0.4, 1.8);
+          let h = baseH * random(0.4, 1.8);
+
+          rects.push({
+              w,
+              h,
+              z: (i - (RECT_COUNT - 1) / 2) * (depthT + Z_EPS)
+          });
+      }
+  }
+
+  function draw() {
+      background(255);
+
+      shader(gradientShader);
+      gradientShader.setUniform("uC1", c1);
+      gradientShader.setUniform("uC2", c2);
+      gradientShader.setUniform("uC3", c3);
+      gradientShader.setUniform("uTime", millis() * 0.0003);
+
+      push();
+
+      // global rotation
+      rotateY(millis() * 0.0005);
+
+      // draw stacked rectangles
+      for (let r of rects) {
+          push();
+          translate(0, 0, r.z);
+          box(r.w, r.h, depthT);
+          pop();
+      }
+
+      pop();
+  }
+
+  function hsbToRgb(h, s, b) {
+      colorMode(HSB, 360, 100, 100);
+      let c = color(h, s, b);
+      colorMode(RGB, 255);
+      return [red(c) / 255, green(c) / 255, blue(c) / 255];
+  }
+  </script>
+</body>
+</html>

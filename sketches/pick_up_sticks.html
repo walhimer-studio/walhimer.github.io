@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>p5.js WEBGL Gradient Boxes</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- p5.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+
+  <script>
+    let colors = [];
+    let margin = 100;  // Margin value for white space around the composition
+    let shapes = [];  // Store the shapes' parameters
+    let fadeSpeed = 0.01;  // Control the speed of fading
+
+    function setup() {
+      createCanvas(1000, 1000, WEBGL);  // Switch to WEBGL for 3D rendering
+      frameRate(60);  // Set a stable frame rate for smooth animations
+
+      // Defining some basic color sets for gradients with increased transparency
+      colors = [
+        [color(255, 0, 0, 80), color(255, 204, 0, 80)],   // Red to Yellow
+        [color(0, 255, 255, 80), color(0, 0, 255, 80)],   // Cyan to Blue
+        [color(255, 0, 255, 80), color(255, 255, 0, 80)]  // Magenta to Yellow
+      ];
+
+      // Create centered overlapping shapes (3D boxes)
+      for (let j = 0; j < 20; j++) {
+        let w = random(500, 1000);
+        let h = random(40, 1000);
+        let d = random(40, 500);
+        let xOffset = random(-300, 200);
+        let yOffset = random(-300, 300);
+
+        shapes.push({
+          x: xOffset,
+          y: yOffset,
+          w: w,
+          h: h,
+          d: d,
+          colorSet: random(colors),
+          fadeOffset: random(TWO_PI)
+        });
+      }
+    }
+
+    function draw() {
+      background(255);
+      rotateY(millis() / 10000);
+
+      for (let i = 0; i < shapes.length; i++) {
+        let shape = shapes[i];
+
+        let transparency = map(
+          sin(frameCount * fadeSpeed + shape.fadeOffset),
+          -1, 1, 20, 120
+        );
+
+        push();
+        translate(shape.x, shape.y, 0);
+
+        let c1 = color(
+          red(shape.colorSet[0]),
+          green(shape.colorSet[0]),
+          blue(shape.colorSet[0]),
+          transparency
+        );
+        let c2 = color(
+          red(shape.colorSet[1]),
+          green(shape.colorSet[1]),
+          blue(shape.colorSet[1]),
+          transparency
+        );
+
+        drawSoftGradientBox(shape.w, shape.h, shape.d, c1, c2);
+        pop();
+      }
+    }
+
+    function drawSoftGradientBox(w, h, d, c1, c2) {
+      noStroke();
+
+      // Front face
+      beginShape();
+      fill(c1);
+      vertex(-w / 2, -h / 2, d / 2);
+      fill(c2);
+      vertex(w / 2, -h / 2, d / 2);
+      vertex(w / 2, h / 2, d / 2);
+      vertex(-w / 2, h / 2, d / 2);
+      endShape(CLOSE);
+
+      // Back face
+      beginShape();
+      fill(c2);
+      vertex(-w / 2, -h / 2, -d / 2);
+      fill(c1);
+      vertex(w / 2, -h / 2, -d / 2);
+      vertex(w / 2, h / 2, -d / 2);
+      vertex(-w / 2, h / 2, -d / 2);
+      endShape(CLOSE);
+
+      // Left side
+      beginShape();
+      fill(c1);
+      vertex(-w / 2, -h / 2, d / 2);
+      vertex(-w / 2, h / 2, d / 2);
+      fill(c2);
+      vertex(-w / 2, h / 2, -d / 2);
+      vertex(-w / 2, -h / 2, -d / 2);
+      endShape(CLOSE);
+
+      // Right side
+      beginShape();
+      fill(c2);
+      vertex(w / 2, -h / 2, d / 2);
+      vertex(w / 2, h / 2, d / 2);
+      fill(c1);
+      vertex(w / 2, h / 2, -d / 2);
+      vertex(w / 2, -h / 2, -d / 2);
+      endShape(CLOSE);
+    }
+  </script>
+
+</body>
+</html>

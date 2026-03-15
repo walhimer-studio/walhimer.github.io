@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Umbrella — Translucent Gradient Swirls (WEBGL)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; }
+    canvas { display: block; margin: 0 auto; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+// p5.js WEBGL — Umbrella with moving translucent gradient swirls (incl. white)
+// - White background
+// - Back-lighted fabric
+// - Rod/runner logic kept but not rendered (hidden)
+// - White ribs + glowing rim
+// - Fabric: vivid, more translucent, changing random swirls inspired by layered disks
+
+const DOME_RADIUS = 560;
+const U_SEGMENTS  = 64;
+const V_SEGMENTS  = 28;
+const RIB_COUNT   = 8;
+
+let openAmt = 1.0;
+let openTarget = 1.0;
+const OPEN_SPEED = 0.08;
+
+// ---- Swirl field (disk layers) ----
+let time = 0;
+const LAYERS = 3;         // number of moving gradient "disks"
+const BASE_SIZE = 1000;   // diameter scale used for canopy-space swirls
+let disks = [];           // { x0, z0, size0, a, speed, amp, colorSet:[c1,c2], tOff }
+
+function setup() {
+  createCanvas(1000, 1000, WEBGL);
+  frameRate(60);
+  setAttributes('alpha', true);
+  colorMode(HSB, 360, 100, 100, 100);
+
+  // Define vivid translucent color sets (HSB) and include white as an endpoint in some
+  const colorSets = [
+    [ color(330,100,100,45), color( 45,100,100,45) ],  // magenta -> yellow (translucent)
+    [ color(200,100,100,45), color(270,100,100,45) ],  // cyan/blue -> violet
+    [ color(  0,100,100,45), color( 30,100,100,45) ],  // red -> orange
+    [ color( 45,100,100,45), color(200,100,100,45) ],  // yellow -> cyan
+    [ color(  0,  0,100,55), color(  0,  0,100,30) ]   // white -> soft white (for gentle flares)
+  ];
+
+  // Seed moving disks in canopy XZ space
+  for (let i = 0; i < LAYERS; i++) {
+    disks.push({
+      x0: random(-DOME_RADIUS*0.9, DOME_RADIUS*0.9),
+      z0: random(-DOME_RADIUS*0.9, DOME_RADIUS*0.9),
+      size0: random(BASE_SIZE*0.45, BASE_SIZE*0.9),
+      a: random(TWO_PI),              // phase for circular drift
+      speed: random(0.2, 0.55) * 0.01,
+      amp: random(60, 160),           // center drift amplitude
+      colorSet: random(colorSets),
+      tOff: random(TWO_PI)            // time offset for pulsation
+    });
+  }
+}
+
+function draw() {
+  background(255);
+  orbitControl();
+
+  // --- LIGHTING FROM BEHIND ---
+  ambientLight(255);
+  directionalLight(255,255,255, 0,0,1);       // from behind toward the camera
+  pointLight(200,200,200, 0, -200, -800);     // back glow
+
+  // Open/close easing
+  openAmt += (openTarget - openAmt) * OPEN_SPEED;
+
+  // Advance time (controls swirl motion)
+  time += 0.02;
+
+  // Pose
+  rotateX(-0.35);
+  translate(0, 70, 0);
+
+  // Keep runner logic (hidden)
+  const runnerY = lerp(-DOME_RADIUS * 0.05, -DOME_RADIUS * 0.85, openAmt);
+
+  drawUmbrella(DOME_RADIUS, U_SEGMENTS, V_SEGMENTS, RIB_COUNT, openAmt);
+}
+
+// Pleat profile: keeps fabric near ribs when closed
+function pleatScale(theta, ribs, openVal) {
+  const p = 3.0;
+  const minClosed = 0.06;
+  const wave = Math.abs(Math.cos(ribs * theta));
+  const closedShape = minClosed + (1.0 - minClosed) * Math.pow(wave, p);
+  return closedShape * (1.0 - openVal) + openVal;
+}
+
+// Outward bias driven by runner/post (logic retained)
+function outwardBias(openVal) {
+  return lerp(0.10, 1.00, openVal);
+}
+
+// Compute the moving center and effective size of a disk layer at time t
+function layerState(layer) {
+  const cx = layer.x0 + Math.cos(layer.a + time * layer.speed * 60) * layer.amp;
+  const cz = layer.z0 + Math.sin(layer.a + time * layer.speed * 60) * layer.amp;
+  const pulsate = 1.0 + 0.22 * Math.sin(time * layer.speed * 40 + layer.tOff);
+  const size = layer.size0 * pulsate;
+  return { cx, cz, size, c1: layer.colorSet[0], c2: layer.colorSet[1] };
+}
+
+// Blend multiple layers into a single translucent color at point (x,z)
+// We pick the closest couple of layers and mix their gradients.
+// Also occasionally inject white streaks with noise.
+function swirledColorAt(x, z) {
+  // Gather distances to each layer center
+  let infos = [];
+  for (let i = 0; i < disks.length; i++) {
+    const s = layerState(disks[i]);
+    const dx = x - s.cx;
+    const dz = z - s.cz;
+    const d  = Math.sqrt(dx*dx + dz*dz);
+    // radial factor 0 at center -> 1 at edge and beyond
+    const t = constrain(d / (s.size * 0.5), 0, 1);
+    // Inverse weight (closer = higher weight)
+    const w = 1.0 / (0.0001 + d);
+    infos.push({t, w, s});
+  }
+  // Sort by distance (weight desc)
+  infos.sort((a, b) => b.w - a.w);
+
+  // Take top 2 layers for blended swirl
+  let totalW = 0;
+  let accH = 0, accS = 0, accB = 0, accA = 0;
+  for (let k = 0; k < Math.min(2, infos.length); k++) {
+    const { t, w, s } = infos[k];
+    const col = lerpColor(s.c1, s.c2, t); // gradient from c1 -> c2 across radius
+    accH += hue(col) * w;
+    accS += saturation(col) * w;
+    accB += brightness(col) * w;
+    accA += alpha(col) * w;
+    totalW += w;
+  }
+  let H = accH / totalW;
+  let S = accS / totalW;
+  let B = accB / totalW;
+  let A = accA / totalW;
+
+  // Add subtle time/space variation for extra motion
+  const n = noise(x*0.003, z*0.003, frameCount*0.01);
+  H = (H + 360 * (n*0.15)) % 360;
+
+  // Occasional white swirls: when noise crosses threshold, bias to white
+  if (n > 0.68) {
+    S = lerp(S, 0, map(n, 0.68, 1.0, 0, 1));  // desaturate toward white
+    B = 100;                                   // bright
+    A = max(A, 60);                             // slightly stronger opacity for the streak
+  }
+
+  // Ensure vividness but keep translucency
+  S = constrain(S, 85, 100);   // vivid
+  B = constrain(B, 90, 100);   // bright
+  A = constrain(A, 35, 60);    // translucent window
+
+  return color(H, S, B, A);
+}
+
+function drawUmbrella(r, uSeg, vSeg, ribs, openVal) {
+  const yStretch = 1.0 + 0.25 * (1.0 - openVal);
+  const bias = outwardBias(openVal);
+
+  // ---- FABRIC with swirled translucent fills ----
+  noStroke();
+
+  for (let v = 0; v < vSeg; v++) {
+    const v0 = (v / vSeg) * HALF_PI;
+    const v1 = ((v + 1) / vSeg) * HALF_PI;
+
+    beginShape(TRIANGLE_STRIP);
+    for (let u = 0; u <= uSeg; u++) {
+      const t = (u / uSeg) * TWO_PI;
+
+      const ring0 = r * Math.sin(v0);
+      const ring1 = r * Math.sin(v1);
+
+      const biased0 = ring0 * bias;
+      const biased1 = ring1 * bias;
+
+      const s0 = pleatScale(t, ribs, openVal);
+      const s1 = pleatScale(t, ribs, openVal);
+
+      const eff0 = lerp(biased0, ring0, s0);
+      const eff1 = lerp(biased1, ring1, s1);
+
+      const x0 = eff0 * Math.cos(t);
+      const z0 = eff0 * Math.sin(t);
+      const y0 = -r * Math.cos(v0) * yStretch;
+
+      const x1 = eff1 * Math.cos(t);
+      const z1 = eff1 * Math.sin(t);
+      const y1 = -r * Math.cos(v1) * yStretch;
+
+      // Sample swirled color field in canopy XZ-space (use x1,z1 for consistency)
+      const c = swirledColorAt(x1, z1);
+      fill(c);
+
+      vertex(x1, y1, z1);
+      vertex(x0, y0, z0);
+    }
+    endShape();
+  }
+
+  // ---- RIBS (white) ----
+  stroke(0, 0, 100);
+  strokeWeight(2);
+  noFill();
+
+  for (let k = 0; k < ribs; k++) {
+    const theta = (k / ribs) * TWO_PI;
+    beginShape();
+    for (let v = 0; v <= vSeg; v++) {
+      const vv = (v / vSeg) * HALF_PI;
+      const ring = r * Math.sin(vv);
+      const biased = ring * bias;
+      const s = pleatScale(theta, ribs, openVal);
+      const eff = lerp(biased, ring, s);
+
+      const x = eff * Math.cos(theta);
+      const z = eff * Math.sin(theta);
+      const y = -r * Math.cos(vv) * yStretch;
+
+      vertex(x, y, z);
+    }
+    endShape();
+  }
+
+  // ---- RIM HOOP (white) ----
+  strokeWeight(1.5);
+  beginShape();
+  for (let u = 0; u <= uSeg; u++) {
+    const t = (u / uSeg) * TWO_PI;
+    const ring = r;
+    const biased = ring * bias;
+    const s = pleatScale(t, ribs, openVal);
+    const eff = lerp(biased, ring, s);
+    vertex(eff * Math.cos(t), 0, eff * Math.sin(t));
+  }
+  endShape();
+
+  // ---- GLOWING RIM OVERLAY ----
+  stroke(0, 0, 100, 70); // semi-transparent white glow
+  strokeWeight(12);
+  beginShape();
+  for (let u = 0; u <= uSeg; u++) {
+    const t = (u / uSeg) * TWO_PI;
+    const ring = r;
+    const biased = ring * bias;
+    const s = pleatScale(t, ribs, openVal);
+    const eff = lerp(biased, ring, s);
+    vertex(eff * Math.cos(t), 0, eff * Math.sin(t));
+  }
+  endShape();
+}
+
+// Toggle open/close + randomize swirl layout phase a bit
+function keyPressed() {
+  if (key === ' ') {
+    openTarget = openTarget === 1 ? 0 : 1;
+    // small rephase on toggle
+    for (let d of disks) d.a += random(-0.4, 0.4);
+  }
+}
+function mousePressed() {
+  openTarget = openTarget === 1 ? 0 : 1;
+  for (let d of disks) d.a += random(-0.4, 0.4);
+}
+</script>
+</body>
+</html>

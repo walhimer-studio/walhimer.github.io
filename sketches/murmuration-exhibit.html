@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MURMURATION — Interactive Exhibit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #02020c;
+    }
+
+    #c {
+      position: fixed;
+      inset: 0;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* ── UI LAYER ── */
+    .ui {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      position: absolute;
+      top: 44px;
+      left: 52px;
+    }
+
+    .museum-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(90, 150, 255, 0.45);
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(38px, 5vw, 68px);
+      font-weight: 300;
+      color: #f0f4ff;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .tagline {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: rgba(80, 140, 255, 0.38);
+      text-transform: uppercase;
+    }
+
+    /* ── MODE BADGE ── */
+    .mode-badge {
+      position: absolute;
+      top: 50px;
+      right: 52px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mode-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(80, 210, 255, 0.85);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.3; transform: scale(0.65); }
+    }
+
+    .mode-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      color: rgba(100, 190, 255, 0.55);
+      text-transform: uppercase;
+      transition: color 0.4s;
+    }
+
+    /* ── THREE RULES ── */
+    .rules {
+      position: absolute;
+      top: 50%;
+      right: 52px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .rule {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      opacity: 0.28;
+      transition: opacity 0.5s ease;
+    }
+
+    .rule.lit { opacity: 1; }
+
+    .rule-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 8px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: rgba(100, 200, 255, 0.65);
+      padding-top: 4px;
+      min-width: 16px;
+    }
+
+    .rule-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(210, 228, 255, 0.88);
+      line-height: 1.5;
+      max-width: 170px;
+    }
+
+    /* ── INFO CARD ── */
+    .info-card {
+      position: absolute;
+      bottom: 88px;
+      left: 52px;
+      width: 310px;
+      border: 1px solid rgba(60, 110, 255, 0.18);
+      padding: 26px 30px;
+      background: rgba(2, 2, 16, 0.72);
+      backdrop-filter: blur(14px);
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      width: 22px; height: 22px;
+      border-top: 1px solid rgba(80, 170, 255, 0.7);
+      border-left: 1px solid rgba(80, 170, 255, 0.7);
+    }
+
+    .info-card::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; right: -1px;
+      width: 22px; height: 22px;
+      border-bottom: 1px solid rgba(80, 170, 255, 0.7);
+      border-right: 1px solid rgba(80, 170, 255, 0.7);
+    }
+
+    .card-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 8px;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      color: rgba(80, 150, 255, 0.4);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .info-card h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 21px;
+      font-weight: 300;
+      font-style: italic;
+      color: #dce8ff;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .info-card p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14.5px;
+      line-height: 1.75;
+      color: rgba(180, 210, 255, 0.58);
+    }
+
+    /* ── STATS ── */
+    .stats {
+      position: absolute;
+      bottom: 88px;
+      right: 52px;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stat-row {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      color: rgba(80, 140, 255, 0.35);
+      text-transform: uppercase;
+    }
+
+    .stat-row span {
+      color: rgba(130, 195, 255, 0.75);
+    }
+
+    /* ── CONTROLS HINT ── */
+    .controls {
+      position: absolute;
+      bottom: 34px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'DM Mono', monospace;
+      font-size: 8.5px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      color: rgba(80, 130, 255, 0.28);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .controls strong {
+      color: rgba(120, 180, 255, 0.55);
+      font-weight: 400;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .lifeline {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: rgba(50, 80, 180, 0.08);
+    }
+
+    .lifeline-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg,
+        rgba(40, 100, 255, 0.5),
+        rgba(80, 210, 255, 0.8)
+      );
+      transition: width 0.12s linear;
+    }
+
+    /* ── SEPARATOR LINES ── */
+    .line-h {
+      position: absolute;
+      left: 52px; right: 52px;
+      height: 1px;
+      background: rgba(50, 80, 200, 0.1);
+    }
+    .line-h.top { top: 130px; }
+  </style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div class="ui">
+
+  <div class="header">
+    <span class="museum-label">Interactive Installation · Natural Systems · 2025</span>
+    <h1>MURMURATION</h1>
+    <p class="tagline">Collective Intelligence / 400 Autonomous Agents</p>
+  </div>
+
+  <div class="line-h top"></div>
+
+  <div class="mode-badge">
+    <div class="mode-dot"></div>
+    <span class="mode-text" id="mode-text">Observe</span>
+  </div>
+
+  <div class="rules">
+    <div class="rule lit" id="rule-1">
+      <span class="rule-num">I</span>
+      <span class="rule-text">Avoid crowding your neighbors</span>
+    </div>
+    <div class="rule lit" id="rule-2">
+      <span class="rule-num">II</span>
+      <span class="rule-text">Align with nearby agents</span>
+    </div>
+    <div class="rule lit" id="rule-3">
+      <span class="rule-num">III</span>
+      <span class="rule-text">Move toward the local center</span>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <p class="card-label">Exhibit 01 / Emergence</p>
+    <h2>Three rules.<br>Infinite complexity.</h2>
+    <p>No leader. No plan. Each agent knows only its nearest neighbors. Yet from these three rules alone, the flock thinks and moves as one.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-row"><span id="stat-agents">400</span> Agents</div>
+    <div class="stat-row"><span id="stat-fps">—</span> fps</div>
+    <div class="stat-row">Avg <span id="stat-nbrs">—</span> neighbors</div>
+  </div>
+
+  <div class="controls">
+    <strong>DRAG</strong> · Rotate &nbsp;&nbsp;
+    <strong>SCROLL</strong> · Zoom &nbsp;&nbsp;
+    <strong>HOVER</strong> · Scatter &nbsp;&nbsp;
+    <strong>CLICK</strong> · Attract
+  </div>
+
+  <div class="lifeline">
+    <div class="lifeline-fill" id="lifeline-fill"></div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+
+// ── RENDERER + SCENE ───────────────────────────────────────────
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x02020c);
+scene.fog = new THREE.FogExp2(0x02020c, 0.0038);
+
+const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 800);
+
+// ── CAMERA ORBIT ───────────────────────────────────────────────
+const orbit = { theta: 0.4, phi: 1.25, radius: 190, autoRotate: true };
+
+function applyOrbit() {
+  camera.position.set(
+    orbit.radius * Math.sin(orbit.phi) * Math.sin(orbit.theta),
+    orbit.radius * Math.cos(orbit.phi),
+    orbit.radius * Math.sin(orbit.phi) * Math.cos(orbit.theta)
+  );
+  camera.lookAt(0, 0, 0);
+}
+applyOrbit();
+
+let isDragging = false, prevMX = 0, prevMY = 0;
+let autoResumeTimer = null;
+
+canvas.addEventListener('mousedown', e => {
+  isDragging = true;
+  prevMX = e.clientX; prevMY = e.clientY;
+  orbit.autoRotate = false;
+  clearTimeout(autoResumeTimer);
+});
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  autoResumeTimer = setTimeout(() => { orbit.autoRotate = true; }, 4000);
+});
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const dx = e.clientX - prevMX, dy = e.clientY - prevMY;
+  orbit.theta -= dx * 0.005;
+  orbit.phi = Math.max(0.15, Math.min(Math.PI - 0.15, orbit.phi + dy * 0.005));
+  prevMX = e.clientX; prevMY = e.clientY;
+});
+canvas.addEventListener('wheel', e => {
+  orbit.radius = Math.max(70, Math.min(320, orbit.radius + e.deltaY * 0.08));
+}, { passive: true });
+
+// ── SPRITE TEXTURE (soft glow circle) ─────────────────────────
+function makeSpriteTexture(size = 64) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const ctx = c.getContext('2d');
+  const h = size / 2;
+  const g = ctx.createRadialGradient(h, h, 0, h, h, h);
+  g.addColorStop(0,    'rgba(255,255,255,1)');
+  g.addColorStop(0.15, 'rgba(255,255,255,0.95)');
+  g.addColorStop(0.4,  'rgba(255,255,255,0.45)');
+  g.addColorStop(0.75, 'rgba(255,255,255,0.1)');
+  g.addColorStop(1,    'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, size, size);
+  return new THREE.CanvasTexture(c);
+}
+
+// ── BOUNDING BOX WIREFRAME ─────────────────────────────────────
+const BOUNDS = 68;
+const boxEdges = new THREE.LineSegments(
+  new THREE.EdgesGeometry(new THREE.BoxGeometry(BOUNDS*2, BOUNDS*2, BOUNDS*2)),
+  new THREE.LineBasicMaterial({ color: 0x0d1a3a, transparent: true, opacity: 0.55 })
+);
+scene.add(boxEdges);
+
+// Interior grid planes (subtle)
+function addGrid(rotation) {
+  const grid = new THREE.GridHelper(BOUNDS * 2, 12, 0x0a1530, 0x0a1530);
+  grid.rotation.copy(rotation);
+  grid.material.transparent = true;
+  grid.material.opacity = 0.25;
+  scene.add(grid);
+}
+addGrid(new THREE.Euler(0, 0, 0));
+
+// Background stars
+(function() {
+  const N = 250;
+  const sp = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    const r = 250 + Math.random() * 150;
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.acos(2 * Math.random() - 1);
+    sp[i*3]   = r * Math.sin(ph) * Math.cos(th);
+    sp[i*3+1] = r * Math.cos(ph);
+    sp[i*3+2] = r * Math.sin(ph) * Math.sin(th);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({
+    size: 0.9,
+    color: 0x1a2d55,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    transparent: true,
+    opacity: 0.6,
+  })));
+})();
+
+// ── BOID DATA ──────────────────────────────────────────────────
+const NUM = 400;
+const MAX_SPEED = 1.55;
+const MIN_SPEED = 0.48;
+
+const pos = new Float32Array(NUM * 3);
+const vel = new Float32Array(NUM * 3);
+const col = new Float32Array(NUM * 3);
+
+// Precomputed squared radii
+const SEP_RADIUS = 7,   SEP_R2 = SEP_RADIUS * SEP_RADIUS;
+const ALI_RADIUS = 14,  ALI_R2 = ALI_RADIUS * ALI_RADIUS;
+const COH_RADIUS = 22,  COH_R2 = COH_RADIUS * COH_RADIUS;
+const SEP_W = 1.7, ALI_W = 1.05, COH_W = 0.85;
+const BOUND_MARGIN = BOUNDS - 6, BOUND_FORCE = 0.055;
+const MOUSE_R = 30, MOUSE_R2 = MOUSE_R * MOUSE_R, MOUSE_W = 3.2;
+
+for (let i = 0; i < NUM; i++) {
+  pos[i*3]   = (Math.random() - 0.5) * BOUNDS * 1.6;
+  pos[i*3+1] = (Math.random() - 0.5) * BOUNDS * 1.6;
+  pos[i*3+2] = (Math.random() - 0.5) * BOUNDS * 1.6;
+
+  const spd = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
+  const th = Math.random() * Math.PI * 2;
+  const ph = Math.acos(2 * Math.random() - 1);
+  vel[i*3]   = spd * Math.sin(ph) * Math.cos(th);
+  vel[i*3+1] = spd * Math.cos(ph);
+  vel[i*3+2] = spd * Math.sin(ph) * Math.sin(th);
+
+  col[i*3] = 0.1; col[i*3+1] = 0.4; col[i*3+2] = 1.0;
+}
+
+// Points geometry
+const geo = new THREE.BufferGeometry();
+const posAttr = new THREE.BufferAttribute(pos, 3);
+const colAttr = new THREE.BufferAttribute(col, 3);
+geo.setAttribute('position', posAttr);
+geo.setAttribute('color',    colAttr);
+
+const mat = new THREE.PointsMaterial({
+  size: 2.8,
+  vertexColors: true,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  transparent: true,
+  map: makeSpriteTexture(64),
+  sizeAttenuation: true,
+});
+
+scene.add(new THREE.Points(geo, mat));
+
+// ── MOUSE WORLD POSITION ───────────────────────────────────────
+const raycaster  = new THREE.Raycaster();
+const mouseNDC   = new THREE.Vector2();
+const mouseWorld = new THREE.Vector3(9999, 9999, 9999);
+const camPlane   = new THREE.Plane();
+let   mouseActive = false;
+let   mouseMode   = 'scatter';  // 'scatter' | 'attract'
+const modeTextEl  = document.getElementById('mode-text');
+
+canvas.addEventListener('mousemove', e => {
+  mouseActive = true;
+  mouseNDC.x =  (e.clientX / window.innerWidth)  * 2 - 1;
+  mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouseNDC, camera);
+  // Intersect with a plane facing the camera through scene origin
+  const camDir = new THREE.Vector3();
+  camera.getWorldDirection(camDir);
+  camPlane.set(camDir, 0);
+  raycaster.ray.intersectPlane(camPlane, mouseWorld);
+});
+
+canvas.addEventListener('mouseleave', () => {
+  mouseActive = false;
+  mouseWorld.set(9999, 9999, 9999);
+  modeTextEl.textContent = 'Observe';
+});
+
+canvas.addEventListener('click', () => {
+  mouseMode = mouseMode === 'scatter' ? 'attract' : 'scatter';
+  modeTextEl.textContent = mouseMode === 'scatter' ? 'Scatter' : 'Attract';
+});
+
+// ── BOIDS UPDATE ───────────────────────────────────────────────
+let totalNbrs = 0;
+
+function updateBoids(dtFactor) {
+  const mx = mouseWorld.x, my = mouseWorld.y, mz = mouseWorld.z;
+  totalNbrs = 0;
+
+  for (let i = 0; i < NUM; i++) {
+    const ix = pos[i*3], iy = pos[i*3+1], iz = pos[i*3+2];
+
+    let sx=0, sy=0, sz=0;   // separation
+    let ax=0, ay=0, az=0;   // alignment
+    let cx=0, cy=0, cz=0;   // cohesion
+    let sepN=0, aliN=0, cohN=0;
+
+    for (let j = 0; j < NUM; j++) {
+      if (i === j) continue;
+      const dx = ix - pos[j*3];
+      const dy = iy - pos[j*3+1];
+      const dz = iz - pos[j*3+2];
+      const d2 = dx*dx + dy*dy + dz*dz;
+
+      if (d2 < SEP_R2 && d2 > 0.0001) {
+        const d = Math.sqrt(d2);
+        sx += dx/d; sy += dy/d; sz += dz/d;
+        sepN++;
+      }
+      if (d2 < ALI_R2) {
+        ax += vel[j*3]; ay += vel[j*3+1]; az += vel[j*3+2];
+        aliN++;
+      }
+      if (d2 < COH_R2) {
+        cx += pos[j*3]; cy += pos[j*3+1]; cz += pos[j*3+2];
+        cohN++;
+      }
+    }
+
+    totalNbrs += cohN;
+
+    let fx=0, fy=0, fz=0;
+
+    if (sepN > 0) {
+      fx += (sx / sepN) * SEP_W;
+      fy += (sy / sepN) * SEP_W;
+      fz += (sz / sepN) * SEP_W;
+    }
+    if (aliN > 0) {
+      fx += (ax/aliN - vel[i*3])   * ALI_W * 0.12;
+      fy += (ay/aliN - vel[i*3+1]) * ALI_W * 0.12;
+      fz += (az/aliN - vel[i*3+2]) * ALI_W * 0.12;
+    }
+    if (cohN > 0) {
+      fx += (cx/cohN - ix) * COH_W * 0.012;
+      fy += (cy/cohN - iy) * COH_W * 0.012;
+      fz += (cz/cohN - iz) * COH_W * 0.012;
+    }
+
+    // Soft boundary containment
+    if (ix >  BOUND_MARGIN) fx -= BOUND_FORCE * (ix - BOUND_MARGIN);
+    if (ix < -BOUND_MARGIN) fx -= BOUND_FORCE * (ix + BOUND_MARGIN);
+    if (iy >  BOUND_MARGIN) fy -= BOUND_FORCE * (iy - BOUND_MARGIN);
+    if (iy < -BOUND_MARGIN) fy -= BOUND_FORCE * (iy + BOUND_MARGIN);
+    if (iz >  BOUND_MARGIN) fz -= BOUND_FORCE * (iz - BOUND_MARGIN);
+    if (iz < -BOUND_MARGIN) fz -= BOUND_FORCE * (iz + BOUND_MARGIN);
+
+    // Mouse force
+    if (mouseActive) {
+      const mdx = ix - mx, mdy = iy - my, mdz = iz - mz;
+      const md2 = mdx*mdx + mdy*mdy + mdz*mdz;
+      if (md2 < MOUSE_R2 && md2 > 0.01) {
+        const md  = Math.sqrt(md2);
+        const str = (1.0 - md / MOUSE_R) * MOUSE_W;
+        const sign = mouseMode === 'scatter' ? 1 : -0.6;
+        fx += sign * (mdx / md) * str;
+        fy += sign * (mdy / md) * str;
+        fz += sign * (mdz / md) * str;
+      }
+    }
+
+    // Integrate velocity
+    vel[i*3]   += fx * 0.05 * dtFactor;
+    vel[i*3+1] += fy * 0.05 * dtFactor;
+    vel[i*3+2] += fz * 0.05 * dtFactor;
+
+    // Clamp speed
+    const spd2 = vel[i*3]*vel[i*3] + vel[i*3+1]*vel[i*3+1] + vel[i*3+2]*vel[i*3+2];
+    if (spd2 > 0.001) {
+      const spd = Math.sqrt(spd2);
+      const cs  = Math.max(MIN_SPEED, Math.min(MAX_SPEED, spd)) / spd;
+      vel[i*3] *= cs; vel[i*3+1] *= cs; vel[i*3+2] *= cs;
+    }
+
+    // Integrate position
+    pos[i*3]   += vel[i*3]   * dtFactor;
+    pos[i*3+1] += vel[i*3+1] * dtFactor;
+    pos[i*3+2] += vel[i*3+2] * dtFactor;
+
+    // Color: blue→cyan by speed, gold near mouse
+    const currSpd = Math.sqrt(vel[i*3]*vel[i*3] + vel[i*3+1]*vel[i*3+1] + vel[i*3+2]*vel[i*3+2]);
+    const t = Math.max(0, Math.min(1, (currSpd - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)));
+
+    const ndx = pos[i*3]-mx, ndy = pos[i*3+1]-my, ndz = pos[i*3+2]-mz;
+    const nearMouse = mouseActive && (ndx*ndx + ndy*ndy + ndz*ndz) < MOUSE_R2 * 1.8;
+
+    if (nearMouse && mouseMode === 'scatter') {
+      // Warm gold when scattering
+      col[i*3]   = 0.85 + 0.15*t;
+      col[i*3+1] = 0.55 + 0.25*t;
+      col[i*3+2] = 0.05 + 0.1*t;
+    } else if (nearMouse && mouseMode === 'attract') {
+      // Soft violet when attracting
+      col[i*3]   = 0.55 + 0.25*t;
+      col[i*3+1] = 0.1  + 0.2*t;
+      col[i*3+2] = 0.85 + 0.15*t;
+    } else {
+      // Deep blue → electric cyan
+      col[i*3]   = 0.04 + 0.22*t;
+      col[i*3+1] = 0.28 + 0.72*t;
+      col[i*3+2] = 0.90 + 0.10*t;
+    }
+  }
+
+  posAttr.needsUpdate = true;
+  colAttr.needsUpdate = true;
+}
+
+// ── RESIZE ────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ── STATS ELEMENTS ─────────────────────────────────────────────
+const statFps   = document.getElementById('stat-fps');
+const statNbrs  = document.getElementById('stat-nbrs');
+const lifeEl    = document.getElementById('lifeline-fill');
+let fpsFrames=0, fpsAcc=0, lifeT=0;
+
+// ── RULE HIGHLIGHT CYCLING ────────────────────────────────────
+const rules = [
+  document.getElementById('rule-1'),
+  document.getElementById('rule-2'),
+  document.getElementById('rule-3'),
+];
+let rulePhase = 0, ruleTimer = 0;
+const RULE_INTERVAL = 3200;
+
+// ── ANIMATION LOOP ─────────────────────────────────────────────
+let last = null;
+
+function loop(t) {
+  requestAnimationFrame(loop);
+
+  const dt  = last ? Math.min(t - last, 50) : 16.67;
+  last = t;
+  const dtf = dt / 16.67;
+
+  // Auto orbit
+  if (orbit.autoRotate) orbit.theta += 0.0007 * dtf;
+  applyOrbit();
+
+  updateBoids(dtf);
+  renderer.render(scene, camera);
+
+  // FPS counter
+  fpsFrames++;
+  fpsAcc += dt;
+  if (fpsAcc >= 1000) {
+    statFps.textContent  = Math.round(fpsFrames * 1000 / fpsAcc);
+    statNbrs.textContent = Math.round(totalNbrs / NUM);
+    fpsFrames = 0; fpsAcc = 0;
+  }
+
+  // Life bar (slow oscillating pulse)
+  lifeT = (lifeT + dt * 0.000055) % 1;
+  lifeEl.style.width = (lifeT * 100).toFixed(2) + '%';
+
+  // Rule spotlight cycling
+  ruleTimer += dt;
+  if (ruleTimer > RULE_INTERVAL) {
+    rules.forEach(r => r.classList.remove('lit'));
+    rules[rulePhase % 3].classList.add('lit');
+    rulePhase++;
+    ruleTimer = 0;
+    // After 3 cycles show all
+    if (rulePhase % 3 === 0) {
+      setTimeout(() => rules.forEach(r => r.classList.add('lit')), 600);
+    }
+  }
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

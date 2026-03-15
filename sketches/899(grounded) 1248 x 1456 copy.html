@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>p5.js WEBGL City</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
+  <script>
+let city = [];
+let cols = 1;
+let rows = 15;
+let spacing = 175;
+let palette = [310, 45, 30, 210, 270];
+
+let camZ = 2000;
+let targetCamZ = 2000;
+let camSpeed = 0.5;
+
+let gradientTextures = [];
+
+function setup() {
+  createCanvas(1248, 1456, WEBGL);
+  pixelDensity(4);
+  frameRate(60);
+  colorMode(HSB, 360, 100, 100, 255);
+  noStroke();
+  setAttributes('alpha', true);
+
+  // Pre-generate gradient textures
+  for (let i = 0; i < 10; i++) {
+    let hue1 = random(palette);
+    let hue2 = random(palette);
+    let sat = random(80, 100);
+    let bri = random(80, 100);
+    let tex = createGraphics(64, 256);
+    tex.colorMode(HSB, 360, 100, 100, 255);
+    for (let y = 0; y < tex.height; y++) {
+      let inter = map(y, 0, tex.height, 0, 1);
+      let hBlend = lerp(hue1, hue2, inter);
+      tex.stroke(hBlend, sat, bri, 255);
+      tex.line(0, y, tex.width, y);
+    }
+    gradientTextures.push(tex);
+  }
+
+  // Generate single column of city blocks
+  for (let z = -rows / 2; z < rows / 2; z++) {
+    let w = random(200, 400);
+    let d = random(200, 400);
+    let h = random(300, 600);
+    let pulseSpeed = random(0.01, 0.03);
+    let pulseOffset = random(TWO_PI);
+    let tex = random(gradientTextures);
+    city.push({ x: 0, z: z * spacing, w, h, d, tex, pulseSpeed, pulseOffset });
+  }
+}
+
+function draw() {
+  background(0, 0, 100); // Light background
+
+  // Move camera forward
+  targetCamZ -= camSpeed;
+  camZ = lerp(camZ, targetCamZ, 0.05);
+
+  // Slight horizontal camera drift
+  let camX = sin(frameCount * 0.005) * 50;
+  let camY = 50;
+  let camTargetZ = camZ - 100;
+  camera(camX, camY, camZ, 0, camY, camTargetZ, 0, 1, 0);
+
+  // Lighting
+  ambientLight(100);
+  directionalLight(255, 255, 255, sin(frameCount * 0.01), -1, cos(frameCount * 0.01));
+
+  // Draw city blocks
+  for (let b of city) {
+    let distanceToCam = abs(b.z - camZ);
+    let alpha = map(distanceToCam, 0, 1000, 255, 0, true); // fade with distance
+
+    let pulse = 1 + 0.05 * sin(frameCount * b.pulseSpeed + b.pulseOffset);
+    let h = b.h * pulse;
+
+    // --- Dynamic floor clamp (prevents bottom interference) ---
+    let baseY = max(160 - h / 2, 0);
+
+    push();
+    translate(b.x, baseY, b.z);
+    texture(b.tex);
+    tint(255, alpha); // apply alpha to texture
+    box(b.w, h, b.d);
+    pop();
+  }
+}
+  </script>
+</body>
+</html>

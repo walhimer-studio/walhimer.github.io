@@ -1,0 +1,336 @@
+{{ define "main" }}
+{{ end }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>EmergentDNA — 000</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { margin: 0; overflow: hidden; background: #0a0a0a; font-family: 'Space Mono', monospace; }
+    canvas { display: block; touch-action: none; }
+    #countdown {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: #0a0a0a; z-index: 1000;
+      transition: opacity 1.5s ease;
+    }
+    #countdown.fade { opacity: 0; pointer-events: none; }
+    #countdown .number {
+      font-size: min(30vw, 300px); font-weight: 700; color: #fff;
+      opacity: 0.9; line-height: 1; font-variant-numeric: tabular-nums;
+    }
+    #countdown .label {
+      font-size: 11px; letter-spacing: 6px; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); margin-top: 20px;
+    }
+    #info {
+      position: fixed; bottom: 24px; left: 24px;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.15); z-index: 100; transition: opacity 2s ease;
+    }
+    #info.visible { color: rgba(255,255,255,0.25); }
+    #dna {
+      position: fixed; bottom: 24px; right: 24px;
+      font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.1);
+      text-align: right; z-index: 100; line-height: 1.8; font-variant-numeric: tabular-nums;
+    }
+    #progress {
+      position: fixed; top: 0; left: 0; height: 1px;
+      background: rgba(255,255,255,0.15); z-index: 100; transition: width 1s linear;
+    }
+  </style>
+</head>
+<body>
+  <div id="countdown">
+    <div class="number" id="countNum">5</div>
+    <div class="label">organism emerging</div>
+  </div>
+  <div id="progress" style="width: 0%"></div>
+  <div id="info">EmergentDNA — 000<br>Mark Walhimer</div>
+  <div id="dna" aria-hidden="true"></div>
+  <script>
+    "use strict";
+
+    // ── Token seed ──────────────────────────────────────
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenId = urlParams.get('tokenId') || '0';
+
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash = hash & hash;
+      }
+      return hash;
+    }
+
+    class SeededRandom {
+      constructor(seed) { this.seed = seed; }
+      random() {
+        const x = Math.sin(this.seed++) * 10000;
+        return x - Math.floor(x);
+      }
+      range(min, max) { return min + this.random() * (max - min); }
+    }
+
+    const rng = new SeededRandom(hashCode(tokenId));
+
+    // ── DNA: parameters determined by seed ──────────────
+    const DNA = {
+      rotSpeed:    rng.range(0.3, 2.2),
+      breathSpeed: rng.range(0.4, 2.0),
+      scale:       rng.range(0.6, 1.4),
+      coreGlow:    rng.range(0.1, 0.7),
+      saturation:  rng.range(40, 100),
+      brightness:  rng.range(70, 100),
+      hueSpread:   rng.range(10, 180),
+      baseHue:     rng.range(0, 360),
+      lifespan:    300,  // 5 minutes — fixed for 000
+      componentCount: Math.floor(rng.range(5, 12)),
+      particleCount:  Math.floor(rng.range(80, 200)),
+      coreSize:    rng.range(35, 65),
+      orbitRadius: rng.range(60, 140),
+      pulseRate:   rng.range(0.5, 2.5),
+      driftSpeed:  rng.range(0.0002, 0.001),
+    };
+
+    // ── Display DNA on screen ───────────────────────────
+    function showDNA() {
+      const el = document.getElementById('dna');
+      const lines = [
+        `seed ${tokenId}`,
+        `rot ${DNA.rotSpeed.toFixed(2)}`,
+        `breath ${DNA.breathSpeed.toFixed(2)}`,
+        `glow ${DNA.coreGlow.toFixed(2)}`,
+        `hue ${DNA.baseHue.toFixed(0)}\u00B0`,
+        `spread ${DNA.hueSpread.toFixed(0)}\u00B0`,
+        `sat ${DNA.saturation.toFixed(0)}`,
+        `components ${DNA.componentCount}`,
+      ];
+      el.innerHTML = lines.join('<br>');
+    }
+
+    // ── State ───────────────────────────────────────────
+    let organism, particles;
+    let hasStarted = false;
+    let startTime = 0;
+
+    // ── p5.js ───────────────────────────────────────────
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      colorMode(HSB, 360, 100, 100, 255);
+      pixelDensity(Math.min(window.devicePixelRatio, 2));
+      buildOrganism();
+      showDNA();
+      beginCountdown();
+    }
+
+    function buildOrganism() {
+      organism = {
+        rotX: rng.random() * TWO_PI,
+        rotY: rng.random() * TWO_PI,
+        rotZ: rng.random() * TWO_PI,
+        rsX: rng.range(0.008, 0.025),
+        rsY: rng.range(0.008, 0.025),
+        rsZ: rng.range(0.005, 0.015),
+        components: []
+      };
+
+      for (let i = 0; i < DNA.componentCount; i++) {
+        const angle1 = rng.random() * TWO_PI;
+        const angle2 = rng.random() * PI;
+        const r = DNA.orbitRadius * rng.range(0.3, 1.2);
+        organism.components.push({
+          type: Math.floor(rng.random() * 4),
+          x: r * Math.sin(angle2) * Math.cos(angle1),
+          y: r * Math.sin(angle2) * Math.sin(angle1),
+          z: r * Math.cos(angle2),
+          size: rng.range(10, 30),
+          rotSpeed: rng.range(0.015, 0.06),
+          phase: rng.random() * TWO_PI,
+          hueOffset: rng.range(0, DNA.hueSpread),
+        });
+      }
+
+      particles = [];
+      for (let i = 0; i < DNA.particleCount; i++) {
+        particles.push(makeParticle());
+      }
+    }
+
+    function makeParticle() {
+      const angle1 = rng.random() * TWO_PI;
+      const angle2 = rng.random() * PI;
+      const r = rng.range(150, 500);
+      return {
+        x: r * Math.sin(angle2) * Math.cos(angle1),
+        y: r * Math.sin(angle2) * Math.sin(angle1),
+        z: r * Math.cos(angle2),
+        vx: (rng.random() - 0.5) * 0.3,
+        vy: (rng.random() - 0.5) * 0.3,
+        vz: (rng.random() - 0.5) * 0.3,
+        life: rng.range(100, 255),
+        maxLife: 255,
+        size: rng.range(1, 4),
+        hueOffset: rng.range(0, DNA.hueSpread),
+      };
+    }
+
+    // ── Countdown ────────────────────────────────────────
+    function beginCountdown() {
+      let count = 5;
+      const numEl = document.getElementById('countNum');
+      const cdEl = document.getElementById('countdown');
+
+      const timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          numEl.textContent = count;
+        } else {
+          clearInterval(timer);
+          cdEl.classList.add('fade');
+          hasStarted = true;
+          startTime = millis();
+          document.getElementById('info').classList.add('visible');
+          setTimeout(() => cdEl.style.display = 'none', 1500);
+        }
+      }, 1000);
+    }
+
+    // ── Draw ─────────────────────────────────────────────
+    function draw() {
+      background(0, 0, 4);
+
+      if (!hasStarted) {
+        push();
+        rotateY(millis() * 0.0003);
+        rotateX(millis() * 0.0002);
+        drawCore(0.3, 0.2);
+        pop();
+        return;
+      }
+
+      const t = millis();
+      const elapsed = (t - startTime) / 1000;
+      const progress = Math.min(elapsed / DNA.lifespan, 1.0);
+
+      // Update progress bar
+      document.getElementById('progress').style.width = (progress * 100) + '%';
+
+      // Slow camera drift
+      const camX = Math.cos(t * DNA.driftSpeed * DNA.rotSpeed) * 500;
+      const camY = Math.sin(t * DNA.driftSpeed * 0.7 * DNA.rotSpeed) * 300;
+      const camZ = 400 + Math.sin(t * DNA.driftSpeed * 0.5) * 150;
+      camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
+
+      // Subtle ambient
+      ambientLight(DNA.baseHue, 20, 15);
+      directionalLight(DNA.baseHue, 15, 40, -1, 0.5, -1);
+
+      // Breathing pulse
+      const breathe = Math.sin(t * 0.001 * DNA.breathSpeed * DNA.pulseRate);
+
+      // ── Draw organism ───────────
+      push();
+      const s = DNA.scale * (1 + breathe * 0.05);
+      scale(s);
+      rotateX(organism.rotX + t * organism.rsX * DNA.rotSpeed);
+      rotateY(organism.rotY + t * organism.rsY * DNA.rotSpeed);
+      rotateZ(organism.rotZ + t * organism.rsZ * DNA.rotSpeed);
+
+      // Core
+      drawCore(1.0, progress);
+
+      // Components emerge over time
+      const visibleComponents = Math.ceil(progress * organism.components.length);
+      for (let i = 0; i < visibleComponents; i++) {
+        const c = organism.components[i];
+        const componentAge = Math.max(0, progress - (i / organism.components.length));
+        const componentAlpha = Math.min(componentAge * 5, 1);
+
+        push();
+        const bOff = Math.sin(t * 0.001 * DNA.breathSpeed + c.phase) * 10;
+        translate(c.x + bOff * 0.3, c.y + bOff * 0.2, c.z + bOff * 0.4);
+
+        const r = t * c.rotSpeed * DNA.rotSpeed + c.phase;
+        rotateX(r);
+        rotateY(r * 0.7);
+
+        const h = (DNA.baseHue + c.hueOffset + t * 0.005) % 360;
+        fill(h, DNA.saturation, DNA.brightness, componentAlpha * 180);
+        noStroke();
+
+        if (c.type === 0) cylinder(c.size * 0.4, c.size * 0.8);
+        else if (c.type === 1) box(c.size * 0.7);
+        else if (c.type === 2) torus(c.size * 0.5, c.size * 0.15);
+        else sphere(c.size * 0.5);
+
+        // Connective filament back to core
+        stroke(h, DNA.saturation * 0.5, DNA.brightness * 0.6, componentAlpha * 40);
+        strokeWeight(0.5);
+        line(0, 0, 0, -c.x * 0.6, -c.y * 0.6, -c.z * 0.6);
+
+        pop();
+      }
+      pop();
+
+      // ── Particles ───────────────
+      const visibleParticles = Math.ceil(progress * particles.length);
+      for (let i = 0; i < visibleParticles; i++) {
+        const p = particles[i];
+        push();
+        translate(p.x, p.y, p.z);
+        const h = (DNA.baseHue + p.hueOffset + t * 0.003) % 360;
+        fill(h, DNA.saturation * 0.5, DNA.brightness * 0.8, p.life * 0.4);
+        noStroke();
+        sphere(p.size);
+        pop();
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.z += p.vz;
+        p.life -= 0.15;
+
+        if (p.life <= 0) {
+          const np = makeParticle();
+          p.x = np.x; p.y = np.y; p.z = np.z;
+          p.life = np.maxLife;
+        }
+      }
+
+      // ── End of life ─────────────
+      if (progress >= 1.0) {
+        const fadeOut = Math.max(0, 1 - (elapsed - DNA.lifespan) / 30);
+        if (fadeOut <= 0) noLoop();
+      }
+    }
+
+    function drawCore(intensity, progress) {
+      const t = millis();
+      const layers = 8;
+      for (let i = 0; i < layers; i++) {
+        const alpha = map(i, 0, layers - 1, DNA.coreGlow * 255 * intensity, 5 * intensity);
+        const emerge = Math.min(progress * 3, 1);
+
+        fill(
+          (DNA.baseHue + i * 3 + t * 0.008) % 360,
+          DNA.saturation * 0.8,
+          DNA.brightness,
+          alpha * emerge
+        );
+        noStroke();
+        push();
+        scale(1 + i * 0.18);
+        box(DNA.coreSize * 0.8);
+        pop();
+      }
+    }
+
+    function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+  </script>
+</body>
+</html>

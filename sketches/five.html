@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multiple Umbrellas — p5.js WEBGL</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      width: 100%;
+      height: 100%;
+    }
+    canvas { display: block; outline: none; }
+  </style>
+</head>
+<body>
+  <!-- p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+  <script>
+  // p5.js WEBGL — Multiple Umbrellas (5 total)
+  // Keys 1–5 toggle each umbrella independently, click toggles all
+
+  const DOME_RADIUS = 110;
+  const U_SEGMENTS  = 64;
+  const V_SEGMENTS  = 28;
+  const RIB_COUNT   = 8;
+
+  const OPEN_SPEED  = 0.08;
+
+  let umbrellas = [];
+
+  function setup() {
+    createCanvas(windowWidth, windowHeight, WEBGL);
+    frameRate(60);
+    setAttributes('alpha', true);
+
+    // Create 5 umbrellas (center + 4 around)
+    umbrellas.push(new Umbrella(0, 0));           // center
+    umbrellas.push(new Umbrella(-200, -200));
+    umbrellas.push(new Umbrella(200, -200));
+    umbrellas.push(new Umbrella(-200, 200));
+    umbrellas.push(new Umbrella(200, 200));
+  }
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+
+  function draw() {
+    background(0);
+    orbitControl();
+
+    rotateX(-0.4); // tilt for better view
+    translate(0, 100, 0);
+
+    // Update + draw each umbrella
+    for (let umb of umbrellas) {
+      umb.update();
+      umb.display();
+    }
+  }
+
+  class Umbrella {
+    constructor(x, z) {
+      this.x = x;
+      this.z = z;
+      this.openAmt = 1.0;
+      this.openTarget = 1.0;
+    }
+
+    toggle() {
+      this.openTarget = this.openTarget === 1 ? 0 : 1;
+    }
+
+    update() {
+      this.openAmt += (this.openTarget - this.openAmt) * OPEN_SPEED;
+    }
+
+    display() {
+      push();
+      translate(this.x, 0, this.z);
+
+      // CENTER POST
+      push();
+      noStroke();
+      ambientMaterial(200);
+      translate(0, -DOME_RADIUS * 0.6, 0);
+      rotateX(HALF_PI);
+      cylinder(3, DOME_RADIUS * 2.0, 12, 1);
+      pop();
+
+      // RUNNER
+      const runnerY = lerp(-DOME_RADIUS * 0.05, -DOME_RADIUS * 0.85, this.openAmt);
+      push();
+      noStroke();
+      ambientMaterial(230);
+      translate(0, runnerY, 0);
+      torus(10, 2, 24, 8);
+      pop();
+
+      // CANOPY
+      drawUmbrella(DOME_RADIUS, U_SEGMENTS, V_SEGMENTS, RIB_COUNT, this.openAmt, runnerY);
+
+      pop();
+    }
+  }
+
+  // ---------- Umbrella geometry helpers ----------
+
+  function pleatScale(theta, ribs, openVal) {
+    const p = 3.0;
+    const minClosed = 0.06;
+    const wave = Math.abs(Math.cos(ribs * theta));
+    const closedShape = minClosed + (1.0 - minClosed) * Math.pow(wave, p);
+    return closedShape * (1.0 - openVal) + openVal;
+  }
+
+  function ringBias(yRing, runnerY, openVal, r) {
+    const d = Math.min(Math.abs(yRing - runnerY), r);
+    const t = d / r;
+    const w = t * t * (3 - 2 * t); // smoothstep
+    const minInner = 0.08;
+    const closedBias = minInner + (1.0 - minInner) * w;
+    return closedBias * (1.0 - openVal) + 1.0 * openVal;
+  }
+
+  function drawUmbrella(r, uSeg, vSeg, ribs, openVal, runnerY) {
+    const yStretch = 1.0 + 0.25 * (1.0 - openVal);
+
+    // ---- SKIN ----
+    noStroke();
+    fill(255, 255, 255, 70);
+
+    for (let v = 0; v < vSeg; v++) {
+      const v0 = (v / vSeg) * HALF_PI;
+      const v1 = ((v + 1) / vSeg) * HALF_PI;
+
+      const y0 = -r * Math.cos(v0) * yStretch;
+      const y1 = -r * Math.cos(v1) * yStretch;
+
+      const bias0 = ringBias(y0, runnerY, openVal, r);
+      const bias1 = ringBias(y1, runnerY, openVal, r);
+
+      beginShape(TRIANGLE_STRIP);
+      for (let u = 0; u <= uSeg; u++) {
+        const t = (u / uSeg) * TWO_PI;
+        const ring0 = r * Math.sin(v0);
+        const ring1 = r * Math.sin(v1);
+
+        const s0 = pleatScale(t, ribs, openVal);
+        const s1 = pleatScale(t, ribs, openVal);
+
+        const inner0 = ring0 * bias0;
+        const inner1 = ring1 * bias1;
+
+        const eff0 = lerp(inner0, ring0, s0);
+        const eff1 = lerp(inner1, ring1, s1);
+
+        vertex(eff1 * Math.cos(t), y1, eff1 * Math.sin(t));
+        vertex(eff0 * Math.cos(t), y0, eff0 * Math.sin(t));
+      }
+      endShape();
+    }
+
+    // ---- RIBS ----
+    stroke(255);
+    strokeWeight(2);
+    noFill();
+
+    for (let k = 0; k < ribs; k++) {
+      const theta = (k / ribs) * TWO_PI;
+      beginShape();
+      for (let v = 0; v <= vSeg; v++) {
+        const vv = (v / vSeg) * HALF_PI;
+        const ring = r * Math.sin(vv);
+        const y   = -r * Math.cos(vv) * yStretch;
+        const bias = ringBias(y, runnerY, openVal, r);
+        const s = pleatScale(theta, ribs, openVal);
+        const eff = lerp(ring * bias, ring, s);
+        vertex(eff * Math.cos(theta), y, eff * Math.sin(theta));
+      }
+      endShape();
+    }
+
+    // ---- Rim hoop ----
+    strokeWeight(1.5);
+    beginShape();
+    const yRim = 0;
+    const biasRim = ringBias(yRim, runnerY, openVal, r);
+    for (let u = 0; u <= uSeg; u++) {
+      const t = (u / uSeg) * TWO_PI;
+      const s = pleatScale(t, ribs, openVal);
+      const eff = lerp(r * biasRim, r, s);
+      vertex(eff * Math.cos(t), 0, eff * Math.sin(t));
+    }
+    endShape();
+  }
+
+  // ---------- Controls ----------
+
+  function keyPressed() {
+    if (key === '1') umbrellas[0].toggle();
+    if (key === '2') umbrellas[1].toggle();
+    if (key === '3') umbrellas[2].toggle();
+    if (key === '4') umbrellas[3].toggle();
+    if (key === '5') umbrellas[4].toggle();
+  }
+
+  function mousePressed() {
+    for (let umb of umbrellas) umb.toggle();
+  }
+  </script>
+</body>
+</html>

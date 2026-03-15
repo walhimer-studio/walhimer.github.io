@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shelves — WEBGL (with fallback)</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    body{margin:0;display:flex;flex-direction:column;align-items:center;background:#fff;font-family:system-ui,Arial,sans-serif}
+    #sliders{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap;justify-content:center}
+    input[type=range]{width:160px}
+    #readout{font-size:13px;margin-bottom:6px}
+    canvas{border:1px solid #ccc;margin-top:8px}
+    #fallback{color:#b00020;margin-top:8px;display:none}
+  </style>
+</head>
+<body>
+  <div id="sliders">
+    <label>m0 <input type="range" id="m0" min="0" max="1" step="0.001" value="0.5"></label>
+    <label>m1 <input type="range" id="m1" min="0" max="1" step="0.001" value="0.5"></label>
+    <label>m2 <input type="range" id="m2" min="0" max="1" step="0.001" value="0.5"></label>
+    <label>m3 <input type="range" id="m3" min="0" max="1" step="0.001" value="0.5"></label>
+    <label>m4 <input type="range" id="m4" min="0" max="1" step="0.001" value="0.5"></label>
+  </div>
+  <div id="readout">m0=0.500 m1=0.500 m2=0.500 m3=0.500 m4=0.500</div>
+  <div id="fallback">WEBGL failed; showing 2D fallback (you can still test sliders).</div>
+  <main id="canvas-container"></main>
+  <script>
+    let m0=0.5,m1=0.5,m2=0.5,m3=0.5,m4=0.5;
+    let use2D=false;
+    let palette=[310,45,30,210,270];
+    let gradientTextures=[];
+
+    function safeCreateCanvas(){
+      try{
+        let cnv=createCanvas(800,800,WEBGL);
+        if(!gl || gl.isContextLost && gl.isContextLost()){ throw new Error('webgl lost'); }
+        return cnv;
+      }catch(e){
+        use2D=true;
+        document.getElementById('fallback').style.display='block';
+        return createCanvas(800,800); // 2D fallback
+      }
+    }
+    let gl=null;
+    function setup(){
+      const cnv=safeCreateCanvas(); cnv.parent('canvas-container');
+      if(this._renderer && this._renderer.GL){
+        gl=this._renderer.GL;
+      }
+      colorMode(HSB,360,100,100,255);
+      noStroke();
+      noLoop();
+      drawArt();
+    }
+    function updateReadout(){
+      document.getElementById('readout').textContent =
+        `m0=${m0.toFixed(3)} m1=${m1.toFixed(3)} m2=${m2.toFixed(3)} m3=${m3.toFixed(3)} m4=${m4.toFixed(3)}`;
+    }
+    function draw(){ drawArt(); }
+
+    function drawArt(){
+      clear();
+      background(0,0,100);
+      updateReadout();
+
+      // Re-seed & rebuild textures so hue shifts are obvious
+      randomSeed(int(m0*10000));
+      gradientTextures=[];
+      const hueShift=map(m3,0,1,-60,60);
+      for(let i=0;i<8;i++){
+        const h1=(random(palette)+hueShift+360)%360;
+        const h2=(random(palette)+hueShift+360)%360;
+        const tex=createGraphics(64,256);
+        tex.colorMode(HSB,360,100,100,255);
+        tex.noStroke();
+        for(let y=0;y<tex.height;y++){
+          const t=map(y,0,tex.height,0,1);
+          const h=lerp(h1,h2,t);
+          tex.fill(h,100,100,100);
+          tex.rect(0,y,tex.width,1);
+        }
+        gradientTextures.push(tex);
+      }
+
+      const numShelves=int(map(m0,0,1,1,8));
+      const shelfWBase=map(m1,0,1,300,750);
+      const cubeCount=int(map(m2,0,1,0,6));
+      const spread=map(m4,0,1,300,760);
+      const margin=100;
+      const avail=spread - margin*2;
+
+      if(!use2D){
+        ambientLight(255);
+        directionalLight(255,255,255,0.3,-1,-0.5);
+        camera(0,0,800,0,0,0,0,1,0);
+      }
+
+      for(let i=0;i<numShelves;i++){
+        const y=(numShelves===1)?0:map(i,0,numShelves-1,-avail/2,avail/2);
+        const shelfW=shelfWBase+random(-50,50);
+        const shelfH=use2D?20:40;
+        const shelfD=100;
+        const tex=random(gradientTextures);
+
+        if(use2D){
+          // 2D shelf
+          push();
+          fill(0,0,90);
+          rectMode(CENTER);
+          rect(width/2, height/2+y, shelfW, shelfH);
+          pop();
+        }else{
+          // WEBGL shelf
+          push();
+          texture(tex);
+          translate(0,y,0);
+          box(shelfW,shelfH,shelfD);
+          pop();
+        }
+
+        for(let j=0;j<cubeCount;j++){
+          const s=random(40,120);
+          const x=random(-shelfW/2+s/2, shelfW/2-s/2);
+          const texC=random(gradientTextures);
+          if(use2D){
+            push();
+            fill(0,0,30,60);
+            rectMode(CENTER);
+            rect(width/2 + x, height/2 + y - shelfH/2 - s/2, s, s);
+            pop();
+          }else{
+            push();
+            texture(texC);
+            translate(x, y - shelfH/2 - s/2, 0);
+            box(s);
+            pop();
+          }
+        }
+      }
+    }
+
+    // Slider handlers -> set value + redraw()
+    document.querySelectorAll('input[type=range]').forEach(s=>{
+      s.addEventListener('input',e=>{
+        window[e.target.id]=parseFloat(e.target.value);
+        redraw();
+      });
+    });
+  </script>
+</body>
+</html>

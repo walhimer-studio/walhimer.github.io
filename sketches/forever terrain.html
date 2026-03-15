@@ -1,0 +1,52 @@
+let time = 0;
+let scl = 20;
+let visibleWidth = 2200;
+let visibleHeight = 1800;
+let cols, rows;
+let zOffset = 0;
+
+function setup() {
+  pixelDensity(2);
+  createCanvas(900, 900, WEBGL);
+  noStroke();
+
+  cols = visibleWidth / scl;
+  rows = visibleHeight / scl;
+}
+
+function draw() {
+  background(0);
+  time += 0.01;
+  zOffset += 0.01;
+
+  // Dynamic lighting
+  let lx = sin(time) * 300;
+  let ly = 0;
+  let lz = 400;
+  ambientLight(50);
+  spotLight(255, 255, 255, lx, ly, lz, 0, 0, -1, PI / 6, 20);
+
+  // Terrain
+  push();
+  rotateX(PI / 3.0);
+  translate(-visibleWidth / 2, -visibleHeight / 2, -200);
+
+  for (let y = 0; y < rows - 1; y++) {
+    beginShape(TRIANGLE_STRIP);
+    for (let x = 0; x < cols; x++) {
+      let nx = x * 0.1;
+      let ny = y * 0.1 + zOffset;
+
+      let z1 = map(noise(nx, ny), 0, 1, -100, 100);
+      let z2 = map(noise(nx, ny + 0.1), 0, 1, -100, 100);
+
+      let colorVal = map(z1, -100, 100, 0, 255);
+      fill(50, colorVal, 150);
+
+      vertex(x * scl, y * scl, z1);
+      vertex(x * scl, (y + 1) * scl, z2);
+    }
+    endShape();
+  }
+  pop();
+}

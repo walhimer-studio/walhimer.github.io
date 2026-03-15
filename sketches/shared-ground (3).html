@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shared Ground — Mark Walhimer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --black:#070705;
+      --paper:#f0ede6;
+      --dim:#55554e;
+      --rule:#1e1e1a;
+      --accent:#c8a882;
+      --warm:#a07848;
+    }
+    html{scroll-behavior:smooth}
+    body{
+      background:var(--black);
+      color:var(--paper);
+      font-family:'Cormorant Garamond',Georgia,serif;
+      font-weight:300;
+      line-height:1.6;
+      cursor:none;
+    }
+
+    /* CURSOR */
+    #cur{position:fixed;pointer-events:none;z-index:10002;width:0;height:0}
+    #cur::before{
+      content:'';position:absolute;
+      width:36px;height:36px;
+      border:1px solid rgba(200,168,130,0.4);
+      border-radius:50%;
+      transform:translate(-50%,-50%);
+      transition:transform 0.15s ease, border-color 0.3s;
+    }
+    #cur::after{
+      content:'';position:absolute;
+      width:3px;height:3px;
+      background:var(--accent);
+      border-radius:50%;
+      transform:translate(-50%,-50%);
+    }
+    body:hover #cur::before{border-color:rgba(200,168,130,0.7)}
+
+    /* HEADER */
+    header{
+      max-width:980px;margin:0 auto;
+      padding:88px 52px 60px;
+      border-bottom:1px solid var(--rule);
+    }
+    .kicker{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
+      color:var(--dim);margin-bottom:36px;
+      display:flex;align-items:center;gap:18px;
+    }
+    .kicker::before{content:'';width:28px;height:1px;background:var(--accent);flex-shrink:0}
+    h1{
+      font-size:clamp(52px,8vw,96px);
+      font-weight:300;line-height:0.95;
+      letter-spacing:-0.03em;
+      margin-bottom:44px;
+    }
+    h1 em{font-style:italic;color:var(--accent)}
+    .lede{
+      font-size:clamp(18px,2.2vw,23px);
+      font-weight:300;line-height:1.7;
+      max-width:620px;margin-bottom:36px;
+    }
+    .thesis{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;color:var(--dim);
+      border-left:1px solid var(--rule);
+      padding-left:22px;line-height:2;
+      max-width:560px;
+    }
+
+    /* INSTRUCTION BAR */
+    .ibar-wrap{
+      border-bottom:1px solid var(--rule);
+    }
+    .ibar{
+      max-width:980px;margin:0 auto;
+      padding:18px 52px;
+      display:flex;align-items:center;gap:14px;
+    }
+    .dot{
+      width:5px;height:5px;background:var(--accent);
+      border-radius:50%;flex-shrink:0;
+      animation:pulse 2.8s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.15}}
+    .ibar p{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;color:var(--dim);letter-spacing:0.04em;
+    }
+    .ibar p span{color:var(--paper)}
+
+    /* STAGE */
+    #stage{
+      position:relative;width:100%;
+      background:#000;
+      border-bottom:1px solid var(--rule);
+      overflow:hidden;
+    }
+    #stage canvas{display:block;width:100%;max-width:1280px;margin:0 auto}
+
+    /* STAGE OVERLAYS */
+    .stage-corner{
+      position:absolute;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:9px;letter-spacing:0.18em;text-transform:uppercase;
+      padding:10px 16px;
+      background:rgba(7,7,5,0.72);
+      border:1px solid var(--rule);
+      backdrop-filter:blur(4px);
+      pointer-events:none;z-index:10;
+      transition:color 0.5s;
+    }
+    #label-a{top:24px;left:24px;color:var(--accent)}
+    #label-b{top:24px;right:24px;color:rgba(240,237,230,0.5)}
+    #label-center{
+      position:absolute;bottom:24px;
+      left:50%;transform:translateX(-50%);
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+      color:var(--accent);
+      background:rgba(7,7,5,0.8);
+      border:1px solid rgba(200,168,130,0.2);
+      padding:8px 18px;
+      pointer-events:none;z-index:10;
+      white-space:nowrap;
+      transition:opacity 0.4s;
+    }
+
+    /* CONCEPT SECTION */
+    .concept{
+      max-width:980px;margin:0 auto;
+      padding:80px 52px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:72px;
+      border-bottom:1px solid var(--rule);
+    }
+    @media(max-width:680px){.concept{grid-template-columns:1fr;gap:44px;padding:52px 32px}}
+    .concept-col h2{
+      font-size:clamp(21px,2.6vw,28px);
+      font-weight:300;font-style:italic;
+      line-height:1.25;margin-bottom:22px;
+    }
+    .concept-col p{
+      font-size:16px;font-weight:300;
+      line-height:1.9;
+      color:rgba(240,237,230,0.68);
+      margin-bottom:18px;
+    }
+    .concept-col p:last-child{margin-bottom:0}
+    .concept-col p strong{
+      font-weight:400;color:var(--paper);font-style:normal;
+    }
+
+    /* LINEAGE */
+    .lineage{
+      max-width:980px;margin:0 auto;
+      padding:60px 52px;
+      border-bottom:1px solid var(--rule);
+    }
+    .lineage-label{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:9px;letter-spacing:0.22em;text-transform:uppercase;
+      color:var(--dim);margin-bottom:32px;
+    }
+    .lineage-row{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:1px;background:var(--rule);
+    }
+    @media(max-width:680px){.lineage-row{grid-template-columns:1fr}}
+    .lineage-card{
+      background:var(--black);
+      padding:28px 28px 32px;
+    }
+    .lc-name{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+      color:var(--accent);margin-bottom:10px;
+    }
+    .lc-title{
+      font-size:18px;font-weight:300;font-style:italic;
+      margin-bottom:12px;line-height:1.3;
+    }
+    .lc-desc{
+      font-size:14px;font-weight:300;
+      color:rgba(240,237,230,0.55);
+      line-height:1.75;
+    }
+    .lc-arrow{
+      margin-top:20px;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:9px;letter-spacing:0.14em;
+      color:var(--dim);
+    }
+    .lc-arrow span{color:var(--accent)}
+
+    /* ARCHIVE */
+    .archive{border-bottom:1px solid var(--rule)}
+    .archive-head{
+      max-width:980px;margin:0 auto;
+      padding:44px 52px 20px;
+    }
+    .archive-head p{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--dim);
+    }
+    .archive-reel{
+      display:flex;gap:2px;
+      overflow-x:auto;
+      padding:0 52px 44px;
+      scrollbar-width:thin;
+      scrollbar-color:var(--rule) transparent;
+    }
+    .reel-frame{
+      flex-shrink:0;width:172px;height:128px;
+      overflow:hidden;border:1px solid var(--rule);
+      position:relative;cursor:pointer;
+      transition:border-color 0.2s;
+    }
+    .reel-frame:hover{border-color:var(--accent)}
+    .reel-frame img{
+      width:100%;height:100%;object-fit:cover;
+      filter:grayscale(100%) sepia(15%);
+      opacity:0.7;
+      transition:opacity 0.3s,filter 0.3s;
+    }
+    .reel-frame:hover img{opacity:1;filter:grayscale(70%) sepia(25%)}
+    .reel-cap{
+      position:absolute;bottom:0;left:0;right:0;
+      padding:5px 8px;
+      background:rgba(7,7,5,0.88);
+      font-family:'IBM Plex Mono',monospace;
+      font-size:8px;letter-spacing:0.06em;
+      color:rgba(240,237,230,0.75);
+      line-height:1.3;
+      opacity:0;transition:opacity 0.2s;
+    }
+    .reel-frame:hover .reel-cap{opacity:1}
+
+    /* DEPLOYMENT */
+    .deploy{
+      max-width:980px;margin:0 auto;
+      padding:72px 52px;
+      border-bottom:1px solid var(--rule);
+      display:grid;grid-template-columns:220px 1fr;gap:52px;align-items:start;
+    }
+    @media(max-width:680px){.deploy{grid-template-columns:1fr;gap:32px;padding:52px 32px}}
+    .deploy-head{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;letter-spacing:0.2em;text-transform:uppercase;
+      color:var(--accent);line-height:2;
+    }
+    .deploy-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:28px 52px;
+    }
+    @media(max-width:480px){.deploy-grid{grid-template-columns:1fr}}
+    .di-label{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:9px;letter-spacing:0.16em;text-transform:uppercase;
+      color:var(--dim);margin-bottom:7px;
+    }
+    .di-val{
+      font-size:15px;font-weight:300;font-style:italic;
+      color:var(--paper);line-height:1.5;
+    }
+
+    /* CITIES */
+    .cities{
+      max-width:980px;margin:0 auto;
+      padding:72px 52px;
+      border-bottom:1px solid var(--rule);
+    }
+    .cities-label{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;letter-spacing:0.2em;text-transform:uppercase;
+      color:var(--dim);margin-bottom:36px;
+    }
+    .cities-row{
+      display:flex;flex-wrap:wrap;gap:10px;
+    }
+    .city-tag{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:11px;letter-spacing:0.1em;
+      color:var(--dim);
+      border:1px solid var(--rule);
+      padding:8px 16px;
+      transition:color 0.2s,border-color 0.2s;
+      cursor:default;
+    }
+    .city-tag:hover{color:var(--paper);border-color:var(--accent)}
+    .city-tag.first{color:var(--accent);border-color:rgba(200,168,130,0.4)}
+    .city-tag.tbd{
+      color:rgba(85,85,78,0.5);
+      border-color:rgba(30,30,26,0.8);
+      border-style:dashed;
+      font-style:italic;
+    }
+
+    /* FOOTER */
+    footer{
+      max-width:980px;margin:0 auto;
+      padding:40px 52px;
+      display:flex;justify-content:space-between;
+      align-items:baseline;flex-wrap:wrap;gap:12px;
+    }
+    footer p{
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10px;color:var(--dim);letter-spacing:0.1em;
+    }
+    footer p span{color:var(--accent)}
+  </style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="kicker">Ars Electronica PRIX Submission &nbsp;·&nbsp; Interactive Installation &nbsp;·&nbsp; 2026</div>
+  <h1>Shared<br><em>Ground</em></h1>
+  <p class="lede">
+    The same place. Different histories. Two histories in a room — moving apart, the archive diverges. Moving together, something neither has seen before surfaces on the wall.
+  </p>
+  <p class="thesis">
+    A platform for embodied collective memory.<br>
+    The social geometry of bodies in space determines what history is visible.<br>
+    First instantiation: McDonough, Georgia — Starr Photograph Collection, 1821–present.
+  </p>
+</header>
+
+
+<div class="ibar-wrap">
+<div class="ibar">
+  <div class="dot"></div>
+  <p>Demo — <span>move your cursor</span> to carry one history through the space. A second history moves autonomously. Watch what the archive does when you approach or separate.</p>
+  <button onclick="openStageFullscreen()" style="margin-left:auto;background:none;border:1px solid rgba(200,168,130,0.3);cursor:pointer;padding:6px 14px;display:flex;align-items:center;gap:8px;color:rgba(200,168,130,0.7);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" stroke="rgba(200,168,130,0.7)" stroke-width="1.5" fill="none"/></svg>
+    Expand
+  </button>
+  <button id="sound-btn" onclick="toggleSound()" style="background:none;border:1px solid rgba(200,168,130,0.3);cursor:pointer;padding:6px 14px;color:rgba(200,168,130,0.9);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;">◼ sound on</button>
+</div>
+</div>
+
+<!-- FULLSCREEN STAGE MODAL -->
+<div id="stage-modal" style="display:none;position:fixed;inset:0;background:#070705;z-index:10000;flex-direction:column;">
+  <div style="position:absolute;top:16px;right:20px;z-index:10001;display:flex;align-items:center;gap:16px;">
+    <span id="modal-label-center" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:rgba(200,168,130,0.6);"></span>
+    <button onclick="closeStageFullscreen()" style="background:none;border:1px solid rgba(200,168,130,0.3);cursor:pointer;padding:6px 14px;color:rgba(200,168,130,0.7);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">✕ close</button>
+  </div>
+  <canvas id="fs-canvas" style="display:block;width:100%;height:100%;"></canvas>
+</div>
+
+<script>
+let fsActive = false;
+let fsDraw = null;
+
+function openStageFullscreen() {
+  const modal = document.getElementById('stage-modal');
+  modal.style.display = 'flex';
+  fsActive = true;
+  const fc = document.getElementById('fs-canvas');
+  fc.width = window.innerWidth;
+  fc.height = window.innerHeight;
+  // Mouse control on fullscreen canvas
+  modal.addEventListener('mousemove', fsMouse);
+}
+
+function closeStageFullscreen() {
+  document.getElementById('stage-modal').style.display = 'none';
+  document.getElementById('stage-modal').removeEventListener('mousemove', fsMouse);
+  fsActive = false;
+}
+
+function fsMouse(e) {
+  const fc = document.getElementById('fs-canvas');
+  mouseX = e.clientX * (W / fc.offsetWidth);
+  mouseY = e.clientY * (H / fc.offsetHeight);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeStageFullscreen();
+});
+</script>
+
+<!-- STAGE -->
+<div id="stage">
+  <div class="stage-corner" id="label-a">History A</div>
+  <div class="stage-corner" id="label-b">History B</div>
+  <div id="label-center">approaching — histories converging</div>
+  <canvas id="c"></canvas>
+</div>
+
+<!-- CONCEPT -->
+<div class="concept">
+  <div class="concept-col">
+    <h2>The relationship between bodies determines what history is visible</h2>
+    <p>One person enters the installation. A single thread of the archive surfaces — photographs of this place, from one vantage, one time. The experience is solitary, partial.</p>
+    <p>A second person enters. They move in the opposite direction. The archive <strong>diverges</strong> — two different histories of the same ground become visible simultaneously on the same walls.</p>
+    <p>They begin to walk toward each other. The system reads their approach. Photographs begin to surface that belong to <strong>both histories at once</strong> — moments where the two memories of a place overlap, contradict, or simply coexist.</p>
+    <p>A room full of people produces a configuration the archive has never shown before.</p>
+    <p>With three or more people, every pair generates its own relationship simultaneously — A and B, A and C, B and C — and the archive responds to all of them at once. The more people in the room, the more relationships the system holds, and the less any single person controls what surfaces.</p>
+  </div>
+  <div class="concept-col">
+    <h2>What this is not</h2>
+    <p>This is not a history lesson. It does not explain or resolve the divergent histories it surfaces. It does not assign photographs to people based on identity.</p>
+    <p>The archive responds to <strong>movement and relationship</strong> — the physical geometry of how people occupy shared space together. What surfaces is a function of that geometry, not of who the people are.</p>
+    <p>The piece works in McDonough, Georgia. It works in New Orleans after a flood. It works in Detroit after the plants closed. It works in any place where two communities have lived on the same ground and remember it differently.</p>
+    <p><strong>The photographs change. The logic stays the same.</strong></p>
+  </div>
+</div>
+
+<!-- LINEAGE -->
+<div class="lineage">
+  <div class="lineage-label">In conversation with</div>
+  <div class="lineage-row">
+    <div class="lineage-card">
+      <div class="lc-name">Scott Snibbe, 1998</div>
+      <div class="lc-title">Boundary Functions</div>
+      <div class="lc-desc">The space between bodies made visible as Voronoi divisions. Personal space exists only in relation to others.</div>
+      <div class="lc-arrow">Shared Ground departs: <span>no divisions — only convergence</span></div>
+    </div>
+    <div class="lineage-card">
+      <div class="lc-name">Camille Utterback, 2010</div>
+      <div class="lc-title">Shifting Time</div>
+      <div class="lc-desc">One person's proximity to a wall controls temporal depth through archival footage. A single history navigates time alone.</div>
+      <div class="lc-arrow">Shared Ground departs: <span>the relationship between bodies navigates the archive</span></div>
+    </div>
+    <div class="lineage-card">
+      <div class="lc-name">Shared Ground, 2026</div>
+      <div class="lc-title">New territory</div>
+      <div class="lc-desc">Multiple bodies. Multiple archives. The social geometry of the room — who is here, and how they move together — determines what collective memory surfaces.</div>
+      <div class="lc-arrow">The piece <span>cannot exist with one person</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ARCHIVE -->
+<div class="archive">
+  <div class="archive-head">
+    <p>First Archive — McDonough, Georgia — Starr Collection &amp; Creek Nation records — 200+ photographs — 1821–present</p>
+  </div>
+  <div class="archive-reel" id="reel"></div>
+</div>
+
+<!-- DEPLOYMENT -->
+<div class="deploy">
+  <div class="deploy-head">Technical<br>Specification</div>
+  <div class="deploy-grid">
+    <div><div class="di-label">Sensing</div><div class="di-val">Overhead depth cameras — full body tracking, multi-person</div></div>
+    <div><div class="di-label">Environment</div><div class="di-val">4 to 6 wall projection, edge-blended, full room immersion</div></div>
+    <div><div class="di-label">Archive logic</div><div class="di-val">Social geometry engine — distance, direction, velocity between all bodies in space</div></div>
+    <div><div class="di-label">Archive scale</div><div class="di-val">200+ photographs per city, organized by emotional register not date</div></div>
+    <div><div class="di-label">Sound</div><div class="di-val">Ambient field recordings keyed to relational state — divergence, convergence, stillness</div></div>
+    <div><div class="di-label">Platform</div><div class="di-val">Portable — each city instantiation uses local archive, same underlying system</div></div>
+  </div>
+</div>
+
+<!-- CITIES -->
+<div class="cities">
+  <div class="cities-label">The platform — cities where Shared Ground can be instantiated</div>
+  <div class="cities-row">
+    <div class="city-tag first">McDonough, Georgia — proof of concept</div>
+    <div class="city-tag">New Orleans, Louisiana</div>
+    <div class="city-tag">Detroit, Michigan</div>
+    <div class="city-tag">Tulsa, Oklahoma</div>
+    <div class="city-tag">Ferguson, Missouri</div>
+    <div class="city-tag">Standing Rock, North Dakota</div>
+    <div class="city-tag">Havana, Cuba</div>
+    <div class="city-tag">Belfast, Northern Ireland</div>
+    <div class="city-tag tbd">your city →</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Mark Walhimer &nbsp;·&nbsp; <span>Shared Ground</span> &nbsp;·&nbsp; Ars Electronica PRIX 2026</p>
+  <p>Archive materials drawn from the City of McDonough historical collection</p>
+  <p style="margin-top:16px;max-width:640px;line-height:1.9;font-family:'Cormorant Garamond',Georgia,serif;font-size:13px;font-style:italic;color:rgba(240,237,230,0.45);">The C.O. Polk Interactive Museum stands on land formerly inhabited by the Creek Nation, ceded by treaty in 1821. The land was subsequently farmed by enslaved people. Unmarked graves of enslaved people exist in the local cemetery.</p>
+</footer>
+
+<script>
+// ── IMAGE ARCHIVE WITH METADATA ───────────────────────────────────────
+// community: which history this image belongs to
+// themes: content tags driving contextual selection
+// convergence: true = surfaces when histories approach each other
+// include: false = present in archive, excluded from walls (KKK photo)
+const ARCHIVE = [
+  {
+    src: 'images/Lucinda-Davis-a-woman-of-Black-and-Creek-heritage.jpg',
+    cap: 'Lucinda Davis — woman of Black and Creek heritage',
+    era: '1800s', community: ['african-american','native-american'],
+    themes: ['identity','land','witness','family'],
+    emotional_register: 'dignity', convergence: true
+  },
+  {
+    src: 'images/A-Brief-Overview-of-the-Creek-Indians.jpg',
+    cap: 'Creek Nation — portrait, c.1820s',
+    era: '1820s', community: ['native-american'],
+    themes: ['land','identity','before'],
+    emotional_register: 'presence', convergence: false
+  },
+  {
+    src: 'images/04_McIntosh_and_the_Treary_with_Creeks_Float_parade.jpg',
+    cap: 'McIntosh & Treaty with Creeks Float — 1921 Centennial Parade',
+    era: '1921', community: ['white'],
+    themes: ['erasure','performance','land','ceremony','power'],
+    emotional_register: 'appropriation', convergence: true
+  },
+  {
+    src: 'images/Black_cotton_farming_family.jpg',
+    cap: 'Black cotton farming family — Henry County',
+    era: '1890s', community: ['african-american'],
+    themes: ['labor','family','land','cotton','dignity'],
+    emotional_register: 'dignity', convergence: false
+  },
+  {
+    src: 'images/cotton.jpg',
+    cap: 'Cotton field with overseer — Georgia',
+    era: '1880s', community: ['white','african-american'],
+    themes: ['labor','power','cotton','land','coercion'],
+    emotional_register: 'power', convergence: true
+  },
+  {
+    src: 'images/Recept_for_1_bale_of_cotton_1918.jpg',
+    cap: 'Green, Tarpley & Co. — one bale cotton, McDonough GA, 1918',
+    era: '1918', community: ['white','african-american'],
+    themes: ['commerce','cotton','labor','land','document'],
+    emotional_register: 'transaction', convergence: true
+  },
+  {
+    src: 'images/Camp_Creek_Wreck_color.jpg',
+    cap: 'Camp Creek Wreck — Henry County',
+    era: '1900s', community: ['african-american','white'],
+    themes: ['land','disaster','witness','infrastructure'],
+    emotional_register: 'aftermath', convergence: true
+  },
+  {
+    src: 'images/01_Peace_Doves.jpg',
+    cap: 'Peace Doves — 1921 Centennial Parade',
+    era: '1921', community: ['white'],
+    themes: ['ceremony','celebration','performance'],
+    emotional_register: 'celebration', convergence: false
+  },
+  {
+    src: 'images/10_Mammy_and_Banjo.jpg',
+    cap: 'Mammy and Banjo — 1921 Centennial Parade',
+    era: '1921', community: ['white'],
+    themes: ['erasure','performance','power','caricature'],
+    emotional_register: 'erasure', convergence: true
+  },
+  {
+    src: 'images/125429263_1819769804842427_6874479974180851161_n.jpg',
+    cap: 'McDonough, Georgia — aerial view, c.1940s',
+    era: '1940s', community: ['white','african-american'],
+    themes: ['land','town','infrastructure','overview'],
+    emotional_register: 'witness', convergence: true
+  },
+  {
+    src: 'images/19_Court_House_Steps.jpg',
+    cap: 'Courthouse Steps — 1921 Centennial Parade',
+    era: '1921', community: ['white'],
+    themes: ['ceremony','power','civic','land'],
+    emotional_register: 'solemnity', convergence: false
+  },
+  {
+    src: 'images/131412259_1843210695831671_1100162414052350107_n.jpg',
+    cap: 'McDonough Service Station — Standard Oil',
+    era: '1950s', community: ['white'],
+    themes: ['commerce','infrastructure','daily life'],
+    emotional_register: 'everyday', convergence: false
+  },
+  {
+    src: 'images/149050731_1886372564848817_5517403334368890811_n.jpg',
+    cap: 'First Baptist Church, McDonough — c.1940s',
+    era: '1940s', community: ['white'],
+    themes: ['religion','community','architecture','daily life'],
+    emotional_register: 'solemnity', convergence: false
+  },
+  {
+    src: 'images/09_Belles_of_1921.jpg',
+    cap: 'Belles of 1921 — Centennial Parade',
+    era: '1921', community: ['white'],
+    themes: ['ceremony','gender','performance','celebration'],
+    emotional_register: 'celebration', convergence: false
+  },
+  {
+    src: 'images/03_Transportation.jpg',
+    cap: 'Transportation Float — 1921 Centennial Parade',
+    era: '1921', community: ['white'],
+    themes: ['ceremony','progress','infrastructure','celebration'],
+    emotional_register: 'pride', convergence: false
+  },
+];
+
+// Filtered pools by community / convergence
+const PHOTOS = ARCHIVE.filter(p => p.include !== false);
+const poolA   = PHOTOS.filter(p => p.community.includes('african-american') || p.community.includes('native-american'));
+const poolB   = PHOTOS.filter(p => p.community.includes('white') && !p.convergence);
+const poolC   = PHOTOS.filter(p => p.convergence);
+
+// All photos for the archive reel (excluding KKK per artist decision)
+const REEL_PHOTOS = PHOTOS;
+
+// Populate archive reel
+const reel = document.getElementById('reel');
+REEL_PHOTOS.forEach(p => {
+  const d = document.createElement('div');
+  d.className = 'reel-frame';
+  d.innerHTML = `<img src="${p.src}" alt="${p.cap}"/><div class="reel-cap">${p.cap}<br><span style="opacity:0.5;font-size:10px">${p.era} · ${p.emotional_register}</span></div>`;
+  reel.appendChild(d);
+});
+
+// ── CANVAS / DEMO ─────────────────────────────────────────────────────
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 1280, H = 620;
+canvas.width = W; canvas.height = H;
+
+// Load all images
+const imgMap = {};
+PHOTOS.forEach(p => {
+  const i = new Image(); i.src = p.src; imgMap[p.src] = i;
+});
+
+function loadedImg(p) { return imgMap[p.src]; }
+function pick(pool, exclude) {
+  const choices = pool.filter(p => p !== exclude);
+  return choices[Math.floor(Math.random() * choices.length)] || pool[0];
+}
+
+// Two bodies — A (mouse-controlled), B (autonomous)
+let bodyA = { x: W * 0.25, y: H * 0.5 };
+let bodyB = { x: W * 0.75, y: H * 0.5 };
+let mouseX = W * 0.25, mouseY = H * 0.5;
+
+// B wanders
+let bTarget = { x: W * 0.75, y: H * 0.5 };
+let bWander = 0;
+
+// Current photo selections — drawn from tagged pools
+let photoA = poolA[0];
+let photoB = poolB[0];
+let photoC = poolC[0];
+
+// State label
+const centerLabel = document.getElementById('label-center');
+const labelA = document.getElementById('label-a');
+const labelB = document.getElementById('label-b');
+
+const stage = document.getElementById('stage');
+stage.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  mouseX = (e.clientX - r.left) * (W / r.width);
+  mouseY = (e.clientY - r.top) * (H / r.height);
+});
+
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top = e.clientY + 'px';
+});
+
+let alphaA = 0, alphaB = 0, alphaC = 0;
+let targetAlphaA = 0, targetAlphaB = 0, targetAlphaC = 0;
+let lastPhotoSwitch = 0;
+let tick = 0;
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function draw(ts) {
+  requestAnimationFrame(draw);
+  tick++;
+
+  // Ease History A toward mouse
+  bodyA.x = lerp(bodyA.x, mouseX, 0.06);
+  bodyA.y = lerp(bodyA.y, mouseY, 0.06);
+
+  // B wanders autonomously
+  bWander += 0.008;
+  bTarget.x = W * 0.62 + Math.sin(bWander * 0.7) * W * 0.18;
+  bTarget.y = H * 0.5 + Math.cos(bWander * 0.5) * H * 0.25;
+  bodyB.x = lerp(bodyB.x, bTarget.x, 0.018);
+  bodyB.y = lerp(bodyB.y, bTarget.y, 0.018);
+
+  // Distance between bodies
+  const dx = bodyA.x - bodyB.x;
+  const dy = bodyA.y - bodyB.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const maxDist = W * 0.75;
+  const proximity = 1 - Math.min(dist / maxDist, 1); // 0=far, 1=together
+
+  // Metadata-driven photo switching
+  // Diverging: each history shows its own community pool
+  // Converging: convergence pool surfaces between them
+  if (ts - lastPhotoSwitch > 3200) {
+    lastPhotoSwitch = ts;
+    let photoAChanged = false, photoBChanged = false;
+    if (proximity < 0.35) {
+      photoA = pick(poolA, photoA); photoAChanged = true;
+      photoB = pick(poolB, photoB); photoBChanged = true;
+    } else {
+      photoC = pick(poolC, photoC);
+    }
+    updateSound(proximity, photoAChanged, photoBChanged);
+  } else {
+    updateSound(proximity, false, false);
+  }
+
+  // Alpha targets based on proximity
+  if (proximity < 0.25) {
+    targetAlphaA = 1; targetAlphaB = 1; targetAlphaC = 0;
+  } else if (proximity > 0.7) {
+    targetAlphaA = 0.4; targetAlphaB = 0.4; targetAlphaC = 1;
+  } else {
+    targetAlphaA = 0.85; targetAlphaB = 0.85; targetAlphaC = proximity;
+  }
+  alphaA = lerp(alphaA, targetAlphaA, 0.025);
+  alphaB = lerp(alphaB, targetAlphaB, 0.025);
+  alphaC = lerp(alphaC, targetAlphaC, 0.025);
+
+  // Update state label
+  if (proximity < 0.2) {
+    centerLabel.textContent = 'separating — histories diverging';
+    centerLabel.style.color = 'rgba(200,168,130,0.5)';
+  } else if (proximity > 0.65) {
+    centerLabel.textContent = 'converging — something new surfaces';
+    centerLabel.style.color = 'var(--accent)';
+  } else {
+    centerLabel.textContent = 'in motion — the archive listens';
+    centerLabel.style.color = 'rgba(200,168,130,0.7)';
+  }
+
+  // Corner labels reflect current image metadata
+  if (labelA) labelA.textContent = `History A · ${photoA.era} · ${photoA.emotional_register}`;
+  if (labelB) labelB.textContent = `History B · ${photoB.era} · ${photoB.emotional_register}`;
+
+  // ── DRAW ────────────────────────────────────────────────────────
+  ctx.fillStyle = '#070705';
+  ctx.fillRect(0, 0, W, H);
+
+  const imgA = loadedImg(photoA);
+  const imgB = loadedImg(photoB);
+  const imgC = loadedImg(photoC);
+
+  // Left zone — History A's history
+  if (imgA && imgA.complete) {
+    ctx.save();
+    ctx.globalAlpha = alphaA * 0.72;
+    ctx.beginPath();
+    ctx.rect(0, 0, W * 0.5, H);
+    ctx.clip();
+    drawFit(imgA, 0, 0, W * 0.5, H);
+    // Sepia
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = alphaA * 0.22;
+    ctx.fillStyle = 'rgb(160,110,40)';
+    ctx.fillRect(0, 0, W * 0.5, H);
+    ctx.restore();
+  }
+
+  // Right zone — History B's history
+  if (imgB && imgB.complete) {
+    ctx.save();
+    ctx.globalAlpha = alphaB * 0.72;
+    ctx.beginPath();
+    ctx.rect(W * 0.5, 0, W * 0.5, H);
+    ctx.clip();
+    drawFit(imgB, W * 0.5, 0, W * 0.5, H);
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = alphaB * 0.22;
+    ctx.fillStyle = 'rgb(160,110,40)';
+    ctx.fillRect(W * 0.5, 0, W * 0.5, H);
+    ctx.restore();
+  }
+
+  // Center — convergence image blooms between them
+  if (alphaC > 0.05 && imgC && imgC.complete) {
+    const cx = (bodyA.x + bodyB.x) * 0.5;
+    const cy = (bodyA.y + bodyB.y) * 0.5;
+    const radius = proximity * W * 0.42;
+    ctx.save();
+    ctx.globalAlpha = alphaC * 0.9;
+    const clip = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    clip.addColorStop(0, 'rgba(0,0,0,1)');
+    clip.addColorStop(0.7, 'rgba(0,0,0,0.85)');
+    clip.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.clip();
+    drawFit(imgC, cx - radius, cy - radius, radius * 2, radius * 2);
+    ctx.restore();
+  }
+
+  // Vertical dividing line — fades as bodies converge
+  ctx.save();
+  ctx.globalAlpha = (1 - proximity) * 0.2;
+  ctx.strokeStyle = 'rgba(200,168,130,0.6)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 8]);
+  ctx.beginPath();
+  ctx.moveTo(W * 0.5, 0);
+  ctx.lineTo(W * 0.5, H);
+  ctx.stroke();
+  ctx.restore();
+
+  // Vignette
+  const vg = ctx.createRadialGradient(W/2, H/2, H*0.2, W/2, H/2, H*0.9);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, 'rgba(0,0,0,0.65)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grain
+  if (tick % 3 === 0) addGrain(0.55);
+
+  // Draw history markers
+  drawHistory(bodyA, 'rgba(200,168,130,0.9)', 'A');
+  drawHistory(bodyB, 'rgba(240,237,230,0.4)', 'B');
+
+  // Connection thread between bodies — glows as they approach
+  if (proximity > 0.1) {
+    ctx.save();
+    ctx.globalAlpha = proximity * 0.3;
+    ctx.strokeStyle = 'rgba(200,168,130,0.8)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 6]);
+    ctx.beginPath();
+    ctx.moveTo(bodyA.x, bodyA.y);
+    ctx.lineTo(bodyB.x, bodyB.y);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+requestAnimationFrame(draw);
+
+// Mirror main canvas to fullscreen modal when active
+function fsDrawMirror() {
+  if (fsActive) {
+    const fc = document.getElementById('fs-canvas');
+    if (!fc) { requestAnimationFrame(fsDrawMirror); return; }
+    if (fc.width !== window.innerWidth || fc.height !== window.innerHeight) {
+      fc.width = window.innerWidth;
+      fc.height = window.innerHeight;
+    }
+    const fctx = fc.getContext('2d');
+    fctx.drawImage(document.getElementById('c'), 0, 0, fc.width, fc.height);
+    const cl = document.getElementById('label-center');
+    const ml = document.getElementById('modal-label-center');
+    if (cl && ml) ml.textContent = cl.textContent;
+  }
+  requestAnimationFrame(fsDrawMirror);
+}
+requestAnimationFrame(fsDrawMirror);
+
+function drawHistory(b, color, label) {
+  ctx.save();
+  ctx.globalAlpha = 0.9;
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(b.x, b.y, 18, 0, Math.PI * 2);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  // Inner dot
+  ctx.beginPath();
+  ctx.arc(b.x, b.y, 3, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  // Label
+  ctx.font = "300 9px 'IBM Plex Mono'";
+  ctx.fillStyle = color;
+  ctx.letterSpacing = '0.1em';
+  ctx.fillText(label, b.x + 24, b.y + 4);
+  ctx.restore();
+}
+
+function drawFit(img, x, y, w, h) {
+  const scale = Math.max(w / img.width, h / img.height);
+  const sw = img.width * scale, sh = img.height * scale;
+  ctx.drawImage(img, x + (w - sw) / 2, y + (h - sh) / 2, sw, sh);
+}
+
+let _gc = null, _gx = null;
+function addGrain(s) {
+  if (!_gc) { _gc = document.createElement('canvas'); _gc.width = 256; _gc.height = 256; _gx = _gc.getContext('2d'); }
+  const id = _gx.createImageData(256, 256); const d = id.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const v = (Math.random() * 2 - 1) * 50 * s;
+    d[i] = d[i+1] = d[i+2] = 128 + v;
+    d[i+3] = Math.random() * 22 * s;
+  }
+  _gx.putImageData(id, 0, 0);
+  ctx.globalAlpha = s * 0.12;
+  for (let y = 0; y < H; y += 256) for (let x = 0; x < W; x += 256) ctx.drawImage(_gc, x, y);
+  ctx.globalAlpha = 1;
+}
+
+// ── PIANO SOUND — Salamander Grand, pentatonic, event-triggered ──────
+// C pentatonic: C D E G A — no wrong notes, any combo sounds consonant
+// History A owns the left hand (low register)
+// History B owns the right hand (mid register)  
+// Convergence events bloom in the upper register
+let piano = null;
+let soundOn = true;
+let pianoReady = false;
+
+const pentatonicA = ['C2','D2','E2','G2','A2','C3','D3','E3'];
+const pentatonicB = ['G3','A3','C4','D4','E4','G4'];
+const pentatonicBloom = ['C5','E5','G5','A5'];
+
+let lastConvergeState = false; // was it converging last frame?
+
+function buildPiano() {
+  if (pianoReady) return;
+  pianoReady = true;
+  piano = new Tone.Sampler({
+    urls: {
+      C2:'C2.mp3', 'D#2':'Ds2.mp3', 'F#2':'Fs2.mp3', A2:'A2.mp3',
+      C3:'C3.mp3', 'D#3':'Ds3.mp3', 'F#3':'Fs3.mp3', A3:'A3.mp3',
+      C4:'C4.mp3', 'D#4':'Ds4.mp3', 'F#4':'Fs4.mp3', A4:'A4.mp3',
+      C5:'C5.mp3', 'D#5':'Ds5.mp3', 'F#5':'Fs5.mp3', A5:'A5.mp3',
+    },
+    release: 4,
+    baseUrl: 'https://tonejs.github.io/audio/salamander/',
+  }).toDestination();
+  Tone.getDestination().volume.value = -8;
+}
+
+function playNote(pool, velocity) {
+  if (!soundOn || !pianoReady || !piano) return;
+  const note = pool[Math.floor(Math.random() * pool.length)];
+  piano.triggerAttackRelease(note, '2n', Tone.now(), velocity);
+}
+
+// Called by the draw loop on specific events
+function onPhotoA() { playNote(pentatonicA, 0.25 + Math.random() * 0.15); }
+function onPhotoB() { playNote(pentatonicB, 0.25 + Math.random() * 0.15); }
+function onConverge() { playNote(pentatonicBloom, 0.3 + Math.random() * 0.15); }
+
+function toggleSound() {
+  soundOn = !soundOn;
+  updateSoundBtn();
+}
+
+function updateSoundBtn() {
+  const btn = document.getElementById('sound-btn');
+  if (!btn) return;
+  btn.textContent = soundOn ? '◼ sound on' : '▶ sound off';
+  btn.style.color = soundOn ? 'rgba(200,168,130,0.9)' : 'rgba(200,168,130,0.35)';
+}
+
+function updateSound(proximity, photoAChanged, photoBChanged) {
+  // Convergence event: crossing the threshold fires a bloom note
+  const isConverging = proximity > 0.65;
+  if (isConverging && !lastConvergeState) onConverge();
+  lastConvergeState = isConverging;
+
+  // Photo change events fire their history's note
+  if (photoAChanged) onPhotoA();
+  if (photoBChanged) onPhotoB();
+}
+
+document.addEventListener('click', () => {
+  Tone.start();
+  buildPiano();
+}, { once: true });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+</body>
+</html>

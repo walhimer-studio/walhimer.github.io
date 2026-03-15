@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exhibition Template - Auto-Sync</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000; 
+            color: #fff; 
+            overflow: hidden; 
+        }
+        
+        /* Control Panel */
+        #control-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            padding: 20px;
+            z-index: 9999;
+            border-bottom: 2px solid #444;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        
+        #control-panel.hidden {
+            transform: translateY(-100%);
+        }
+        
+        /* OBS Mode Indicator */
+        #obs-mode {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9998;
+            background: #ff6b00;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            display: none;
+        }
+        
+        #obs-mode.active {
+            display: block;
+        }
+        
+        /* Show panel button */
+        #show-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9998;
+            background: #4a9eff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 2px 10px rgba(74, 158, 255, 0.4);
+        }
+        
+        #show-panel:hover {
+            background: #357abd;
+        }
+        
+        #show-panel.visible {
+            display: inline-block;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4a9eff;
+        }
+        
+        .mode-selector {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .mode-selector label {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .mode-selector select {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        input, select {
+            padding: 10px 12px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4a9eff;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            background: #4a9eff;
+            color: #fff;
+        }
+        
+        button:hover {
+            background: #357abd;
+        }
+        
+        button.secondary {
+            background: #555;
+        }
+        
+        button.secondary:hover {
+            background: #666;
+        }
+        
+        .info-box {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #4a9eff;
+            margin-top: 15px;
+        }
+        
+        .info-box h4 {
+            color: #4a9eff;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .info-box p {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        
+        #qr-preview {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        #qr-preview img {
+            max-width: 100px;
+            border: 2px solid #4a9eff;
+            border-radius: 4px;
+        }
+        
+        /* Canvas container */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            z-index: 1;
+        }
+        
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto !important;
+            height: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Control Panel -->
+    <div id="control-panel">
+        <div class="panel-header">
+            <div class="panel-title">🎬 Exhibition Control Panel</div>
+            <div class="mode-selector">
+                <label>Mode:</label>
+                <select id="start-mode" onchange="updateModeInfo()">
+                    <option value="manual">Manual Start</option>
+                    <option value="auto">Auto-Start (OBS)</option>
+                    <option value="hidden">Auto-Start Hidden</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Artwork Title</label>
+                <input type="text" id="title" value="904 (forward)">
+            </div>
+            
+            <div class="control-group">
+                <label>Credit Line</label>
+                <input type="text" id="credit" value="Mark Walhimer, 2026">
+            </div>
+            
+            <div class="control-group">
+                <label>Artwork Duration (seconds)</label>
+                <input type="number" id="duration" value="167" min="10" max="600">
+            </div>
+            
+            <div class="control-group">
+                <label>Title Fade In (seconds)</label>
+                <input type="number" id="title-fade-in" value="1.2" min="0" max="5" step="0.1">
+            </div>
+            
+            <div class="control-group">
+                <label>Title Fade Out (seconds)</label>
+                <input type="number" id="title-fade-out" value="1.2" min="0" max="5" step="0.1">
+            </div>
+            
+            <div class="control-group">
+                <label>Artwork Fade In (seconds)</label>
+                <input type="number" id="art-fade-in" value="0.75" min="0" max="5" step="0.1">
+            </div>
+            
+            <div class="control-group">
+                <label>Artwork Fade Out (seconds)</label>
+                <input type="number" id="art-fade-out" value="0.75" min="0" max="5" step="0.1">
+            </div>
+            
+            <div class="control-group">
+                <label>End Fade In (seconds)</label>
+                <input type="number" id="end-fade-in" value="1.2" min="0" max="5" step="0.1">
+            </div>
+            
+            <div class="control-group">
+                <label>End Fade Out (seconds)</label>
+                <input type="number" id="end-fade-out" value="1.2" min="0" max="5" step="0.1">
+            </div>
+            
+            <div class="control-group">
+                <label>QR Code URL (optional)</label>
+                <input type="text" id="qr-url" placeholder="https://manifold.xyz/...">
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="start()">▶️ START ANIMATION</button>
+            <button onclick="togglePanel()" class="secondary">👁️ HIDE PANEL (H key)</button>
+        </div>
+        
+        <div id="qr-preview"></div>
+        
+        <div class="info-box" id="mode-info">
+            <h4>📹 Manual Start Mode</h4>
+            <p>
+                <strong>1.</strong> Click START ANIMATION<br>
+                <strong>2.</strong> Press H to hide panel<br>
+                <strong>3.</strong> Start OBS recording<br>
+                <strong>Duration:</strong> <span id="total-duration">calculating...</span>
+            </p>
+        </div>
+    </div>
+    
+    <button id="show-panel" onclick="togglePanel()">SHOW CONTROLS</button>
+    <div id="obs-mode">OBS MODE ACTIVE</div>
+    <div id="canvas-container"></div>
+    
+    <script>
+        // Exhibition Constants
+        const W = 2160, H = 3840, FPS = 30;
+        const TITLE_DUR = 6;
+        const BLACK_BEAT = 0.6;
+        const END_DUR = 6;
+        const FONT_SIZE = 90;
+        const QR_SIZE = 280;
+        const QR_PAD = 120;
+        
+        // State
+        let artDur, title, credit, qrImg, overlay, totalFrames, loopSec, artSec;
+        let titleFadeIn, titleFadeOut, artFadeIn, artFadeOut, endFadeIn, endFadeOut;
+        let isRunning = false;
+        
+        // Check URL parameters for auto-start
+        function checkAutoStart() {
+            const params = new URLSearchParams(window.location.search);
+            const mode = params.get('mode') || document.getElementById('start-mode').value;
+            
+            if (mode === 'auto' || mode === 'hidden') {
+                console.log('🤖 Auto-start mode detected');
+                
+                // Load values from URL or use defaults
+                if (params.get('title')) document.getElementById('title').value = params.get('title');
+                if (params.get('duration')) document.getElementById('duration').value = params.get('duration');
+                if (params.get('credit')) document.getElementById('credit').value = params.get('credit');
+                
+                // Hide panel if in hidden mode
+                if (mode === 'hidden') {
+                    setTimeout(() => {
+                        togglePanel();
+                        document.getElementById('obs-mode').classList.add('active');
+                    }, 100);
+                }
+                
+                // Auto-start after short delay
+                setTimeout(() => {
+                    start();
+                }, 500);
+            }
+        }
+        
+        // Update mode info
+        function updateModeInfo() {
+            const mode = document.getElementById('start-mode').value;
+            const infoBox = document.getElementById('mode-info');
+            
+            if (mode === 'manual') {
+                infoBox.innerHTML = `
+                    <h4>📹 Manual Start Mode</h4>
+                    <p>
+                        <strong>1.</strong> Click START ANIMATION<br>
+                        <strong>2.</strong> Press H to hide panel<br>
+                        <strong>3.</strong> Start OBS recording<br>
+                        <strong>Duration:</strong> <span id="total-duration">calculating...</span>
+                    </p>
+                `;
+            } else if (mode === 'auto') {
+                infoBox.innerHTML = `
+                    <h4>🤖 Auto-Start Mode (OBS Ready)</h4>
+                    <p>
+                        Animation starts automatically when page loads.<br>
+                        <strong>Perfect for OBS Browser Source!</strong><br>
+                        You can still press H to hide panel.<br>
+                        <strong>Duration:</strong> <span id="total-duration">calculating...</span>
+                    </p>
+                `;
+            } else {
+                infoBox.innerHTML = `
+                    <h4>🎥 Auto-Start Hidden (Recording Mode)</h4>
+                    <p>
+                        Animation starts automatically with panel hidden.<br>
+                        <strong>Clean recording ready immediately!</strong><br>
+                        Press H to show panel if needed.<br>
+                        <strong>Duration:</strong> <span id="total-duration">calculating...</span>
+                    </p>
+                `;
+            }
+            updateDurationDisplay();
+        }
+        
+        // Generate OBS-ready URL
+        function generateOBSUrl() {
+            const baseUrl = window.location.href.split('?')[0];
+            const mode = document.getElementById('start-mode').value;
+            const title = encodeURIComponent(document.getElementById('title').value);
+            const duration = document.getElementById('duration').value;
+            const credit = encodeURIComponent(document.getElementById('credit').value);
+            
+            const url = `${baseUrl}?mode=${mode}&title=${title}&duration=${duration}&credit=${credit}`;
+            
+            console.log('📋 OBS Browser Source URL:');
+            console.log(url);
+            
+            return url;
+        }
+        
+        // Toggle panel
+        function togglePanel() {
+            const panel = document.getElementById('control-panel');
+            const showButton = document.getElementById('show-panel');
+            
+            const isHidden = panel.classList.toggle('hidden');
+            showButton.classList.toggle('visible', isHidden);
+        }
+        
+        // Update duration display
+        function updateDurationDisplay() {
+            const dur = parseFloat(document.getElementById('duration').value) || 0;
+            const total = TITLE_DUR + BLACK_BEAT + dur + END_DUR;
+            const display = document.getElementById('total-duration');
+            if (display) {
+                display.textContent = `${total.toFixed(1)} seconds (${Math.floor(total / 60)}m ${Math.floor(total % 60)}s)`;
+            }
+        }
+        
+        // Load QR code
+        function loadQRCode(url) {
+            if (!url) return;
+            
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(url)}`;
+            loadImage(qrUrl, img => {
+                qrImg = img;
+                document.getElementById('qr-preview').innerHTML = 
+                    `<img src="${qrUrl}">
+                     <div style="color: #4a9eff; font-weight: 600;">✓ QR Code Ready</div>`;
+            });
+        }
+        
+        // Start animation
+        function start() {
+            title = document.getElementById('title').value;
+            credit = document.getElementById('credit').value;
+            artDur = parseFloat(document.getElementById('duration').value);
+            titleFadeIn = parseFloat(document.getElementById('title-fade-in').value);
+            titleFadeOut = parseFloat(document.getElementById('title-fade-out').value);
+            artFadeIn = parseFloat(document.getElementById('art-fade-in').value);
+            artFadeOut = parseFloat(document.getElementById('art-fade-out').value);
+            endFadeIn = parseFloat(document.getElementById('end-fade-in').value);
+            endFadeOut = parseFloat(document.getElementById('end-fade-out').value);
+            
+            const url = document.getElementById('qr-url').value.trim();
+            if (url) loadQRCode(url);
+            
+            const artHold = Math.max(0, artDur - artFadeIn - artFadeOut);
+            artSec = artFadeIn + artHold + artFadeOut;
+            loopSec = TITLE_DUR + BLACK_BEAT + artSec + END_DUR;
+            totalFrames = Math.floor(FPS * loopSec);
+            
+            isRunning = true;
+            console.log('🎬 Started:', title);
+            console.log('📊 Duration:', loopSec.toFixed(1), 's');
+            console.log('📋 OBS URL:', generateOBSUrl());
+            
+            if (typeof loop === 'function') loop();
+        }
+        
+        // p5.js setup
+        function setup() {
+            let c = createCanvas(W, H, WEBGL);
+            c.parent('canvas-container');
+            frameRate(FPS);
+            pixelDensity(1);
+            colorMode(HSB, 360, 100, 100, 255);
+            noStroke();
+            
+            overlay = createGraphics(W, H);
+            overlay.pixelDensity(1);
+            overlay.colorMode(HSB, 360, 100, 100, 255);
+            overlay.textAlign(CENTER, CENTER);
+            overlay.textFont("sans-serif");
+            overlay.noStroke();
+            
+            noLoop();
+            updateDurationDisplay();
+            
+            // Check for auto-start
+            checkAutoStart();
+            
+            console.log('✅ Ready');
+        }
+        
+        // p5.js draw
+        function draw() {
+            if (!totalFrames || !isRunning) return;
+            
+            const f = (frameCount - 1) % totalFrames;
+            const t = f / FPS;
+            
+            background(0);
+            overlay.clear();
+            
+            // Title phase
+            if (t < TITLE_DUR) {
+                const a = getAlpha(t, 0, TITLE_DUR, titleFadeIn, titleFadeOut);
+                if (a > 0.001) drawText(title, a, qrImg != null);
+            }
+            // Artwork phase
+            else if (t >= TITLE_DUR + BLACK_BEAT && t < TITLE_DUR + BLACK_BEAT + artSec) {
+                const artT = t - TITLE_DUR - BLACK_BEAT;
+                const prog = artT / artSec;
+                const a = getAlpha(artT, 0, artSec, artFadeIn, artFadeOut);
+                
+                if (a > 0.001 && typeof renderArtwork === 'function') {
+                    renderArtwork(prog, t, f);
+                    
+                    if (a < 1) {
+                        push();
+                        translate(-W/2, -H/2, 10);
+                        noStroke();
+                        fill(0, 0, 0, 255 * (1 - a));
+                        rect(0, 0, W, H);
+                        pop();
+                    }
+                }
+            }
+            // End phase
+            else if (t >= TITLE_DUR + BLACK_BEAT + artSec) {
+                const endT = t - TITLE_DUR - BLACK_BEAT - artSec;
+                const a = getAlpha(endT, 0, END_DUR, endFadeIn, endFadeOut);
+                if (a > 0.001) drawText(credit, a, qrImg != null);
+            }
+            
+            push();
+            resetMatrix();
+            imageMode(CORNER);
+            translate(-W/2, -H/2, 1);
+            image(overlay, 0, 0, W, H);
+            pop();
+        }
+        
+        function drawText(txt, alpha, showQR) {
+            overlay.noStroke();
+            overlay.fill(0, 0, 0, 255 * alpha);
+            overlay.rect(0, 0, W, H);
+            overlay.fill(0, 0, 100, 255 * alpha);
+            overlay.textSize(FONT_SIZE);
+            overlay.text(txt, W/2, H/2);
+            
+            if (showQR && qrImg) {
+                overlay.push();
+                overlay.tint(255, 255 * alpha);
+                overlay.image(qrImg, W - QR_SIZE - QR_PAD, H - QR_SIZE - QR_PAD, QR_SIZE, QR_SIZE);
+                overlay.pop();
+            }
+        }
+        
+        function getAlpha(t, start, dur, fadeIn, fadeOut) {
+            if (t < start || t >= start + dur) return 0;
+            const local = t - start;
+            const aIn = smoothstep(0, fadeIn, local);
+            const aOut = 1 - smoothstep(dur - fadeOut, dur, local);
+            return aIn * aOut;
+        }
+        
+        function smoothstep(e0, e1, x) {
+            if (e0 === e1) return x < e0 ? 0 : 1;
+            const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
+            return t * t * (3 - 2 * t);
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'h' || event.key === 'H' || event.key === 'c' || event.key === 'C') {
+                togglePanel();
+            }
+        });
+        
+        // Update duration on change
+        document.getElementById('duration').addEventListener('input', updateDurationDisplay);
+        document.getElementById('start-mode').addEventListener('change', updateModeInfo);
+        
+        // Initialize
+        updateModeInfo();
+    </script>
+    
+    <script src="artwork_904_compatible.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gradient Boxes - Three.js</title>
+  <style>body { margin: 0; overflow: hidden; }</style>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
+
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000);
+camera.position.z = 1000;
+
+let renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+let boxes = [];
+
+for (let i = 0; i < 7; i++) {
+  let w = Math.random() * 500 + 100;
+  let h = Math.random() * 300 + 100;
+  let d = Math.random() * 300 + 100;
+
+  let geometry = new THREE.BoxGeometry(w, h, d);
+
+  let color1 = new THREE.Color(`hsl(${Math.random() * 360}, 100%, 50%)`);
+  let material = new THREE.MeshBasicMaterial({
+    color: color1,
+    transparent: true,
+    opacity: 0.3,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  });
+
+  let box = new THREE.Mesh(geometry, material);
+  box.position.x = (Math.random() - 0.5) * 800;
+  box.position.y = (Math.random() - 0.5) * 800;
+  box.position.z = (Math.random() - 0.5) * 800;
+
+  boxes.push(box);
+  scene.add(box);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  scene.rotation.y += 0.002;
+  scene.rotation.x += 0.001;
+
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Text Cylinder – Volumetric</title>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
+<style>
+  html, body { margin:0; padding:0; background:#f5f5f5; overflow:hidden; }
+  canvas { display:block; }
+</style>
+</head>
+<body>
+<script>
+const PHRASE = "I WILL NOT BECOME THEIR NARRATIVE ";
+const RINGS = 7;
+
+const OUTER_R = 360;
+const INNER_R = 312;
+
+const RING_Y_SPACING = 60;
+
+const FONT_SIZE = 56;
+const GLYPH_PAD = 26;
+
+const PLANE_W = 44;
+const PLANE_H = 64;
+
+const ROT_SPEED = 0.32;
+const TILT_X = -0.18;
+
+const OUTER_ALPHA = 170;
+const INNER_ALPHA = 55;
+
+let rot = 0;
+let glyphTex = new Map();
+let usedChars = [];
+
+function setup() {
+  createCanvas(window.innerWidth, window.innerHeight, WEBGL);
+  pixelDensity(2);
+  setAttributes('alpha', true);
+  setAttributes('antialias', true);
+
+  usedChars = Array.from(new Set(PHRASE.split("")));
+  buildGlyphTextures();
+}
+
+function draw() {
+  disableDepthTest();
+
+  clear();
+  background(255);
+
+  perspective(PI / 3, width / height, 1, 8000);
+
+  rotateX(TILT_X);
+  rotateY(rot);
+  rot += ROT_SPEED;
+
+  noStroke();
+  blendMode(BLEND);
+
+  drawCylinder(INNER_R, INNER_ALPHA, true);
+  drawCylinder(OUTER_R, OUTER_ALPHA, false);
+}
+
+function drawCylinder(radius, baseAlpha, mirrored) {
+  const half = (RINGS - 1) * 0.5;
+
+  for (let ry = 0; ry < RINGS; ry++) {
+    const y = (ry - half) * RING_Y_SPACING;
+    drawRing(radius, y, baseAlpha, mirrored);
+  }
+}
+
+function drawRing(radius, y, baseAlpha, mirrored) {
+  const chars = PHRASE.length;
+  const step = TWO_PI / chars;
+
+  for (let i = 0; i < chars; i++) {
+    const ch = PHRASE[i];
+    if (ch === " ") continue;
+
+    const a = i * step;
+
+    const x = Math.cos(a) * radius;
+    const z = Math.sin(a) * radius;
+
+    const face01 = (Math.cos(a) + 1) * 0.5;
+    const fade = Math.pow(face01, 1.7);
+    let alpha = baseAlpha * (0.18 + 0.82 * fade);
+
+    if (mirrored) alpha *= 0.75;
+
+    const tex = glyphTex.get(ch);
+    if (!tex) continue;
+
+    push();
+    translate(x, y, z);
+
+    if (!mirrored) {
+      rotateY(-a + HALF_PI);
+    } else {
+      rotateY(-a - HALF_PI);
+      scale(-1, 1, 1);
+    }
+
+    translate(0, 0, mirrored ? -0.6 : 0.6);
+
+    tint(0, constrain(alpha, 0, 255));
+    texture(tex);
+    plane(PLANE_W, PLANE_H);
+    pop();
+  }
+}
+
+function buildGlyphTextures() {
+  glyphTex.clear();
+
+  for (const ch of usedChars) {
+    const g = createGraphics(FONT_SIZE + GLYPH_PAD * 2, FONT_SIZE + GLYPH_PAD * 2);
+    g.pixelDensity(1);
+    g.clear();
+    g.background(0, 0, 0, 0);
+    g.noStroke();
+    g.fill(0);
+    g.textFont('monospace');
+    g.textSize(FONT_SIZE);
+    g.textAlign(CENTER, CENTER);
+    g.text(ch, g.width * 0.5, g.height * 0.54);
+    glyphTex.set(ch, g);
+  }
+}
+
+function disableDepthTest() {
+  const gl = drawingContext;
+  if (gl && gl.disable && gl.DEPTH_TEST !== undefined) {
+    gl.disable(gl.DEPTH_TEST);
+  }
+}
+
+function windowResized() {
+  resizeCanvas(window.innerWidth, window.innerHeight);
+}
+</script>
+</body>
+</html>

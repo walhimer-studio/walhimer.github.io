@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LED Tube Curtain Installation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #0a0a0a;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #canvas-container {
+            display: flex;
+            gap: 20px;
+            width: 100vw;
+            height: 100vh;
+        }
+        #controls {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background: rgba(42, 42, 42, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 320px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        .control-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(51, 51, 51, 0.8);
+            border-radius: 8px;
+        }
+        .control-section h2 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .installation-controls {
+            border: 2px solid #00d4ff;
+        }
+        .installation-controls h2 {
+            color: #00d4ff;
+        }
+        .effects-controls {
+            border: 2px solid #3498db;
+        }
+        .effects-controls h2 {
+            color: #3498db;
+        }
+        .beat-controls {
+            border: 2px solid #ff6b6b;
+        }
+        .beat-controls h2 {
+            color: #ff6b6b;
+        }
+        .control-row {
+            margin-bottom: 12px;
+        }
+        .control-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .control-row input[type="range"] {
+            width: 100%;
+            padding: 0;
+        }
+        .control-row input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .value-display span:last-child {
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .button-group {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .button-group button {
+            flex: 1;
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background: #00d4ff;
+            color: #0a0a0a;
+            font-weight: bold;
+            min-width: 70px;
+        }
+        .button-group button:hover {
+            background: #00b8e6;
+        }
+        .bpm-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .bpm-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .play-pause-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .play-pause-btn.playing {
+            background: #ff6b6b;
+            color: white;
+        }
+        .play-pause-btn.stopped {
+            background: #4caf50;
+            color: white;
+        }
+        .pattern-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .pattern-btns button {
+            padding: 8px;
+            font-size: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background: #555;
+            color: white;
+        }
+        .pattern-btns button:hover {
+            background: #666;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div id="p5-canvas"></div>
+        <div id="controls"></div>
+    </div>
+
+    <script>
+        // Installation parameters
+        let numTubes = 150; // Number of hanging tubes
+        let tubeSpacing = 30; // Spacing between tubes
+        let tubes = [];
+        
+        // Beat control variables
+        let isPlaying = false;
+        let bpm = 120;
+        let lastBeatTime = 0;
+        let beatInterval = 0;
+        let beatMode = 'wave-horizontal';
+        
+        // Effect controls
+        let trailEnabled = true;
+        let trailDecayRate = 0.95;
+        let pulseEnabled = false;
+        let pulseSpeed = 0.05;
+        let pulsePhase = 0;
+        let glowIntensity = 1.5;
+        let baseColor = {r: 200, g: 220, b: 255}; // Cool white
+        let accentColor = {r: 0, g: 212, b: 255}; // Cyan
+        
+        // Camera controls
+        let camAngle = 0;
+        let camDistance = 800;
+        let camHeight = 0;
+        let autoRotate = true;
+        let rotationSpeed = 0.002;
+        
+        class Tube {
+            constructor(x, z, length) {
+                this.x = x;
+                this.z = z;
+                this.length = length;
+                this.segments = 50;
+                this.radius = 4;
+                this.intensities = new Array(this.segments).fill(0);
+                this.targetIntensities = new Array(this.segments).fill(0);
+                this.colors = new Array(this.segments).fill(null);
+            }
+            
+            update() {
+                // Smooth transition for intensities
+                for (let i = 0; i < this.segments; i++) {
+                    if (trailEnabled) {
+                        // Fade towards target
+                        this.intensities[i] = lerp(this.intensities[i], this.targetIntensities[i], 0.15);
+                        // Decay
+                        this.targetIntensities[i] *= trailDecayRate;
+                        if (this.targetIntensities[i] < 0.01) this.targetIntensities[i] = 0;
+                    } else {
+                        this.intensities[i] = this.targetIntensities[i];
+                    }
+                }
+            }
+            
+            setSegment(segmentIndex, intensity, color = null) {
+                if (segmentIndex >= 0 && segmentIndex < this.segments) {
+                    this.targetIntensities[segmentIndex] = intensity;
+                    this.colors[segmentIndex] = color;
+                }
+            }
+            
+            setAll(intensity, color = null) {
+                for (let i = 0; i < this.segments; i++) {
+                    this.targetIntensities[i] = intensity;
+                    this.colors[i] = color;
+                }
+            }
+            
+            display() {
+                push();
+                translate(this.x, 0, this.z);
+                
+                let segmentLength = this.length / this.segments;
+                
+                for (let i = 0; i < this.segments; i++) {
+                    let yPos = i * segmentLength;
+                    let intensity = this.intensities[i];
+                    
+                    // Apply pulse if enabled
+                    if (pulseEnabled && intensity > 0) {
+                        let pulseValue = (sin(pulsePhase + this.x * 0.01 + i * 0.1) + 1) / 2;
+                        intensity = intensity * (0.5 + pulseValue * 0.5);
+                    }
+                    
+                    if (intensity > 0.01) {
+                        push();
+                        translate(0, yPos, 0);
+                        
+                        // Get color
+                        let col = this.colors[i] || baseColor;
+                        let r = col.r * intensity;
+                        let g = col.g * intensity;
+                        let b = col.b * intensity;
+                        
+                        // Main tube material
+                        ambientMaterial(r, g, b);
+                        emissiveMaterial(r * glowIntensity, g * glowIntensity, b * glowIntensity);
+                        
+                        cylinder(this.radius, segmentLength);
+                        
+                        // Bright tip
+                        if (i === 0 || i === this.segments - 1) {
+                            emissiveMaterial(r * glowIntensity * 2, g * glowIntensity * 2, b * glowIntensity * 2);
+                            sphere(this.radius * 1.5);
+                        }
+                        
+                        pop();
+                    }
+                }
+                
+                pop();
+            }
+        }
+        
+        function initializeTubes() {
+            tubes = [];
+            let cols = Math.ceil(Math.sqrt(numTubes));
+            let rows = Math.ceil(numTubes / cols);
+            
+            let tubeIndex = 0;
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    if (tubeIndex >= numTubes) break;
+                    
+                    let x = (j - cols / 2) * tubeSpacing;
+                    let z = (i - rows / 2) * tubeSpacing;
+                    
+                    // Vary the length slightly for organic feel
+                    let length = 400 + random(-50, 50);
+                    
+                    tubes.push(new Tube(x, z, length));
+                    tubeIndex++;
+                }
+            }
+        }
+
+        function setup() {
+            let canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+            canvas.parent('p5-canvas');
+            
+            initializeTubes();
+            updateBeatInterval();
+            createControls();
+        }
+
+        function draw() {
+            background(10, 10, 15);
+            
+            // Lighting
+            ambientLight(30);
+            
+            // Camera
+            if (autoRotate) {
+                camAngle += rotationSpeed;
+            }
+            let camX = cos(camAngle) * camDistance;
+            let camZ = sin(camAngle) * camDistance;
+            camera(camX, camHeight, camZ, 0, 0, 0, 0, 1, 0);
+            
+            // Handle beats
+            if (isPlaying) {
+                let currentTime = millis();
+                if (currentTime - lastBeatTime >= beatInterval) {
+                    triggerBeat();
+                    lastBeatTime = currentTime;
+                }
+            }
+            
+            // Update pulse phase
+            if (pulseEnabled) {
+                pulsePhase += pulseSpeed;
+            }
+            
+            // Update and display all tubes
+            for (let tube of tubes) {
+                tube.update();
+                tube.display();
+            }
+            
+            // Optional: Draw floor for reference
+            push();
+            translate(0, 250, 0);
+            rotateX(HALF_PI);
+            fill(20, 20, 25);
+            noStroke();
+            plane(2000, 2000);
+            pop();
+        }
+
+        function updateBeatInterval() {
+            beatInterval = (60 / bpm) * 1000;
+        }
+
+        function triggerBeat() {
+            switch(beatMode) {
+                case 'all-flash':
+                    for (let tube of tubes) {
+                        tube.setAll(1.0);
+                    }
+                    break;
+                    
+                case 'wave-horizontal':
+                    // Wave from left to right
+                    let sortedByX = [...tubes].sort((a, b) => a.x - b.x);
+                    for (let i = 0; i < sortedByX.length; i++) {
+                        setTimeout(() => {
+                            sortedByX[i].setAll(1.0);
+                        }, i * 10);
+                    }
+                    break;
+                    
+                case 'wave-vertical':
+                    // Wave from front to back
+                    let sortedByZ = [...tubes].sort((a, b) => a.z - b.z);
+                    for (let i = 0; i < sortedByZ.length; i++) {
+                        setTimeout(() => {
+                            sortedByZ[i].setAll(1.0);
+                        }, i * 10);
+                    }
+                    break;
+                    
+                case 'rain-down':
+                    // Rain effect on random tubes
+                    for (let tube of tubes) {
+                        if (Math.random() > 0.6) {
+                            for (let i = 0; i < tube.segments; i++) {
+                                setTimeout(() => {
+                                    tube.setSegment(i, 1.0);
+                                }, i * 20);
+                            }
+                        }
+                    }
+                    break;
+                    
+                case 'rain-up':
+                    // Rain upwards on random tubes
+                    for (let tube of tubes) {
+                        if (Math.random() > 0.6) {
+                            for (let i = tube.segments - 1; i >= 0; i--) {
+                                setTimeout(() => {
+                                    tube.setSegment(i, 1.0);
+                                }, (tube.segments - i) * 20);
+                            }
+                        }
+                    }
+                    break;
+                    
+                case 'random-scatter':
+                    // Random tubes light up
+                    let count = Math.floor(numTubes * 0.3);
+                    for (let i = 0; i < count; i++) {
+                        let randomTube = tubes[Math.floor(Math.random() * tubes.length)];
+                        randomTube.setAll(1.0);
+                    }
+                    break;
+                    
+                case 'center-outward':
+                    // From center outward
+                    let centerX = 0;
+                    let centerZ = 0;
+                    let sortedByDistance = [...tubes].sort((a, b) => {
+                        let distA = dist(a.x, a.z, centerX, centerZ);
+                        let distB = dist(b.x, b.z, centerX, centerZ);
+                        return distA - distB;
+                    });
+                    for (let i = 0; i < sortedByDistance.length; i++) {
+                        setTimeout(() => {
+                            sortedByDistance[i].setAll(1.0);
+                        }, i * 15);
+                    }
+                    break;
+                    
+                case 'spiral':
+                    // Spiral pattern
+                    let sortedByAngle = [...tubes].sort((a, b) => {
+                        let angleA = atan2(a.z, a.x);
+                        let angleB = atan2(b.z, b.x);
+                        return angleA - angleB;
+                    });
+                    for (let i = 0; i < sortedByAngle.length; i++) {
+                        setTimeout(() => {
+                            sortedByAngle[i].setAll(1.0);
+                        }, i * 15);
+                    }
+                    break;
+                    
+                case 'white-cyan-wave':
+                    // Alternating white and cyan
+                    let sortedForColor = [...tubes].sort((a, b) => a.x - b.x);
+                    for (let i = 0; i < sortedForColor.length; i++) {
+                        let col = (i % 2 === 0) ? baseColor : accentColor;
+                        setTimeout(() => {
+                            sortedForColor[i].setAll(1.0, col);
+                        }, i * 10);
+                    }
+                    break;
+                    
+                case 'top-down-wave':
+                    // All tubes light from top to bottom simultaneously
+                    for (let tube of tubes) {
+                        for (let i = 0; i < tube.segments; i++) {
+                            setTimeout(() => {
+                                tube.setSegment(i, 1.0);
+                            }, i * 15);
+                        }
+                    }
+                    break;
+                    
+                case 'bottom-up-wave':
+                    // All tubes light from bottom to top simultaneously
+                    for (let tube of tubes) {
+                        for (let i = tube.segments - 1; i >= 0; i--) {
+                            setTimeout(() => {
+                                tube.setSegment(i, 1.0);
+                            }, (tube.segments - i) * 15);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        function createControls() {
+            let controlsDiv = document.getElementById('controls');
+            
+            // Installation Controls
+            let installDiv = document.createElement('div');
+            installDiv.className = 'control-section installation-controls';
+            
+            let installTitle = document.createElement('h2');
+            installTitle.textContent = '🏛️ Installation Setup';
+            installDiv.appendChild(installTitle);
+            
+            // Number of tubes
+            let tubesRow = document.createElement('div');
+            tubesRow.className = 'control-row';
+            let tubesDisplay = document.createElement('div');
+            tubesDisplay.className = 'value-display';
+            tubesDisplay.innerHTML = '<span>Number of Tubes:</span><span id="tubes-value">' + numTubes + '</span>';
+            tubesRow.appendChild(tubesDisplay);
+            let tubesSlider = document.createElement('input');
+            tubesSlider.type = 'range';
+            tubesSlider.min = '50';
+            tubesSlider.max = '300';
+            tubesSlider.step = '10';
+            tubesSlider.value = numTubes;
+            tubesSlider.oninput = (e) => {
+                numTubes = parseInt(e.target.value);
+                document.getElementById('tubes-value').textContent = numTubes;
+                initializeTubes();
+            };
+            tubesRow.appendChild(tubesSlider);
+            installDiv.appendChild(tubesRow);
+            
+            // Tube spacing
+            let spacingRow = document.createElement('div');
+            spacingRow.className = 'control-row';
+            let spacingDisplay = document.createElement('div');
+            spacingDisplay.className = 'value-display';
+            spacingDisplay.innerHTML = '<span>Tube Spacing:</span><span id="spacing-value">' + tubeSpacing + '</span>';
+            spacingRow.appendChild(spacingDisplay);
+            let spacingSlider = document.createElement('input');
+            spacingSlider.type = 'range';
+            spacingSlider.min = '15';
+            spacingSlider.max = '50';
+            spacingSlider.value = tubeSpacing;
+            spacingSlider.oninput = (e) => {
+                tubeSpacing = parseInt(e.target.value);
+                document.getElementById('spacing-value').textContent = tubeSpacing;
+                initializeTubes();
+            };
+            spacingRow.appendChild(spacingSlider);
+            installDiv.appendChild(spacingRow);
+            
+            // Camera distance
+            let camRow = document.createElement('div');
+            camRow.className = 'control-row';
+            let camDisplay = document.createElement('div');
+            camDisplay.className = 'value-display';
+            camDisplay.innerHTML = '<span>Camera Distance:</span><span id="cam-value">' + camDistance + '</span>';
+            camRow.appendChild(camDisplay);
+            let camSlider = document.createElement('input');
+            camSlider.type = 'range';
+            camSlider.min = '400';
+            camSlider.max = '1500';
+            camSlider.value = camDistance;
+            camSlider.oninput = (e) => {
+                camDistance = parseInt(e.target.value);
+                document.getElementById('cam-value').textContent = camDistance;
+            };
+            camRow.appendChild(camSlider);
+            installDiv.appendChild(camRow);
+            
+            // Auto-rotate
+            let rotateCheck = document.createElement('label');
+            rotateCheck.className = 'checkbox-label';
+            let rotateInput = document.createElement('input');
+            rotateInput.type = 'checkbox';
+            rotateInput.checked = autoRotate;
+            rotateInput.onchange = (e) => { autoRotate = e.target.checked; };
+            rotateCheck.appendChild(rotateInput);
+            rotateCheck.appendChild(document.createTextNode('Auto-Rotate Camera'));
+            installDiv.appendChild(rotateCheck);
+            
+            controlsDiv.appendChild(installDiv);
+            
+            // Effects Controls
+            let effectsDiv = document.createElement('div');
+            effectsDiv.className = 'control-section effects-controls';
+            
+            let effectsTitle = document.createElement('h2');
+            effectsTitle.textContent = '✨ Effects';
+            effectsDiv.appendChild(effectsTitle);
+            
+            // Trail effect
+            let trailCheck = document.createElement('label');
+            trailCheck.className = 'checkbox-label';
+            let trailInput = document.createElement('input');
+            trailInput.type = 'checkbox';
+            trailInput.checked = trailEnabled;
+            trailInput.onchange = (e) => { trailEnabled = e.target.checked; };
+            trailCheck.appendChild(trailInput);
+            trailCheck.appendChild(document.createTextNode('Trail Effects'));
+            effectsDiv.appendChild(trailCheck);
+            
+            // Trail decay
+            let trailRow = document.createElement('div');
+            trailRow.className = 'control-row';
+            let trailDisplay = document.createElement('div');
+            trailDisplay.className = 'value-display';
+            trailDisplay.innerHTML = '<span>Trail Length:</span><span id="trail-value">Long</span>';
+            trailRow.appendChild(trailDisplay);
+            let trailSlider = document.createElement('input');
+            trailSlider.type = 'range';
+            trailSlider.min = '0.7';
+            trailSlider.max = '0.98';
+            trailSlider.step = '0.01';
+            trailSlider.value = trailDecayRate;
+            trailSlider.oninput = (e) => {
+                trailDecayRate = parseFloat(e.target.value);
+                let val = trailDecayRate < 0.8 ? 'Short' : trailDecayRate < 0.9 ? 'Medium' : 'Long';
+                document.getElementById('trail-value').textContent = val;
+            };
+            trailRow.appendChild(trailSlider);
+            effectsDiv.appendChild(trailRow);
+            
+            // Pulse
+            let pulseCheck = document.createElement('label');
+            pulseCheck.className = 'checkbox-label';
+            let pulseInput = document.createElement('input');
+            pulseInput.type = 'checkbox';
+            pulseInput.checked = pulseEnabled;
+            pulseInput.onchange = (e) => { pulseEnabled = e.target.checked; };
+            pulseCheck.appendChild(pulseInput);
+            pulseCheck.appendChild(document.createTextNode('Pulse/Breathing'));
+            effectsDiv.appendChild(pulseCheck);
+            
+            // Glow intensity
+            let glowRow = document.createElement('div');
+            glowRow.className = 'control-row';
+            let glowDisplay = document.createElement('div');
+            glowDisplay.className = 'value-display';
+            glowDisplay.innerHTML = '<span>Glow Intensity:</span><span id="glow-value">150%</span>';
+            glowRow.appendChild(glowDisplay);
+            let glowSlider = document.createElement('input');
+            glowSlider.type = 'range';
+            glowSlider.min = '0';
+            glowSlider.max = '3';
+            glowSlider.step = '0.1';
+            glowSlider.value = glowIntensity;
+            glowSlider.oninput = (e) => {
+                glowIntensity = parseFloat(e.target.value);
+                document.getElementById('glow-value').textContent = Math.round(glowIntensity * 100) + '%';
+            };
+            glowRow.appendChild(glowSlider);
+            effectsDiv.appendChild(glowRow);
+            
+            controlsDiv.appendChild(effectsDiv);
+            
+            // Beat Controls
+            let beatDiv = document.createElement('div');
+            beatDiv.className = 'control-section beat-controls';
+            
+            let beatTitle = document.createElement('h2');
+            beatTitle.textContent = '🎵 Beat Controls';
+            beatDiv.appendChild(beatTitle);
+            
+            let bpmDisplay = document.createElement('div');
+            bpmDisplay.className = 'bpm-display';
+            bpmDisplay.innerHTML = '<span>BPM:</span><span class="bpm-value" id="bpm-value">' + bpm + '</span>';
+            beatDiv.appendChild(bpmDisplay);
+            
+            let bpmRow = document.createElement('div');
+            bpmRow.className = 'control-row';
+            let bpmSlider = document.createElement('input');
+            bpmSlider.type = 'range';
+            bpmSlider.min = '30';
+            bpmSlider.max = '480';
+            bpmSlider.value = bpm;
+            bpmSlider.oninput = (e) => {
+                bpm = parseInt(e.target.value);
+                document.getElementById('bpm-value').textContent = bpm;
+                updateBeatInterval();
+            };
+            bpmRow.appendChild(bpmSlider);
+            beatDiv.appendChild(bpmRow);
+            
+            let playPauseBtn = document.createElement('button');
+            playPauseBtn.className = 'play-pause-btn stopped';
+            playPauseBtn.textContent = '▶ Start';
+            playPauseBtn.id = 'play-pause-btn';
+            playPauseBtn.onclick = () => toggleBeat();
+            beatDiv.appendChild(playPauseBtn);
+            
+            let patternLabel = document.createElement('label');
+            patternLabel.textContent = 'Pattern:';
+            patternLabel.style.display = 'block';
+            patternLabel.style.marginBottom = '5px';
+            patternLabel.style.fontSize = '12px';
+            patternLabel.style.color = '#aaa';
+            beatDiv.appendChild(patternLabel);
+            
+            let patternBtns = document.createElement('div');
+            patternBtns.className = 'pattern-btns';
+            
+            let modes = [
+                {name: '💫 All Flash', value: 'all-flash'},
+                {name: '↔️ Wave H', value: 'wave-horizontal'},
+                {name: '↕️ Wave V', value: 'wave-vertical'},
+                {name: '⬇️ Rain Down', value: 'rain-down'},
+                {name: '⬆️ Rain Up', value: 'rain-up'},
+                {name: '🎲 Random', value: 'random-scatter'},
+                {name: '⭕ Center Out', value: 'center-outward'},
+                {name: '🌀 Spiral', value: 'spiral'},
+                {name: '⚪🔵 White/Cyan', value: 'white-cyan-wave'},
+                {name: '📏 Top-Down All', value: 'top-down-wave'},
+                {name: '📏 Bottom-Up All', value: 'bottom-up-wave'}
+            ];
+            
+            modes.forEach(mode => {
+                let btn = document.createElement('button');
+                btn.textContent = mode.name;
+                btn.onclick = () => {
+                    beatMode = mode.value;
+                    patternBtns.querySelectorAll('button').forEach(b => {
+                        b.style.background = '#555';
+                    });
+                    btn.style.background = '#ff6b6b';
+                };
+                if (mode.value === beatMode) {
+                    btn.style.background = '#ff6b6b';
+                }
+                patternBtns.appendChild(btn);
+            });
+            
+            beatDiv.appendChild(patternBtns);
+            controlsDiv.appendChild(beatDiv);
+            
+            // Quick actions
+            let actionsDiv = document.createElement('div');
+            actionsDiv.className = 'button-group';
+            actionsDiv.style.marginTop = '20px';
+            
+            let allOnBtn = document.createElement('button');
+            allOnBtn.textContent = '💡 All ON';
+            allOnBtn.onclick = () => {
+                for (let tube of tubes) {
+                    tube.setAll(1.0);
+                }
+            };
+            
+            let allOffBtn = document.createElement('button');
+            allOffBtn.textContent = '⚫ All OFF';
+            allOffBtn.onclick = () => {
+                for (let tube of tubes) {
+                    tube.setAll(0);
+                }
+            };
+            
+            actionsDiv.appendChild(allOnBtn);
+            actionsDiv.appendChild(allOffBtn);
+            controlsDiv.appendChild(actionsDiv);
+        }
+
+        function toggleBeat() {
+            isPlaying = !isPlaying;
+            let btn = document.getElementById('play-pause-btn');
+            
+            if (isPlaying) {
+                btn.className = 'play-pause-btn playing';
+                btn.textContent = '⏸ Stop';
+                lastBeatTime = millis();
+            } else {
+                btn.className = 'play-pause-btn stopped';
+                btn.textContent = '▶ Start';
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>

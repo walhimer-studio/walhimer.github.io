@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Room Projectors — p5.js WEBGL</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #000; height: 100%; width: 100%; }
+    canvas { display: block; outline: none; }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script>
+  let city = [];
+  let wallScale = 1;
+  let camAngle = 0;
+  const projectors = { front:null, back:null, left:null, right:null };
+  const keystone = {
+    front:{tl:[0,0], tr:[0,0], br:[0,0], bl:[0,0]},
+    back: {tl:[0,0], tr:[0,0], br:[0,0], bl:[0,0]},
+    left: {tl:[0,0], tr:[0,0], br:[0,0], bl:[0,0]},
+    right:{tl:[0,0], tr:[0,0], br:[0,0], bl:[0,0]},
+  };
+  const screens = ['front', 'left', 'back', 'right'];
+  const dwellFrames = 240;
+
+  function setup() {
+    createCanvas(windowWidth, windowHeight, WEBGL);
+    window.focus();
+    pixelDensity(1); // better performance at full screen
+    frameRate(60);
+    colorMode(HSB, 360, 100, 100, 255);
+    noStroke();
+    setAttributes('alpha', true);
+    textureWrap(CLAMP);
+    textureMode(NORMAL);
+
+    let w = 1800, d = 1800, h = 800;
+    city.push({ x: 0, z: 0, w, h, d });
+
+    projectors.front = createGraphics(w, h, WEBGL);
+    projectors.left  = createGraphics(d, h, WEBGL);
+    projectors.right = createGraphics(d, h, WEBGL);
+    projectors.back  = createGraphics(w, h, WEBGL);
+    Object.values(projectors).forEach(g => {
+      g.pixelDensity(1);
+      g.noStroke();
+      g.background(255);
+    });
+  }
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+
+  function draw() {
+    background(0);
+    if (keyIsDown(LEFT_ARROW) || keyIsDown(65))  camAngle -= 0.03;
+    if (keyIsDown(RIGHT_ARROW) || keyIsDown(68)) camAngle += 0.03;
+
+    const b = city[0];
+    const baseW=800, baseD=800, baseH=400;
+    const sizeFactor = Math.max(b.w/baseW, b.d/baseD, b.h/baseH);
+    const baseFov = PI/3;
+    const fovNow  = constrain(baseFov*(1+0.6*(sizeFactor-1)), PI/6, PI*0.9);
+    perspective(fovNow, width/height, 0.1, Math.max(b.w,b.d,b.h)*4);
+
+    const lookX = sin(camAngle)*100, lookZ = cos(camAngle)*100, lookY = -100;
+    camera(0, -100, 0, lookX, lookY, lookZ, 0, 1, 0);
+    ambientLight(255);
+
+    const idx = Math.floor(frameCount / dwellFrames) % screens.length;
+    const activeWall = screens[idx];
+
+    for (const [name, g] of Object.entries(projectors)) {
+      if (name === activeWall) drawWireCubeTo(g);
+      else { g.push(); g.clear(); g.background(255); g.pop(); }
+    }
+
+    push();
+    scale(wallScale);
+    push(); translate(0, 0, -b.d/2); drawTexturedWall(projectors.back,  b.w, b.h, keystone.back);  pop();
+    push(); translate(-b.w/2, 0, 0); rotateY( PI/2); drawTexturedWall(projectors.left,  b.d, b.h, keystone.left);  pop();
+    push(); translate( b.w/2, 0, 0); rotateY(-PI/2); drawTexturedWall(projectors.right, b.d, b.h, keystone.right); pop();
+    push(); translate(0, 0,  b.d/2); rotateY(PI);   drawTexturedWall(projectors.front, b.w, b.h, keystone.front); pop();
+    push(); fill(0); translate(0, b.h/2, 0); rotateX(-PI/2); plane(b.w, b.d); pop();
+    push(); fill(0); translate(0,-b.h/2, 0); rotateX( PI/2); plane(b.w, b.d); pop();
+    pop();
+  }
+
+  function drawTexturedWall(g, w, h, ks){
+    if(!g){ fill(255); plane(w,h); return; }
+    texture(g);
+    const uvTL = [(0+ks.tl[0])/g.width,      (0+ks.tl[1])/g.height];
+    const uvTR = [(g.width+ks.tr[0])/g.width,(0+ks.tr[1])/g.height];
+    const uvBR = [(g.width+ks.br[0])/g.width,(g.height+ks.br[1])/g.height];
+    const uvBL = [(0+ks.bl[0])/g.width,      (g.height+ks.bl[1])/g.height];
+
+    beginShape(TRIANGLE_STRIP);
+    vertex(-w/2,-h/2,0, uvTL[0],uvTL[1]);
+    vertex( w/2,-h/2,0, uvTR[0],uvTR[1]);
+    vertex(-w/2, h/2,0, uvBL[0],uvBL[1]);
+    vertex( w/2, h/2,0, uvBR[0],uvBR[1]);
+    endShape();
+  }
+
+  function drawWireCubeTo(g){
+    const s = g.height * 0.45;
+    g.push();
+    g.clear();
+    g.background(255);
+    g.ambientLight(200);
+    g.noFill();
+    g.stroke(0);
+    g.strokeWeight(3);
+    g.rotateX(-0.25);
+    g.rotateY(frameCount * 0.01);
+    drawWireCube(g, s);
+    g.pop();
+  }
+
+  function drawWireCube(g, s){
+    const h = s/2;
+    const V = [
+      [-h,-h, h], [ h,-h, h], [ h, h, h], [-h, h, h],
+      [-h,-h,-h], [ h,-h,-h], [ h, h,-h], [-h, h,-h]
+    ];
+    const E = [
+      [0,1],[1,2],[2,3],[3,0],
+      [4,5],[5,6],[6,7],[7,4],
+      [0,4],[1,5],[2,6],[3,7]
+    ];
+    for (const [a,b] of E) {
+      const va = V[a], vb = V[b];
+      g.line(va[0],va[1],va[2], vb[0],vb[1],vb[2]);
+    }
+  }
+  </script>
+</body>
+</html>

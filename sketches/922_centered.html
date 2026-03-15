@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>p5.js WEBGL Soft Gradient Planes</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #ffffff; }
+    canvas { display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+  <!-- p5.js -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+
+  <script>
+    let colors = [];
+    let shapes = [];  // Store the shapes' parameters
+
+    function setup() {
+
+      // ----------------------------------------------------
+      // ONLY ADDITION YOU REQUESTED (seed override system)
+      // ----------------------------------------------------
+      let manualSeed = null;   // ← use this seed; set to null for randomness again
+
+      let seed = (manualSeed !== null)
+                 ? manualSeed
+                 : floor(random(1_000_000_000));
+
+      console.log("Seed:", seed);
+      randomSeed(seed);
+      // ----------------------------------------------------
+
+      pixelDensity(6);                // Very crisp rendering
+      createCanvas(1000, 1000, WEBGL);
+      colorMode(HSB, 360, 100, 100, 100); // HSB with alpha
+
+      // Define color sets for gradients with transparency
+      colors = [
+        [color(0, 100, 100, 30), color(45, 100, 100, 30)],    // Red → Yellow
+        [color(180, 100, 100, 30), color(240, 100, 100, 30)], // Cyan → Blue
+        [color(300, 100, 100, 30), color(60, 100, 100, 30)]   // Magenta → Yellow
+      ];
+
+      // Create overlapping, perfectly centered shapes
+      for (let j = 0; j < 6; j++) {
+        let w = random(30, 820);  // Random width
+        let h = random(30, 820);  // Random height
+        shapes.push({
+          w: w,
+          h: h,
+          colorSet: random(colors) // Unique gradient per shape
+        });
+      }
+
+      noLoop();
+      drawShapes();
+    }
+
+    function drawShapes() {
+      background(255);
+
+      for (let shape of shapes) {
+        push();
+        // No offset — all are perfectly centered
+        let c1 = shape.colorSet[0];
+        let c2 = shape.colorSet[1];
+        drawSoftGradientPlane(0, 0, shape.w, shape.h, c1, c2);
+        pop();
+      }
+    }
+
+    // Draw centered rectangle with vertical gradient using vertex colors
+    function drawSoftGradientPlane(x, y, w, h, c1, c2) {
+      noStroke();
+      beginShape();
+      // Top edge uses first color
+      fill(c1);
+      vertex(-w / 2, -h / 2, 0);
+      fill(c2);
+      vertex(w / 2, -h / 2, 0);
+      // Bottom edge uses second color for smooth interpolation
+      vertex(w / 2, h / 2, 0);
+      vertex(-w / 2, h / 2, 0);
+      endShape(CLOSE);
+    }
+  </script>
+</body>
+</html>

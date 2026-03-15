@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Fluid Points</title>
+  <style>
+    body { margin: 0; background: black; overflow: hidden; }
+    canvas { display: block; }
+    .p5Element, p { color: white; font-family: sans-serif; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+let points = [];
+let cols = 6, rows = 6, depths = 6;
+let spacing = 150;
+let cubeSize = spacing * (cols - 1);
+
+let viscositySlider, turbulenceSlider, flowXSlider, speedSlider;
+let viscosity = 0.92;
+let turbulenceStrength = 0.05;
+let flowBias;
+let timeSpeed = 0.01;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  flowBias = createVector(0.03, 0.01, 0);
+
+  createP("Viscosity (fluid thickness)").position(10, 10);
+  viscositySlider = createSlider(0.7, 0.995, viscosity, 0.005).position(10, 40);
+
+  createP("Turbulence (chaotic motion)").position(10, 70);
+  turbulenceSlider = createSlider(0, 0.5, turbulenceStrength, 0.01).position(10, 100);
+
+  createP("Flow (X direction)").position(10, 130);
+  flowXSlider = createSlider(-0.5, 0.5, flowBias.x, 0.01).position(10, 160);
+
+  createP("Speed (simulation rate)").position(10, 190);
+  speedSlider = createSlider(0.001, 0.2, timeSpeed, 0.001).position(10, 220);
+
+  for (let z = 0; z < depths; z++) {
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        let baseX = -cubeSize / 2 + x * spacing;
+        let baseY = -cubeSize / 2 + y * spacing;
+        let baseZ = -cubeSize / 2 + z * spacing;
+
+        points.push({
+          base: createVector(baseX, baseY, baseZ),
+          pos: createVector(baseX, baseY, baseZ),
+          vel: createVector(0, 0, 0),
+          prev: createVector(baseX, baseY, baseZ)
+        });
+      }
+    }
+  }
+}
+
+function draw() {
+  background(0);
+
+  orbitControl(); // still allows drag-to-rotate
+  viscosity = viscositySlider.value();
+  turbulenceStrength = turbulenceSlider.value();
+  flowBias.x = flowXSlider.value();
+  timeSpeed = speedSlider.value();
+
+  let t = frameCount * timeSpeed;
+
+  for (let pt of points) {
+    pt.prev.set(pt.pos);
+
+    let turb = createVector(
+      map(noise(pt.base.y * 0.01, pt.base.z * 0.01, t), 0, 1, -1, 1),
+      map(noise(pt.base.z * 0.01, pt.base.x * 0.01, t + 100), 0, 1, -1, 1),
+      map(noise(pt.base.x * 0.01, pt.base.y * 0.01, t + 200), 0, 1, -1, 1)
+    ).mult(turbulenceStrength);
+
+    let influence = createVector(0, 0, 0);
+    for (let neighbor of points) {
+      let d = p5.Vector.dist(pt.base, neighbor.base);
+      if (d > 0 && d < spacing * 1.5) {
+        let delta = p5.Vector.sub(neighbor.pos, pt.pos);
+        delta.mult(0.002 / d);
+        influence.add(delta);
+      }
+    }
+
+    pt.vel.add(turb);
+    pt.vel.add(flowBias);
+    pt.vel.add(influence);
+    pt.vel.mult(viscosity);
+    pt.pos.add(pt.vel);
+
+    pt.pos.x = constrain(pt.pos.x, pt.base.x - spacing / 2 + 10, pt.base.x + spacing / 2 - 10);
+    pt.pos.y = constrain(pt.pos.y, pt.base.y - spacing / 2 + 10, pt.base.y + spacing / 2 - 10);
+    pt.pos.z = constrain(pt.pos.z, pt.base.z - spacing / 2 + 10, pt.base.z + spacing / 2 - 10);
+
+    // Velocity lines
+    stroke(0, 255, 255);
+    line(pt.pos.x, pt.pos.y, pt.pos.z,
+         pt.pos.x + pt.vel.x * 20,
+         pt.pos.y + pt.vel.y * 20,
+         pt.pos.z + pt.vel.z * 20);
+
+    // Trace lines
+    stroke(0, 100, 255, 80);
+    line(pt.prev.x, pt.prev.y, pt.prev.z, pt.pos.x, pt.pos.y, pt.pos.z);
+
+    // Points
+    push();
+    translate(pt.pos.x, pt.pos.y, pt.pos.z);
+    noStroke();
+    fill(0, 200, 255);
+    sphere(5);
+    pop();
+  }
+}
+
+// ✅ Resizes canvas dynamically
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>

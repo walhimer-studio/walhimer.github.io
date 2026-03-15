@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Figure + Audio (Mobile Simple)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      touch-action: none;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+</head>
+<body>
+<script>
+// ------- AUDIO -------
+
+let bass, clarinet, percussion, reverb;
+let clarinetAnalyzer;
+let notes = [48, 50, 53, 55, 57, 60]; // C minor pentatonic
+let bassMidiCurrent = 36;
+let clarinetBaseFreq = 0;
+
+// Audio start control
+let audioStarted = false;
+
+// Energy ties for visuals
+let clarinetEnergy = 0;
+let percussionEnergy = 0;
+
+// ------- VISUALS -------
+
+let figurePos;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  frameRate(60);
+  figurePos = { x: 0, y: 0, z: 0 };
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+// ------- AUDIO INIT -------
+
+function initAudio() {
+  reverb = new p5.Reverb();
+
+  bass = new p5.Oscillator('sine');
+  setBassNote(random([36, 40, 43]));
+  bass.amp(0.05);
+  bass.start();
+  reverb.process(bass, 6, 0.5);
+
+  clarinet = new p5.Oscillator('triangle');
+  clarinet.amp(0.0);
+  clarinet.start();
+  reverb.process(clarinet, 5, 0.7);
+
+  percussion = new p5.Noise('pink');
+  percussion.amp(0.0);
+  percussion.start();
+  reverb.process(percussion, 2, 0.3);
+
+  clarinetAnalyzer = new p5.Amplitude();
+  clarinetAnalyzer.setInput(clarinet);
+
+  setInterval(playClarinet, 4000);
+  setInterval(playPercussion, 7000);
+}
+
+// Tap to start audio
+function touchStarted() {
+  if (!audioStarted) {
+    userStartAudio();
+    initAudio();
+    audioStarted = true;
+  }
+  return false;
+}
+
+// Also support mouse (desktop)
+function mousePressed() {
+  if (!audioStarted) {
+    userStartAudio();
+    initAudio();
+    audioStarted = true;
+  }
+}
+
+// ------- AUDIO HELPERS -------
+
+function setBassNote(midiNote) {
+  bassMidiCurrent = midiNote;
+  if (bass) bass.freq(midiToFreq(midiNote));
+}
+
+function playClarinet() {
+  if (!audioStarted) return;
+  let midi = random(notes);
+  let f = midiToFreq(midi);
+  clarinetBaseFreq = f;
+
+  clarinet.freq(f);
+  clarinet.amp(0.1, 0.5);
+  clarinetEnergy = 1;
+
+  setTimeout(() => clarinet.amp(0.0, 2), 1500);
+}
+
+function playPercussion() {
+  if (!audioStarted) return;
+  percussion.amp(0.05, 0.01);
+  percussionEnergy = 1;
+  setTimeout(() => percussion.amp(0.0, 0.5), 200);
+}
+
+// ------- DRAW LOOP -------
+
+function draw() {
+  background(20); // dark gray so you can see the figure clearly
+
+  let tMillis = millis();
+  let t = tMillis / 1000.0;
+
+  if (audioStarted && frameCount % 600 === 0) {
+    setBassNote(random([36, 38, 41, 43]));
+  }
+
+  if (audioStarted && clarinetBaseFreq > 0) {
+    let vib = sin(t * 0.4) * 0.03;
+    clarinet.freq(clarinetBaseFreq * (1 + vib));
+  }
+
+  clarinetEnergy *= 0.96;
+  percussionEnergy *= 0.85;
+
+  let clarinetLevel =
+    audioStarted && clarinetAnalyzer ? clarinetAnalyzer.getLevel() : 0;
+
+  let clarinetBrightnessFactor =
+    map(clarinetLevel, 0, 0.3, 0.8, 1.5, true) * (1 + clarinetEnergy * 0.5);
+
+  clarinetBrightnessFactor = constrain(clarinetBrightnessFactor, 0.8, 2.0);
+
+  drawAbstractFigure(clarinetBrightnessFactor, t);
+
+  if (!audioStarted) {
+    push();
+    resetMatrix();
+    translate(-width / 2 + 20, -height / 2 + 30);
+    fill(255);
+    noStroke();
+    textSize(16);
+    text("tap to start audio", 0, 0);
+    pop();
+  }
+}
+
+// ------- ABSTRACT FIGURE -------
+
+function drawAbstractFigure(brightFactor, t) {
+  push();
+
+  translate(figurePos.x, figurePos.y, figurePos.z);
+
+  let alpha = map(brightFactor, 0.8, 2.0, 80, 255); // brighter
+  stroke(255, alpha);
+  noFill();
+  strokeWeight(3); // thicker so it is clearly visible
+
+  let spineHeight = 0.5 * min(width, height);
+  let segments = 16;
+
+  // Spine
+  beginShape();
+  for (let i = 0; i <= segments; i++) {
+    let yy = map(i, 0, segments, -spineHeight / 2, spineHeight / 2);
+    let xx = sin(t * 0.4 + i * 0.6) * (spineHeight * 0.08);
+    vertex(xx, yy, 0);
+  }
+  endShape();
+
+  // Offset outline
+  beginShape();
+  for (let i = 0; i <= segments; i++) {
+    let yy = map(i, 0, segments, -spineHeight / 2, spineHeight / 2);
+    let xx = sin(t * 0.4 + i * 0.6 + 0.7) * (spineHeight * 0.06) + 12;
+    vertex(xx, yy, -10);
+  }
+  endShape();
+
+  // Arms
+  let shoulderY = -spineHeight / 4;
+  let armLen = spineHeight * 0.35;
+  let armOffset = sin(t * 0.5) * (spineHeight * 0.1);
+
+  line(0, shoulderY, 0, -armLen - armOffset, shoulderY + 60, 20);
+  line(0, shoulderY, 0, armLen + armOffset, shoulderY + 60, -20);
+
+  // Head loop
+  let headRadius = spineHeight * 0.12 + sin(t * 0.7) * (spineHeight * 0.03);
+  let headSegments = 24;
+  let headCenterY = -spineHeight / 2 - headRadius * 1.6;
+
+  beginShape();
+  for (let i = 0; i < headSegments; i++) {
+    let a = (TWO_PI * i) / headSegments;
+    let hx = cos(a) * headRadius;
+    let hy = headCenterY + sin(a) * headRadius * 0.9;
+    let jitterZ = sin(t * 0.6 + a * 2.0) * (spineHeight * 0.02);
+    vertex(hx, hy, jitterZ);
+  }
+  endShape(CLOSE);
+
+  pop();
+}
+</script>
+</body>
+</html>

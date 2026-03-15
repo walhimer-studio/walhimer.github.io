@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Text Cylinder</title>
+<style>
+  html, body { margin:0; padding:0; background:#fff; overflow:hidden; }
+  canvas { display:block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const PHRASE = "ME - I WILL NOT BECOME THEIR NARRATIVE ";
+const ROWS = 7;
+const ROW_SPACING = 95;
+const R = 320;
+const ROT_SPEED = 0.003;
+const FONT = '56px "Helvetica Neue", Helvetica, Arial, sans-serif';
+const CANVAS_SIZE = 1450;
+
+const c = document.getElementById('c');
+c.width = c.height = CANVAS_SIZE;
+const ctx = c.getContext('2d');
+
+let angle = 0;
+const letters = PHRASE.split('');
+
+function draw() {
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, c.width, c.height);
+
+  const step = (2 * Math.PI) / letters.length;
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+  const cx = c.width / 2;
+  const cy = c.height / 2;
+  const midRow = (ROWS - 1) / 2;
+
+  const drawn = [];
+  for (let row = 0; row < ROWS; row++) {
+    const rowY = (row - midRow) * ROW_SPACING;
+    const twist = row * 0.12;
+
+    letters.forEach((ch, j) => {
+      const a = j * step + twist;
+      const x = Math.cos(a) * R;
+      const z = Math.sin(a) * R;
+      const rx = x * cosA - z * sinA;
+      const rz = x * sinA + z * cosA;
+
+      const camZ = 1000;
+      const scale = camZ / (camZ - rz);
+      const sx = cx + rx * scale;
+      const sy = cy + rowY * scale;
+
+      const facing = rz > 0;
+
+      drawn.push({ ch, sx, sy, scale, facing, rz });
+    });
+  }
+
+  drawn.sort((a, b) => a.rz - b.rz);
+
+  for (const { ch, sx, sy, scale, facing } of drawn) {
+    ctx.font = FONT;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.globalAlpha = facing ? 1 : 0.55;
+    ctx.fillStyle = facing ? '#000' : '#999';
+    ctx.save();
+    ctx.translate(sx, sy);
+    if (!facing) ctx.scale(-1, 1);
+    ctx.scale(scale, scale);
+    ctx.fillText(ch, 0, 0);
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+
+  angle += ROT_SPEED;
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>

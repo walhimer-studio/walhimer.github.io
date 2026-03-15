@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Floating Umbrellas</title>
+  <style>
+    body { margin: 0; background: black; }
+    svg  { width: 100vw; height: 100vh; display: block; }
+  </style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg">
+<script><![CDATA[
+const BTLDR = {
+  rnd: (() => {
+    let seed = 123456789;
+    return () => {
+      seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
+      return ((seed >>> 0) % 10000) / 10000;
+    };
+  })(),
+  svg: document.currentScript.parentNode,
+  iterationNumber: 1,
+  isPreview: false
+};
+
+(() => {
+  const { svg, rnd, iterationNumber, isPreview } = BTLDR;
+  const NS = "http://www.w3.org/2000/svg";
+  const W = 1000, H = 1000;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("preserveAspectRatio", "xMidYMid slice"); // <-- fills screen by cropping
+
+  const R = () => rnd();
+
+  const el = (tag, attrs={}, children=[]) => {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, String(attrs[k]));
+    for (const c of children) n.appendChild(c);
+    return n;
+  };
+
+  // ----- Animated background -----
+  const defs = el("defs");
+  svg.appendChild(defs);
+  const bgGradId = `bg-${iterationNumber}`;
+  const bgGrad = el("linearGradient", { id:bgGradId, x1:"0", y1:"0", x2:"0", y2:"1" }, [
+    el("stop",{offset:"0%","stop-color":"hsl(200,100%,50%)","stop-opacity":"0.5"}),
+    el("stop",{offset:"60%","stop-color":"hsl(30,100%,50%)","stop-opacity":"0.5"}),
+    el("stop",{offset:"100%","stop-color":"hsl(320,100%,50%)","stop-opacity":"0.5"}),
+  ]);
+  defs.appendChild(bgGrad);
+  svg.appendChild(el("rect",{x:0,y:0,width:W,height:H,fill:`url(#${bgGradId})`}));
+
+  // ----- Umbrella setup -----
+  const NUM=8, DOME_R=210, RIBS=8, U_SEG=96, V_SEG=30;
+  const starts=[
+    {x:W/2-350,y:H/2-180},
+    {x:W/2+350,y:H/2- 40},
+    {x:W/2+320,y:H/2+140},
+    {x:W/2-320,y:H/2+240},
+    {x:W/2+  0,y:H/2+  0},
+    {x:W/2-260,y:H/2-120},
+    {x:W/2+220,y:H/2-160},
+    {x:W/2-120,y:H/2+180},
+  ];
+
+  const umbrellas=[];
+  for(let i=0;i<NUM;i++){
+    const s=starts[i%starts.length];
+    const u={
+      baseX:s.x, baseY:s.y,
+      openAmt:1,
+      openTarget:1,
+      openSpeed:0.6+0.2*R(),
+      bobSpeed:0.25+0.15*R(),
+      driftSX:0.06+0.05*R(),
+      driftSZ:0.05+0.05*R(),
+      pumpSpeed:0.35+0.2*R(),
+      bobAmp:90+40*R(),
+      driftAmpX:140+60*R(),
+      driftAmpZ:140+60*R(),
+      phases:{b:R()*6.28,x:R()*6.28,z:R()*6.28,p:R()*6.28},
+    };
+    u.g = el("g");
+    svg.appendChild(u.g);
+    u.ringPaths=[];
+    for(let v=0;v<V_SEG;v++){
+      const p=el("path",{fill:"rgba(255,255,255,0.58)"});
+      u.g.appendChild(p);
+      u.ringPaths.push(p);
+    }
+    umbrellas.push(u);
+  }
+
+  // ----- Global press/release control -----
+  window.addEventListener("mousedown", ()=> umbrellas.forEach(u=>u.openTarget=0));
+  window.addEventListener("mouseup", ()=> umbrellas.forEach(u=>u.openTarget=1));
+  window.addEventListener("touchstart", e=>{e.preventDefault(); umbrellas.forEach(u=>u.openTarget=0);});
+  window.addEventListener("touchend", e=>{e.preventDefault(); umbrellas.forEach(u=>u.openTarget=1);});
+
+  function updateUmbrella(u,time){
+    // smooth open/close animation
+    u.openAmt += (u.openTarget - u.openAmt) * 0.08;
+
+    const pump=1+0.08*Math.sin(u.phases.p+time*u.pumpSpeed);
+    const x=u.baseX+u.driftAmpX*Math.sin(u.phases.x+time*u.driftSX);
+    const y=u.baseY+u.bobAmp*Math.sin(u.phases.b+time*u.bobSpeed);
+
+    u.g.setAttribute("transform",`translate(${x},${y})`);
+
+    const pleatPower=1.2+(4-1.2)*(1-u.openAmt);
+    const minClosed=0.06;
+    const scallopAmp=0.1*(1-u.openAmt);
+
+    for(let v=0;v<V_SEG;v++){
+      const v0=(v/V_SEG)*Math.PI/2;
+      const v1=((v+1)/V_SEG)*Math.PI/2;
+      const y0=-DOME_R*Math.cos(v0),y1=-DOME_R*Math.cos(v1);
+      const r0Full=DOME_R*Math.sin(v0);
+      const r1Full=DOME_R*Math.sin(v1);
+
+      let d="";
+      for(let uIdx=0;uIdx<=U_SEG;uIdx++){
+        const theta=(uIdx/U_SEG)*Math.PI*2;
+        const angleNorm=Math.abs(Math.sin(theta*0.5));
+        const sideScale=u.openAmt+(1-u.openAmt)*(1-angleNorm)*0.1;
+        const r0=r0Full*sideScale;
+        const r1=r1Full*sideScale;
+
+        const wave=Math.abs(Math.cos(RIBS*theta));
+        const closedShape=minClosed+(1-minClosed)*Math.pow(wave,pleatPower);
+        const s=closedShape*(1-u.openAmt)+u.openAmt;
+        const scallop=1+scallopAmp*Math.cos(RIBS*theta);
+        const eff0=pump*scallop*((r0)*(1-s)+r0*s);
+        const eff1=pump*scallop*((r1)*(1-s)+r1*s);
+        const x1=eff1*Math.cos(theta),x0=eff0*Math.cos(theta);
+        const y1p=y1,y0p=y0;
+        d+=uIdx===0?`M${x1} ${y1p} L${x0} ${y0p}`:` L${x1} ${y1p} L${x0} ${y0p}`;
+      }
+      u.ringPaths[v].setAttribute("d",d);
+    }
+  }
+
+  function tick(now){
+    const t=now*0.001;
+    // animate background hues
+    const hTop=200+60*Math.sin(t*0.16);
+    const hB1=30+60*Math.sin(t*0.104);
+    const hB2=320+40*Math.cos(t*0.136);
+    bgGrad.children[0].setAttribute("stop-color",`hsl(${hTop|0},100%,50%)`);
+    bgGrad.children[1].setAttribute("stop-color",`hsl(${hB1|0},100%,50%)`);
+    bgGrad.children[2].setAttribute("stop-color",`hsl(${hB2|0},100%,50%)`);
+    umbrellas.forEach(u=>updateUmbrella(u,t));
+    if(!isPreview)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+]]></script>
+</svg>
+</body>
+</html>
+

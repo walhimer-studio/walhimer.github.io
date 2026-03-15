@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Weaving Commons - Collective Building</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #faf8f3;
+            --sand: #e8dcc4;
+            --terracotta: #d4695b;
+            --rust: #8b4a3c;
+            --navy: #2a3d4e;
+            --teal: #4a7c7e;
+            --gold: #d4a574;
+            --forest: #3d5a4c;
+        }
+
+        body {
+            font-family: 'Didot', 'Bodoni MT', 'Cochin', serif;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--sand) 100%);
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            position: relative;
+        }
+
+        /* Texture overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #title-block {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #title {
+            font-size: 48px;
+            font-weight: 400;
+            color: var(--navy);
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+        }
+
+        #subtitle {
+            font-size: 16px;
+            color: var(--rust);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-family: 'Futura', 'Century Gothic', sans-serif;
+            font-weight: 300;
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 0;
+            border-left: 6px solid var(--terracotta);
+            box-shadow: 4px 4px 20px rgba(0,0,0,0.1);
+        }
+
+        #instructions h3 {
+            font-size: 22px;
+            color: var(--navy);
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+            font-weight: 400;
+        }
+
+        #instructions p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--rust);
+            margin-bottom: 12px;
+            font-family: 'Garamond', 'Times New Roman', serif;
+        }
+
+        #instructions .emphasis {
+            font-weight: 600;
+            color: var(--terracotta);
+        }
+
+        #instructions .interaction-types {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--sand);
+        }
+
+        #instructions .type {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        #instructions .type::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: var(--terracotta);
+        }
+
+        #stats-panel {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 25px 35px;
+            border-radius: 0;
+            border-right: 6px solid var(--teal);
+            box-shadow: 4px 4px 20px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+
+        .stat {
+            margin-bottom: 18px;
+        }
+
+        .stat:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--navy);
+            margin-bottom: 4px;
+            font-family: 'Futura', sans-serif;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 300;
+            color: var(--terracotta);
+            font-family: 'Didot', serif;
+        }
+
+        #message-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            color: var(--navy);
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+            max-width: 80%;
+            line-height: 1.6;
+            text-shadow: 2px 2px 8px rgba(255,255,255,0.9);
+            font-weight: 300;
+            letter-spacing: 1px;
+            z-index: 100;
+        }
+
+        #message-overlay.show {
+            opacity: 1;
+        }
+
+        .edge-zone {
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(212, 105, 91, 0.15), transparent);
+            pointer-events: none;
+            border: 2px dashed rgba(212, 105, 91, 0.3);
+        }
+
+        .edge-zone.top {
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(212, 105, 91, 0.15), transparent);
+        }
+
+        .edge-zone.bottom {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, rgba(212, 105, 91, 0.15), transparent);
+        }
+
+        .edge-zone.left {
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 100px;
+            background: linear-gradient(to right, rgba(212, 105, 91, 0.15), transparent);
+        }
+
+        .edge-zone.right {
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100px;
+            background: linear-gradient(to left, rgba(212, 105, 91, 0.15), transparent);
+        }
+
+        #clear-button {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            padding: 14px 28px;
+            background: var(--navy);
+            color: var(--cream);
+            border: none;
+            font-family: 'Futura', sans-serif;
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 3px 3px 12px rgba(0,0,0,0.2);
+        }
+
+        #clear-button:hover {
+            background: var(--terracotta);
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 16px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            #title {
+                font-size: 32px;
+            }
+            #subtitle {
+                font-size: 12px;
+            }
+            #instructions, #stats-panel {
+                position: relative;
+                margin: 20px;
+                max-width: calc(100% - 40px);
+            }
+            #clear-button {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="edge-zone top"></div>
+    <div class="edge-zone bottom"></div>
+    <div class="edge-zone left"></div>
+    <div class="edge-zone right"></div>
+
+    <canvas id="canvas"></canvas>
+
+    <div id="title-block">
+        <div id="title">THE WEAVING COMMONS</div>
+        <div id="subtitle">COLLECTIVE CONSTRUCTION</div>
+    </div>
+
+    <div id="message-overlay"></div>
+
+    <div id="instructions">
+        <h3>How to Build Together</h3>
+        <p><span class="emphasis">Drag from any edge</span> toward the center to contribute a thread or beam to the commons.</p>
+        <p><span class="emphasis">When paths cross</span> with others' contributions, cooperative structures emerge:</p>
+        <div class="interaction-types">
+            <div class="type"><span class="emphasis">2 threads cross</span> → Joint (connection)</div>
+            <div class="type"><span class="emphasis">3 threads meet</span> → Node (understanding)</div>
+            <div class="type"><span class="emphasis">4+ threads converge</span> → Hub (community)</div>
+        </div>
+        <p style="margin-top: 20px; font-style: italic; color: var(--teal);">
+            Every structure requires the participation of many hands
+        </p>
+    </div>
+
+    <div id="stats-panel">
+        <div class="stat">
+            <div class="stat-label">Threads</div>
+            <div class="stat-value" id="threads-count">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Joints</div>
+            <div class="stat-value" id="joints-count">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Nodes</div>
+            <div class="stat-value" id="nodes-count">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Hubs</div>
+            <div class="stat-value" id="hubs-count">0</div>
+        </div>
+    </div>
+
+    <button id="clear-button">Clear Commons</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Resize canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // State
+        let threads = [];
+        let joints = [];
+        let nodes = [];
+        let hubs = [];
+        let isDragging = false;
+        let currentThread = null;
+        let activeTouches = new Map();
+
+        const EDGE_THRESHOLD = 100;
+        const INTERSECTION_THRESHOLD = 20;
+        const colors = [
+            '#d4695b', // terracotta
+            '#8b4a3c', // rust
+            '#4a7c7e', // teal
+            '#d4a574', // gold
+            '#3d5a4c', // forest
+            '#2a3d4e'  // navy
+        ];
+
+        function isAtEdge(x, y) {
+            return x < EDGE_THRESHOLD || 
+                   x > canvas.width - EDGE_THRESHOLD || 
+                   y < EDGE_THRESHOLD || 
+                   y > canvas.height - EDGE_THRESHOLD;
+        }
+
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function findIntersections(newThread) {
+            let intersections = [];
+            
+            for (let thread of threads) {
+                if (thread === newThread) continue;
+                
+                let intersection = lineIntersection(
+                    newThread.startX, newThread.startY, newThread.endX, newThread.endY,
+                    thread.startX, thread.startY, thread.endX, thread.endY
+                );
+                
+                if (intersection) {
+                    intersections.push({
+                        point: intersection,
+                        threads: [newThread, thread]
+                    });
+                }
+            }
+            
+            return intersections;
+        }
+
+        function lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+            const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+            if (Math.abs(denom) < 0.001) return null;
+            
+            const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+            const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+            
+            if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+                return {
+                    x: x1 + t * (x2 - x1),
+                    y: y1 + t * (y2 - y1)
+                };
+            }
+            
+            return null;
+        }
+
+        function clusterIntersections(intersections) {
+            if (intersections.length === 0) return [];
+            
+            let clusters = [];
+            
+            for (let inter of intersections) {
+                let foundCluster = false;
+                
+                for (let cluster of clusters) {
+                    let dist = Math.hypot(
+                        inter.point.x - cluster.center.x,
+                        inter.point.y - cluster.center.y
+                    );
+                    
+                    if (dist < INTERSECTION_THRESHOLD * 3) {
+                        cluster.intersections.push(inter);
+                        cluster.threads = [...new Set([...cluster.threads, ...inter.threads])];
+                        
+                        // Recalculate center
+                        let sumX = 0, sumY = 0;
+                        for (let i of cluster.intersections) {
+                            sumX += i.point.x;
+                            sumY += i.point.y;
+                        }
+                        cluster.center = {
+                            x: sumX / cluster.intersections.length,
+                            y: sumY / cluster.intersections.length
+                        };
+                        
+                        foundCluster = true;
+                        break;
+                    }
+                }
+                
+                if (!foundCluster) {
+                    clusters.push({
+                        center: { x: inter.point.x, y: inter.point.y },
+                        intersections: [inter],
+                        threads: [...inter.threads]
+                    });
+                }
+            }
+            
+            return clusters;
+        }
+
+        function createStructures(newThread) {
+            let intersections = findIntersections(newThread);
+            
+            if (intersections.length > 0) {
+                let clusters = clusterIntersections(intersections);
+                
+                for (let cluster of clusters) {
+                    let uniqueThreads = cluster.threads;
+                    let count = uniqueThreads.length;
+                    
+                    if (count === 2) {
+                        joints.push({
+                            x: cluster.center.x,
+                            y: cluster.center.y,
+                            threads: uniqueThreads,
+                            timestamp: Date.now()
+                        });
+                        showMessage("Two builders create a joint");
+                    } else if (count === 3) {
+                        nodes.push({
+                            x: cluster.center.x,
+                            y: cluster.center.y,
+                            threads: uniqueThreads,
+                            timestamp: Date.now()
+                        });
+                        showMessage("Three perspectives form a node");
+                    } else if (count >= 4) {
+                        hubs.push({
+                            x: cluster.center.x,
+                            y: cluster.center.y,
+                            threads: uniqueThreads,
+                            timestamp: Date.now()
+                        });
+                        showMessage("Many hands build a hub");
+                    }
+                }
+            }
+        }
+
+        function showMessage(text) {
+            const msgEl = document.getElementById('message-overlay');
+            msgEl.textContent = text;
+            msgEl.classList.add('show');
+            setTimeout(() => msgEl.classList.remove('show'), 3000);
+        }
+
+        function updateStats() {
+            document.getElementById('threads-count').textContent = threads.length;
+            document.getElementById('joints-count').textContent = joints.length;
+            document.getElementById('nodes-count').textContent = nodes.length;
+            document.getElementById('hubs-count').textContent = hubs.length;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw threads
+            for (let thread of threads) {
+                ctx.strokeStyle = thread.color;
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.globalAlpha = 0.7;
+                
+                ctx.beginPath();
+                ctx.moveTo(thread.startX, thread.startY);
+                ctx.lineTo(thread.endX, thread.endY);
+                ctx.stroke();
+            }
+            
+            // Draw current thread being dragged
+            if (currentThread) {
+                ctx.strokeStyle = currentThread.color;
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.globalAlpha = 0.5;
+                ctx.setLineDash([10, 10]);
+                
+                ctx.beginPath();
+                ctx.moveTo(currentThread.startX, currentThread.startY);
+                ctx.lineTo(currentThread.endX, currentThread.endY);
+                ctx.stroke();
+                
+                ctx.setLineDash([]);
+            }
+            
+            ctx.globalAlpha = 1;
+            
+            // Draw joints (2 threads)
+            for (let joint of joints) {
+                ctx.fillStyle = '#d4695b';
+                ctx.beginPath();
+                ctx.arc(joint.x, joint.y, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // Draw nodes (3 threads)
+            for (let node of nodes) {
+                ctx.fillStyle = '#4a7c7e';
+                ctx.beginPath();
+                ctx.moveTo(node.x, node.y - 12);
+                ctx.lineTo(node.x + 10, node.y + 8);
+                ctx.lineTo(node.x - 10, node.y + 8);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // Draw hubs (4+ threads)
+            for (let hub of hubs) {
+                ctx.fillStyle = '#d4a574';
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3;
+                
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    let angle = (Math.PI * 2 * i) / 6;
+                    let x = hub.x + Math.cos(angle) * 15;
+                    let y = hub.y + Math.sin(angle) * 15;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                // Inner circle
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(hub.x, hub.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Mouse events
+        canvas.addEventListener('mousedown', (e) => {
+            if (!isAtEdge(e.clientX, e.clientY)) return;
+            
+            isDragging = true;
+            currentThread = {
+                startX: e.clientX,
+                startY: e.clientY,
+                endX: e.clientX,
+                endY: e.clientY,
+                color: getRandomColor()
+            };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDragging || !currentThread) return;
+            
+            currentThread.endX = e.clientX;
+            currentThread.endY = e.clientY;
+            draw();
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (!isDragging || !currentThread) return;
+            
+            currentThread.endX = e.clientX;
+            currentThread.endY = e.clientY;
+            
+            // Only add if dragged a reasonable distance
+            let distance = Math.hypot(
+                currentThread.endX - currentThread.startX,
+                currentThread.endY - currentThread.startY
+            );
+            
+            if (distance > 50) {
+                threads.push(currentThread);
+                createStructures(currentThread);
+                updateStats();
+            }
+            
+            isDragging = false;
+            currentThread = null;
+            draw();
+        });
+
+        // Touch events for multi-touch
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            
+            for (let touch of e.touches) {
+                if (!isAtEdge(touch.clientX, touch.clientY)) continue;
+                
+                let thread = {
+                    id: touch.identifier,
+                    startX: touch.clientX,
+                    startY: touch.clientY,
+                    endX: touch.clientX,
+                    endY: touch.clientY,
+                    color: getRandomColor()
+                };
+                
+                activeTouches.set(touch.identifier, thread);
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            
+            for (let touch of e.touches) {
+                let thread = activeTouches.get(touch.identifier);
+                if (!thread) continue;
+                
+                thread.endX = touch.clientX;
+                thread.endY = touch.clientY;
+            }
+            
+            // Draw all active threads
+            draw();
+            
+            for (let [id, thread] of activeTouches) {
+                ctx.strokeStyle = thread.color;
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.globalAlpha = 0.5;
+                ctx.setLineDash([10, 10]);
+                
+                ctx.beginPath();
+                ctx.moveTo(thread.startX, thread.startY);
+                ctx.lineTo(thread.endX, thread.endY);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+            ctx.globalAlpha = 1;
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            
+            for (let touch of e.changedTouches) {
+                let thread = activeTouches.get(touch.identifier);
+                if (!thread) continue;
+                
+                thread.endX = touch.clientX;
+                thread.endY = touch.clientY;
+                
+                let distance = Math.hypot(
+                    thread.endX - thread.startX,
+                    thread.endY - thread.startY
+                );
+                
+                if (distance > 50) {
+                    threads.push(thread);
+                    createStructures(thread);
+                    updateStats();
+                }
+                
+                activeTouches.delete(touch.identifier);
+            }
+            
+            draw();
+        });
+
+        // Clear button
+        document.getElementById('clear-button').addEventListener('click', () => {
+            threads = [];
+            joints = [];
+            nodes = [];
+            hubs = [];
+            updateStats();
+            draw();
+            showMessage("The commons awaits new construction");
+        });
+
+        // Initial draw
+        draw();
+        
+        // Animate a subtle pulse on structures
+        setInterval(() => {
+            draw();
+        }, 100);
+    </script>
+</body>
+</html>

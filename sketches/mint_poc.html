@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mint Proof of Concept - Swarm Interaction</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 20px;
+      background: #000;
+      color: #fff;
+      font-family: monospace;
+    }
+    .controls {
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #333;
+      color: #fff;
+      border: 1px solid #666;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #555;
+    }
+    .mints-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .mint-card {
+      border: 1px solid #333;
+      padding: 15px;
+      background: #111;
+    }
+    .mint-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .mint-canvas {
+      border: 1px solid #333;
+      background: #000;
+    }
+    .mint-info {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #888;
+    }
+    .global-info {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #111;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mint Proof of Concept - Swarm Interaction</h1>
+  
+  <div class="global-info">
+    <strong>Total Mints: <span id="totalMints">0</span></strong> | 
+    <strong>Global Activity: <span id="globalActivity">0.00</span></strong>
+    <p style="margin: 10px 0 0 0; font-size: 12px; color: #888;">
+      Each mint's appearance is influenced by the total number of mints. 
+      Mint more to see the swarm effect!
+    </p>
+  </div>
+
+  <div class="controls">
+    <button onclick="mintNew()">Mint New</button>
+    <button onclick="mintBatch(5)">Mint 5</button>
+    <button onclick="mintBatch(10)">Mint 10</button>
+    <button onclick="clearAll()">Clear All</button>
+  </div>
+
+  <div class="mints-container" id="mintsContainer"></div>
+
+  <script src="p5.min.js"></script>
+  <script type="module">
+    import { createVibeCell } from "./vibe_dna.js";
+
+    let allMints = [];
+    let globalActivity = 0.1;
+
+    // Simple p5 instance creator for each mint
+    function createMintCanvas(container, mintId, totalMints) {
+      const canvasId = `mint-${mintId}`;
+      const canvasDiv = document.createElement('div');
+      canvasDiv.className = 'mint-card';
+      canvasDiv.innerHTML = `
+        <div class="mint-header">
+          <span>Mint #${mintId}</span>
+          <span>Seed: ${(mintId / 1000).toFixed(3)}</span>
+        </div>
+        <div id="${canvasId}"></div>
+        <div class="mint-info">
+          Total Mints: ${totalMints} | Influenced by swarm
+        </div>
+      `;
+      container.appendChild(canvasDiv);
+
+      // Create p5 instance for this mint
+      const sketch = (p) => {
+        let cell;
+        let lastMs = 0;
+
+        p.setup = () => {
+          const canvas = p.createCanvas(250, 250);
+          canvas.parent(canvasId);
+          p.colorMode(p.HSB, 360, 1, 1, 1);
+          p.noStroke();
+          lastMs = p.millis();
+
+          // Create one cell for this mint
+          // Seed based on mintId, so each mint is unique
+          cell = createVibeCell(p, {
+            id: `mint-${mintId}`,
+            seed: mintId / 1000  // Unique seed per mint
+          });
+        };
+
+        p.draw = () => {
+          const now = p.millis();
+          const dt = (now - lastMs) / 1000.0;
+          lastMs = now;
+
+          // Global activity influenced by total mint count
+          // More mints = higher activity (swarm effect)
+          const activityFromMints = Math.min(totalMints / 50, 1.0); // Max at 50 mints
+          const timeActivity = 0.2 + 0.6 * p.noise(now * 0.00005);
+          globalActivity = p.constrain(
+            activityFromMints * 0.5 + timeActivity * 0.5, 
+            0, 
+            1
+          );
+
+          // Set global activity for this cell
+          cell.setGlobalActivity(globalActivity);
+          
+          // No neighbors for single-cell mints, but could add later
+          cell.setNeighborMood(0.5);
+
+          // Update and draw
+          cell.update(dt);
+          p.background(0);
+          cell.draw(p.width / 2, p.height / 2, 80);
+        };
+      };
+
+      new p5(sketch);
+    }
+
+    // Mint functions
+    window.mintNew = function() {
+      const mintId = allMints.length + 1;
+      allMints.push(mintId);
+      updateGlobalInfo();
+      createMintCanvas(
+        document.getElementById('mintsContainer'), 
+        mintId, 
+        allMints.length
+      );
+    };
+
+    window.mintBatch = function(count) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => mintNew(), i * 100);
+      }
+    };
+
+    window.clearAll = function() {
+      allMints = [];
+      document.getElementById('mintsContainer').innerHTML = '';
+      updateGlobalInfo();
+    };
+
+    function updateGlobalInfo() {
+      document.getElementById('totalMints').textContent = allMints.length;
+      const activityFromMints = Math.min(allMints.length / 50, 1.0);
+      document.getElementById('globalActivity').textContent = activityFromMints.toFixed(2);
+    }
+
+    // Auto-update global activity display
+    setInterval(() => {
+      const activityFromMints = Math.min(allMints.length / 50, 1.0);
+      document.getElementById('globalActivity').textContent = activityFromMints.toFixed(2);
+    }, 100);
+  </script>
+</body>
+</html>
+

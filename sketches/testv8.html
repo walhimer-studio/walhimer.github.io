@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Text Cylinder</title>
+<style>
+  html, body { margin:0; padding:0; background:#fff; overflow:hidden; width:100%; height:100%; }
+  canvas { display:block; }
+
+  #controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    padding: 16px 24px;
+    border-radius: 14px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.10);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #333;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .control-group label {
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #888;
+    white-space: nowrap;
+  }
+
+  .control-group input[type="range"] {
+    width: 120px;
+    accent-color: #000;
+    cursor: pointer;
+  }
+
+  .control-group input[type="text"] {
+    width: 200px;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .control-group input[type="text"]:focus {
+    border-color: #000;
+  }
+
+  .val {
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    font-weight: 600;
+    color: #000;
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="controls">
+  <div class="control-group">
+    <label>Text</label>
+    <input type="text" id="textInput" value="ME - I WILL NOT BECOME THEIR NARRATIVE " />
+  </div>
+  <div class="control-group">
+    <label>Rings</label>
+    <div class="slider-row">
+      <input type="range" id="rowsSlider" min="1" max="16" value="8" />
+      <span class="val" id="rowsVal">8</span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label>Height</label>
+    <div class="slider-row">
+      <input type="range" id="sizeSlider" min="24" max="120" value="64" />
+      <span class="val" id="sizeVal">64</span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label>Diameter</label>
+    <div class="slider-row">
+      <input type="range" id="diamSlider" min="200" max="700" value="500" />
+      <span class="val" id="diamVal">500</span>
+    </div>
+  </div>
+</div>
+
+<script>
+let phrase = "ME - I WILL NOT BECOME THEIR NARRATIVE ";
+let ROWS = 8;
+let BASE_FONT_SIZE = 64;
+let R = 500;
+
+const ROW_SPACING = 88;
+const ROT_SPEED = 0.003;
+const CANVAS_REF = 1450;
+const LETTER_HSCALE = 0.30;
+
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+
+let angle = 0;
+
+const camZ = 1000;
+const tiltAngle = 0.14;
+const cosTilt = Math.cos(tiltAngle);
+const sinTilt = Math.sin(tiltAngle);
+
+/* --- Controls --- */
+const textInput = document.getElementById('textInput');
+const rowsSlider = document.getElementById('rowsSlider');
+const rowsVal = document.getElementById('rowsVal');
+const sizeSlider = document.getElementById('sizeSlider');
+const sizeVal = document.getElementById('sizeVal');
+const diamSlider = document.getElementById('diamSlider');
+const diamVal = document.getElementById('diamVal');
+
+textInput.addEventListener('input', () => {
+  let v = textInput.value;
+  if (v.length && v[v.length - 1] !== ' ') v += ' ';
+  phrase = v;
+});
+
+rowsSlider.addEventListener('input', () => {
+  ROWS = parseInt(rowsSlider.value);
+  rowsVal.textContent = ROWS;
+});
+
+sizeSlider.addEventListener('input', () => {
+  BASE_FONT_SIZE = parseInt(sizeSlider.value);
+  sizeVal.textContent = BASE_FONT_SIZE;
+});
+
+diamSlider.addEventListener('input', () => {
+  R = parseInt(diamSlider.value);
+  diamVal.textContent = R;
+});
+
+/* --- Resize --- */
+function resize() {
+  const s = Math.min(window.innerWidth, window.innerHeight);
+  const dpr = window.devicePixelRatio || 1;
+  c.style.width = s + 'px';
+  c.style.height = s + 'px';
+  c.width = s * dpr;
+  c.height = s * dpr;
+  c.style.position = 'absolute';
+  c.style.left = ((window.innerWidth - s) / 2) + 'px';
+  c.style.top = ((window.innerHeight - s) / 2) + 'px';
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* --- Draw --- */
+function draw() {
+  const w = c.width;
+  const h = c.height;
+  const sc = w / CANVAS_REF;
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, w, h);
+
+  const letters = phrase.split('');
+  if (letters.length === 0) { angle += ROT_SPEED; requestAnimationFrame(draw); return; }
+
+  const step = (2 * Math.PI) / letters.length;
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+  const cx = w / 2;
+  const cy = h / 2;
+  const midRow = (ROWS - 1) / 2;
+
+  const drawn = [];
+  for (let row = 0; row < ROWS; row++) {
+    const rowY3D = (row - midRow) * ROW_SPACING;
+    const twist = row * 0.12;
+
+    letters.forEach((ch, j) => {
+      const a = -j * step + twist;
+      const x = Math.cos(a) * R;
+      const z = Math.sin(a) * R;
+
+      const rx = x * cosA - z * sinA;
+      const rz = x * sinA + z * cosA;
+
+      const ry = rowY3D * cosTilt - rz * sinTilt;
+      const rz2 = rowY3D * sinTilt + rz * cosTilt;
+
+      const depth = camZ - rz2;
+      const scale = camZ / depth;
+      const sx = cx + rx * scale * sc;
+      const sy = cy + ry * scale * sc;
+
+      const facing = rz > 0;
+      const foreshorten = Math.abs(rz) / R;
+
+      drawn.push({ ch, sx, sy, scale, facing, rz2, foreshorten });
+    });
+  }
+
+  drawn.sort((a, b) => a.rz2 - b.rz2);
+
+  const fontSize = BASE_FONT_SIZE * sc;
+
+  for (const { ch, sx, sy, scale, facing, foreshorten } of drawn) {
+    ctx.font = `${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.globalAlpha = facing ? 1 : 0.55;
+    ctx.fillStyle = facing ? '#000' : '#999';
+    ctx.save();
+    ctx.translate(sx, sy);
+    const hScale = LETTER_HSCALE * foreshorten;
+    if (!facing) ctx.scale(-hScale * scale, scale);
+    else ctx.scale(hScale * scale, scale);
+    ctx.fillText(ch, 0, 0);
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+
+  angle += ROT_SPEED;
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>

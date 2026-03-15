@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Emergent Discs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- p5.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  </head>
+  <body>
+    <main></main>
+
+    <script>
+      let colors = [];         // Gradient color sets
+      let discs = [];          // All discs
+      let time = 0;            // Global time for animation
+
+      const MAX_DISCS = 15;    // Target number of discs
+      const MAX_LAYERS = 4;    // Layers per disc
+
+      // Timing / pacing (in seconds)
+      let startTime;
+      let lastElapsed = 0;
+
+      let phase = 0;           // 0 = spawning discs, 1 = adding layers, 2 = starting strong animation
+      let lastEventTime = 0;
+
+      const DISC_BIRTH_INTERVAL = 5.0;      // Time between new discs
+      const DISC_MOVE_DURATION = 8.0;       // Time for a disc to move from behind to its own spot
+      const LAYER_ADD_INTERVAL = 3.0;       // Time between adding layers
+      const FADE_DURATION = 4.0;            // Fade-in duration for layers
+      const ANIM_START_INTERVAL = 3.0;      // Time between enabling strong animation per disc
+      const ANIM_RAMP_DURATION = 6.0;       // Time for breathing amplitude to ramp up
+
+      let currentTargetLayer = 1;           // We start at 1 layer (initial)
+      let nextDiscToLayer = 0;              // Index when adding layers
+      let nextDiscToAnimate = 0;            // Index when starting stronger animation
+
+      function setup() {
+        createCanvas(1000, 1000, WEBGL);
+        frameRate(60);
+
+        startTime = millis();
+        lastElapsed = 0;
+        lastEventTime = 0;
+
+        // Richer color palette
+        colors = [
+          [color(255, 0, 0, 80),   color(255, 204, 0, 80)],   // Red → Yellow
+          [color(0, 255, 255, 80), color(0, 0, 255, 80)],     // Cyan → Blue
+          [color(255, 0, 255, 80), color(255, 255, 0, 80)],   // Magenta → Yellow
+          [color(0, 255, 0, 80),   color(0, 128, 255, 80)],   // Green → Sky
+          [color(255, 128, 0, 80), color(255, 0, 128, 80)],   // Orange → Pink
+          [color(128, 0, 255, 80), color(0, 255, 128, 80)]    // Purple → Mint
+        ];
+
+        // Start with no discs; they will appear over time
+      }
+
+      function draw() {
+        background(255);
+
+        let elapsed = (millis() - startTime) / 1000.0;
+        let dt = elapsed - lastElapsed;
+        if (dt < 0) dt = 0;
+        lastElapsed = elapsed;
+
+        // Slow global time for breathing
+        time += dt * 0.5;
+
+        // Phase logic
+        if (phase === 0) {
+          handleDiscSpawning(elapsed);
+        } else if (phase === 1) {
+          handleLayerAdding(elapsed);
+        } else if (phase === 2) {
+          handleAnimationStart(elapsed);
+        }
+
+        // Update and draw all discs
+        updateDiscs(dt, elapsed);
+        drawDiscs();
+      }
+
+      // ---------------------- PHASE HANDLERS ----------------------
+
+      function handleDiscSpawning(elapsed) {
+        if (discs.length < MAX_DISCS && elapsed - lastEventTime >= DISC_BIRTH_INTERVAL) {
+          spawnDisc();
+          lastEventTime = elapsed;
+        }
+
+        if (discs.length === MAX_DISCS && elapsed - lastEventTime > DISC_BIRTH_INTERVAL) {
+          // Once we’ve spawned all discs and given a little time, move to layer adding
+          phase = 1;
+          currentTargetLayer = 2;   // We already have 1 layer from spawn
+          nextDiscToLayer = 0;
+          lastEventTime = elapsed;
+        }
+      }
+
+      function handleLayerAdding(elapsed) {
+        if (currentTargetLayer > MAX_LAYERS) {
+          // All discs have all layers, move to animation phase
+          phase = 2;
+          nextDiscToAnimate = 0;
+          lastEventTime = elapsed;
+          return;
+        }
+
+        if (elapsed - lastEventTime >= LAYER_ADD_INTERVAL) {
+          let d = discs[nextDiscToLayer];
+
+          if (d.layers.length < currentTargetLayer) {
+            addLayerToDisc(d);
+          }
+
+          nextDiscToLayer++;
+          if (nextDiscToLayer >= discs.length) {
+            nextDiscToLayer = 0;
+            currentTargetLayer++;
+          }
+
+          lastEventTime = elapsed;
+        }
+      }
+
+      function handleAnimationStart(elapsed) {
+        // Start stronger animation disc by disc, with a subtle ramp
+        if (nextDiscToAnimate < discs.length && elapsed - lastEventTime >= ANIM_START_INTERVAL) {
+          let d = discs[nextDiscToAnimate];
+          if (d.animationStartTime === null) {
+            d.animationStartTime = elapsed;
+          }
+          nextDiscToAnimate++;
+          lastEventTime = elapsed;
+        }
+      }
+
+      // ---------------------- DISC MANAGEMENT ----------------------
+
+      function spawnDisc() {
+        // Small discs to leave room for 10–15 of them
+        let baseDiameter = random(80, 180);
+
+        let targetX, targetY;
+
+        if (discs.length === 0) {
+          // First disc can appear anywhere (not forced to center)
+          targetX = random(-400, 400);
+          targetY = random(-400, 400);
+        } else {
+          // New disc appears "behind" a random existing disc, then moves out
+          let parent = random(discs);
+          targetX = random(-400, 400);
+          targetY = random(-400, 400);
+
+          // To give a feeling of "coming from behind", we start at the parent and move away
+          let startX = parent.targetX;
+          let startY = parent.targetY;
+
+          let disc = {
+            startX: startX,
+            startY: startY,
+            targetX: targetX,
+            targetY: targetY,
+            moveProgress: 0,     // 0..1 interpolation from start to target
+            moveDuration: DISC_MOVE_DURATION,
+            baseDiameter: baseDiameter,
+            layers: [],
+            animationStartTime: null,
+            breathingAmp: 0,     // Strong breathing amplitude (ramps up later)
+            gentleBreathingAmp: 0.03 // Subtle base breathing (very small)
+          };
+
+          // Initial layer with slow fade-in
+          disc.layers.push(createLayer(baseDiameter));
+
+          discs.push(disc);
+          return;
+        }
+
+        // First disc (no parent to come from)
+        let disc = {
+          startX: targetX,
+          startY: targetY,
+          targetX: targetX,
+          targetY: targetY,
+          moveProgress: 1,       // Already at its target position
+          moveDuration: DISC_MOVE_DURATION,
+          baseDiameter: baseDiameter,
+          layers: [],
+          animationStartTime: null,
+          breathingAmp: 0,
+          gentleBreathingAmp: 0.03
+        };
+
+        disc.layers.push(createLayer(baseDiameter));
+        discs.push(disc);
+      }
+
+      function addLayerToDisc(disc) {
+        // Additional layer roughly same size, could be slightly varied
+        let scale = random(0.9, 1.1);
+        let diameter = disc.baseDiameter * scale;
+        disc.layers.push(createLayer(diameter));
+      }
+
+      function createLayer(diameter) {
+        return {
+          diameter: diameter,
+          colorSet: random(colors),
+          timeOffset: random(TWO_PI),
+          fade: 0                  // Fade 0→1 over time
+        };
+      }
+
+      // ---------------------- UPDATE & DRAW ----------------------
+
+      function updateDiscs(dt, elapsed) {
+        for (let d of discs) {
+          // Movement from start to target (new discs drift out slowly)
+          if (d.moveProgress < 1) {
+            d.moveProgress += dt / d.moveDuration;
+            if (d.moveProgress > 1) d.moveProgress = 1;
+          }
+
+          // Fade-in for each layer
+          for (let layer of d.layers) {
+            if (layer.fade < 1) {
+              layer.fade += dt / FADE_DURATION;
+              if (layer.fade > 1) layer.fade = 1;
+            }
+          }
+
+          // Stronger animation: once animationStartTime is set, ramp breathingAmp up gradually
+          if (d.animationStartTime !== null) {
+            let t = (elapsed - d.animationStartTime) / ANIM_RAMP_DURATION;
+            if (t < 0) t = 0;
+            if (t > 1) t = 1;
+            // Target stronger amplitude (pronounced breathing)
+            let targetAmp = 0.2; // similar to your earlier code
+            d.breathingAmp = targetAmp * easeInOut(t);
+          }
+        }
+      }
+
+      function drawDiscs() {
+        noStroke();
+
+        for (let d of discs) {
+          // Current position using eased interpolation
+          let mp = easeInOut(d.moveProgress);
+          let x = lerp(d.startX, d.targetX, mp);
+          let y = lerp(d.startY, d.targetY, mp);
+
+          push();
+          translate(x, y, 0);
+
+          for (let layer of d.layers) {
+            // Combine gentle base breathing + possibly stronger breathing
+            let amp = d.gentleBreathingAmp + d.breathingAmp;
+            let scaleFactor = 1 + sin(time + layer.timeOffset) * amp;
+
+            push();
+            scale(scaleFactor);
+
+            // Draw gradient disk with fade-based alpha
+            drawSoftGradientDisk(layer.diameter, layer.colorSet[0], layer.colorSet[1], layer.fade);
+
+            pop();
+          }
+
+          pop();
+        }
+      }
+
+      // ---------------------- RENDER GRADIENT DISK ----------------------
+
+      function drawSoftGradientDisk(diameter, c1, c2, alphaFactor) {
+        let detail = 50;  // Smoothness of the disk
+
+        // Apply fade factor to alpha
+        let c1a = color(red(c1), green(c1), blue(c1), alpha(c1) * alphaFactor);
+        let c2a = color(red(c2), green(c2), blue(c2), alpha(c2) * alphaFactor);
+
+        beginShape(TRIANGLE_FAN);
+
+        fill(c1a);
+        vertex(0, 0, 0);
+
+        for (let angle = 0; angle <= TWO_PI + 0.01; angle += TWO_PI / detail) {
+          let vx = cos(angle) * diameter / 2;
+          let vy = sin(angle) * diameter / 2;
+          let t = map(angle, 0, TWO_PI, 0, 1);
+          let cc = lerpColor(c1a, c2a, t);
+          fill(cc);
+          vertex(vx, vy, 0);
+        }
+
+        endShape(CLOSE);
+      }
+
+      // ---------------------- EASING ----------------------
+
+      function easeInOut(t) {
+        // Smooth step ease (0..1)
+        return t < 0.5
+          ? 2 * t * t
+          : 1 - pow(-2 * t + 2, 2) / 2;
+      }
+    </script>
+  </body>
+</html>
+

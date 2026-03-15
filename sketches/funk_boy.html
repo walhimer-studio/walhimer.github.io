@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Funk Boy — Full 3D Motion</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+  <style>
+    body { margin: 0; background: #000; }
+    #startButton {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      padding: 20px 40px;
+      background: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <button id="startButton">▶ Start Dance</button>
+
+<script>
+let figureParts = [];
+let fadeSpeed = 0.01;
+let figureScale = 1.0;
+let centerOffset = 0;
+
+let music;
+let bpm = 118.35;
+let beatInterval = 60.0 / bpm;
+let lastBeatTime = 0;
+let beatIndex = 0;
+let started = false;
+
+function preload() {
+  music = loadSound('Music_fx_funk_create_a_fun_little_dance_piece.wav');
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  setAttributes('alpha', true);
+  noStroke();
+  pixelDensity(2);
+  colorMode(HSB, 360, 100, 100, 255);
+  createFigure();
+
+  select('#startButton').mousePressed(() => {
+    userStartAudio();
+    if (music && !music.isPlaying()) music.loop();
+    started = true;
+    select('#startButton').remove();
+  });
+}
+
+function createFigure() {
+  figureParts = [];
+
+  // HEAD - slightly forward in Z
+  figureParts.push(makePart(0, centerOffset - 200, 50, 90, 90, 60, 'head'));
+
+  // TORSO - stacked with increasing Z for depth
+  for (let i = 0; i < 3; i++) {
+    figureParts.push(makePart(
+      0,
+      centerOffset - 80 + i * 80,
+      i * 15, // stagger along Z-axis
+      80, 80, 40,
+      'torso', i
+    ));
+  }
+
+  // ARMS + HANDS - offset in Z slightly back
+  for (let side of [-1, 1]) {
+    figureParts.push(makePart(side * 100, centerOffset - 40, -20, 30, 120, 30, 'arm', null, side));
+    figureParts.push(makePart(side * 100, centerOffset + 40, -20, 45, 45, 30, 'hand', null, side));
+  }
+
+  // LEGS + FEET - slightly back
+  for (let side of [-1, 1]) {
+    figureParts.push(makePart(side * 40, centerOffset + 200, -15, 40, 120, 30, 'leg', null, side));
+    figureParts.push(makePart(side * 40, centerOffset + 280, -15, 60, 30, 40, 'foot', null, side));
+  }
+}
+
+function makePart(x, y, z, w, h, d, type, index=null, side=0) {
+  return {
+    x, y, z, w, h, d, type, index, side,
+    colorSet: [color(random(360),100,100,120), color(random(360),100,100,120)],
+    fadeOffset: random(TWO_PI)
+  };
+}
+
+function draw() {
+  background(255);
+  if (!started) return;
+
+  rotateY(millis() / 10000);
+  scale(figureScale);
+
+  let now = music && music.isPlaying() ? music.currentTime() : millis() / 1000.0;
+  if (now - lastBeatTime >= beatInterval) {
+    lastBeatTime = now;
+    beatIndex++;
+  }
+
+  let beatPhase = (now - lastBeatTime) / beatInterval;
+  let bounce = sin(beatPhase * PI) * -15;
+  let swing = (beatIndex % 2 === 0 ? 1 : -1) * sin(beatPhase * PI) * 0.6;
+  let zMotion = sin(beatPhase * PI) * 30;
+
+  for (let part of figureParts) {
+    let transparency = map(sin(frameCount * fadeSpeed + part.fadeOffset), -1, 1, 40, 170);
+    let c1 = color(hue(part.colorSet[0]), saturation(part.colorSet[0]), brightness(part.colorSet[0]), transparency);
+    let c2 = color(hue(part.colorSet[1]), saturation(part.colorSet[1]), brightness(part.colorSet[1]), transparency);
+
+    push();
+    translate(part.x, part.y + bounce, part.z + zMotion); // ✅ torso + head + arms + legs all move in Z
+
+    if (part.type === 'head') rotateZ(swing * 0.4);
+    if (part.type === 'arm') rotateZ(part.side * (0.3 + swing));
+    if (part.type === 'hand') rotateZ(part.side * (0.3 + swing * 1.2));
+    if (part.type === 'leg') rotateZ(part.side * (0.1 + swing * 0.6));
+    if (part.type === 'foot') rotateZ(part.side * (0.1 + swing * 0.8));
+
+    drawSoftGradientBox(part.w, part.h, part.d, c1, c2);
+    pop();
+  }
+}
+
+function drawSoftGradientBox(w, h, d, c1, c2) {
+  beginShape();
+  fill(c1); vertex(-w/2, -h/2,  d/2);
+  fill(c2); vertex( w/2, -h/2,  d/2);
+            vertex( w/2,  h/2,  d/2);
+            vertex(-w/2,  h/2,  d/2);
+  endShape(CLOSE);
+  beginShape();
+  fill(c2); vertex(-w/2, -h/2, -d/2);
+  fill(c1); vertex( w/2, -h/2, -d/2);
+            vertex( w/2,  h/2, -d/2);
+            vertex(-w/2,  h/2, -d/2);
+  endShape(CLOSE);
+  beginShape();
+  fill(c1); vertex(-w/2, -h/2,  d/2);
+            vertex(-w/2,  h/2,  d/2);
+  fill(c2); vertex(-w/2,  h/2, -d/2);
+            vertex(-w/2, -h/2, -d/2);
+  endShape(CLOSE);
+  beginShape();
+  fill(c2); vertex( w/2, -h/2,  d/2);
+            vertex( w/2,  h/2,  d/2);
+  fill(c1); vertex( w/2,  h/2, -d/2);
+            vertex( w/2, -h/2, -d/2);
+  endShape(CLOSE);
+  beginShape();
+  fill(c1); vertex(-w/2, -h/2, -d/2);
+  fill(c2); vertex( w/2, -h/2, -d/2);
+            vertex( w/2, -h/2,  d/2);
+            vertex(-w/2, -h/2,  d/2);
+  endShape(CLOSE);
+  beginShape();
+  fill(c2); vertex(-w/2,  h/2, -d/2);
+  fill(c1); vertex( w/2,  h/2, -d/2);
+            vertex( w/2,  h/2,  d/2);
+            vertex(-w/2,  h/2,  d/2);
+  endShape(CLOSE);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>

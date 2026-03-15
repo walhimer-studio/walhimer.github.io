@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Single Mint - Evolving Over Time</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 20px;
+      background: #000;
+      color: #fff;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .info {
+      margin-bottom: 20px;
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+    }
+    .mint-info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111;
+      border: 1px solid #333;
+      text-align: center;
+      font-size: 12px;
+    }
+    .mint-info strong {
+      color: #fff;
+    }
+    #mintCanvas {
+      border: 2px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Single Mint - Evolving Over Time</h1>
+  <div class="info">
+    This mint was created at a specific time.<br>
+    It continues to evolve - same DNA, changing state.<br>
+    Leave it running and it will look different tomorrow.
+  </div>
+
+  <div id="mintCanvas"></div>
+
+  <div class="mint-info">
+    <strong>Mint #1</strong> | Seed: 0.500<br>
+    <strong>Time Since Mint:</strong> <span id="timeElapsed">0</span> seconds<br>
+    <strong>Current Mood:</strong> <span id="currentMood">0.50</span><br>
+    <strong>State Evolution:</strong> Continuous
+  </div>
+
+  <script src="p5.min.js"></script>
+  <script type="module">
+    import { createVibeCell } from "./vibe_dna.js";
+
+    // Simulate mint timestamp (in real minting, this would be the actual mint time)
+    const mintTimestamp = Date.now();
+    
+    let cell;
+    let lastMs = 0;
+    let currentMood = 0.5;
+
+    const sketch = (p) => {
+      p.setup = () => {
+        const canvas = p.createCanvas(600, 600);
+        canvas.parent('mintCanvas');
+        p.colorMode(p.HSB, 360, 1, 1, 1);
+        p.noStroke();
+        lastMs = p.millis();
+
+        // Create cell with unique seed (in real minting, this would be tokenId)
+        cell = createVibeCell(p, {
+          id: 'mint-1',
+          seed: 0.5  // Unique seed for this mint
+        });
+      };
+
+      p.draw = () => {
+        const now = p.millis();
+        const dt = (now - lastMs) / 1000.0;
+        lastMs = now;
+
+        // Calculate time since mint (in real minting, this would be: now - mintTimestamp)
+        const timeSinceMint = (now - mintTimestamp) / 1000.0;
+        
+        // Update time display
+        document.getElementById('timeElapsed').textContent = Math.floor(timeSinceMint);
+
+        // Global activity slowly modulates (could be influenced by external factors)
+        const globalActivity = 0.2 + 0.6 * p.noise(now * 0.00005);
+        cell.setGlobalActivity(globalActivity);
+        
+        // No neighbors for single mint (but could add later)
+        cell.setNeighborMood(0.5);
+
+        // Update cell state
+        cell.update(dt);
+        
+        // Get current mood for display
+        currentMood = cell.mood;
+        document.getElementById('currentMood').textContent = currentMood.toFixed(3);
+
+        // Draw
+        p.background(0);
+        cell.draw(p.width / 2, p.height / 2, 150);
+      };
+    };
+
+    new p5(sketch);
+  </script>
+</body>
+</html>
+

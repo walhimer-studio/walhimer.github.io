@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>P5 WebGL — Flash Box (Fixed Timing)</title>
+  <style>
+    html, body { margin:0; padding:0; background:#000; overflow:hidden; }
+    canvas { display:block; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/addons/p5.sound.min.js"></script>
+</head>
+<body>
+<script>
+// P5.JS WEBGL — FLASH BOX (FIXED TIMING)
+// ONLY CHANGE:
+// - Add SAVE / LOAD / CLEAR for settings (colors, BPM, X/Y direction).
+// - Saves to localStorage so you can recall a combo you like later.
+
+let isPlaying = false;
+let bpm = 70;
+let beatCount = 0;
+let intervalId = null;
+let audioContext = null;
+
+let flashOn = false;
+let flashOffTimeout = null;
+let flashStartTime = 0;
+
+let controlsDiv, playBtn, randomBtn, saveBtn, loadBtn, clearBtn;
+let debugDiv;
+
+const BOX_H = 900;
+const BOX_GAP = 10;
+
+const FIXED_BOX_COUNT = 60;
+const FIXED_BOX_WIDTH = 20;
+
+const BOX_D = 60;
+
+const FLASH_DURATION_MS = 1600;   // SOFTER / LONGER
+const FLASH_STAGGER_MS = 6;       // SOFTER / SLOWER WAVE
+
+// sliders
+let colorSlider1;
+let colorSlider2;
+let xDirSlider;
+let yDirSlider;
+
+// palette (pink, yellow, orange, green, white)
+const PALETTE = [
+  { name: 'PINK',   top: [255, 120, 200], bot: [255, 80, 170] },
+  { name: 'YELLOW', top: [255, 235, 120], bot: [255, 210, 80] },
+  { name: 'ORANGE', top: [255, 180, 90],  bot: [255, 140, 60] },
+  { name: 'GREEN',  top: [120, 255, 180], bot: [60, 200, 120] },
+  { name: 'WHITE',  top: [255, 255, 255], bot: [210, 210, 210] }
+];
+
+// per-box randomized fade shaping per beat
+let fadePow = [];
+
+// never-off baseline so there is always soft light (no strobe)
+const LIGHT_FLOOR = 0.18;  // 0..1
+const LIGHT_CEIL  = 0.75;  // max intensity (keeps it gentle)
+
+// NEW: storage key
+const SETTINGS_KEY = 'flashbox_saved_settings_v1';
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  pixelDensity(1);
+  frameRate(60);
+
+  // Controls container — TOP RIGHT (CSS ONLY)
+  controlsDiv = createDiv();
+  controlsDiv.style('position', 'fixed');
+  controlsDiv.style('top', '20px');
+  controlsDiv.style('right', '20px');
+  controlsDiv.style('background', 'rgba(0,0,0,0.8)');
+  controlsDiv.style('padding', '12px');
+  controlsDiv.style('border-radius', '10px');
+  controlsDiv.style('font-family', 'Arial, sans-serif');
+
+  // Play button
+  playBtn = createButton('▶ START (Click for Sound)');
+  playBtn.parent(controlsDiv);
+  playBtn.style('padding', '15px');
+  playBtn.style('font-size', '20px');
+  playBtn.style('font-weight', 'bold');
+  playBtn.style('cursor', 'pointer');
+  playBtn.style('border', 'none');
+  playBtn.style('border-radius', '5px');
+  playBtn.style('background', '#4caf50');
+  playBtn.style('color', 'white');
+
+  playBtn.mousePressed(() => {
+    if (!audioContext) {
+      userStartAudio();
+      audioContext = getAudioContext();
+    }
+
+    isPlaying = !isPlaying;
+
+    if (isPlaying) {
+      playBtn.html('⏸ STOP');
+      playBtn.style('background', '#ff6b6b');
+      startBeats();
+    } else {
+      playBtn.html('▶ START');
+      playBtn.style('background', '#4caf50');
+      stopBeats();
+      flashOn = false;
+    }
+  });
+
+  // RANDOM button
+  randomBtn = createButton('🎲 RANDOM');
+  randomBtn.parent(controlsDiv);
+  randomBtn.style('padding', '12px');
+  randomBtn.style('font-size', '18px');
+  randomBtn.style('font-weight', 'bold');
+  randomBtn.style('cursor', 'pointer');
+  randomBtn.style('border', 'none');
+  randomBtn.style('border-radius', '5px');
+  randomBtn.style('background', '#2e86ff');
+  randomBtn.style('color', 'white');
+  randomBtn.style('margin-top', '10px');
+  randomBtn.style('width', '100%');
+  randomBtn.mousePressed(randomizeSettings);
+
+  // NEW: SAVE / LOAD / CLEAR row
+  let saveRow = createDiv();
+  saveRow.parent(controlsDiv);
+  saveRow.style('display', 'flex');
+  saveRow.style('gap', '8px');
+  saveRow.style('margin-top', '10px');
+
+  saveBtn = createButton('SAVE');
+  saveBtn.parent(saveRow);
+  saveBtn.style('flex', '1');
+  saveBtn.style('padding', '10px');
+  saveBtn.style('font-size', '14px');
+  saveBtn.style('font-weight', 'bold');
+  saveBtn.style('cursor', 'pointer');
+  saveBtn.style('border', 'none');
+  saveBtn.style('border-radius', '5px');
+  saveBtn.style('background', '#22c55e');
+  saveBtn.style('color', 'white');
+  saveBtn.mousePressed(saveSettings);
+
+  loadBtn = createButton('LOAD');
+  loadBtn.parent(saveRow);
+  loadBtn.style('flex', '1');
+  loadBtn.style('padding', '10px');
+  loadBtn.style('font-size', '14px');
+  loadBtn.style('font-weight', 'bold');
+  loadBtn.style('cursor', 'pointer');
+  loadBtn.style('border', 'none');
+  loadBtn.style('border-radius', '5px');
+  loadBtn.style('background', '#f59e0b');
+  loadBtn.style('color', 'white');
+  loadBtn.mousePressed(loadSettings);
+
+  clearBtn = createButton('CLEAR');
+  clearBtn.parent(saveRow);
+  clearBtn.style('flex', '1');
+  clearBtn.style('padding', '10px');
+  clearBtn.style('font-size', '14px');
+  clearBtn.style('font-weight', 'bold');
+  clearBtn.style('cursor', 'pointer');
+  clearBtn.style('border', 'none');
+  clearBtn.style('border-radius', '5px');
+  clearBtn.style('background', '#ef4444');
+  clearBtn.style('color', 'white');
+  clearBtn.mousePressed(clearSettings);
+
+  // COLOR 1 label + slider
+  let colorLabel1 = createDiv('COLOR 1');
+  colorLabel1.parent(controlsDiv);
+  colorLabel1.style('margin-top', '10px');
+  colorLabel1.style('font-size', '14px');
+  colorLabel1.style('color', '#bbb');
+
+  colorSlider1 = createSlider(0, PALETTE.length - 1, 3, 1);
+  colorSlider1.parent(controlsDiv);
+  colorSlider1.style('width', '200px');
+  colorSlider1.style('display', 'block');
+  colorSlider1.style('margin-top', '6px');
+
+  // COLOR 2 label + slider
+  let colorLabel2 = createDiv('COLOR 2');
+  colorLabel2.parent(controlsDiv);
+  colorLabel2.style('margin-top', '10px');
+  colorLabel2.style('font-size', '14px');
+  colorLabel2.style('color', '#bbb');
+
+  colorSlider2 = createSlider(0, PALETTE.length - 1, 0, 1);
+  colorSlider2.parent(controlsDiv);
+  colorSlider2.style('width', '200px');
+  colorSlider2.style('display', 'block');
+  colorSlider2.style('margin-top', '6px');
+
+  // X SWEEP slider (0=L→R, 1=R→L)
+  let xLabel = createDiv('X SWEEP');
+  xLabel.parent(controlsDiv);
+  xLabel.style('margin-top', '10px');
+  xLabel.style('font-size', '14px');
+  xLabel.style('color', '#bbb');
+
+  xDirSlider = createSlider(0, 1, 0, 1);
+  xDirSlider.parent(controlsDiv);
+  xDirSlider.style('width', '200px');
+  xDirSlider.style('display', 'block');
+  xDirSlider.style('margin-top', '6px');
+
+  // Y SWEEP slider (0=TOP→BOTTOM, 1=BOTTOM→TOP)
+  let yLabel = createDiv('Y SWEEP');
+  yLabel.parent(controlsDiv);
+  yLabel.style('margin-top', '10px');
+  yLabel.style('font-size', '14px');
+  yLabel.style('color', '#bbb');
+
+  yDirSlider = createSlider(0, 1, 0, 1);
+  yDirSlider.parent(controlsDiv);
+  yDirSlider.style('width', '200px');
+  yDirSlider.style('display', 'block');
+  yDirSlider.style('margin-top', '6px');
+
+  // Debug (bottom-left)
+  debugDiv = createDiv('');
+  debugDiv.style('position', 'fixed');
+  debugDiv.style('bottom', '20px');
+  debugDiv.style('left', '20px');
+  debugDiv.style('color', '#0f0');
+  debugDiv.style('background', 'rgba(0,0,0,0.8)');
+  debugDiv.style('padding', '15px');
+  debugDiv.style('border-radius', '10px');
+  debugDiv.style('font-family', 'monospace');
+  debugDiv.style('font-size', '14px');
+
+  fadePow = new Array(FIXED_BOX_COUNT).fill(2.0);
+
+  // NEW: auto-load saved settings if present
+  loadSettings(true);
+
+  updateDebug();
+}
+
+function getSettingsObject() {
+  return {
+    color1: int(colorSlider1.value()),
+    color2: int(colorSlider2.value()),
+    bpm: int(bpm),
+    xDir: int(xDirSlider.value()),
+    yDir: int(yDirSlider.value())
+  };
+}
+
+function applySettingsObject(s) {
+  if (!s) return;
+
+  if (typeof s.color1 === 'number') colorSlider1.value(constrain(s.color1, 0, PALETTE.length - 1));
+  if (typeof s.color2 === 'number') colorSlider2.value(constrain(s.color2, 0, PALETTE.length - 1));
+  if (typeof s.bpm === 'number') bpm = int(constrain(s.bpm, 30, 240));
+  if (typeof s.xDir === 'number') xDirSlider.value(constrain(s.xDir, 0, 1));
+  if (typeof s.yDir === 'number') yDirSlider.value(constrain(s.yDir, 0, 1));
+
+  if (isPlaying) {
+    stopBeats();
+    startBeats();
+  }
+
+  updateDebug();
+}
+
+function saveSettings() {
+  let s = getSettingsObject();
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  } catch (e) {}
+  updateDebug();
+}
+
+function loadSettings(isAuto = false) {
+  let raw = null;
+  try {
+    raw = localStorage.getItem(SETTINGS_KEY);
+  } catch (e) {}
+
+  if (!raw) {
+    if (!isAuto) updateDebug();
+    return;
+  }
+
+  let s = null;
+  try {
+    s = JSON.parse(raw);
+  } catch (e) {
+    s = null;
+  }
+
+  applySettingsObject(s);
+}
+
+function clearSettings() {
+  try {
+    localStorage.removeItem(SETTINGS_KEY);
+  } catch (e) {}
+  updateDebug();
+}
+
+function randomizeSettings() {
+  colorSlider1.value(int(random(0, PALETTE.length)));
+  colorSlider2.value(int(random(0, PALETTE.length)));
+  bpm = int(random(30, 241));
+  xDirSlider.value(int(random(0, 2)));
+  yDirSlider.value(int(random(0, 2)));
+
+  if (isPlaying) {
+    stopBeats();
+    startBeats();
+  }
+
+  updateDebug();
+}
+
+function randomizeFadeShape() {
+  for (let i = 0; i < FIXED_BOX_COUNT; i++) {
+    fadePow[i] = random(1.2, 3.8); // gentle shaping
+  }
+}
+
+function draw() {
+  background(0);
+
+  let count = FIXED_BOX_COUNT;
+  let w = FIXED_BOX_WIDTH;
+
+  let totalW = count * w + (count - 1) * BOX_GAP;
+  let startX = -totalW / 2 + w / 2;
+
+  // ===== CEILING & FLOOR LINES =====
+  stroke(120);
+  strokeWeight(2);
+  noFill();
+
+  let leftX = startX - w / 2;
+  let rightX = startX + (count - 1) * (w + BOX_GAP) + w / 2;
+
+  line(leftX, -BOX_H / 2, 0, rightX, -BOX_H / 2, 0);
+  line(leftX,  BOX_H / 2, 0, rightX,  BOX_H / 2, 0);
+
+  // ===== 3D BOXES =====
+  noStroke();
+  ambientLight(255);
+  directionalLight(255, 255, 255, 0, 0, 1);
+
+  let now = millis();
+
+  let palA = PALETTE[int(colorSlider1.value())];
+  let palB = PALETTE[int(colorSlider2.value())];
+
+  let xDir = int(xDirSlider.value());
+  let yDir = int(yDirSlider.value());
+
+  for (let i = 0; i < count; i++) {
+    let x = startX + i * (w + BOX_GAP);
+
+    let xIdx = (xDir === 0) ? i : (count - 1 - i);
+    let yIdx = (yDir === 0) ? i : (count - 1 - i);
+
+    // ALWAYS keep soft light; if not playing, still show floor level
+    let a = LIGHT_FLOOR;
+
+    if (flashOn) {
+      let localTX = (now - flashStartTime) - (xIdx * FLASH_STAGGER_MS);
+      let localTY = (now - flashStartTime) - (yIdx * FLASH_STAGGER_MS);
+
+      let ax = fadeEnvelopeSoft(localTX, i);
+      let ay = fadeEnvelopeSoft(localTY, i);
+
+      a = min(LIGHT_CEIL, LIGHT_FLOOR + max(ax, ay) * (LIGHT_CEIL - LIGHT_FLOOR));
+    }
+
+    push();
+    translate(x, 0, 0);
+
+    let t = (count <= 1) ? 0.0 : (i / (count - 1));
+
+    let topR = lerp(palA.top[0], palB.top[0], t);
+    let topG = lerp(palA.top[1], palB.top[1], t);
+    let topB = lerp(palA.top[2], palB.top[2], t);
+
+    let botR = lerp(palA.bot[0], palB.bot[0], t);
+    let botG = lerp(palA.bot[1], palB.bot[1], t);
+    let botB = lerp(palA.bot[2], palB.bot[2], t);
+
+    if (yDir === 1) {
+      let tr = topR, tg = topG, tb = topB;
+      topR = botR; topG = botG; topB = botB;
+      botR = tr;   botG = tg;   botB = tb;
+    }
+
+    // gradient face with soft, never-zero alpha
+    push();
+    translate(0, 0, BOX_D / 2 + 0.5);
+    noStroke();
+    beginShape(QUADS);
+
+    fill(topR, topG, topB, 235 * a);
+    vertex(-w / 2, -BOX_H / 2, 0);
+    vertex(w / 2, -BOX_H / 2, 0);
+
+    fill(botR, botG, botB, 180 * a);
+    vertex(w / 2, BOX_H / 2, 0);
+    vertex(-w / 2, BOX_H / 2, 0);
+
+    endShape();
+    pop();
+
+    let m = lerp(51, 140, a);
+    ambientMaterial(m);
+    box(w, BOX_H, BOX_D);
+
+    pop();
+  }
+}
+
+function fadeEnvelopeSoft(localT, i) {
+  if (localT < 0 || localT > FLASH_DURATION_MS) return 0.0;
+
+  let u = localT / FLASH_DURATION_MS; // 0..1
+  let s = sin(PI * u);
+
+  let p = fadePow[i] || 2.0;
+  return pow(constrain(s, 0, 1), p);
+}
+
+function startBeats() {
+  beatCount = 0;
+  flash();
+  intervalId = setInterval(flash, (60 / bpm) * 1000);
+  updateDebug();
+}
+
+function stopBeats() {
+  if (intervalId) clearInterval(intervalId);
+  if (flashOffTimeout) clearTimeout(flashOffTimeout);
+  intervalId = null;
+  updateDebug();
+}
+
+function flash() {
+  beatCount++;
+
+  randomizeFadeShape();
+
+  flashOn = true;
+  flashStartTime = millis();
+
+  if (flashOffTimeout) clearTimeout(flashOffTimeout);
+
+  flashOffTimeout = setTimeout(() => {
+    flashOn = false;
+  }, FLASH_DURATION_MS + (FIXED_BOX_COUNT - 1) * FLASH_STAGGER_MS);
+
+  if (audioContext) {
+    let osc = audioContext.createOscillator();
+    let gain = audioContext.createGain();
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.frequency.value = 80;
+    osc.type = 'sine';
+
+    gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
+
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.12);
+  }
+
+  updateDebug();
+}
+
+function updateDebug() {
+  let palNameA = PALETTE[int(colorSlider1 ? colorSlider1.value() : 3)].name;
+  let palNameB = PALETTE[int(colorSlider2 ? colorSlider2.value() : 0)].name;
+  let xName = ['L→R', 'R→L'][int(xDirSlider ? xDirSlider.value() : 0)];
+  let yName = ['TOP→BOTTOM', 'BOTTOM→TOP'][int(yDirSlider ? yDirSlider.value() : 0)];
+
+  // NEW: show saved settings presence + raw numbers
+  let hasSaved = false;
+  try { hasSaved = !!localStorage.getItem(SETTINGS_KEY); } catch (e) {}
+
+  debugDiv.html(
+    'Status: ' + (isPlaying ? '<span style="color:#f00;">PLAYING</span>' : 'STOPPED') + '<br>' +
+    'Beat: ' + beatCount + '<br>' +
+    'BPM: ' + bpm + '<br>' +
+    'Color 1: ' + palNameA + ' (' + int(colorSlider1.value()) + ')<br>' +
+    'Color 2: ' + palNameB + ' (' + int(colorSlider2.value()) + ')<br>' +
+    'X: ' + xName + ' (' + int(xDirSlider.value()) + ')<br>' +
+    'Y: ' + yName + ' (' + int(yDirSlider.value()) + ')<br>' +
+    'Saved: ' + (hasSaved ? '<span style="color:#0f0;">YES</span>' : '<span style="color:#f00;">NO</span>')
+  );
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>
+

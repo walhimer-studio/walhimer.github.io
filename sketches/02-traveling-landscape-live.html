@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traveling Landscape — Mark Walhimer</title>
+
+<!-- ========================================================= -->
+<!-- MASTER TEMPLATE — DO NOT MODIFY FOR INDIVIDUAL ARTWORKS  -->
+<!-- ========================================================= -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.11/p5.min.js"></script>
+
+<style>
+
+/* ================= GLOBAL TOKENS ================= */
+
+:root{
+  --bg:#000;
+  --text:#fff;
+  --accent:#00ffcc;
+  --panel-bg:rgba(0,0,0,0.65);
+  --font-serif: Georgia, serif;
+  --font-mono: "Courier New", monospace;
+}
+
+body{
+  margin:0;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-serif);
+}
+
+/* ================= STANDARD UI ================= */
+
+#title{
+  position:absolute;
+  top:20px;
+  left:20px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.12em;
+  opacity:0.8;
+}
+
+#info{
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  background:var(--panel-bg);
+  padding:16px;
+  font-size:12px;
+  max-width:340px;
+  border-radius:8px;
+}
+
+#fullscreenBtn{
+  position:absolute;
+  top:20px;
+  right:20px;
+  border:1px solid rgba(255,255,255,0.3);
+  background:var(--panel-bg);
+  padding:8px 12px;
+  font-size:10px;
+  cursor:pointer;
+}
+
+canvas{
+  display:block;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ========================================================= -->
+<!-- ARTWORK METADATA (EDIT PER ARTWORK)                      -->
+<!-- ========================================================= -->
+
+<div id="title">
+Traveling Landscape · MARK WALHIMER
+</div>
+
+<div id="info">
+Artwork description goes here.
+</div>
+
+<button id="fullscreenBtn">FULL</button>
+
+<!-- ========================================================= -->
+<!-- SHARED UTILITIES (DO NOT EDIT PER ARTWORK)               -->
+<!-- ========================================================= -->
+
+<script>
+
+document.getElementById("fullscreenBtn").onclick=()=>{
+
+    if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen()
+    }else{
+        document.exitFullscreen()
+    }
+
+}
+
+</script>
+
+<!-- ========================================================= -->
+<!-- ARTWORK DNA SECTION (SAFE TO MODIFY)                     -->
+<!-- ========================================================= -->
+
+<script>
+
+let particles=[]
+
+function setup(){
+
+createCanvas(windowWidth,windowHeight)
+colorMode(HSB,360,100,100)
+
+}
+
+function draw(){
+
+background(0,0,5)
+
+}
+
+function windowResized(){
+
+resizeCanvas(windowWidth,windowHeight)
+
+}
+
+</script>
+
+</body>
+</html>

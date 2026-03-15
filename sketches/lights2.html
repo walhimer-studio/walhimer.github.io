@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FLASH BOX (Fixed Timing)</title>
+  <style>
+    html, body { margin:0; padding:0; overflow:hidden; background:#000; }
+    canvas { display:block; }
+  </style>
+
+  <!-- p5.js ONLY (no p5.sound) -->
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+</head>
+<body>
+<script>
+// P5.JS WEBGL — FLASH BOX (FIXED TIMING)
+// ONLY CHANGE:
+// - Increased light output for every flashing box (brighter + more opaque gradient face, brighter box material while flashing)
+
+let isPlaying = false;
+let bpm = 70;
+let beatCount = 0;
+let intervalId = null;
+
+// native WebAudio (no p5.sound dependency)
+let audioContext = null;
+
+let flashOn = false;
+let flashOffTimeout = null;
+let flashStartTime = 0;
+
+let controlsDiv, playBtn;
+let debugDiv;
+
+const BOX_H = 900;
+const BOX_GAP = 10;
+
+const FIXED_BOX_COUNT = 80;
+const FIXED_BOX_WIDTH = 10;
+
+const BOX_D = 60;
+
+const FLASH_DURATION_MS = 1000;
+const FLASH_STAGGER_MS = 2;
+
+// sliders
+let colorSlider1;
+let colorSlider2;
+let xDirSlider;
+let yDirSlider;
+
+// palette (pink, yellow, orange, green, white)
+const PALETTE = [
+  { name: 'PINK',   top: [255, 120, 200], bot: [255, 80, 170] },
+  { name: 'YELLOW', top: [255, 235, 120], bot: [255, 210, 80] },
+  { name: 'ORANGE', top: [255, 180, 90],  bot: [255, 140, 60] },
+  { name: 'GREEN',  top: [120, 255, 180], bot: [60, 200, 120] },
+  { name: 'WHITE',  top: [255, 255, 255], bot: [210, 210, 210] }
+];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  pixelDensity(1);
+  frameRate(60);
+
+  // Controls container — TOP RIGHT (CSS ONLY)
+  controlsDiv = createDiv();
+  controlsDiv.style('position', 'fixed');
+  controlsDiv.style('top', '20px');
+  controlsDiv.style('right', '20px');
+  controlsDiv.style('background', 'rgba(0,0,0,0.8)');
+  controlsDiv.style('padding', '12px');
+  controlsDiv.style('border-radius', '10px');
+  controlsDiv.style('font-family', 'Arial, sans-serif');
+
+  // Play button
+  playBtn = createButton('▶ START (Click for Sound)');
+  playBtn.parent(controlsDiv);
+  playBtn.style('padding', '15px');
+  playBtn.style('font-size', '20px');
+  playBtn.style('font-weight', 'bold');
+  playBtn.style('cursor', 'pointer');
+  playBtn.style('border', 'none');
+  playBtn.style('border-radius', '5px');
+  playBtn.style('background', '#4caf50');
+  playBtn.style('color', 'white');
+
+  playBtn.mousePressed(() => {
+    // Create or resume native WebAudio on user gesture
+    if (!audioContext) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AC();
+    } else if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
+    isPlaying = !isPlaying;
+
+    if (isPlaying) {
+      playBtn.html('⏸ STOP');
+      playBtn.style('background', '#ff6b6b');
+      startBeats();
+    } else {
+      playBtn.html('▶ START');
+      playBtn.style('background', '#4caf50');
+      stopBeats();
+      flashOn = false;
+    }
+  });
+
+  // COLOR 1 label + slider
+  let colorLabel1 = createDiv('COLOR 1');
+  colorLabel1.parent(controlsDiv);
+  colorLabel1.style('margin-top', '10px');
+  colorLabel1.style('font-size', '14px');
+  colorLabel1.style('color', '#bbb');
+
+  colorSlider1 = createSlider(0, PALETTE.length - 1, 3, 1); // default GREEN
+  colorSlider1.parent(controlsDiv);
+  colorSlider1.style('width', '200px');
+  colorSlider1.style('display', 'block');
+  colorSlider1.style('margin-top', '6px');
+
+  // COLOR 2 label + slider
+  let colorLabel2 = createDiv('COLOR 2');
+  colorLabel2.parent(controlsDiv);
+  colorLabel2.style('margin-top', '10px');
+  colorLabel2.style('font-size', '14px');
+  colorLabel2.style('color', '#bbb');
+
+  colorSlider2 = createSlider(0, PALETTE.length - 1, 0, 1); // default PINK
+  colorSlider2.parent(controlsDiv);
+  colorSlider2.style('width', '200px');
+  colorSlider2.style('display', 'block');
+  colorSlider2.style('margin-top', '6px');
+
+  // X SWEEP slider (0=L→R, 1=R→L)
+  let xLabel = createDiv('X SWEEP');
+  xLabel.parent(controlsDiv);
+  xLabel.style('margin-top', '10px');
+  xLabel.style('font-size', '14px');
+  xLabel.style('color', '#bbb');
+
+  xDirSlider = createSlider(0, 1, 0, 1);
+  xDirSlider.parent(controlsDiv);
+  xDirSlider.style('width', '200px');
+  xDirSlider.style('display', 'block');
+  xDirSlider.style('margin-top', '6px');
+
+  // Y SWEEP slider (0=TOP→BOTTOM, 1=BOTTOM→TOP)
+  let yLabel = createDiv('Y SWEEP');
+  yLabel.parent(controlsDiv);
+  yLabel.style('margin-top', '10px');
+  yLabel.style('font-size', '14px');
+  yLabel.style('color', '#bbb');
+
+  yDirSlider = createSlider(0, 1, 0, 1);
+  yDirSlider.parent(controlsDiv);
+  yDirSlider.style('width', '200px');
+  yDirSlider.style('display', 'block');
+  yDirSlider.style('margin-top', '6px');
+
+  // Debug (bottom-left)
+  debugDiv = createDiv('');
+  debugDiv.style('position', 'fixed');
+  debugDiv.style('bottom', '20px');
+  debugDiv.style('left', '20px');
+  debugDiv.style('color', '#0f0');
+  debugDiv.style('background', 'rgba(0,0,0,0.8)');
+  debugDiv.style('padding', '15px');
+  debugDiv.style('border-radius', '10px');
+  debugDiv.style('font-family', 'monospace');
+  debugDiv.style('font-size', '14px');
+
+  updateDebug();
+}
+
+function draw() {
+  background(0);
+
+  let count = FIXED_BOX_COUNT;
+  let w = FIXED_BOX_WIDTH;
+
+  let totalW = count * w + (count - 1) * BOX_GAP;
+  let startX = -totalW / 2 + w / 2;
+
+  // ===== CEILING & FLOOR LINES =====
+  stroke(120);
+  strokeWeight(2);
+  noFill();
+
+  let leftX = startX - w / 2;
+  let rightX = startX + (count - 1) * (w + BOX_GAP) + w / 2;
+
+  line(leftX, -BOX_H / 2, 0, rightX, -BOX_H / 2, 0);
+  line(leftX,  BOX_H / 2, 0, rightX,  BOX_H / 2, 0);
+
+  // ===== 3D BOXES =====
+  noStroke();
+
+  ambientLight(255);
+  directionalLight(255, 255, 255, 0, 0, 1);
+
+  let now = millis();
+
+  let palA = PALETTE[int(colorSlider1.value())];
+  let palB = PALETTE[int(colorSlider2.value())];
+
+  let xDir = int(xDirSlider.value()); // 0 L→R, 1 R→L
+  let yDir = int(yDirSlider.value()); // 0 TOP→BOTTOM, 1 BOTTOM→TOP
+
+  for (let i = 0; i < count; i++) {
+    let x = startX + i * (w + BOX_GAP);
+
+    let xIdx = (xDir === 0) ? i : (count - 1 - i);
+    let yIdx = (yDir === 0) ? i : (count - 1 - i);
+
+    let boxIsFlashing = false;
+    if (flashOn) {
+      let localTX = (now - flashStartTime) - (xIdx * FLASH_STAGGER_MS);
+      let localTY = (now - flashStartTime) - (yIdx * FLASH_STAGGER_MS);
+      boxIsFlashing =
+        ((localTX >= 0 && localTX <= FLASH_DURATION_MS) ||
+         (localTY >= 0 && localTY <= FLASH_DURATION_MS));
+    }
+
+    push();
+    translate(x, 0, 0);
+
+    if (boxIsFlashing) {
+      let t = (count <= 1) ? 0.0 : (i / (count - 1));
+
+      let topR = lerp(palA.top[0], palB.top[0], t);
+      let topG = lerp(palA.top[1], palB.top[1], t);
+      let topB = lerp(palA.top[2], palB.top[2], t);
+
+      let botR = lerp(palA.bot[0], palB.bot[0], t);
+      let botG = lerp(palA.bot[1], palB.bot[1], t);
+      let botB = lerp(palA.bot[2], palB.bot[2], t);
+
+      if (yDir === 1) {
+        let tr = topR, tg = topG, tb = topB;
+        topR = botR; topG = botG; topB = botB;
+        botR = tr;   botG = tg;   botB = tb;
+      }
+
+      // translucent gradient "front face" in front of the 3D box (BRIGHTER OUTPUT)
+      push();
+      translate(0, 0, BOX_D / 2 + 0.5);
+      noStroke();
+      beginShape(QUADS);
+
+      fill(topR, topG, topB, 235);
+      vertex(-w / 2, -BOX_H / 2, 0);
+      vertex(w / 2, -BOX_H / 2, 0);
+
+      fill(botR, botG, botB, 180);
+      vertex(w / 2, BOX_H / 2, 0);
+      vertex(-w / 2, BOX_H / 2, 0);
+
+      endShape();
+      pop();
+
+      ambientMaterial(110);
+      box(w, BOX_H, BOX_D);
+    } else {
+      ambientMaterial(51);
+      box(w, BOX_H, BOX_D);
+    }
+
+    pop();
+  }
+}
+
+function startBeats() {
+  beatCount = 0;
+  flash();
+  intervalId = setInterval(flash, (60 / bpm) * 1000);
+  updateDebug();
+}
+
+function stopBeats() {
+  if (intervalId) clearInterval(intervalId);
+  if (flashOffTimeout) clearTimeout(flashOffTimeout);
+  intervalId = null;
+  updateDebug();
+}
+
+function flash() {
+  beatCount++;
+
+  flashOn = true;
+  flashStartTime = millis();
+
+  if (flashOffTimeout) clearTimeout(flashOffTimeout);
+
+  flashOffTimeout = setTimeout(() => {
+    flashOn = false;
+  }, FLASH_DURATION_MS + (FIXED_BOX_COUNT - 1) * FLASH_STAGGER_MS);
+
+  // native WebAudio beep
+  if (audioContext) {
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.frequency.value = 80;
+    osc.type = 'sine';
+
+    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+    osc.start();
+    osc.stop(audioContext.currentTime + 0.1);
+  }
+
+  updateDebug();
+}
+
+function updateDebug() {
+  let palNameA = PALETTE[int(colorSlider1 ? colorSlider1.value() : 3)].name;
+  let palNameB = PALETTE[int(colorSlider2 ? colorSlider2.value() : 0)].name;
+  let xName = ['L→R', 'R→L'][int(xDirSlider ? xDirSlider.value() : 0)];
+  let yName = ['TOP→BOTTOM', 'BOTTOM→TOP'][int(yDirSlider ? yDirSlider.value() : 0)];
+
+  debugDiv.html(
+    'Status: ' + (isPlaying ? '<span style="color:#f00;">PLAYING</span>' : 'STOPPED') + '<br>' +
+    'Beat: ' + beatCount + '<br>' +
+    'BPM: ' + bpm + '<br>' +
+    'Color 1: ' + palNameA + '<br>' +
+    'Color 2: ' + palNameB + '<br>' +
+    'X: ' + xName + '<br>' +
+    'Y: ' + yName
+  );
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>
+

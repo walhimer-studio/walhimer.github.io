@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Emergent DNA Studio</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1620;
+      --panel2:#121c28;
+      --text:#e8eef6;
+      --muted:#93a4b8;
+      --line:rgba(255,255,255,0.08);
+      --accent:#5fd3ff;
+      --good:#45d483;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;}
+
+    .app{
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 14px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+      border-bottom:1px solid var(--line);
+      min-height:56px;
+    }
+
+    .brand{
+      font-weight:650;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .brand .dot{
+      width:9px;height:9px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 4px rgba(95,211,255,0.12);
+    }
+
+    .spacer{flex:1;}
+
+    button{
+      background:rgba(255,255,255,0.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:10px;
+      padding:9px 14px;
+      font-size:13px;
+      cursor:pointer;
+      transition:all .2s;
+    }
+    button:hover{background:rgba(255,255,255,0.09);}
+    button.primary{background:rgba(95,211,255,0.16);border-color:rgba(95,211,255,0.35);}
+
+    .workspace{
+      flex:1;
+      display:flex;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .panel{
+      display:flex;
+      flex-direction:column;
+      background:var(--panel);
+      border-right:1px solid var(--line);
+      overflow:hidden;
+      transition:width 0.3s ease, min-width 0.3s ease;
+    }
+
+    .panel.collapsed{
+      width:0 !important;
+      min-width:0 !important;
+      border:none;
+    }
+
+    .panel-header{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      font-size:13px;
+      font-weight:600;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .panel-content{
+      flex:1;
+      overflow:auto;
+      padding:12px;
+    }
+
+    .resizer{
+      width:10px;
+      background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border-left:1px solid var(--line);
+      border-right:1px solid var(--line);
+      cursor:col-resize;
+      position:relative;
+      flex-shrink:0;
+    }
+    .resizer:hover{background:rgba(95,211,255,0.08);}
+    .resizer::after{
+      content:"";
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:3px;
+      height:40px;
+      border-radius:2px;
+      background:rgba(255,255,255,0.2);
+    }
+
+    body.resizing{cursor:col-resize;user-select:none;}
+    body.resizing *{user-select:none;}
+
+    .project{
+      padding:10px 12px;
+      border-radius:8px;
+      border:1px solid transparent;
+      cursor:pointer;
+      margin-bottom:6px;
+      transition:all .2s;
+    }
+    .project:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.08);}
+    .project.active{background:rgba(95,211,255,0.12);border-color:rgba(95,211,255,0.28);}
+    .project .name{font-family:var(--mono);font-size:13px;margin-bottom:4px;}
+    .project .date{color:var(--muted);font-size:11px;}
+
+    .editor-panel{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      background:var(--panel2);
+      min-width:300px;
+    }
+
+    .editor-header{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+
+    input.name-input{
+      flex:1;
+      background:transparent;
+      border:none;
+      color:var(--text);
+      font-family:var(--mono);
+      font-size:13px;
+      outline:none;
+      padding:6px 8px;
+    }
+
+    textarea{
+      flex:1;
+      background:transparent;
+      border:none;
+      color:var(--text);
+      font-family:var(--mono);
+      font-size:13px;
+      line-height:1.5;
+      padding:16px;
+      resize:none;
+      outline:none;
+    }
+
+    .preview-panel{
+      background:#000;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    #preview{
+      flex:1;
+      border:none;
+      width:100%;
+      height:100%;
+      background:#fff;
+    }
+
+    footer{
+      display:flex;
+      align-items:center;
+      padding:0 14px;
+      height:32px;
+      background:var(--panel);
+      border-top:1px solid var(--line);
+      font-size:11px;
+      color:var(--muted);
+      gap:12px;
+    }
+
+    .status{flex:1;}
+    .badge{
+      padding:4px 10px;
+      border-radius:6px;
+      font-weight:600;
+      font-size:10px;
+    }
+    .badge.good{background:rgba(69,212,131,0.15);color:var(--good);}
+
+    .toggle-btn{
+      padding:6px 10px;
+      font-size:11px;
+      background:rgba(255,255,255,0.04);
+      border:1px solid var(--line);
+      border-radius:6px;
+      color:var(--muted);
+      cursor:pointer;
+      transition:all .2s;
+    }
+    .toggle-btn:hover{background:rgba(255,255,255,0.08);}
+    .toggle-btn.active{background:rgba(95,211,255,0.12);border-color:rgba(95,211,255,0.28);color:var(--accent);}
+
+    .icon-btn{
+      width:28px;
+      height:28px;
+      padding:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="brand">
+      <span class="dot"></span>
+      <span>Emergent DNA Studio</span>
+    </div>
+    
+    <button class="toggle-btn" id="toggleProjects">📁 Projects</button>
+    <button class="toggle-btn active" id="toggleEditor">📝 Editor</button>
+    <button class="toggle-btn active" id="togglePreview">👁 Preview</button>
+    
+    <div class="spacer"></div>
+    
+    <button id="newBtn">+ New</button>
+    <button id="saveBtn" class="primary">Save</button>
+    <button id="runBtn" class="primary">▶ Run</button>
+  </header>
+
+  <div class="workspace">
+    <!-- Projects Panel -->
+    <div class="panel" id="projectsPanel" style="width:280px;min-width:200px;">
+      <div class="panel-header">
+        <span>Projects</span>
+      </div>
+      <div class="panel-content" id="projectsList"></div>
+    </div>
+
+    <div class="resizer" data-resize="projects"></div>
+
+    <!-- Editor Panel -->
+    <div class="editor-panel" id="editorPanel">
+      <div class="editor-header">
+        <input type="text" class="name-input" id="nameInput" placeholder="Untitled" />
+      </div>
+      <textarea id="editor" placeholder="// Write your p5.js code here..." spellcheck="false"></textarea>
+    </div>
+
+    <div class="resizer" data-resize="preview"></div>
+
+    <!-- Preview Panel -->
+    <div class="panel preview-panel" id="previewPanel" style="width:600px;min-width:300px;">
+      <div class="panel-header">
+        <span>Preview</span>
+        <button class="icon-btn" id="popoutBtn" title="Open in new window">⤢</button>
+      </div>
+      <iframe id="preview"></iframe>
+    </div>
+  </div>
+
+  <footer>
+    <span class="status" id="status">Ready</span>
+    <span class="badge good" id="badge">●</span>
+  </footer>
+</div>
+
+<script>
+// Storage
+const LS_PROJECTS = "ednastudio_projects";
+const LS_ACTIVE = "ednastudio_active";
+const LS_LAYOUT = "ednastudio_layout";
+
+let projects = [];
+let activeId = null;
+
+const el = id => document.getElementById(id);
+
+// Load/Save
+function loadProjects() {
+  try {
+    const raw = localStorage.getItem(LS_PROJECTS);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveProjects() {
+  localStorage.setItem(LS_PROJECTS, JSON.stringify(projects));
+}
+
+function ensureProject() {
+  if (projects.length === 0) {
+    projects.push({
+      id: Date.now().toString(),
+      name: "Example: Centered Gradient",
+      code: `let colors = [];
+let shapes = [];
+
+function setup() {
+  pixelDensity(2);
+  createCanvas(600, 600, WEBGL);
+  colorMode(HSB, 360, 100, 100, 100);
+
+  colors = [
+    [color(0, 100, 100, 30), color(45, 100, 100, 30)],
+    [color(180, 100, 100, 30), color(240, 100, 100, 30)],
+    [color(300, 100, 100, 30), color(60, 100, 100, 30)]
+  ];
+
+  for (let j = 0; j < 6; j++) {
+    let w = random(100, 400);
+    let h = random(100, 400);
+    shapes.push({
+      w: w,
+      h: h,
+      colorSet: random(colors)
+    });
+  }
+
+  noLoop();
+}
+
+function draw() {
+  background(255);
+  
+  for (let shape of shapes) {
+    push();
+    let c1 = shape.colorSet[0];
+    let c2 = shape.colorSet[1];
+    drawGradient(shape.w, shape.h, c1, c2);
+    pop();
+  }
+}
+
+function drawGradient(w, h, c1, c2) {
+  noStroke();
+  beginShape();
+  fill(c1);
+  vertex(-w/2, -h/2, 0);
+  fill(c2);
+  vertex(w/2, -h/2, 0);
+  vertex(w/2, h/2, 0);
+  vertex(-w/2, h/2, 0);
+  endShape(CLOSE);
+}`,
+      created: Date.now(),
+      modified: Date.now()
+    });
+    saveProjects();
+  }
+}
+
+function renderProjects() {
+  const list = el("projectsList");
+  if (projects.length === 0) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">No projects</div>';
+    return;
+  }
+
+  list.innerHTML = projects.map(p => {
+    const date = new Date(p.modified).toLocaleDateString();
+    return `
+      <div class="project ${p.id === activeId ? 'active' : ''}" onclick="selectProject('${p.id}')">
+        <div class="name">${p.name || 'Untitled'}</div>
+        <div class="date">${date}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectProject(id) {
+  saveActive();
+  activeId = id;
+  localStorage.setItem(LS_ACTIVE, id);
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  
+  el("nameInput").value = p.name || '';
+  el("editor").value = p.code || '';
+  renderProjects();
+  setStatus("Loaded: " + p.name);
+}
+
+function getActive() {
+  return projects.find(p => p.id === activeId);
+}
+
+function saveActive() {
+  const p = getActive();
+  if (!p) return;
+  
+  p.name = (el("nameInput").value || "Untitled").trim();
+  p.code = el("editor").value;
+  p.modified = Date.now();
+  
+  saveProjects();
+  renderProjects();
+  setStatus("Saved: " + p.name);
+}
+
+function createProject() {
+  const proj = {
+    id: Date.now().toString(),
+    name: "Untitled",
+    code: `function setup() {
+  createCanvas(600, 600);
+}
+
+function draw() {
+  background(220);
+  
+  // Your code here
+  
+}`,
+    created: Date.now(),
+    modified: Date.now()
+  };
+  
+  projects.push(proj);
+  saveProjects();
+  selectProject(proj.id);
+}
+
+function runPreview() {
+  const p = getActive();
+  if (!p) return;
+  
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { 
+      margin: 0; 
+      padding: 0; 
+      overflow: hidden; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #fff;
+    }
+    canvas { display: block; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"><\/script>
+</head>
+<body>
+  <script>${p.code}<\/script>
+</body>
+</html>`;
+  
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  el("preview").src = url;
+  
+  setStatus("Running: " + p.name);
+}
+
+function setStatus(msg) {
+  el("status").textContent = msg;
+}
+
+// Panel resizing
+let resizing = null;
+let startX = 0;
+let startWidth = 0;
+
+document.querySelectorAll('.resizer').forEach(resizer => {
+  resizer.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    resizing = resizer.dataset.resize;
+    startX = e.clientX;
+    
+    const panel = resizing === 'projects' 
+      ? el('projectsPanel') 
+      : el('previewPanel');
+    startWidth = panel.offsetWidth;
+    
+    document.body.classList.add('resizing');
+  });
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!resizing) return;
+  
+  const dx = e.clientX - startX;
+  const panel = resizing === 'projects' 
+    ? el('projectsPanel') 
+    : el('previewPanel');
+  
+  const newWidth = resizing === 'projects' 
+    ? startWidth + dx 
+    : startWidth - dx;
+  
+  if (newWidth >= 200 && newWidth <= 800) {
+    panel.style.width = newWidth + 'px';
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  if (resizing) {
+    resizing = null;
+    document.body.classList.remove('resizing');
+  }
+});
+
+// Panel toggles
+el('toggleProjects').onclick = function() {
+  const panel = el('projectsPanel');
+  panel.classList.toggle('collapsed');
+  this.classList.toggle('active');
+};
+
+el('toggleEditor').onclick = function() {
+  const panel = el('editorPanel');
+  panel.classList.toggle('collapsed');
+  this.classList.toggle('active');
+};
+
+el('togglePreview').onclick = function() {
+  const panel = el('previewPanel');
+  panel.classList.toggle('collapsed');
+  this.classList.toggle('active');
+};
+
+// Popout preview
+el('popoutBtn').onclick = function() {
+  const p = getActive();
+  if (!p) return;
+  
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${p.name}</title>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: #fff; }
+    canvas { display: block; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"><\/script>
+</head>
+<body>
+  <script>${p.code}<\/script>
+</body>
+</html>`;
+  
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+};
+
+// Init
+function init() {
+  projects = loadProjects();
+  ensureProject();
+  
+  const lastActive = localStorage.getItem(LS_ACTIVE);
+  activeId = (lastActive && projects.find(p => p.id === lastActive)) 
+    ? lastActive 
+    : projects[0].id;
+  
+  renderProjects();
+  selectProject(activeId);
+  
+  el("newBtn").onclick = createProject;
+  el("saveBtn").onclick = saveActive;
+  el("runBtn").onclick = runPreview;
+  
+  el("nameInput").addEventListener("input", () => {
+    const p = getActive();
+    if (p) {
+      p.name = (el("nameInput").value || "Untitled").trim();
+      renderProjects();
+    }
+  });
+  
+  // Keyboard shortcuts
+  window.addEventListener("keydown", (e) => {
+    const mod = e.metaKey || e.ctrlKey;
+    
+    if (mod && e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      saveActive();
+    }
+    
+    if (mod && e.key.toLowerCase() === "enter") {
+      e.preventDefault();
+      runPreview();
+    }
+  });
+}
+
+init();
+</script>
+
+</body>
+</html>

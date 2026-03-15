@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generative Art</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+  // Configuration constants
+  const CANVAS_SIZE = 800;
+  const COLUMN_COUNT = 3;
+  const TILE_COUNT = 3;
+  const GRADIENT_COUNT = 3;
+
+  // Layout constants
+  const BORDER_WIDTH = 600;
+  const BORDER_HEIGHT = 700;
+  const COLUMN_WIDTH = 200;
+  const COLUMN_HEIGHT = 700;
+  const COLUMN_SPACING = 200;
+  const COLUMN_START_X = 200;
+  const TILE_WIDTH = 150;
+  const TILE_HEIGHT = 233;
+  const TILE_Y_START = 166;
+  const TILE_Y_END = 863;
+
+  // Visual constants
+  const BORDER_STROKE_WEIGHT = 4;
+  const BLUR_AMOUNT = 10;
+  const ALPHA_MIN = 20;
+  const ALPHA_MAX = 100;
+  const BASE_ALPHA = 120;
+
+  // Color constants
+  const HUE_OPTIONS = [0, 30, 210];
+  const SATURATION_MIN = 80;
+  const SATURATION_MAX = 100;
+  const BRIGHTNESS_MIN = 80;
+  const BRIGHTNESS_MAX = 100;
+
+  // State
+  let borderColor;
+  const borderOn = true;
+
+  // --- Helpers ---
+
+  function random(a, b) {
+    if (Array.isArray(a)) return a[Math.floor(Math.random() * a.length)];
+    return Math.random() * (b - a) + a;
+  }
+
+  function map(value, inMin, inMax, outMin, outMax) {
+    return outMin + ((value - inMin) / (inMax - inMin)) * (outMax - outMin);
+  }
+
+  // HSB (0-360, 0-100, 0-100, 0-255) → {r,g,b,a} 0-255
+  function hsbToRgb(h, s, br, a255) {
+    s /= 100; br /= 100;
+    const k = n => (n + h / 60) % 6;
+    const f = n => br * (1 - s * Math.max(0, Math.min(k(n), 4 - k(n), 1)));
+    return {
+      r: Math.round(f(5) * 255),
+      g: Math.round(f(3) * 255),
+      b: Math.round(f(1) * 255),
+      a: Math.round(a255)
+    };
+  }
+
+  function makeColor(h, s, br, a255) {
+    return hsbToRgb(h, s, br, a255);
+  }
+
+  function lerpColor(c1, c2, t) {
+    return {
+      r: Math.round(c1.r + (c2.r - c1.r) * t),
+      g: Math.round(c1.g + (c2.g - c1.g) * t),
+      b: Math.round(c1.b + (c2.b - c1.b) * t),
+      a: Math.round(c1.a + (c2.a - c1.a) * t)
+    };
+  }
+
+  function getRandomColors(count) {
+    return Array.from({ length: count }, () => {
+      const hue = random(HUE_OPTIONS);
+      const saturation = random(SATURATION_MIN, SATURATION_MAX);
+      const brightness = random(BRIGHTNESS_MIN, BRIGHTNESS_MAX);
+      return makeColor(hue, saturation, brightness, BASE_ALPHA);
+    });
+  }
+
+  function interpolateColors(colors, x, width) {
+    const segmentLength = width / (colors.length - 1);
+    let segmentIndex = Math.floor(x / segmentLength);
+    // clamp
+    segmentIndex = Math.min(segmentIndex, colors.length - 2);
+    const startColor = colors[segmentIndex];
+    const endColor = colors[segmentIndex + 1];
+    const t = (x % segmentLength) / segmentLength;
+    return lerpColor(startColor, endColor, t);
+  }
+
+  // --- Main drawing ---
+
+  const canvas = document.getElementById('canvas');
+  canvas.width = CANVAS_SIZE;
+  canvas.height = CANVAS_SIZE;
+  const ctx = canvas.getContext('2d');
+
+  function drawBorder() {
+    const x = CANVAS_SIZE / 2 - BORDER_WIDTH / 2;
+    const y = CANVAS_SIZE / 2 - BORDER_HEIGHT / 2;
+    ctx.beginPath();
+    ctx.rect(x, y, BORDER_WIDTH, BORDER_HEIGHT);
+    if (borderOn) {
+      ctx.strokeStyle = 'rgba(128,128,128,0.78)';
+      ctx.lineWidth = BORDER_STROKE_WEIGHT;
+      ctx.stroke();
+    }
+  }
+
+  function drawGradientTile(x, y, colors) {
+    const offscreen = document.createElement('canvas');
+    offscreen.width = TILE_WIDTH;
+    offscreen.height = TILE_HEIGHT;
+    const oc = offscreen.getContext('2d');
+    const imageData = oc.createImageData(TILE_WIDTH, TILE_HEIGHT);
+    const data = imageData.data;
+
+    for (let i = 0; i < TILE_WIDTH; i++) {
+      const colorValue = interpolateColors(colors, i, TILE_WIDTH);
+      for (let j = 0; j < TILE_HEIGHT; j++) {
+        const index = (i + j * TILE_WIDTH) * 4;
+        const alpha = map(j, 0, TILE_HEIGHT, ALPHA_MIN, ALPHA_MAX);
+        data[index]     = colorValue.r;
+        data[index + 1] = colorValue.g;
+        data[index + 2] = colorValue.b;
+        data[index + 3] = alpha;
+      }
+    }
+    oc.putImageData(imageData, 0, 0);
+    // Draw centered at (x, y)
+    ctx.drawImage(offscreen, x - TILE_WIDTH / 2, y - TILE_HEIGHT / 2);
+  }
+
+  function drawTilesInColumn(x) {
+    for (let j = 0; j < TILE_COUNT; j++) {
+      const tileY = map(j, 0, TILE_COUNT, TILE_Y_START, TILE_Y_END);
+      const colors = getRandomColors(GRADIENT_COUNT);
+      drawGradientTile(x, tileY, colors);
+    }
+  }
+
+  function drawColumns() {
+    for (let i = 0; i < COLUMN_COUNT; i++) {
+      const x = COLUMN_START_X + COLUMN_SPACING * i;
+      drawTilesInColumn(x);
+    }
+  }
+
+  function applyBlurEffect() {
+    const centerY = CANVAS_SIZE / 2;
+    const blurWidth = 100;
+    const blurOffsetX = 50;
+    const blurOffsetY = 350;
+
+    for (let i = 0; i < COLUMN_COUNT; i++) {
+      const x = COLUMN_START_X + COLUMN_SPACING * i;
+      const srcX = x - blurOffsetX;
+      const srcY = centerY - blurOffsetY;
+
+      // Grab the region
+      const offscreen = document.createElement('canvas');
+      offscreen.width = blurWidth;
+      offscreen.height = COLUMN_HEIGHT;
+      const oc = offscreen.getContext('2d');
+      oc.drawImage(canvas, srcX, srcY, blurWidth, COLUMN_HEIGHT, 0, 0, blurWidth, COLUMN_HEIGHT);
+
+      // Apply blur via CSS filter
+      const blurred = document.createElement('canvas');
+      blurred.width = blurWidth;
+      blurred.height = COLUMN_HEIGHT;
+      const bc = blurred.getContext('2d');
+      bc.filter = `blur(${BLUR_AMOUNT}px)`;
+      bc.drawImage(offscreen, 0, 0);
+
+      // Stamp back centered at (x, centerY)
+      ctx.drawImage(blurred, x - blurWidth / 2, centerY - COLUMN_HEIGHT / 2);
+    }
+  }
+
+  // White background (HSB 0,0,255 = white)
+  ctx.fillStyle = 'rgb(255,255,255)';
+  ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+  drawBorder();
+  drawColumns();
+  applyBlurEffect();
+</script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Emergent Machines</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { margin: 0; overflow: hidden; background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    canvas { display: block; touch-action: none; }
+    #controls { position: fixed; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); width: 280px; max-height: 90vh; overflow-y: auto; z-index: 1000; transition: transform 0.3s ease, opacity 0.3s ease; }
+    #controls.hidden { transform: translateX(320px); opacity: 0; pointer-events: none; }
+    #controls h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #000; }
+    .control-group { margin-bottom: 20px; }
+    .control-group label { display: block; font-size: 12px; font-weight: 500; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .control-group input[type="range"] { width: 100%; height: 6px; border-radius: 3px; background: #e0e0e0; outline: none; -webkit-appearance: none; }
+    .control-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #000; cursor: pointer; }
+    .value-display { font-size: 14px; color: #000; font-weight: 600; margin-top: 4px; }
+    #toggleControls { position: fixed; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: none; border-radius: 50%; width: 48px; height: 48px; cursor: pointer; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 999; }
+    #info { position: fixed; bottom: 20px; left: 20px; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 12px 16px; border-radius: 8px; font-size: 12px; color: #666; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); }
+    #info strong { color: #000; display: block; margin-bottom: 4px; }
+    #startButton { width: 100%; background: black; color: white; border: none; padding: 20px; font-size: 18px; font-weight: 600; border-radius: 8px; cursor: pointer; margin-bottom: 20px; }
+    #startButton.started { display: none; }
+    #countdown { width: 100%; background: black; color: white; padding: 20px; font-size: 48px; font-weight: 700; border-radius: 8px; text-align: center; margin-bottom: 20px; display: none; }
+    #countdown.active { display: block; }
+    @media (max-width: 768px) { #controls { width: calc(100vw - 40px); bottom: 20px; top: auto; } #toggleControls { top: auto; bottom: 20px; } }
+  </style>
+</head>
+<body>
+  <button id="toggleControls">⚙️</button>
+  <div id="controls">
+    <h2>Machine Parameters</h2>
+    <button id="startButton">START</button>
+    <div id="countdown"></div>
+    <div class="control-group"><label>Lifespan</label><input type="range" id="lifespan" min="0" max="17" step="1" value="9"><div class="value-display" id="lifespanValue">6h</div></div>
+    <div class="control-group"><label>Rotation Speed</label><input type="range" id="rotSpeed" min="0.1" max="3.0" step="0.1" value="1.0"><div class="value-display" id="rotSpeedValue">1.0</div></div>
+    <div class="control-group"><label>Atmosphere</label><input type="range" id="breathSpeed" min="0.1" max="3.0" step="0.1" value="1.0"><div class="value-display" id="breathSpeedValue">1.0</div></div>
+    <div class="control-group"><label>Machine Scale</label><input type="range" id="boxSize" min="0.3" max="2.0" step="0.1" value="1.0"><div class="value-display" id="boxSizeValue">1.0</div></div>
+    <div class="control-group"><label>Core Glow</label><input type="range" id="alphaMin" min="0.05" max="0.8" step="0.05" value="0.35"><div class="value-display" id="alphaMinValue">0.35</div></div>
+    <div class="control-group"><label>Saturation</label><input type="range" id="saturation" min="0" max="100" step="5" value="80"><div class="value-display" id="saturationValue">80</div></div>
+    <div class="control-group"><label>Brightness</label><input type="range" id="brightness" min="50" max="100" step="5" value="95"><div class="value-display" id="brightnessValue">95</div></div>
+    <div class="control-group"><label>Hue Spread</label><input type="range" id="hueSpread" min="0" max="360" step="10" value="60"><div class="value-display" id="hueSpreadValue">60</div></div>
+    <div class="control-group"><label>Background</label><input type="range" id="bgColor" min="0" max="9" step="1" value="9"><div class="value-display" id="bgColorValue">Black</div></div>
+  </div>
+  <div id="info"><strong>Emergent Machines</strong>Mark Walhimer</div>
+
+  <script>
+    "use strict";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenId = urlParams.get('tokenId') || '0';
+    
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash = hash & hash;
+      }
+      return hash;
+    }
+
+    class SeededRandom {
+      constructor(seed) { this.seed = seed; }
+      random() {
+        const x = Math.sin(this.seed++) * 10000;
+        return x - Math.floor(x);
+      }
+    }
+
+    const seededRandom = new SeededRandom(hashCode(tokenId));
+
+    const BG_PRESETS = [
+      { label: "White", h: 0, s: 0, b: 100 }, { label: "Grey", h: 0, s: 0, b: 60 },
+      { label: "Beige", h: 40, s: 20, b: 85 }, { label: "Light Blue", h: 200, s: 30, b: 80 },
+      { label: "Pink", h: 330, s: 25, b: 90 }, { label: "Orange", h: 30, s: 35, b: 85 },
+      { label: "Yellow", h: 50, s: 30, b: 95 }, { label: "Cream", h: 45, s: 15, b: 95 },
+      { label: "Green", h: 120, s: 25, b: 75 }, { label: "Black", h: 0, s: 0, b: 10 }
+    ];
+
+    const LIFESPAN_OPTIONS = [
+      { label: "30s", seconds: 30, maxElements: 100 }, { label: "1m", seconds: 60, maxElements: 150 },
+      { label: "2m", seconds: 120, maxElements: 200 }, { label: "5m", seconds: 300, maxElements: 300 },
+      { label: "10m", seconds: 600, maxElements: 400 }, { label: "20m", seconds: 1200, maxElements: 500 },
+      { label: "30m", seconds: 1800, maxElements: 600 }, { label: "1h", seconds: 3600, maxElements: 800 },
+      { label: "2h", seconds: 7200, maxElements: 1000 }, { label: "6h", seconds: 21600, maxElements: 1200 },
+      { label: "12h", seconds: 43200, maxElements: 1400 }, { label: "1d", seconds: 86400, maxElements: 1600 },
+      { label: "2d", seconds: 172800, maxElements: 1800 }, { label: "1w", seconds: 604800, maxElements: 2000 }
+    ];
+
+    let params = { rotSpeed: 1.0, breathSpeed: 1.0, boxSize: 1.0, alphaMin: 0.35, saturation: 80, brightness: 95, hueSpread: 60, bgColor: 9, lifespan: 9 };
+    let machines = [], particles = [], hasStarted = false, startTime, countdownValue = 10;
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      colorMode(HSB, 360, 100, 100, 255);
+      buildState();
+      setupUI();
+    }
+
+    function buildState() {
+      machines = []; particles = [];
+      for (let i = 0; i < 10; i++) {
+        let m = {
+          x: seededRandom.random() * 800 - 400, y: seededRandom.random() * 400 - 200, z: seededRandom.random() * 600 - 300,
+          rotX: seededRandom.random() * TWO_PI, rotY: seededRandom.random() * TWO_PI, rotZ: seededRandom.random() * TWO_PI,
+          rsX: seededRandom.random() * 0.02, rsY: seededRandom.random() * 0.02, rsZ: seededRandom.random() * 0.02,
+          scale: 0.5 + seededRandom.random() * 0.7, hue: seededRandom.random() * 360, components: []
+        };
+        for (let j = 0; j < 8; j++) {
+          m.components.push({
+            type: Math.floor(seededRandom.random() * 4), x: seededRandom.random() * 160 - 80, y: seededRandom.random() * 160 - 80, z: seededRandom.random() * 160 - 80,
+            size: 15 + seededRandom.random() * 25, rs: 0.02 + seededRandom.random() * 0.06, phase: seededRandom.random() * TWO_PI
+          });
+        }
+        machines.push(m);
+      }
+      for (let i = 0; i < 500; i++) {
+        particles.push({
+          x: seededRandom.random() * 1600 - 800, y: seededRandom.random() * 1200 - 600, z: seededRandom.random() * 1600 - 800,
+          vx: seededRandom.random() - 0.5, vy: seededRandom.random() - 0.5, vz: seededRandom.random() - 0.5,
+          life: 100 + seededRandom.random() * 155, size: 2 + seededRandom.random() * 6, hue: seededRandom.random() * 360
+        });
+      }
+    }
+
+    function setupUI() {
+      const controls = Object.keys(params);
+      controls.forEach(name => {
+        const slider = document.getElementById(name);
+        const display = document.getElementById(name + 'Value');
+        slider.addEventListener('input', (e) => {
+          params[name] = parseFloat(e.target.value);
+          if (name === 'lifespan') display.textContent = LIFESPAN_OPTIONS[Math.floor(params[name])].label;
+          else if (name === 'bgColor') display.textContent = BG_PRESETS[Math.floor(params[name])].label;
+          else display.textContent = params[name];
+        });
+      });
+      document.getElementById('toggleControls').addEventListener('click', () => document.getElementById('controls').classList.toggle('hidden'));
+      document.getElementById('startButton').addEventListener('click', function() {
+        this.classList.add('started');
+        const cd = document.getElementById('countdown');
+        cd.classList.add('active');
+        let timer = setInterval(() => {
+          countdownValue--;
+          cd.textContent = countdownValue;
+          if (countdownValue <= 0) { clearInterval(timer); cd.style.display = 'none'; hasStarted = true; startTime = millis(); }
+        }, 1000);
+      });
+    }
+
+    function draw() {
+      const bg = BG_PRESETS[Math.floor(params.bgColor)];
+      background(bg.h, bg.s, bg.b);
+      const t = millis();
+
+      if (!hasStarted) {
+        push(); rotateY(t * 0.001); drawMachine(machines[0], true); pop();
+        return;
+      }
+
+      const elapsed = (t - startTime) / 1000;
+      const lifeData = LIFESPAN_OPTIONS[Math.floor(params.lifespan)];
+      const progress = Math.min(elapsed / lifeData.seconds, 1.0);
+      
+      // Camera
+      camera(cos(t * 0.0005 * params.rotSpeed) * 800, sin(t * 0.0004 * params.rotSpeed) * 600, sin(t * 0.0006 * params.rotSpeed) * 700 + 400, 0, 0, 0, 0, 1, 0);
+      ambientLight(280, 40, 30);
+      directionalLight(bg.h, 20, 80, -1, 0.5, -1);
+
+      drawBackgroundVolumes(t);
+
+      const visibleMachines = Math.floor(progress * machines.length);
+      const visibleParticles = Math.floor(progress * particles.length);
+
+      for (let i = 0; i < visibleMachines; i++) drawMachine(machines[i], false);
+      drawParticles(visibleParticles);
+    }
+
+    function drawBackgroundVolumes(t) {
+      push(); noFill();
+      for (let i = 0; i < 3; i++) {
+        push();
+        translate(cos(t * 0.001 * params.breathSpeed + i) * 300, sin(t * 0.0008 * params.breathSpeed + i) * 200, sin(t * 0.0012 * params.breathSpeed + i) * 400);
+        rotateX(t * 0.0005); rotateY(t * 0.0003);
+        for (let j = 0; j < 10; j++) {
+          stroke((t * 0.1 + j * 10) % 360, 50, 90, map(j, 0, 9, 80, 5));
+          if (i % 2 === 0) sphere(100 + j * 20); else torus(100 + j * 20, 30);
+        }
+        pop();
+      }
+      pop();
+    }
+
+    function drawMachine(m, isPreview) {
+      push();
+      if (!isPreview) translate(m.x, m.y, m.z);
+      scale(m.scale * params.boxSize);
+      rotateX(m.rotX + millis() * m.rsX * params.rotSpeed);
+      rotateY(m.rotY + millis() * m.rsY * params.rotSpeed);
+      rotateZ(m.rotZ + millis() * m.rsZ * params.rotSpeed);
+
+      for (let i = 0; i < 6; i++) {
+        fill((m.hue + millis() * 0.02) % 360, params.saturation, params.brightness, map(i, 0, 5, 150 * params.alphaMin, 10));
+        noStroke(); push(); scale(1 + i * 0.2); box(50); pop();
+      }
+
+      if (!isPreview) {
+        m.components.forEach(c => {
+          push(); translate(c.x, c.y, c.z);
+          let r = millis() * c.rs * params.rotSpeed + c.phase;
+          rotateX(r); rotateY(r * 0.7);
+          fill((m.hue + params.hueSpread + r * 10) % 360, params.saturation, params.brightness, 100);
+          if (c.type === 0) cylinder(c.size * 0.5, c.size);
+          else if (c.type === 1) box(c.size);
+          else if (c.type === 2) torus(c.size, c.size * 0.3);
+          else sphere(c.size * 0.6);
+          stroke(m.hue, 40, 70, 50); line(0, 0, 0, -c.x * 0.5, -c.y * 0.5, -c.z * 0.5);
+          pop();
+        });
+      }
+      pop();
+    }
+
+    function drawParticles(count) {
+      for (let i = 0; i < count; i++) {
+        let p = particles[i];
+        push(); translate(p.x, p.y, p.z);
+        fill(p.hue, 50, 90, p.life); noStroke(); sphere(p.size);
+        pop();
+        p.x += p.vx; p.y += p.vy; p.z += p.vz; p.life -= 0.2;
+        if (p.life <= 0) { p.life = 255; p.x = seededRandom.random() * 1600 - 800; }
+      }
+    }
+
+    function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+  </script>
+</body>
+</html>

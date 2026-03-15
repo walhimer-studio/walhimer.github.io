@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bloom / Release — Mark Walhimer Artist</title>
+  <meta name="description" content="A generative garden of twenty-two blooms — each grows, breathes, holds, and dissolves in its own time. Autonomous, inevitable, unrepeatable.">
+  <link rel="canonical" href="https://www.mark-walhimer.com/bloom-release/">
+  <meta name="author" content="Mark Walhimer">
+  <meta property="og:site_name" content="Mark Walhimer Artist">
+  <meta property="og:title" content="Bloom / Release — Mark Walhimer Artist">
+  <meta property="og:description" content="A generative garden of twenty-two blooms — each grows, breathes, holds, and dissolves in its own time.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:site" content="@WalhimerArt">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --serif:  'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      --sans:   'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --mono:   'DM Mono', 'Courier New', Courier, monospace;
+      --paper:      #efe9df;
+      --paper-mid:  #e8e2d8;
+      --deep:       #18160f;
+      --ink:        #18160f;
+      --mid:        #9a9088;
+      --dim:        #c4bcb4;
+      --accent:     #a8864e;
+      --rule-light: rgba(24,22,15,0.1);
+      --rule-dark:  rgba(255,255,255,0.07);
+      --audio-btn-size: 42px; --audio-btn-bottom: 28px; --audio-btn-right: 28px;
+      --audio-btn-bg-light: rgba(239,233,223,0.88);
+      --audio-btn-opacity: 0.4; --audio-icon-size: 16px;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--serif);
+      line-height: 1.65;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 52px;
+      background: rgba(239,233,223,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    nav .nav-logo {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    nav .nav-logo:hover { color: var(--ink); }
+
+    nav .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s, color 0.2s;
+    }
+
+    nav .nav-links a:hover { opacity: 1; color: var(--ink); }
+    nav .nav-links a.active { color: var(--accent); opacity: 1; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 140px 52px 80px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .genre-line {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 72px);
+      font-weight: 400;
+      font-family: var(--serif);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 36px;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .opening {
+      font-size: 17px;
+      font-family: var(--serif);
+      line-height: 1.75;
+      color: var(--ink);
+      max-width: 640px;
+      margin-bottom: 48px;
+    }
+
+    .opening strong { font-weight: 600; color: var(--ink); }
+
+    /* ── LIVE WORK FRAME ── */
+    .work-section {
+      padding: 0 0 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+
+    .frame-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #fff;
+      border: 1px solid var(--rule-light);
+      overflow: hidden;
+    }
+
+    .frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .frame-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(249,249,247,0);
+      transition: background 0.3s;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .frame-overlay:hover {
+      background: rgba(249,249,247,0.12);
+    }
+
+    .frame-label {
+      margin-top: 12px;
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    .live-btn {
+      display: inline-block;
+      margin-top: 20px;
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none;
+      border-bottom: 1px solid var(--black);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+
+    .live-btn:hover { opacity: 0.5; }
+
+    /* ── STATS ROW ── */
+    .stats {
+      display: flex;
+      gap: 0;
+      border-top: 1px solid var(--rule-light);
+      border-bottom: 1px solid var(--rule-light);
+      margin: 80px 52px;
+      max-width: 820px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .stat {
+      flex: 1;
+      padding: 28px 0;
+      border-right: 1px solid var(--rule-light);
+      text-align: center;
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-number {
+      font-size: 32px;
+      font-family: var(--serif);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+
+    /* ── PROCESS ── */
+    .section {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 52px 80px;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 40px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 40px 32px;
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--mid);
+      margin-bottom: 10px;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-family: var(--serif);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .step-body {
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--mid);
+    }
+
+    /* ── CONCEPT ── */
+    .concept-body {
+      font-size: 17px;
+      font-family: var(--serif);
+      line-height: 1.8;
+      color: var(--ink);
+      max-width: 640px;
+      margin-bottom: 32px;
+    }
+
+    .pull-quote {
+      font-size: 21px;
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--ink);
+      border-left: 2px solid var(--accent);
+      padding-left: 24px;
+      margin: 48px 0;
+      max-width: 580px;
+    }
+
+    /* ── TECHNICAL ── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 32px;
+    }
+
+    .tech-col h3 {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .tech-col ul { list-style: none; }
+
+    .tech-col li {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--mid);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--rule-light);
+      line-height: 1.4;
+    }
+
+    .tech-col li:last-child { border-bottom: none; }
+
+    /* ── BIO ── */
+    .bio-section {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 52px 120px;
+      border-top: 1px solid var(--rule-light);
+      padding-top: 60px;
+      display: flex;
+      gap: 60px;
+      align-items: flex-start;
+    }
+
+    .bio-name {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 14px;
+    }
+
+    .bio-text {
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--mid);
+      max-width: 500px;
+    }
+
+    .bio-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 120px;
+    }
+
+    .bio-links a {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .bio-links a:hover { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--deep);
+      color: var(--paper);
+      padding: 28px 52px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(239,233,223,0.35);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 20px;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(239,233,223,0.3);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: rgba(239,233,223,0.18);
+    }
+
+    /* ── AUDIO TOGGLE ── */
+    .sound-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 1000;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--rule-light);
+      background: rgba(239,233,223,0.88);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.4;
+      transition: opacity 0.2s, border-color 0.2s;
+      padding: 0;
+      color: var(--ink);
+    }
+    .sound-btn:hover  { opacity: 1; border-color: var(--accent); }
+    .sound-btn.on     { opacity: 1; border-color: var(--accent); }
+    .sound-btn svg    { width: 16px; height: 16px; display: block; }
+    #sound-icon-on    { display: none; }
+    /* ── EXPAND / COLLAPSE ── */
+    .expand-btn {
+      position: fixed;
+      bottom: 28px;
+      left: 28px;
+      z-index: 800;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--rule-light);
+      background: rgba(239,233,223,0.88);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.4;
+      transition: opacity 0.2s, border-color 0.2s;
+      padding: 0;
+      color: var(--ink);
+    }
+    .expand-btn:hover { opacity: 1; border-color: var(--accent); }
+    .expand-btn svg   { width: 14px; height: 14px; display: block; }
+    #expand-icon-collapse { display: none; }
+    .art-stage.is-fullscreen {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 800;
+      background: #fff;
+    }
+    .art-stage.is-fullscreen canvas {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: none !important;
+    }
+
+    /* ── Garden canvas ── */
+    .frame-wrap canvas { display: block; width: 100%; height: 100%; }
+
+    #lifebar-wrap {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--rule-light);
+    }
+    #lifebar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.1s linear;
+    }
+
+    #label {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mid);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── FRAME LABEL / LIVE BTN ── */
+    .frame-label {
+      margin-top: 12px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .live-btn {
+      display: inline-block;
+      margin-top: 20px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 2px;
+      transition: opacity 0.2s;
+    }
+    .live-btn:hover { opacity: 0.5; }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 24px; }
+      .hero, .section, .work-section { padding-left: 24px; padding-right: 24px; }
+      .stats { margin-left: 24px; margin-right: 24px; }
+      .tech-grid { grid-template-columns: 1fr; }
+      .bio-section { flex-direction: column; gap: 32px; padding: 40px 24px 80px; }
+      h1 { font-size: 36px; }
+      footer { padding: 24px; }
+    }
+</style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="https://www.mark-walhimer.com">Mark Walhimer</a>
+    <ul class="nav-links">
+      <li><a href="https://www.mark-walhimer.com">Works</a></li>
+      <li><a href="https://objkt.com/@markwalhimer" target="_blank" rel="noopener">Objkt</a></li>
+      <li><a href="https://www.fxhash.xyz/u/MarkWalhimer" target="_blank" rel="noopener">fxhash</a></li>
+      <li><a href="https://museumplanning.com" target="_blank" rel="noopener">Museum Planning</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="genre-line">Generative Art &nbsp;/&nbsp; Autonomous System &nbsp;/&nbsp; 2025–2026</p>
+    <h1>Bloom &nbsp;/ <em>Release</em></h1>
+    <div class="opening">
+      <p>Twenty-two blooms appear, one by one. Each grows at its own pace, breathes, and holds. Then, slowly, they begin to go.</p>
+      <br>
+      <p>You did not plant them. You cannot stop them. The garden does not wait for you — <strong>it has its own arc.</strong></p>
+      <br>
+      <p>The work runs in a single loop: emergence, fullness, dissolution. Then it begins again. No two cycles are the same.</p>
+    </div>
+
+  </section>
+
+  <!-- LIVE WORK -->
+  <div class="work-section">
+    <div class="frame-wrap art-stage" id="art-stage">
+      <canvas id="c"></canvas>
+      <div id="lifebar-wrap"><div id="lifebar"></div></div>
+    </div>
+
+  <!-- STATS -->
+  <div class="stats reveal">
+    <div class="stat">
+      <span class="stat-number">22</span>
+      <span class="stat-label">Blooms per cycle</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">∞</span>
+      <span class="stat-label">Unique cycles</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">0</span>
+      <span class="stat-label">Fixed outcomes</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">1</span>
+      <span class="stat-label">Unbroken arc</span>
+    </div>
+  </div>
+
+  <!-- PROCESS -->
+  <section class="section reveal">
+    <p class="section-label">Process</p>
+    <div class="process-grid">
+      <div class="process-step">
+        <p class="step-num">01</p>
+        <h2 class="step-title">Arrival</h2>
+        <p class="step-body">The first bloom appears. Then another. Each is seeded with its own color, scale, breath, and pace. The garden grows without asking permission.</p>
+      </div>
+      <div class="process-step">
+        <p class="step-num">02</p>
+        <h2 class="step-title">Fullness</h2>
+        <p class="step-body">At twenty-two, the garden holds. All blooms breathe together — expanding, contracting — for eight seconds of shared presence.</p>
+      </div>
+      <div class="process-step">
+        <p class="step-num">03</p>
+        <h2 class="step-title">Release</h2>
+        <p class="step-body">The oldest bloom begins to fade. Then the next. Dissolution moves in order of arrival — the first to come is the first to go.</p>
+      </div>
+      <div class="process-step">
+        <p class="step-num">04</p>
+        <h2 class="step-title">Return</h2>
+        <p class="step-body">When the last bloom disappears, the canvas clears. After a breath of white silence, the cycle begins again — different colors, different positions, the same arc.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONCEPT -->
+  <section class="section reveal">
+    <p class="section-label">Concept</p>
+    <p class="concept-body">
+      The garden is not a metaphor for death. It is a demonstration of arc. Things come. They reach fullness. They go. This is not tragedy — it is the basic condition of living things.
+    </p>
+    <p class="concept-body">
+      We spend most of our attention on arrival and presence. The bloom, the achievement, the moment of fullness. Bloom / Release asks you to stay for the rest of it. To watch the going. To notice that the going is as ordered and deliberate as the coming. That release has its own integrity.
+    </p>
+
+    <div class="pull-quote">
+      "The first to arrive is the first to go. There is no other order."
+    </div>
+
+    <p class="concept-body">
+      Each cycle takes a different form — different hues, different positions on the canvas, different pacing in each bloom. But the arc is always the same. Emergence. Fullness. Dissolution. Return. The work does not let you skip any of it.
+    </p>
+    <p class="concept-body">
+      Bloom / Release is the quieter companion to Surrender Machines. Where that work is mechanical, confrontational, driven by the three forces of anger, ego, and attachment — this one is organic, patient, inevitable. You cannot intervene. You can only watch what happens when something lives its full arc without interference.
+    </p>
+  </section>
+
+  <!-- TECHNICAL -->
+  <section class="section reveal">
+    <p class="section-label">Technical</p>
+    <div class="tech-grid">
+      <div class="tech-col">
+        <h3>Software</h3>
+        <ul>
+          <li>HTML Canvas — 2D rendering context</li>
+          <li>Vanilla JavaScript — no framework dependencies</li>
+          <li>HSB color engine — harmonic hue generation</li>
+          <li>Custom seeded random — unique per cycle</li>
+          <li>Radial gradient layering — translucency and depth</li>
+          <li>RequestAnimationFrame — smooth 60fps loop</li>
+        </ul>
+      </div>
+      <div class="tech-col">
+        <h3>Behavior</h3>
+        <ul>
+          <li>22 blooms — spawned at 1.8s intervals</li>
+          <li>8 second hold — full garden breathing together</li>
+          <li>Staggered fade — oldest first, 600ms offset</li>
+          <li>Life bar — single pixel progress, bottom of screen</li>
+          <li>Full reset — new seed, new cycle, same arc</li>
+          <li>Single file — runs in any browser, no install</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- BIO -->
+  <div class="bio-section reveal">
+    <div>
+      <p class="bio-name">Mark Walhimer</p>
+      <p class="bio-text">
+        Museum planner, industrial designer, generative artist. Twenty years designing interactive public spaces for the Smithsonian Institution, the Children's Museum of Indianapolis, and institutions across three continents. Author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury). Fulbright Specialist. His generative practice grows from a career spent designing spaces that respond to the people inside them.
+      </p>
+    </div>
+    <div class="bio-links">
+      <a href="https://medium.com/@markwalhimer" target="_blank" rel="noopener">Medium</a>
+      <a href="https://objkt.com/@markwalhimer" target="_blank" rel="noopener">Objkt</a>
+      <a href="https://www.fxhash.xyz/u/MarkWalhimer" target="_blank" rel="noopener">fxhash</a>
+      <a href="https://www.mark-walhimer.com" target="_blank" rel="noopener">Studio</a>
+      <a href="https://www.mark-walhimer.com">All Works</a>
+    </div>
+  </div>
+
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => observer.observe(r));
+
+
+  </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+<script>
+"use strict";
+
+// ── PENTATONIC AUDIO — Salamander piano, pure sustain ─────────────────
+const PENTA_POOL = [
+  'C2','D2','E2','G2','A2',
+  'C3','D3','E3','G3','A3',
+  'C4','D4','E4','G4','A4',
+  'C5','D5','E5','G5','A5',
+  'C6','D6',
+];
+
+function shufflePool(rng) {
+  const pool = [...PENTA_POOL];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rng.range(0, i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool;
+}
+
+let noteAssignments = [];
+let horn = null;
+let hornReady = false;
+let audioEnabled = false;  // default silent — user opts in via sound button
+
+function buildHorn() {
+  if (hornReady) return;
+  hornReady = true;
+  horn = new Tone.Sampler({
+    urls: {
+      C2:'C2.mp3', D2:'D2.mp3', E2:'E2.mp3', G2:'G2.mp3', A2:'A2.mp3',
+      C3:'C3.mp3', D3:'D3.mp3', E3:'E3.mp3', G3:'G3.mp3', A3:'A3.mp3',
+      C4:'C4.mp3', D4:'D4.mp3', E4:'E4.mp3', G4:'G4.mp3', A4:'A4.mp3',
+      C5:'C5.mp3', D5:'D5.mp3', E5:'E5.mp3', G5:'G5.mp3', A5:'A5.mp3',
+      C6:'C6.mp3', D6:'D6.mp3',
+    },
+    release: 5,
+    baseUrl: './samples/',
+  }).toDestination();
+  Tone.getDestination().volume.value = -8;
+}
+
+function playNote(note, velocity) {
+  if (!audioEnabled || !hornReady || !horn || !note) return;
+  horn.triggerAttackRelease(note, '2n', Tone.now(), velocity);
+}
+
+// ── SOUND BUTTON ──────────────────────────────────────────────────────
+(function() {
+  var btn     = document.getElementById('sound-btn');
+  var iconOff = document.getElementById('sound-icon-off');
+  var iconOn  = document.getElementById('sound-icon-on');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    audioEnabled = !audioEnabled;
+    if (audioEnabled) {
+      Tone.start();
+      buildHorn();
+      btn.classList.add('on');
+      iconOff.style.display = 'none';
+      iconOn.style.display  = '';
+    } else {
+      btn.classList.remove('on');
+      iconOff.style.display = '';
+      iconOn.style.display  = 'none';
+    }
+  });
+})();
+
+const canvas  = document.getElementById('c');
+const ctx     = canvas.getContext('2d');
+const lifebar = document.getElementById('lifebar');
+
+function resize() {
+  const wrap = canvas.parentElement;
+  canvas.width  = wrap ? wrap.clientWidth : window.innerWidth;
+  canvas.height = wrap ? wrap.clientHeight : window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── RANDOM
+class Rand {
+  constructor(seed) { this.s = Math.abs(seed) + 1; }
+  next() { const x = Math.sin(this.s++) * 10000; return x - Math.floor(x); }
+  range(a, b) { return a + this.next() * (b - a); }
+}
+
+// ── COLOR — rich, like original bloom.html
+// returns [r,g,b] 0-1 from HSB 0-360/0-100/0-100
+function hsbToRgb(h, s, b) {
+  s /= 100; b /= 100;
+  const k = n => (n + h / 60) % 6;
+  const f = n => b - b * s * Math.max(0, Math.min(k(n), 4 - k(n), 1));
+  return [f(5), f(3), f(1)];
+}
+
+function rgbaStr(rgb, a) {
+  return `rgba(${(rgb[0]*255)|0},${(rgb[1]*255)|0},${(rgb[2]*255)|0},${a.toFixed(3)})`;
+}
+
+// ── BLOOM
+class Bloom {
+  constructor(rng, W, H, note) {
+    // scatter position
+    this.x = rng.range(W * 0.1, W * 0.9);
+    this.y = rng.range(H * 0.1, H * 0.9);
+
+    // three harmonic hues — rich saturation
+    const h0 = rng.range(0, 360);
+    this.c1 = hsbToRgb(h0,                          rng.range(80, 100), 100);
+    this.c2 = hsbToRgb((h0 + rng.range(30, 80)) % 360,  rng.range(70, 95),  100);
+    this.c3 = hsbToRgb((h0 + rng.range(140,200)) % 360, rng.range(60, 85),  95);
+
+    // size — grows to fill meaningful space
+    this.maxR = rng.range(80, 200);
+
+    // layers — soft, overlapping, like original bloom
+    this.layerCount = Math.floor(rng.range(4, 8));
+    this.layers = Array.from({length: this.layerCount}, (_, i) => ({
+      dx:     rng.range(-12, 12),
+      dy:     rng.range(-12, 12),
+      rScale: 1.0 - i * (0.38 / this.layerCount),
+      alpha:  0.35 - i * (0.06 / this.layerCount),  // soft, like original 0.35
+    }));
+
+    // breath
+    this.breathAmp   = rng.range(0.05, 0.10);
+    this.breathSpeed = rng.range(0.6, 1.5);
+    this.breathPhase = rng.range(0, Math.PI * 2);
+
+    // DNA note — unique, pre-assigned from shuffled pool, belongs to this bloom
+    this.note = note;
+
+    // growth — slow and deliberate
+    this.growSpeed = rng.range(0.018, 0.038);  // fraction of maxR per frame at 60fps
+    this.currentR  = 0;
+    this.growing   = true;  // still expanding
+
+    // fade — very slow death
+    this.dying    = false;
+    this.fadeAlpha = 1.0;
+    this.fadeSpeed = rng.range(0.0008, 0.002);
+
+    this.dead = false;
+  }
+
+  update(dt) {
+    if (this.growing) {
+      this.currentR += this.maxR * this.growSpeed * (dt / 16.67);
+      if (this.currentR >= this.maxR) {
+        this.currentR = this.maxR;
+        this.growing  = false;
+      }
+    }
+    if (this.dying) {
+      this.fadeAlpha -= this.fadeSpeed * (dt / 16.67);
+      if (this.fadeAlpha <= 0) { this.dead = true; }
+    }
+  }
+
+  startDying() { this.dying = true; }
+
+  draw(ctx, t) {
+    if (this.dead) return;
+    const breath = 1.0 + this.breathAmp * Math.sin(
+      t * 0.001 * this.breathSpeed + this.breathPhase
+    );
+    const r = this.currentR * (this.growing ? 1.0 : breath);
+    if (r < 1) return;
+
+    for (const L of this.layers) {
+      const cx = this.x + L.dx * (r / this.maxR);
+      const cy = this.y + L.dy * (r / this.maxR);
+      const lr = r * L.rScale;
+      const la = L.alpha * this.fadeAlpha;
+
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, lr);
+      grad.addColorStop(0.0, rgbaStr(this.c1, la * 0.95));
+      grad.addColorStop(0.3, rgbaStr(this.c2, la * 0.60));
+      grad.addColorStop(0.7, rgbaStr(this.c3, la * 0.28));
+      grad.addColorStop(1.0, rgbaStr(this.c3, 0));
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, lr, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+  }
+}
+
+// ── GARDEN ORCHESTRATOR
+const rng = new Rand(Date.now() % 99991);
+
+const TOTAL_BLOOMS   = 22;      // how many until garden is full
+const SPAWN_INTERVAL = 1800;    // ms between each new bloom appearing
+const HOLD_AFTER_FULL = 8000;   // ms to breathe before slow dying begins
+const TOTAL_LIFE = TOTAL_BLOOMS * SPAWN_INTERVAL + HOLD_AFTER_FULL + 30000;
+
+let blooms       = [];
+let spawnCount   = 0;
+let nextSpawn    = 600;
+let gardenFull   = false;
+let fullAt       = -1;
+let dyingStarted = false;
+let startTime    = null;
+noteAssignments  = shufflePool(rng);
+
+function update(t, dt) {
+  if (!startTime) startTime = t;
+  const elapsed = t - startTime;
+
+  // spawn next bloom
+  if (spawnCount < TOTAL_BLOOMS && t > nextSpawn) {
+    blooms.push(new Bloom(rng, canvas.width, canvas.height, noteAssignments[spawnCount]));
+    playNote(blooms[blooms.length - 1].note, 0.22 + Math.random() * 0.1);
+    spawnCount++;
+    nextSpawn = t + SPAWN_INTERVAL;
+
+    if (spawnCount === TOTAL_BLOOMS) {
+      gardenFull = true;
+      fullAt = t;
+    }
+  }
+
+  // after hold period, begin slow death — oldest first
+  if (gardenFull && !dyingStarted && t > fullAt + HOLD_AFTER_FULL) {
+    dyingStarted = true;
+    // death plays in reverse birth order — each bloom says its own note
+    const deathOrder = [...blooms].reverse();
+    deathOrder.forEach((b, i) => {
+      setTimeout(() => {
+        b.startDying();
+        playNote(b.note, 0.14 + Math.random() * 0.08);
+      }, i * 600);
+    });
+  }
+
+  // update each bloom
+  blooms.forEach(b => b.update(dt));
+
+  // life bar — grows over the full arc
+  const pct = Math.min(elapsed / TOTAL_LIFE * 100, 100);
+  lifebar.style.width = pct.toFixed(2) + '%';
+
+  // when all dead — restart
+  if (dyingStarted && blooms.every(b => b.dead)) {
+    blooms = [];
+    spawnCount = 0;
+    noteAssignments = shufflePool(rng);
+    nextSpawn  = t + 600;
+    gardenFull = false;
+    fullAt     = -1;
+    dyingStarted = false;
+    startTime  = t;
+  }
+}
+
+function draw(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // draw largest first so smaller sit on top
+  const sorted = [...blooms].sort((a, b) => b.maxR - a.maxR);
+  sorted.forEach(b => b.draw(ctx, t));
+}
+
+let last = null;
+function loop(t) {
+  const dt = last ? t - last : 16.67;
+  last = t;
+  update(t, dt);
+  draw(t);
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+
+<!-- CANONICAL FOOTER -->
+<footer>
+  <div class="footer-brand">Mark Walhimer Artist &nbsp;·&nbsp; Generative Art</div>
+  <div class="footer-links">
+    <a href="https://www.mark-walhimer.com" target="_blank" rel="noopener">mark-walhimer.com</a>
+    <a href="https://www.instagram.com/markwalhimer" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://x.com/WalhimerArt" target="_blank" rel="noopener">X</a>
+    <a href="https://objkt.com/@markwalhimer" target="_blank" rel="noopener">Objkt</a>
+    <a href="https://www.fxhash.xyz/u/MarkWalhimer" target="_blank" rel="noopener">fxhash</a>
+    <a href="https://foundation.app/@markwalhimer" target="_blank" rel="noopener">Foundation</a>
+    <a href="https://medium.com/@markwalhimer" target="_blank" rel="noopener">Medium</a>
+    <a href="https://www.youtube.com/@Mark-Walhimer" target="_blank" rel="noopener">YouTube</a>
+    <a href="https://www.linkedin.com/company/mark-walhimer-artist/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+  <div class="footer-copy">&copy; 2026 Mark Walhimer</div>
+</footer>
+
+<!-- AUDIO TOGGLE -->
+<button id="sound-btn" class="sound-btn" title="Toggle sound" aria-label="Toggle sound">
+  <svg id="sound-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+  </svg>
+  <svg id="sound-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+  </svg>
+</button>
+
+<!-- EXPAND / COLLAPSE -->
+<button id="expand-btn" class="expand-btn" title="Expand artwork" aria-label="Toggle fullscreen">
+  <svg id="expand-icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+  </svg>
+  <svg id="expand-icon-collapse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+    <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
+  </svg>
+</button>
+<script>
+(function() {
+  var stage        = document.getElementById('art-stage');
+  var btn          = document.getElementById('expand-btn');
+  var iconExpand   = document.getElementById('expand-icon-expand');
+  var iconCollapse = document.getElementById('expand-icon-collapse');
+  if (!stage || !btn) return;
+  function enter() {
+    stage.classList.add('is-fullscreen');
+    document.body.style.overflow = 'hidden';
+    btn.title = 'Collapse artwork';
+    iconExpand.style.display = 'none'; iconCollapse.style.display = '';
+    setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 30);
+  }
+  function exit() {
+    stage.classList.remove('is-fullscreen');
+    document.body.style.overflow = '';
+    btn.title = 'Expand artwork';
+    iconExpand.style.display = ''; iconCollapse.style.display = 'none';
+    setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 30);
+  }
+  btn.addEventListener('click', function() { stage.classList.contains('is-fullscreen') ? exit() : enter(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && stage.classList.contains('is-fullscreen')) exit(); });
+})();
+</script>
+
+</body>
+</html>

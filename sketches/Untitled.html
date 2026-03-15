@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Text Effect</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            perspective: 1000px;
+        }
+
+        .container {
+            width: 500px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .text {
+            position: absolute;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 24px;
+            color: #333;
+            text-shadow: 2px 2px 0px #fff, -2px -2px 0px #333;
+        }
+
+        .text:nth-child(1) { top: 10%; left: 50%; transform: rotateY(0deg) translateX(150px); }
+        .text:nth-child(2) { top: 20%; left: 50%; transform: rotateY(15deg) translateX(150px); }
+        .text:nth-child(3) { top: 30%; left: 50%; transform: rotateY(30deg) translateX(150px); }
+        .text:nth-child(4) { top: 40%; left: 50%; transform: rotateY(45deg) translateX(150px); }
+        .text:nth-child(5) { top: 50%; left: 50%; transform: rotateY(60deg) translateX(150px); }
+        .text:nth-child(6) { top: 60%; left: 50%; transform: rotateY(75deg) translateX(150px); }
+        .text:nth-child(7) { top: 70%; left: 50%; transform: rotateY(90deg) translateX(150px); }
+        .text:nth-child(8) { top: 80%; left: 50%; transform: rotateY(105deg) translateX(150px); }
+        .text:nth-child(9) { top: 90%; left: 50%; transform: rotateY(120deg) translateX(150px); }
+        .text:nth-child(10) { top: 100%; left: 50%; transform: rotateY(135deg) translateX(150px); }
+        .text:nth-child(11) { top: 110%; left: 50%; transform: rotateY(150deg) translateX(150px); }
+        .text:nth-child(12) { top: 120%; left: 50%; transform: rotateY(165deg) translateX(150px); }
+        .text:nth-child(13) { top: 130%; left: 50%; transform: rotateY(180deg) translateX(150px); }
+        .text:nth-child(14) { top: 140%; left: 50%; transform: rotateY(195deg) translateX(150px); }
+        .text:nth-child(15) { top: 150%; left: 50%; transform: rotateY(210deg) translateX(150px); }
+        .text:nth-child(16) { top: 160%; left: 50%; transform: rotateY(225deg) translateX(150px); }
+        .text:nth-child(17) { top: 170%; left: 50%; transform: rotateY(240deg) translateX(150px); }
+        .text:nth-child(18) { top: 180%; left: 50%; transform: rotateY(255deg) translateX(150px); }
+        .text:nth-child(19) { top: 190%; left: 50%; transform: rotateY(270deg) translateX(150px); }
+        .text:nth-child(20) { top: 200%; left: 50%; transform: rotateY(285deg) translateX(150px); }
+        .text:nth-child(21) { top: 210%; left: 50%; transform: rotateY(300deg) translateX(150px); }
+        .text:nth-child(22) { top: 220%; left: 50%; transform: rotateY(315deg) translateX(150px); }
+        .text:nth-child(23) { top: 230%; left: 50%; transform: rotateY(330deg) translateX(150px); }
+        .text:nth-child(24) { top: 240%; left: 50%; transform: rotateY(345deg) translateX(150px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text">WE</div>
+        <div class="text">WILL</div>
+        <div class="text">COME</div>
+        <div class="text">BEHIND</div>
+        <div class="text">THEIR</div>
+        <div class="text">NARRATIVE</div>
+        <div class="text">WE</div>
+        <div class="text">WILL</div>
+        <div class="text">COME</div>
+        <div class="text">BEHIND</div>
+        <div class="text">THEIR</div>
+        <div class="text">NARRATIVE</div>
+        <div class="text">WE</div>
+        <div class="text">WILL</div>
+        <div class="text">COME</div>
+        <div class="text">BEHIND</div>
+        <div class="text">THEIR</div>
+        <div class="text">NARRATIVE</div>
+        <div class="text">WE</div>
+        <div class="text">WILL</div>
+        <div class="text">COME</div>
+        <div class="text">BEHIND</div>
+        <div class="text">THEIR</div>
+        <div class="text">NARRATIVE</div>
+    </div>
+</body>
+</html>

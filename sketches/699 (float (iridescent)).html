@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Umbrella — Ultra-Translucent Film (MULTIPLY)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; }
+    canvas { display: block; margin: 0 auto; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+// p5.js WEBGL — Umbrella: ultra-translucent film on white (MULTIPLY blend)
+
+const DOME_RADIUS = 560;
+const U_SEGMENTS  = 96;
+const V_SEGMENTS  = 44;
+const RIB_COUNT   = 8;
+
+let openAmt = 1.0;
+let openTarget = 1.0;
+const OPEN_SPEED = 0.08;
+
+function setup() {
+  createCanvas(1000, 1000, WEBGL);
+  pixelDensity(6);
+  frameRate(60);
+  setAttributes('alpha', true);
+  colorMode(HSB, 360, 100, 100, 100);
+}
+
+function draw() {
+  background(255);  // white canvas
+  orbitControl();
+
+  // back-light
+  ambientLight(255);
+  directionalLight(255,255,255, 0,0,1);
+  pointLight(200,200,200, 0,-200,-900);
+
+  // easing
+  openAmt += (openTarget - openAmt) * OPEN_SPEED;
+
+  // pose
+  rotateX(-0.35);
+  translate(0, 70, 0);
+
+  // keep runner logic (hidden)
+  const runnerY = lerp(-DOME_RADIUS * 0.05, -DOME_RADIUS * 0.85, openAmt);
+
+  // ---- FABRIC (MULTIPLY so colors show on white) ----
+  blendMode(MULTIPLY);
+  drawFabric(DOME_RADIUS, U_SEGMENTS, V_SEGMENTS, RIB_COUNT, openAmt);
+  blendMode(BLEND);
+
+  // ---- FRAME ----
+  drawFrame(DOME_RADIUS, U_SEGMENTS, V_SEGMENTS, RIB_COUNT, openAmt);
+}
+
+function pleatScale(theta, ribs, openVal) {
+  const p = 3.0;
+  const minClosed = 0.06;
+  const wave = Math.abs(Math.cos(ribs * theta));
+  const closedShape = minClosed + (1.0 - minClosed) * Math.pow(wave, p);
+  return closedShape * (1.0 - openVal) + openVal;
+}
+
+function outwardBias(openVal) {
+  return lerp(0.10, 1.00, openVal);
+}
+
+// vivid targets only (avoid muddy mixes)
+const TARGET_HUES = [50, 330, 220, 20]; // yellow, pink, blue, orange
+
+// Film color: large clear gaps, near-white brights, ultra-translucent base
+function filmColorFor(x, y, z) {
+  // radial normal approx
+  const m = 1.0 / max(1e-6, Math.hypot(x, y, z));
+  const nz = z * m;
+
+  const fres  = pow(1.0 - abs(nz), 2.0);
+
+  const t = frameCount * 0.01;
+  const thick  = noise(x*0.003, z*0.003, t);
+  const ripple = noise(x*0.006+100, z*0.006-50, t*0.6);
+
+  // --- CLEAR PATCHES ---
+  const clearGate = noise(x*0.01, z*0.01, t*0.35);
+  if (clearGate > 0.68) {
+    return color(0, 0, 100, 0); // fully clear: show background
+  }
+
+  // base hue → snap toward vivid targets
+  let hueVal = (360 * (fres*1.2 + thick*0.6 + ripple*0.15)) % 360;
+  let closest = TARGET_HUES[0], best = 999;
+  for (let h of TARGET_HUES) {
+    const d = abs(((hueVal - h + 540) % 360) - 180);
+    if (d < best) { best = d; closest = h; }
+  }
+  hueVal = (hueVal * 0.3 + closest * 0.7) % 360;
+
+  // --- NEAR-WHITE BRIGHTS ---
+  if (ripple > 0.82) {
+    const S = 15;      // almost white
+    const B = 100;
+    const A = 70;      // stronger so it reads on white
+    return color(hueVal, S, B, A);
+  }
+
+  // --- ULTRA-TRANSLUCENT BASE (visible on white with MULTIPLY) ---
+  const S = 90;
+  const B = 100;
+  const A = 12 + fres*12 + thick*6; // ~12..30 (≈ 90–95% transparent)
+  return color(hueVal, S, B, A);
+}
+
+function drawFabric(r, uSeg, vSeg, ribs, openVal) {
+  const yStretch = 1.0 + 0.25*(1.0 - openVal);
+  const bias = outwardBias(openVal);
+
+  noStroke();
+  for (let v = 0; v < vSeg; v++) {
+    const v0 = (v / vSeg) * HALF_PI;
+    const v1 = ((v + 1) / vSeg) * HALF_PI;
+
+    beginShape(TRIANGLE_STRIP);
+    for (let u = 0; u <= uSeg; u++) {
+      const th = (u / uSeg) * TWO_PI;
+
+      const ring0 = r * Math.sin(v0);
+      const ring1 = r * Math.sin(v1);
+
+      const biased0 = ring0 * bias;
+      const biased1 = ring1 * bias;
+
+      const s0 = pleatScale(th, ribs, openVal);
+      const s1 = pleatScale(th, ribs, openVal);
+
+      const eff0 = lerp(biased0, ring0, s0);
+      const eff1 = lerp(biased1, ring1, s1);
+
+      const x0 = eff0 * Math.cos(th);
+      const z0 = eff0 * Math.sin(th);
+      const y0 = -r * Math.cos(v0) * yStretch;
+
+      const x1 = eff1 * Math.cos(th);
+      const z1 = eff1 * Math.sin(th);
+      const y1 = -r * Math.cos(v1) * yStretch;
+
+      fill(filmColorFor(x1, y1, z1));
+      vertex(x1, y1, z1);
+      vertex(x0, y0, z0);
+    }
+    endShape();
+  }
+}
+
+function drawFrame(r, uSeg, vSeg, ribs, openVal) {
+  const yStretch = 1.0 + 0.25*(1.0 - openVal);
+  const bias = outwardBias(openVal);
+
+  // ribs (white)
+  stroke(0, 0, 100);
+  strokeWeight(2);
+  noFill();
+  for (let k = 0; k < ribs; k++) {
+    const theta = (k / ribs) * TWO_PI;
+    beginShape();
+    for (let v = 0; v <= vSeg; v++) {
+      const vv = (v / vSeg) * HALF_PI;
+      const ring = r * Math.sin(vv);
+      const biased = ring * bias;
+      const s = pleatScale(theta, ribs, openVal);
+      const eff = lerp(biased, ring, s);
+      vertex(eff * Math.cos(theta), -r * Math.cos(vv) * yStretch, eff * Math.sin(theta));
+    }
+    endShape();
+  }
+
+  // rim (white)
+  strokeWeight(1.5);
+  beginShape();
+  for (let u = 0; u <= uSeg; u++) {
+    const th = (u / uSeg) * TWO_PI;
+    const ring = r;
+    const biased = ring * bias;
+    const s = pleatScale(th, ribs, openVal);
+    const eff = lerp(biased, ring, s);
+    vertex(eff * Math.cos(th), 0, eff * Math.sin(th));
+  }
+  endShape();
+
+  // glowing rim overlay
+  stroke(0, 0, 100, 70);
+  strokeWeight(12);
+  beginShape();
+  for (let u = 0; u <= uSeg; u++) {
+    const th = (u / uSeg) * TWO_PI;
+    const ring = r;
+    const biased = ring * bias;
+    const s = pleatScale(th, ribs, openVal);
+    const eff = lerp(biased, ring, s);
+    vertex(eff * Math.cos(th), 0, eff * Math.sin(th));
+  }
+  endShape();
+}
+
+// Toggle
+function keyPressed() {
+  if (key === ' ') openTarget = openTarget === 1 ? 0 : 1;
+}
+function mousePressed() {
+  openTarget = openTarget === 1 ? 0 : 1;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergent Geometry - Mark Walhimer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+        #info h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h3>EMERGENT GEOMETRY</h3>
+        <div>Mark Walhimer | 2026</div>
+        <div>Click to pause/resume</div>
+    </div>
+    <script>
+        // Inspired by Mark's rotating cubes and interactive installations
+        // Combines gradient textures with emergent DNA-like evolution
+        
+        let shapes = [];
+        let palette = [310, 195, 45, 270, 30, 180, 210];
+        let gradientTextures = [];
+        let isPaused = false;
+        let time = 0;
+        
+        // Seed for deterministic randomness
+        const ARTWORK_SEED = 777;
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+            pixelDensity(2);
+            frameRate(60);
+            colorMode(HSB, 360, 100, 100, 255);
+            noStroke();
+            
+            // Initialize random with seed
+            randomSeed(ARTWORK_SEED);
+            
+            // Generate gradient textures
+            for (let i = 0; i < 15; i++) {
+                let hue1 = random(palette);
+                let hue2 = random(palette);
+                let tex = createGraphics(128, 256);
+                tex.colorMode(HSB, 360, 100, 100, 255);
+                tex.noStroke();
+                
+                for (let y = 0; y < tex.height; y++) {
+                    let inter = map(y, 0, tex.height, 0, 1);
+                    let hBlend = lerp(hue1, hue2, inter);
+                    tex.fill(hBlend, 100, 100, 180);
+                    tex.rect(0, y, tex.width, 1);
+                }
+                gradientTextures.push(tex);
+            }
+            
+            // Create shapes in a DNA-like spiral
+            let numShapes = 24;
+            let radius = 150;
+            
+            for (let i = 0; i < numShapes; i++) {
+                let angle = (i / numShapes) * TWO_PI * 3; // 3 full spirals
+                let y = map(i, 0, numShapes, -400, 400);
+                let x = cos(angle) * radius;
+                let z = sin(angle) * radius;
+                
+                shapes.push({
+                    pos: createVector(x, y, z),
+                    size: random(60, 120),
+                    rotSpeed: random(0.002, 0.008) * (random() > 0.5 ? 1 : -1),
+                    rotX: 0,
+                    rotY: random(TWO_PI),
+                    rotZ: 0,
+                    tex: random(gradientTextures),
+                    orbitRadius: radius,
+                    orbitSpeed: random(0.0005, 0.002),
+                    baseAngle: angle,
+                    breathSpeed: random(0.002, 0.004),
+                    breathOffset: random(TWO_PI)
+                });
+            }
+        }
+        
+        function draw() {
+            if (!isPaused) {
+                time += 0.01;
+            }
+            
+            background(0, 0, 5); // Almost black with slight warmth
+            
+            // Camera orbits slowly
+            let camX = cos(time * 0.3) * 600;
+            let camZ = sin(time * 0.3) * 600;
+            let camY = sin(time * 0.15) * 200;
+            camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
+            
+            // Ambient lighting with subtle color shift
+            let ambHue = (time * 5) % 360;
+            ambientLight(ambHue, 30, 80);
+            directionalLight(0, 0, 100, 0.5, -1, -0.5);
+            
+            // Draw shapes
+            for (let i = 0; i < shapes.length; i++) {
+                let s = shapes[i];
+                
+                // Update rotation
+                s.rotY += s.rotSpeed;
+                s.rotX = sin(time + s.breathOffset) * 0.3;
+                
+                // Breathing effect on size
+                let breathSize = s.size * (1 + sin(time * s.breathSpeed + s.breathOffset) * 0.2);
+                
+                // Update orbit position
+                let orbitAngle = s.baseAngle + time * s.orbitSpeed;
+                s.pos.x = cos(orbitAngle) * s.orbitRadius;
+                s.pos.z = sin(orbitAngle) * s.orbitRadius;
+                
+                push();
+                translate(s.pos.x, s.pos.y, s.pos.z);
+                rotateY(s.rotY);
+                rotateX(s.rotX);
+                rotateZ(s.rotZ);
+                
+                texture(s.tex);
+                
+                // Alternate between boxes and spheres for variety
+                if (i % 3 === 0) {
+                    box(breathSize);
+                } else if (i % 3 === 1) {
+                    sphere(breathSize * 0.6, 24, 16);
+                } else {
+                    cylinder(breathSize * 0.4, breathSize * 1.2, 24, 1, true, true);
+                }
+                
+                pop();
+                
+                // Draw connecting lines between nearby shapes
+                if (i < shapes.length - 1) {
+                    let next = shapes[i + 1];
+                    let d = p5.Vector.dist(s.pos, next.pos);
+                    if (d < 200) {
+                        let alpha = map(d, 0, 200, 100, 0);
+                        stroke(ambHue, 50, 80, alpha);
+                        strokeWeight(1);
+                        line(s.pos.x, s.pos.y, s.pos.z, 
+                             next.pos.x, next.pos.y, next.pos.z);
+                        noStroke();
+                    }
+                }
+            }
+        }
+        
+        function mousePressed() {
+            isPaused = !isPaused;
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>

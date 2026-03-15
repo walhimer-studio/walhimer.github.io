@@ -1,0 +1,364 @@
+<!doctype html><html><head><meta charset="utf-8"><title>smear</title><style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        smear-partition {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        smear-canvas {
+            display: block;
+            position: absolute;
+        }
+
+        smear-canvas canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            -ms-interpolation-mode: nearest-neighbor;
+        }
+    
+        .smear-container { position: absolute; overflow: hidden; }
+        .smear-container canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+      </style></head><body style="margin:0;background-color:black;width:100vw;height:100vh;overflow:hidden;"><div id="puzzle-container"><div class="smear-container" data-x="0" data-y="0" data-width="0.018516104294478527" data-height="1" data-start-edge="top" data-speed="45" data-source-interval="1817" data-pixel-size="3" data-color-fg="#FFFF00" data-color-bg="#FF0000" data-source-type="cellular-automata" style="left: 0px; top: 0px; width: 12.0725px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.018516104294478527" data-y="0" data-width="0.010041687116564417" data-height="1" data-start-edge="left" data-speed="67" data-source-interval="1283" data-pixel-size="3" data-color-fg="#FFFF00" data-color-bg="#FF0000" data-source-type="cellular-automata" style="left: 12.0725px; top: 0px; width: 6.54718px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.028557822085889573" data-y="0" data-width="0.017980521472392638" data-height="1" data-start-edge="right" data-speed="65" data-source-interval="1184" data-pixel-size="4" data-color-fg="#87CEEB" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 18.6197px; top: 0px; width: 11.7233px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.04653834355828221" data-y="0" data-width="0.021910276073619634" data-height="1" data-start-edge="left" data-speed="89" data-source-interval="564" data-pixel-size="4" data-color-fg="#FF8000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 30.343px; top: 0px; width: 14.2855px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.06844861963190184" data-y="0" data-width="0.027974233128834358" data-height="1" data-start-edge="top" data-speed="56" data-source-interval="1217" data-pixel-size="1" data-color-fg="#FF69B4" data-color-bg="#FF0000" data-source-type="cellular-automata" style="left: 44.6285px; top: 0px; width: 18.2392px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.0964228527607362" data-y="0" data-width="0.024250613496932517" data-height="1" data-start-edge="bottom" data-speed="92" data-source-interval="1750" data-pixel-size="4" data-color-fg="#333333" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 62.8677px; top: 0px; width: 15.8114px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.12067346625766873" data-y="0" data-width="0.01336340490797546" data-height="1" data-start-edge="right" data-speed="89" data-source-interval="695" data-pixel-size="5" data-color-fg="#FFFF00" data-color-bg="#FF0000" data-source-type="cellular-automata" style="left: 78.6791px; top: 0px; width: 8.71294px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.13403680981595092" data-y="0" data-width="0.03133634969325153" data-height="1" data-start-edge="bottom" data-speed="36" data-source-interval="528" data-pixel-size="4" data-color-fg="#FFFF00" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 87.392px; top: 0px; width: 20.4313px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.16537269938650306" data-y="0" data-width="0.017137576687116563" data-height="1" data-start-edge="left" data-speed="93" data-source-interval="1462" data-pixel-size="4" data-color-fg="#FF69B4" data-color-bg="#FF0000" data-source-type="cellular-automata" style="left: 107.823px; top: 0px; width: 11.1737px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.18251073619631902" data-y="0" data-width="0.031776993865030675" data-height="1" data-start-edge="right" data-speed="83" data-source-interval="1532" data-pixel-size="6" data-color-fg="#87CEEB" data-color-bg="#808080" data-source-type="cellular-automata" style="left: 118.997px; top: 0px; width: 20.7186px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.21428834355828222" data-y="0" data-width="0.030970858895705524" data-height="1" data-start-edge="left" data-speed="59" data-source-interval="1190" data-pixel-size="3" data-color-fg="#0000FF" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 139.716px; top: 0px; width: 20.193px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.24525920245398772" data-y="0" data-width="0.00957909509202454" data-height="1" data-start-edge="left" data-speed="51" data-source-interval="558" data-pixel-size="5" data-color-fg="#333333" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 159.909px; top: 0px; width: 6.24557px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.25483742331288345" data-y="0" data-width="0.013697668711656442" data-height="1" data-start-edge="top" data-speed="96" data-source-interval="977" data-pixel-size="1" data-color-fg="#800080" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 166.154px; top: 0px; width: 8.93088px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.26853527607361966" data-y="0" data-width="0.014487162576687116" data-height="1" data-start-edge="left" data-speed="79" data-source-interval="997" data-pixel-size="5" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 175.085px; top: 0px; width: 9.44563px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.28302300613496933" data-y="0" data-width="0.020482822085889568" data-height="1" data-start-edge="top" data-speed="65" data-source-interval="1135" data-pixel-size="4" data-color-fg="#FFFFFF" data-color-bg="#CCCCCC" data-source-type="cellular-automata" style="left: 184.531px; top: 0px; width: 13.3548px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.30350460122699385" data-y="0" data-width="0.006174248466257669" data-height="1" data-start-edge="left" data-speed="43" data-source-interval="1709" data-pixel-size="3" data-color-fg="#FFFFFF" data-color-bg="#FF00CC" data-source-type="cellular-automata" style="left: 197.885px; top: 0px; width: 4.02561px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.30967944785276075" data-y="0" data-width="0.007714493865030674" data-height="1" data-start-edge="top" data-speed="91" data-source-interval="1739" data-pixel-size="1" data-color-fg="#0000FF" data-color-bg="#666666" data-source-type="cellular-automata" style="left: 201.911px; top: 0px; width: 5.02985px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.3173941717791411" data-y="0" data-width="0.03593542944785276" data-height="1" data-start-edge="bottom" data-speed="88" data-source-interval="1722" data-pixel-size="2" data-color-fg="#FFFFFF" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 206.941px; top: 0px; width: 23.4299px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.353329754601227" data-y="0" data-width="0.008014171779141105" data-height="1" data-start-edge="top" data-speed="53" data-source-interval="810" data-pixel-size="3" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 230.371px; top: 0px; width: 5.22524px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.3613435582822086" data-y="0" data-width="0.023925306748466258" data-height="1" data-start-edge="left" data-speed="29" data-source-interval="683" data-pixel-size="4" data-color-fg="#FFFF00" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 235.596px; top: 0px; width: 15.5993px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.3852684049079754" data-y="0" data-width="0.03272653374233129" data-height="1" data-start-edge="left" data-speed="72" data-source-interval="1148" data-pixel-size="6" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 251.195px; top: 0px; width: 21.3377px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.4179953987730062" data-y="0" data-width="0.004015858895705522" data-height="1" data-start-edge="top" data-speed="73" data-source-interval="1686" data-pixel-size="1" data-color-fg="#FF8000" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 272.533px; top: 0px; width: 2.61834px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.422010736196319" data-y="0" data-width="0.005112377300613497" data-height="1" data-start-edge="top" data-speed="96" data-source-interval="620" data-pixel-size="1" data-color-fg="#800080" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 275.151px; top: 0px; width: 3.33327px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.42712423312883435" data-y="0" data-width="0.03011579754601227" data-height="1" data-start-edge="right" data-speed="33" data-source-interval="1387" data-pixel-size="4" data-color-fg="#FFFF00" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 278.485px; top: 0px; width: 19.6355px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.45723926380368096" data-y="0" data-width="0.02660521472392638" data-height="1" data-start-edge="bottom" data-speed="91" data-source-interval="605" data-pixel-size="1" data-color-fg="#FFFFFF" data-color-bg="#FF00CC" data-source-type="cellular-automata" style="left: 298.12px; top: 0px; width: 17.3466px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.48384509202453985" data-y="0" data-width="0.020761503067484664" data-height="1" data-start-edge="top" data-speed="28" data-source-interval="1361" data-pixel-size="4" data-color-fg="#FF0000" data-color-bg="#0000FF" data-source-type="cellular-automata" style="left: 315.467px; top: 0px; width: 13.5365px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.5046058282208589" data-y="0" data-width="0.017361656441717794" data-height="1" data-start-edge="left" data-speed="96" data-source-interval="1456" data-pixel-size="4" data-color-fg="#800080" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 329.003px; top: 0px; width: 11.3198px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.5219677914110429" data-y="0" data-width="0.0036837269938650307" data-height="1" data-start-edge="left" data-speed="41" data-source-interval="1550" data-pixel-size="3" data-color-fg="#87CEEB" data-color-bg="#808080" data-source-type="cellular-automata" style="left: 340.323px; top: 0px; width: 2.40179px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.5256518404907976" data-y="0" data-width="0.02935138036809816" data-height="1" data-start-edge="top" data-speed="80" data-source-interval="708" data-pixel-size="5" data-color-fg="#0000FF" data-color-bg="#FF69B4" data-source-type="cellular-automata" style="left: 342.725px; top: 0px; width: 19.1371px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.5550030674846627" data-y="0" data-width="0.019736042944785277" data-height="1" data-start-edge="right" data-speed="71" data-source-interval="1432" data-pixel-size="5" data-color-fg="#87CEEB" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 361.862px; top: 0px; width: 12.8679px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.574739263803681" data-y="0" data-width="0.008384539877300612" data-height="1" data-start-edge="top" data-speed="90" data-source-interval="1385" data-pixel-size="2" data-color-fg="#87CEEB" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 374.73px; top: 0px; width: 5.46672px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.5831242331288343" data-y="0" data-width="0.00908015337423313" data-height="1" data-start-edge="left" data-speed="60" data-source-interval="879" data-pixel-size="2" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 380.197px; top: 0px; width: 5.92026px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.5922039877300613" data-y="0" data-width="0.03337147239263803" data-height="1" data-start-edge="right" data-speed="59" data-source-interval="569" data-pixel-size="4" data-color-fg="#333333" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 386.117px; top: 0px; width: 21.7582px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.6255751533742331" data-y="0" data-width="0.007889708588957055" data-height="1" data-start-edge="left" data-speed="92" data-source-interval="1008" data-pixel-size="3" data-color-fg="#0000FF" data-color-bg="#FF69B4" data-source-type="cellular-automata" style="left: 407.875px; top: 0px; width: 5.14409px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.6334647239263804" data-y="0" data-width="0.03462638036809816" data-height="1" data-start-edge="top" data-speed="99" data-source-interval="1064" data-pixel-size="1" data-color-fg="#FF0000" data-color-bg="#0000FF" data-source-type="cellular-automata" style="left: 413.019px; top: 0px; width: 22.5764px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.668090490797546" data-y="0" data-width="0.006729800613496932" data-height="1" data-start-edge="bottom" data-speed="90" data-source-interval="1002" data-pixel-size="3" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 435.595px; top: 0px; width: 4.38783px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.6748205521472392" data-y="0" data-width="0.02644401840490797" data-height="1" data-start-edge="left" data-speed="59" data-source-interval="1577" data-pixel-size="2" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 439.983px; top: 0px; width: 17.2415px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.7012653374233129" data-y="0" data-width="0.02347377300613497" data-height="1" data-start-edge="bottom" data-speed="64" data-source-interval="1543" data-pixel-size="2" data-color-fg="#FF8000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 457.225px; top: 0px; width: 15.3049px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.7247392638036809" data-y="0" data-width="0.021537423312883438" data-height="1" data-start-edge="bottom" data-speed="31" data-source-interval="1273" data-pixel-size="4" data-color-fg="#333333" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 472.53px; top: 0px; width: 14.0424px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.7462760736196319" data-y="0" data-width="0.016181901840490797" data-height="1" data-start-edge="top" data-speed="66" data-source-interval="721" data-pixel-size="6" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 486.572px; top: 0px; width: 10.5506px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.7624585889570552" data-y="0" data-width="0.03338696319018405" data-height="1" data-start-edge="left" data-speed="33" data-source-interval="1532" data-pixel-size="2" data-color-fg="#FF8000" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 497.123px; top: 0px; width: 21.7683px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.7958450920245398" data-y="0" data-width="0.027004447852760734" data-height="1" data-start-edge="left" data-speed="93" data-source-interval="1075" data-pixel-size="5" data-color-fg="#FF0000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 518.891px; top: 0px; width: 17.6069px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.8228496932515338" data-y="0" data-width="0.030461349693251535" data-height="1" data-start-edge="left" data-speed="48" data-source-interval="1374" data-pixel-size="6" data-color-fg="#FFFFFF" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 536.498px; top: 0px; width: 19.8608px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.8533113496932516" data-y="0" data-width="0.011799846625766872" data-height="1" data-start-edge="top" data-speed="83" data-source-interval="1947" data-pixel-size="4" data-color-fg="#87CEEB" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 556.359px; top: 0px; width: 7.6935px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.8651104294478528" data-y="0" data-width="0.02739340490797546" data-height="1" data-start-edge="right" data-speed="72" data-source-interval="931" data-pixel-size="3" data-color-fg="#FF8000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 564.052px; top: 0px; width: 17.8605px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.8925046012269939" data-y="0" data-width="0.0341670245398773" data-height="1" data-start-edge="left" data-speed="47" data-source-interval="1513" data-pixel-size="1" data-color-fg="#FFFFFF" data-color-bg="#FF00CC" data-source-type="cellular-automata" style="left: 581.913px; top: 0px; width: 22.2769px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.9266717791411043" data-y="0" data-width="0.006314171779141104" data-height="1" data-start-edge="top" data-speed="49" data-source-interval="1273" data-pixel-size="4" data-color-fg="#FF0000" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 604.19px; top: 0px; width: 4.11684px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.9329846625766872" data-y="0" data-width="0.009186380368098159" data-height="1" data-start-edge="left" data-speed="89" data-source-interval="1174" data-pixel-size="5" data-color-fg="#333333" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 608.306px; top: 0px; width: 5.98952px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.9421717791411044" data-y="0" data-width="0.012026319018404908" data-height="1" data-start-edge="right" data-speed="56" data-source-interval="1090" data-pixel-size="3" data-color-fg="#FF00CC" data-color-bg="#000000" data-source-type="cellular-automata" style="left: 614.296px; top: 0px; width: 7.84116px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.9541978527607361" data-y="0" data-width="0.030103680981595094" data-height="1" data-start-edge="right" data-speed="74" data-source-interval="1273" data-pixel-size="2" data-color-fg="#FFFF00" data-color-bg="#FF0000" data-source-type="cellular-automata" style="left: 622.137px; top: 0px; width: 19.6276px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.9843021472392638" data-y="0" data-width="0.008601579754601227" data-height="1" data-start-edge="left" data-speed="95" data-source-interval="1323" data-pixel-size="5" data-color-fg="#FF8000" data-color-bg="#FFFFFF" data-source-type="cellular-automata" style="left: 641.765px; top: 0px; width: 5.60823px; height: 652px;"><canvas></canvas></div><div class="smear-container" data-x="0.9929033742331289" data-y="0" data-width="0.007096840490797546" data-height="1" data-start-edge="bottom" data-speed="90" data-source-interval="1440" data-pixel-size="6" data-color-fg="#FF69B4" data-color-bg="#FF0000" data-source-type="cellular-automata" style="left: 647.373px; top: 0px; width: 4.62714px; height: 652px;"><canvas></canvas></div></div><script>
+class SmearCanvas {
+    constructor(c) {
+        this.container = c;
+        this.canvas = c.querySelector("canvas") || document.createElement("canvas");
+        if (!c.querySelector("canvas")) c.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext("2d");
+        this.ctx.imageSmoothingEnabled = false;
+        this.imageData = null;
+        this.lastTime = 0;
+        this.animationId = null;
+        this.speed = parseInt(c.dataset.speed) || 50;
+        this.pixelSize = parseInt(c.dataset.pixelSize) || 2;
+        this.sourceInterval = parseInt(c.dataset.sourceInterval) || 1000;
+        this.colorFg = c.dataset.colorFg || "#FFFFFF";
+        this.colorBg = c.dataset.colorBg || "#000000";
+        this.sourceType = c.dataset.sourceType || "noise";
+        this.startEdge = c.dataset.startEdge || "top";
+        this.fgRGB = this.hexToRGB(this.colorFg);
+        this.bgRGB = this.hexToRGB(this.colorBg);
+        this.moveSpeed = (1000 / 60) / this.speed;
+        this.subPixelX = 0;
+        this.subPixelY = 0;
+        this.leadX = 0;
+        this.leadY = 0;
+        this.initDirection();
+        this.lastDirectionChange = 0;
+        this.nextDirectionInterval = this.randomInterval();
+        this.sourceParams = this.generateSourceParams();
+        this.lastSourceTime = 0;
+        this.resize();
+        this.initCanvas();
+        this.generateSourceEdge();
+        this.initLeadPosition();
+        this.startAnimation();
+        this.resizeObserver = new ResizeObserver(() => this.resize());
+        this.resizeObserver.observe(this.container);
+    }
+    generateSourceParams() {
+        return {
+            steps: 3 + Math.floor(Math.random() * 6),
+            stripeWidth: 2 + Math.floor(Math.random() * 8),
+            checkSize: 1 + Math.floor(Math.random() * 4),
+            phase: 0,
+            dashLength: 3 + Math.floor(Math.random() * 10),
+            gapLength: 2 + Math.floor(Math.random() * 6),
+            density: 0.05 + Math.random() * 0.25,
+            frequency: 1 + Math.random() * 4,
+            sinePhase: Math.random() * Math.PI * 2,
+            seed1: Math.random() * 100,
+            seed2: Math.random() * 100,
+            seed3: Math.random() * 100,
+            counter: Math.floor(Math.random() * 65536),
+            caRule: Math.random() > 0.5 ? 30 : 110
+        };
+    }
+    initDirection() {
+        switch (this.startEdge) {
+            case "top": this.dx = 0; this.dy = 1; break;
+            case "bottom": this.dx = 0; this.dy = -1; break;
+            case "left": this.dx = 1; this.dy = 0; break;
+            case "right": this.dx = -1; this.dy = 0; break;
+            default: this.dx = 0; this.dy = 1;
+        }
+    }
+    initLeadPosition() {
+        switch (this.startEdge) {
+            case "top": this.leadX = Math.floor(this.internalWidth / 2); this.leadY = 1; break;
+            case "bottom": this.leadX = Math.floor(this.internalWidth / 2); this.leadY = this.internalHeight - 2; break;
+            case "left": this.leadX = 1; this.leadY = Math.floor(this.internalHeight / 2); break;
+            case "right": this.leadX = this.internalWidth - 2; this.leadY = Math.floor(this.internalHeight / 2); break;
+        }
+    }
+    resize() {
+        var rect = this.container.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        this.internalWidth = Math.ceil(rect.width / this.pixelSize);
+        this.internalHeight = Math.ceil(rect.height / this.pixelSize);
+        var oldImageData = this.imageData;
+        var oldWidth = this.canvas.width;
+        var oldHeight = this.canvas.height;
+        this.canvas.width = this.internalWidth;
+        this.canvas.height = this.internalHeight;
+        this.imageData = this.ctx.createImageData(this.internalWidth, this.internalHeight);
+        if (oldImageData && oldWidth > 0 && oldHeight > 0) {
+            var minW = Math.min(oldWidth, this.internalWidth);
+            var minH = Math.min(oldHeight, this.internalHeight);
+            for (var y = 0; y < minH; y++) {
+                for (var x = 0; x < minW; x++) {
+                    var oi = (y * oldWidth + x) * 4;
+                    var ni = (y * this.internalWidth + x) * 4;
+                    this.imageData.data[ni] = oldImageData.data[oi];
+                    this.imageData.data[ni + 1] = oldImageData.data[oi + 1];
+                    this.imageData.data[ni + 2] = oldImageData.data[oi + 2];
+                    this.imageData.data[ni + 3] = oldImageData.data[oi + 3];
+                }
+            }
+        }
+    }
+    hexToRGB(hex) {
+        var r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return r ? { r: parseInt(r[1], 16), g: parseInt(r[2], 16), b: parseInt(r[3], 16) } : { r: 255, g: 255, b: 255 };
+    }
+    lerpColor(t) {
+        return {
+            r: Math.round(this.bgRGB.r + (this.fgRGB.r - this.bgRGB.r) * t),
+            g: Math.round(this.bgRGB.g + (this.fgRGB.g - this.bgRGB.g) * t),
+            b: Math.round(this.bgRGB.b + (this.fgRGB.b - this.bgRGB.b) * t)
+        };
+    }
+    getSourceValue(pos, length) {
+        var t = pos / length;
+        switch (this.sourceType) {
+            case "noise": return Math.random() > 0.5 ? this.fgRGB : this.bgRGB;
+            case "linear-gradient": return this.lerpColor(t);
+            case "stepped-gradient":
+                var steps = this.sourceParams.steps || 5;
+                return this.lerpColor(Math.floor(t * steps) / (steps - 1));
+            case "random-gradient":
+                if (!this.gradientCache || this.gradientCache.length !== length) this.generateRandomGradient(length);
+                return this.lerpColor(this.gradientCache[pos]);
+            case "stripes":
+                return (Math.floor(pos / (this.sourceParams.stripeWidth || 4)) % 2 === 0) ? this.fgRGB : this.bgRGB;
+            case "checkerboard":
+                return ((Math.floor(pos / (this.sourceParams.checkSize || 2)) + (this.sourceParams.phase || 0)) % 2 === 0) ? this.fgRGB : this.bgRGB;
+            case "dashes":
+                var cycle = (this.sourceParams.dashLength || 6) + (this.sourceParams.gapLength || 3);
+                return (pos % cycle < (this.sourceParams.dashLength || 6)) ? this.fgRGB : this.bgRGB;
+            case "dots":
+                return Math.random() < (this.sourceParams.density || 0.15) ? this.fgRGB : this.bgRGB;
+            case "sine":
+                var sv = (Math.sin((t * (this.sourceParams.frequency || 2) * Math.PI * 2) + (this.sourceParams.sinePhase || 0)) + 1) / 2;
+                return this.lerpColor(sv);
+            case "perlin":
+                var p1 = Math.sin(t * 3.7 + this.sourceParams.seed1) * 0.5;
+                var p2 = Math.sin(t * 7.3 + this.sourceParams.seed2) * 0.25;
+                var p3 = Math.sin(t * 13.1 + this.sourceParams.seed3) * 0.125;
+                return this.lerpColor(Math.max(0, Math.min(1, (p1 + p2 + p3 + 0.875) / 1.75)));
+            case "binary-counter":
+                return ((this.sourceParams.counter >> (pos % 16)) & 1) ? this.fgRGB : this.bgRGB;
+            case "cellular-automata":
+                if (!this.caState || this.caState.length !== length) this.initCellularAutomata(length);
+                return this.caState[pos] ? this.fgRGB : this.bgRGB;
+            default:
+                return Math.random() > 0.5 ? this.fgRGB : this.bgRGB;
+        }
+    }
+    generateRandomGradient(length) {
+        var np = 3 + Math.floor(Math.random() * 4);
+        var cp = [0];
+        for (var i = 1; i < np - 1; i++) cp.push(Math.random());
+        cp.push(1);
+        cp.sort((a, b) => a - b);
+        var cv = cp.map(() => Math.random());
+        this.gradientCache = [];
+        for (var i = 0; i < length; i++) {
+            var t = i / length;
+            var si = 0;
+            for (var j = 0; j < cp.length - 1; j++) {
+                if (t >= cp[j] && t <= cp[j + 1]) { si = j; break; }
+            }
+            var st = (t - cp[si]) / (cp[si + 1] - cp[si]);
+            this.gradientCache.push(cv[si] + (cv[si + 1] - cv[si]) * st);
+        }
+    }
+    initCellularAutomata(length) {
+        this.caState = [];
+        for (var i = 0; i < length; i++) this.caState.push(Math.random() > 0.5);
+    }
+    evolveCellularAutomata() {
+        if (!this.caState) return;
+        var rule = this.sourceParams.caRule || 30;
+        var os = [...this.caState];
+        var len = this.caState.length;
+        for (var i = 0; i < len; i++) {
+            var p = (os[(i - 1 + len) % len] ? 4 : 0) + (os[i] ? 2 : 0) + (os[(i + 1) % len] ? 1 : 0);
+            this.caState[i] = ((rule >> p) & 1) === 1;
+        }
+    }
+    updateSourceParams() {
+        switch (this.sourceType) {
+            case "checkerboard": this.sourceParams.phase = (this.sourceParams.phase + 1) % 2; break;
+            case "sine": this.sourceParams.sinePhase += 0.5; break;
+            case "binary-counter": this.sourceParams.counter++; break;
+            case "cellular-automata": this.evolveCellularAutomata(); break;
+            case "random-gradient": this.gradientCache = null; break;
+            case "perlin":
+                this.sourceParams.seed1 += 0.3;
+                this.sourceParams.seed2 += 0.2;
+                this.sourceParams.seed3 += 0.1;
+                break;
+        }
+    }
+    randomInterval() { return 100 + Math.random() * 900; }
+    changeDirection() {
+        var dirs = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]];
+        var idx = dirs.findIndex(d => d[0] === this.dx && d[1] === this.dy);
+        if (idx === -1) idx = 0;
+        idx = Math.random() > 0.5 ? (idx + 1) % 8 : (idx + 7) % 8;
+        this.dx = dirs[idx][0];
+        this.dy = dirs[idx][1];
+    }
+    initCanvas() {
+        if (!this.imageData) return;
+        var data = this.imageData.data;
+        var w = this.internalWidth, h = this.internalHeight;
+        var isH = (this.startEdge === "top" || this.startEdge === "bottom");
+        for (var y = 0; y < h; y++) {
+            for (var x = 0; x < w; x++) {
+                var idx = (y * w + x) * 4;
+                var col = this.getSourceValue(isH ? x : y, isH ? w : h);
+                data[idx] = col.r;
+                data[idx + 1] = col.g;
+                data[idx + 2] = col.b;
+                data[idx + 3] = 255;
+            }
+        }
+        this.ctx.putImageData(this.imageData, 0, 0);
+    }
+    generateSourceEdge() {
+        if (!this.imageData) return;
+        this.updateSourceParams();
+        var data = this.imageData.data;
+        var w = this.internalWidth, h = this.internalHeight;
+        var gen = (getIdx, len) => {
+            for (var i = 0; i < len; i++) {
+                var idx = getIdx(i);
+                var c = this.getSourceValue(i, len);
+                data[idx] = c.r;
+                data[idx + 1] = c.g;
+                data[idx + 2] = c.b;
+                data[idx + 3] = 255;
+            }
+        };
+        switch (this.startEdge) {
+            case "top": gen(x => x * 4, w); break;
+            case "bottom": gen(x => ((h - 1) * w + x) * 4, w); break;
+            case "left": gen(y => (y * w) * 4, h); break;
+            case "right": gen(y => (y * w + (w - 1)) * 4, h); break;
+        }
+    }
+    getSourceEdgeCoord(x, y) {
+        switch (this.startEdge) {
+            case "top": return y === 0;
+            case "bottom": return y === this.internalHeight - 1;
+            case "left": return x === 0;
+            case "right": return x === this.internalWidth - 1;
+        }
+        return false;
+    }
+    smear() {
+        if (!this.imageData) return;
+        var data = this.imageData.data;
+        var w = this.internalWidth, h = this.internalHeight;
+        this.subPixelX += this.dx * this.moveSpeed;
+        this.subPixelY += this.dy * this.moveSpeed;
+        var moveX = Math.trunc(this.subPixelX), moveY = Math.trunc(this.subPixelY);
+        if (moveX === 0 && moveY === 0) return;
+        this.subPixelX -= moveX;
+        this.subPixelY -= moveY;
+        this.leadX += moveX;
+        this.leadY += moveY;
+        if (this.leadX <= 0 || this.leadX >= w - 1) { this.dx = -this.dx; this.leadX = Math.max(0, Math.min(w - 1, this.leadX)); }
+        if (this.leadY <= 0 || this.leadY >= h - 1) { this.dy = -this.dy; this.leadY = Math.max(0, Math.min(h - 1, this.leadY)); }
+        var oldData = new Uint8ClampedArray(data);
+        for (var y = 0; y < h; y++) {
+            for (var x = 0; x < w; x++) {
+                if (this.getSourceEdgeCoord(x, y)) continue;
+                var srcX = Math.max(0, Math.min(w - 1, x - moveX));
+                var srcY = Math.max(0, Math.min(h - 1, y - moveY));
+                var dstIdx = (y * w + x) * 4, srcIdx = (srcY * w + srcX) * 4;
+                data[dstIdx] = oldData[srcIdx];
+                data[dstIdx + 1] = oldData[srcIdx + 1];
+                data[dstIdx + 2] = oldData[srcIdx + 2];
+                data[dstIdx + 3] = oldData[srcIdx + 3];
+            }
+        }
+    }
+    startAnimation() {
+        var fi = 1000 / 60;
+        var animate = (ts) => {
+            if (!this.lastTime) this.lastTime = ts;
+            if (!this.lastSourceTime) this.lastSourceTime = ts;
+            if (!this.lastDirectionChange) this.lastDirectionChange = ts;
+            if (ts - this.lastDirectionChange >= this.nextDirectionInterval) {
+                this.changeDirection();
+                this.lastDirectionChange = ts;
+                this.nextDirectionInterval = this.randomInterval();
+            }
+            if (ts - this.lastSourceTime >= this.sourceInterval) {
+                this.generateSourceEdge();
+                this.lastSourceTime = ts;
+            }
+            if (ts - this.lastTime >= fi) {
+                this.smear();
+                if (this.imageData) this.ctx.putImageData(this.imageData, 0, 0);
+                this.lastTime = ts;
+            }
+            this.animationId = requestAnimationFrame(animate);
+        };
+        this.animationId = requestAnimationFrame(animate);
+    }
+}
+function layoutSmears() {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    document.querySelectorAll(".smear-container").forEach(function(div) {
+        var x = parseFloat(div.dataset.x || 0);
+        var y = parseFloat(div.dataset.y || 0);
+        var w = parseFloat(div.dataset.width || 0);
+        var h = parseFloat(div.dataset.height || 0);
+        div.style.left = (x * vw) + "px";
+        div.style.top = (y * vh) + "px";
+        div.style.width = (w * vw) + "px";
+        div.style.height = (h * vh) + "px";
+    });
+}
+function initSmears() {
+    document.querySelectorAll(".smear-container").forEach(function(c) {
+        if (!c._smearInstance) c._smearInstance = new SmearCanvas(c);
+    });
+}
+window.addEventListener("load", function() { layoutSmears(); initSmears(); });
+window.addEventListener("resize", layoutSmears);
+layoutSmears();
+initSmears();
+</script></body></html>

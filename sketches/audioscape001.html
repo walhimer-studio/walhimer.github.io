@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Soundscape + p5.js (Flint-leaning)</title>
+  <style>
+    html, body { margin:0; padding:0; background:#070709; overflow:hidden; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    #ui {
+      position:fixed; left:18px; top:18px; z-index:10;
+      display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap;
+      background:rgba(0,0,0,0.48); border:1px solid rgba(255,255,255,0.12);
+      padding:12px 12px; border-radius:14px; backdrop-filter: blur(10px);
+    }
+    .row { display:flex; gap:10px; align-items:center; }
+    button {
+      background:rgba(255,255,255,0.10); color:#fff; border:1px solid rgba(255,255,255,0.18);
+      border-radius:12px; padding:10px 12px; cursor:pointer;
+    }
+    button:hover { background:rgba(255,255,255,0.14); }
+    .knob {
+      width:84px; height:84px; border-radius:18px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.14);
+      display:grid; place-items:center;
+      user-select:none;
+      position:relative;
+      touch-action:none;
+    }
+    .knob canvas { width:72px; height:72px; }
+    .klabel {
+      position:absolute; left:0; right:0; bottom:-18px;
+      font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+      color:rgba(255,255,255,0.70); text-align:center;
+    }
+    .live {
+      position:absolute; top:8px; right:10px;
+      font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+      color:rgba(255,255,255,0.85);
+      opacity:0.0; transition:opacity 120ms linear;
+    }
+    .live.on { opacity:1.0; }
+    #status {
+      color:rgba(255,255,255,0.78); font-size:12px; line-height:1.25;
+      max-width:560px;
+    }
+    #status b { color:#fff; }
+    #hint { color:rgba(255,255,255,0.55); font-size:11px; }
+    #toast {
+      display:inline-block;
+      margin-top:6px;
+      padding:6px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.14);
+      background:rgba(255,255,255,0.06);
+      color:rgba(255,255,255,0.85);
+      font-size:11px;
+      letter-spacing:0.06em;
+      text-transform:uppercase;
+      opacity:0;
+      transform: translateY(-2px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+    #toast.on { opacity:1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <div class="row">
+      <button id="startBtn">START AUDIO</button>
+      <button id="saveBtn">SAVE SNAP</button>
+      <button id="loadBtn">LOAD SNAP</button>
+      <button id="clearBtn">CLEAR SNAP</button>
+    </div>
+
+    <div class="row">
+      <div class="knob" data-k="density"><div class="live">LIVE</div><canvas width="72" height="72"></canvas><div class="klabel">DENSITY</div></div>
+      <div class="knob" data-k="drift"><div class="live">LIVE</div><canvas width="72" height="72"></canvas><div class="klabel">DRIFT</div></div>
+      <div class="knob" data-k="spread"><div class="live">LIVE</div><canvas width="72" height="72"></canvas><div class="klabel">SPREAD</div></div>
+      <div class="knob" data-k="tension"><div class="live">LIVE</div><canvas width="72" height="72"></canvas><div class="klabel">TENSION</div></div>
+    </div>
+
+    <div id="status">
+      <b>Trackpad:</b> drag on a knob, or hover and <b>two-finger scroll</b> up/down.<br/>
+      <span id="vals"></span><br/>
+      <span id="snap"></span>
+      <div id="toast"></div>
+      <div id="hint">Flint-leaning tip: keep <b>DRIFT</b> low-to-mid and let it breathe. Use <b>TENSION</b> for spectral opening.</div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+
+  <script>
+  // ============================================================
+  // SHARED STATE (relative targets + smoothing)
+  // ============================================================
+  const state = {
+    density: 0.38,  // overall amount
+    drift:   0.22,  // how fast the world meanders
+    spread:  0.62,  // space depth / diffusion
+    tension: 0.46,  // spectral brightness / resonance
+    _t: { density: 0.38, drift: 0.22, spread: 0.62, tension: 0.46 }
+  };
+
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+  function lerp(a,b,t){ return a + (b-a)*t; }
+
+  function stepState(dt){
+    const smooth = 1 - Math.exp(-dt * 2.6); // slightly slower / heavier
+    for (const k of ["density","drift","spread","tension"]){
+      state[k] = lerp(state[k], state._t[k], smooth);
+    }
+  }
+  function nudge(k, delta){
+    state._t[k] = clamp01(state._t[k] + delta);
+  }
+
+  // ============================================================
+  // UI: knobs + drag + trackpad scroll + visible save/load/clear
+  // ============================================================
+  const knobEls = Array.from(document.querySelectorAll(".knob"));
+  const valsEl = document.getElementById("vals");
+  const snapEl = document.getElementById("snap");
+  const toastEl = document.getElementById("toast");
+
+  const SNAP_KEY = "soundscape_snap_flint_v1";
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("on");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toastEl.classList.remove("on"), 900);
+  }
+
+  function hasSnap(){
+    return !!localStorage.getItem(SNAP_KEY);
+  }
+
+  function renderSnapStatus(){
+    snapEl.innerHTML = `<b>Snapshot:</b> ${hasSnap() ? "YES" : "NO"}`;
+  }
+
+  function drawKnob(canvas, value){
+    const g = canvas.getContext("2d");
+    const w = canvas.width, h = canvas.height;
+    g.clearRect(0,0,w,h);
+
+    // base ring
+    g.beginPath();
+    g.arc(w/2, h/2, 28, 0, Math.PI*2);
+    g.strokeStyle = "rgba(255,255,255,0.14)";
+    g.lineWidth = 7;
+    g.stroke();
+
+    // value arc
+    const a0 = -Math.PI*0.75;
+    const a1 = a0 + value * (Math.PI*1.5);
+    g.beginPath();
+    g.arc(w/2, h/2, 28, a0, a1);
+    g.strokeStyle = "rgba(255,255,255,0.78)";
+    g.lineWidth = 7;
+    g.lineCap = "round";
+    g.stroke();
+
+    // pointer dot
+    const ang = a1;
+    const px = w/2 + Math.cos(ang)*22;
+    const py = h/2 + Math.sin(ang)*22;
+    g.beginPath();
+    g.arc(px, py, 3.4, 0, Math.PI*2);
+    g.fillStyle = "rgba(255,255,255,0.92)";
+    g.fill();
+  }
+
+  let drag = null;
+  const liveTimers = new Map();
+
+  function setLive(el){
+    const live = el.querySelector(".live");
+    live.classList.add("on");
+    clearTimeout(liveTimers.get(el));
+    liveTimers.set(el, setTimeout(() => live.classList.remove("on"), 140));
+  }
+
+  knobEls.forEach(el => {
+    const k = el.dataset.k;
+
+    el.addEventListener("pointerdown", (e) => {
+      el.setPointerCapture(e.pointerId);
+      drag = { k, y: e.clientY, el };
+      setLive(el);
+      e.preventDefault();
+    });
+
+    el.addEventListener("pointermove", (e) => {
+      if (!drag || drag.k !== k) return;
+      const dy = drag.y - e.clientY;
+      drag.y = e.clientY;
+      nudge(k, dy * 0.0032);
+      setLive(el);
+      e.preventDefault();
+    });
+
+    el.addEventListener("pointerup", (e) => {
+      drag = null;
+      e.preventDefault();
+    });
+
+    // two-finger scroll on trackpad
+    el.addEventListener("wheel", (e) => {
+      nudge(k, (-e.deltaY) * 0.0007);
+      setLive(el);
+      e.preventDefault();
+    }, { passive:false });
+  });
+
+  function renderUI(){
+    for (const el of knobEls){
+      const k = el.dataset.k;
+      drawKnob(el.querySelector("canvas"), state[k]);
+    }
+    valsEl.textContent =
+      `density ${state.density.toFixed(2)}  |  drift ${state.drift.toFixed(2)}  |  spread ${state.spread.toFixed(2)}  |  tension ${state.tension.toFixed(2)}`;
+    renderSnapStatus();
+  }
+
+  document.getElementById("saveBtn").onclick = () => {
+    localStorage.setItem(SNAP_KEY, JSON.stringify({ ...state._t }));
+    toast("SAVED");
+    renderSnapStatus();
+  };
+
+  document.getElementById("loadBtn").onclick = () => {
+    const raw = localStorage.getItem(SNAP_KEY);
+    if (!raw) { toast("NO SNAP"); return; }
+    try {
+      const snap = JSON.parse(raw);
+      for (const k of ["density","drift","spread","tension"]){
+        if (typeof snap[k] === "number") state._t[k] = clamp01(snap[k]);
+      }
+      toast("LOADED");
+    } catch(e){
+      toast("BAD SNAP");
+    }
+    renderSnapStatus();
+  };
+
+  document.getElementById("clearBtn").onclick = () => {
+    localStorage.removeItem(SNAP_KEY);
+    toast("CLEARED");
+    renderSnapStatus();
+  };
+
+  // ============================================================
+  // WEB AUDIO (Flint-leaning: darker, spectral drift, micro-grains)
+  // ============================================================
+  let audio = null;
+
+  function makeSoftClipCurve(amount){
+    const n = 2048;
+    const curve = new Float32Array(n);
+    for (let i = 0; i < n; i++){
+      const x = (i / (n - 1)) * 2 - 1;
+      const a = 4 * (1.0 - amount);
+      curve[i] = x / (1 + a * Math.abs(x));
+    }
+    return curve;
+  }
+
+  function makeAudio(){
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Master chain
+    const mix = ctx.createGain();
+    mix.gain.value = 0.9;
+
+    const shaper = ctx.createWaveShaper();
+    shaper.curve = makeSoftClipCurve(0.92);
+    shaper.oversample = "4x";
+
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 2048;
+    const freqData = new Uint8Array(analyser.frequencyBinCount);
+    const timeData = new Uint8Array(analyser.fftSize);
+
+    const master = ctx.createGain();
+    master.gain.value = 0.0;
+
+    mix.connect(shaper);
+    shaper.connect(analyser);
+    analyser.connect(master);
+    master.connect(ctx.destination);
+
+    // Shared noise buffer
+    const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const ch = noiseBuf.getChannelData(0);
+    for (let i = 0; i < ch.length; i++) ch[i] = (Math.random() * 2 - 1);
+
+    // -------- Bed: pink-ish / shaped noise (NOT raw hiss)
+    const bed = ctx.createBufferSource();
+    bed.buffer = noiseBuf;
+    bed.loop = true;
+
+    const bedHP = ctx.createBiquadFilter();
+    bedHP.type = "highpass";
+    bedHP.frequency.value = 55;
+
+    const bedLP = ctx.createBiquadFilter();
+    bedLP.type = "lowpass";
+    bedLP.frequency.value = 900;
+
+    const bedGain = ctx.createGain();
+    bedGain.gain.value = 0.02;
+
+    bed.connect(bedHP);
+    bedHP.connect(bedLP);
+    bedLP.connect(bedGain);
+
+    // -------- Drone: very restrained, dark fundamental + slow spectral opening
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    o1.type = "sine";
+    o2.type = "triangle";
+    o1.frequency.value = 43.65; // F1-ish darker than 55
+    o2.frequency.value = 87.3;
+
+    const droneLP = ctx.createBiquadFilter();
+    droneLP.type = "lowpass";
+    droneLP.frequency.value = 520;
+    droneLP.Q.value = 1.2;
+
+    const droneGain = ctx.createGain();
+    droneGain.gain.value = 0.03;
+
+    o1.connect(droneLP);
+    o2.connect(droneLP);
+    droneLP.connect(droneGain);
+
+    // -------- Shimmer bank: multiple resonant bandpasses drifting slowly
+    const shimmerOut = ctx.createGain();
+    shimmerOut.gain.value = 0.0;
+
+    const shimmerSrc = ctx.createBufferSource();
+    shimmerSrc.buffer = noiseBuf;
+    shimmerSrc.loop = true;
+
+    const shimmerHP = ctx.createBiquadFilter();
+    shimmerHP.type = "highpass";
+    shimmerHP.frequency.value = 350;
+
+    shimmerSrc.connect(shimmerHP);
+
+    const shimmerFilters = [];
+    for (let i = 0; i < 4; i++){
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.value = 700 + i * 420;
+      bp.Q.value = 6.5;
+      shimmerHP.connect(bp);
+      bp.connect(shimmerOut);
+      shimmerFilters.push(bp);
+    }
+
+    // -------- Space: feedback delay + damping (diffuse, not “echo”)
+    const pre = ctx.createGain();
+
+    const delay = ctx.createDelay(3.0);
+    delay.delayTime.value = 0.34;
+
+    const fb = ctx.createGain();
+    fb.gain.value = 0.38;
+
+    const damp = ctx.createBiquadFilter();
+    damp.type = "lowpass";
+    damp.frequency.value = 1600;
+
+    const wet = ctx.createGain();
+    wet.gain.value = 0.35;
+
+    const dry = ctx.createGain();
+    dry.gain.value = 0.85;
+
+    // Sum sources to pre
+    bedGain.connect(pre);
+    droneGain.connect(pre);
+    shimmerOut.connect(pre);
+
+    // Dry + wet routing
+    pre.connect(dry);
+    pre.connect(delay);
+
+    delay.connect(damp);
+    damp.connect(wet);
+
+    damp.connect(fb);
+    fb.connect(delay);
+
+    dry.connect(mix);
+    wet.connect(mix);
+
+    // Start continuous sources
+    bed.start();
+    shimmerSrc.start();
+    o1.start();
+    o2.start();
+
+    // Smooth param helper
+    function setSmooth(param, value, time=0.10){
+      const now = ctx.currentTime;
+      param.cancelScheduledValues(now);
+      param.setTargetAtTime(value, now, time);
+    }
+
+    // Random walk modulators
+    let rwA = 0.5, rwB = 0.5, rwC = 0.5, rwD = 0.5;
+    function randWalk(x, amt){ return clamp01(x + (Math.random()*2-1) * amt); }
+
+    // -------- Micro-grains: tiny enveloped noise “particles” (non-rhythmic)
+    let grainPhase = 0;
+
+    function spawnGrain(){
+      const now = ctx.currentTime;
+
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuf;
+
+      const g = ctx.createGain();
+      g.gain.value = 0.0;
+
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass";
+
+      // choose a spectral region (tension pushes upward)
+      const ten = state.tension;
+      const base = 240 + ten * 4200;
+      const spread = 180 + ten * 1600;
+      const f = base + (Math.random()*2-1) * spread;
+      bp.frequency.value = Math.max(120, f);
+      bp.Q.value = 8 + ten * 18;
+
+      // envelope
+      const dur = 0.035 + Math.random() * (0.10 + state.density * 0.12);
+      const a = 0.0008 + state.density * 0.010;
+
+      src.connect(bp);
+      bp.connect(g);
+      g.connect(pre); // grains share same space
+
+      g.gain.setValueAtTime(0.0, now);
+      g.gain.linearRampToValueAtTime(a, now + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.00001, now + dur);
+
+      src.start(now);
+      src.stop(now + dur + 0.02);
+    }
+
+    function updateFromState(dt){
+      const dens = state.density;
+      const ten  = state.tension;
+      const sp   = state.spread;
+
+      // Bed stays dark and controlled (avoid hiss)
+      setSmooth(bedGain.gain, 0.006 + dens * 0.030, 0.15);
+      setSmooth(bedLP.frequency, 420 + ten * 2000, 0.20);
+      setSmooth(bedHP.frequency, 40 + (1.0 - sp) * 90, 0.20);
+
+      // Drone: present but not “musical”
+      setSmooth(droneGain.gain, 0.010 + dens * 0.070, 0.20);
+      setSmooth(droneLP.frequency, 220 + ten * 1200, 0.20);
+      setSmooth(droneLP.Q, 0.9 + ten * 6.0, 0.20);
+
+      // Shimmer: spectral “air” that comes in with tension
+      setSmooth(shimmerOut.gain, (0.002 + dens * 0.040) * (0.15 + ten * 1.10), 0.25);
+
+      // Space: deeper as spread increases
+      setSmooth(wet.gain, 0.10 + sp * 0.80, 0.28);
+      setSmooth(dry.gain, 0.92 - sp * 0.55, 0.28);
+      setSmooth(delay.delayTime, 0.14 + sp * 0.66, 0.30);
+      setSmooth(fb.gain, 0.12 + sp * 0.78, 0.34);
+      setSmooth(damp.frequency, 700 + (1.0 - sp) * 2400, 0.34);
+    }
+
+    function updateDrift(dt){
+      const d = state.drift;
+      const speed = 0.0012 + d * 0.018; // slow
+      const amt = speed * dt * 60;
+
+      rwA = randWalk(rwA, amt);
+      rwB = randWalk(rwB, amt);
+      rwC = randWalk(rwC, amt);
+      rwD = randWalk(rwD, amt);
+
+      // subtle frequency meander (avoid “melody”)
+      const det = (rwA - 0.5) * (0.25 + d * 2.2);
+      setSmooth(o1.frequency, 43.65 + det, 0.45);
+      setSmooth(o2.frequency, (43.65 * 2) + det * 1.6, 0.45);
+
+      // shimmer bank drifts (spectral movement)
+      for (let i = 0; i < shimmerFilters.length; i++){
+        const s = shimmerFilters[i];
+        const ten = state.tension;
+        const base = 380 + ten * 4200;
+        const off = (i - 1.5) * (240 + ten * 420);
+        const jitter = ( (i%2===0 ? rwB : rwC) - 0.5 ) * (160 + ten*480);
+        const f = Math.max(180, base + off + jitter);
+        setSmooth(s.frequency, f, 0.60);
+        setSmooth(s.Q, 4.0 + ten * 18.0, 0.60);
+      }
+
+      // grains: rate increases with density, irregularity increases with drift
+      // no beat: poisson-ish
+      const baseRate = 0.10 + state.density * 1.60; // grains per second-ish
+      const jitter = 0.6 + state.drift * 2.8;
+      grainPhase += dt * baseRate * jitter;
+
+      while (grainPhase >= 1.0){
+        grainPhase -= 1.0;
+        // sometimes skip to keep it sparse / organic
+        if (Math.random() < (0.55 + state.density * 0.35)) spawnGrain();
+      }
+    }
+
+    function getAnalysis(){
+      analyser.getByteFrequencyData(freqData);
+      analyser.getByteTimeDomainData(timeData);
+
+      let sum = 0;
+      for (let i = 0; i < timeData.length; i++){
+        const v = (timeData[i] - 128) / 128;
+        sum += v*v;
+      }
+      const rms = Math.sqrt(sum / timeData.length);
+
+      let wsum = 0, vsum = 0;
+      for (let i = 0; i < freqData.length; i++){
+        const v = freqData[i] / 255;
+        vsum += v;
+        wsum += v * i;
+      }
+      const centroid = vsum > 1e-6 ? (wsum / vsum) / freqData.length : 0;
+
+      return { rms, centroid, freqData };
+    }
+
+    function start(){
+      setSmooth(master.gain, 0.85, 0.25);
+    }
+
+    return { ctx, start, updateFromState, updateDrift, getAnalysis };
+  }
+
+  document.getElementById("startBtn").onclick = async () => {
+    if (!audio) audio = makeAudio();
+    if (audio.ctx.state !== "running") await audio.ctx.resume();
+    audio.start();
+    toast("AUDIO ON");
+  };
+
+  // ============================================================
+  // p5 VISUALS (darker / more Flint-leaning field)
+  // ============================================================
+  let analysis = { rms:0, centroid:0, freqData:null };
+
+  new p5((p) => {
+    p.setup = () => {
+      p.createCanvas(window.innerWidth, window.innerHeight);
+      p.pixelDensity(2);
+      p.frameRate(60);
+      p.noStroke();
+      p.colorMode(p.HSB, 360, 100, 100, 1);
+    };
+
+    p.windowResized = () => p.resizeCanvas(window.innerWidth, window.innerHeight);
+
+    p.draw = () => {
+      const dt = Math.min(0.05, p.deltaTime / 1000);
+      stepState(dt);
+
+      if (audio){
+        audio.updateFromState(dt);
+        audio.updateDrift(dt);
+        analysis = audio.getAnalysis();
+      }
+
+      renderUI();
+
+      const dens = state.density;
+      const dr  = state.drift;
+      const sp  = state.spread;
+      const ten = state.tension;
+
+      const rms = analysis.rms || 0;
+      const cen = analysis.centroid || 0;
+
+      // darker base with slow spectral tint
+      const bgHue = (235 + cen*110) % 360;
+      p.background(bgHue, 18 + ten*30, 3 + sp*8, 1);
+
+      // Field: fewer, softer, more “mist” than particles
+      const N = Math.floor(120 + dens * 1200);
+      const t = p.millis() * 0.000045 * (0.25 + dr*1.7);
+
+      const scale = 0.0010 + (1.0 - sp)*0.0022 + ten*0.0012;
+      const glow = 0.06 + rms * 2.6;
+
+      p.blendMode(p.ADD);
+
+      for (let i = 0; i < N; i++){
+        const x0 = (i * 101) % p.width;
+        const y0 = (i * 61) % p.height;
+
+        const nx = p.noise(x0*scale, y0*scale, t);
+        const ny = p.noise(x0*scale + 130, y0*scale + 70, t);
+
+        const ang = (nx*2 - 1) * Math.PI * (0.55 + ten*2.4);
+        const r = (0.7 + sp*2.0) * (9 + dens*40);
+
+        const x = x0 + Math.cos(ang) * r * (0.55 + ny);
+        const y = y0 + Math.sin(ang) * r * (0.55 + nx);
+
+        const hue = (220 + cen*140 + nx*70) % 360;
+        const sat = 12 + ten*55;
+        const bri = 6 + sp*26 + glow*30;
+
+        const a = 0.010 + dens*0.020 + glow*0.05;
+        const sz = 1.0 + nx * (1.6 + dens*2.6) + glow*6.5;
+
+        p.fill(hue, sat, bri, a);
+        p.circle(x, y, sz);
+      }
+
+      // a slow “pressure halo”
+      p.blendMode(p.BLEND);
+      p.push();
+      p.translate(p.width/2, p.height/2);
+      const ring = Math.min(p.width, p.height) * (0.10 + sp*0.28 + rms*0.36);
+      p.noFill();
+      p.stroke(0, 0, 100, 0.10);
+      p.strokeWeight(2);
+      p.circle(0, 0, ring);
+      p.pop();
+    };
+  });
+
+  // initial UI render
+  renderUI();
+  </script>
+</body>
+</html>

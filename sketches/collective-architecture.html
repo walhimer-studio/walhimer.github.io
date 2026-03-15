@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collective Architecture - Cooperative Building</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Courier New', monospace;
+        }
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: #00ffaa;
+            padding: 20px;
+            border-radius: 0;
+            border-left: 3px solid #00ffaa;
+            max-width: 350px;
+            font-size: 13px;
+            line-height: 1.6;
+            z-index: 100;
+        }
+        #info-panel h2 {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+        #info-panel .instruction {
+            margin: 10px 0;
+            padding-left: 15px;
+            border-left: 2px solid rgba(0, 255, 170, 0.3);
+        }
+        #info-panel .emphasis {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        #stats {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            color: #00ffaa;
+            padding: 20px;
+            border-radius: 0;
+            border-right: 3px solid #00ffaa;
+            min-width: 200px;
+            font-size: 12px;
+            z-index: 100;
+        }
+        .stat-row {
+            margin: 12px 0;
+        }
+        .stat-label {
+            font-size: 10px;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+        .stat-value {
+            font-size: 28px;
+            color: #ffff00;
+            font-weight: bold;
+        }
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00ffaa;
+            font-size: 32px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s;
+            pointer-events: none;
+            max-width: 80%;
+            text-shadow: 0 0 20px rgba(0, 255, 170, 0.8);
+            z-index: 200;
+        }
+        #message.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="info-panel">
+        <h2>COLLECTIVE ARCHITECTURE</h2>
+        <div class="instruction">
+            <span class="emphasis">Click anywhere</span> to place a foundation block
+        </div>
+        <div class="instruction">
+            <span class="emphasis">Click near others' blocks</span> (within range) to connect and build upward
+        </div>
+        <div class="instruction">
+            When <span class="emphasis">2+ people connect</span>, structures grow taller and more colorful
+        </div>
+        <div class="instruction">
+            The architecture <span class="emphasis">evolves</span> - connections spawn new possibilities
+        </div>
+        <div style="margin-top: 15px; font-style: italic; opacity: 0.8;">
+            Alone we build foundations.<br>
+            Together we reach the sky.
+        </div>
+    </div>
+
+    <div id="stats">
+        <div class="stat-row">
+            <div class="stat-label">BLOCKS PLACED</div>
+            <div class="stat-value" id="blocks-count">0</div>
+        </div>
+        <div class="stat-row">
+            <div class="stat-label">CONNECTIONS</div>
+            <div class="stat-value" id="connections-count">0</div>
+        </div>
+        <div class="stat-row">
+            <div class="stat-label">TOWER HEIGHT</div>
+            <div class="stat-value" id="height-count">1</div>
+        </div>
+        <div class="stat-row">
+            <div class="stat-label">COOPERATORS</div>
+            <div class="stat-value" id="cooperators-count">0</div>
+        </div>
+    </div>
+
+    <div id="message"></div>
+
+    <script>
+        // COLLECTIVE ARCHITECTURE
+        // A cooperative building system where structures grow through collaboration
+        
+        let blocks = [];
+        let connections = [];
+        let recentClicks = [];
+        let cs;
+        let camDistance = 600;
+        let targetCamDistance = 600;
+        let camAngle = 0;
+        
+        // Stats
+        let totalBlocks = 0;
+        let totalConnections = 0;
+        let maxHeight = 1;
+        let currentCooperators = 0;
+        
+        // Cooperative settings
+        const CONNECTION_DISTANCE = 200;
+        const CLICK_WINDOW = 3000; // 3 seconds to cooperate
+        const BASE_HEIGHT = 80;
+        const HEIGHT_GROWTH = 60;
+        
+        // Color palette
+        const palette = [310, 45, 30, 210, 270, 180, 60, 120];
+        
+        function setup() {
+            cs = min(windowWidth, windowHeight);
+            createCanvas(cs, cs, WEBGL);
+            pixelDensity(2);
+            frameRate(60);
+            colorMode(HSB, 360, 100, 100, 255);
+            
+            // Start with a few seed blocks
+            for (let i = 0; i < 3; i++) {
+                let angle = (TWO_PI * i) / 3;
+                let radius = 150;
+                blocks.push(createBlock(
+                    cos(angle) * radius,
+                    sin(angle) * radius,
+                    0,
+                    1,
+                    true
+                ));
+            }
+            totalBlocks = 3;
+        }
+        
+        function createBlock(x, z, baseY, level, isSeed = false) {
+            let blockHeight = BASE_HEIGHT + (level - 1) * HEIGHT_GROWTH;
+            let blockWidth = 120 - (level - 1) * 15;
+            blockWidth = max(blockWidth, 40);
+            
+            return {
+                x: x,
+                y: baseY - blockHeight / 2,
+                z: z,
+                w: blockWidth,
+                h: blockHeight,
+                d: blockWidth,
+                level: level,
+                tex: makeMultiColorGradientTexture(level),
+                connections: [],
+                isSeed: isSeed,
+                birthTime: millis(),
+                pulseOffset: random(TWO_PI)
+            };
+        }
+        
+        function makeMultiColorGradientTexture(level) {
+            const tex = createGraphics(128, 256);
+            tex.pixelDensity(2);
+            tex.colorMode(HSB, 360, 100, 100, 255);
+            tex.noStroke();
+            
+            // More colors for higher levels
+            let numColors = min(level + 2, 4);
+            let colors = [];
+            for (let i = 0; i < numColors; i++) {
+                colors.push(random(palette));
+            }
+            
+            let alpha = map(level, 1, 10, 110, 200); // More solid as it grows
+            
+            for (let y = 0; y < tex.height; y++) {
+                const t = y / (tex.height - 1);
+                let h;
+                
+                if (numColors === 2) {
+                    h = lerp(colors[0], colors[1], t);
+                } else if (numColors === 3) {
+                    if (t < 0.5) {
+                        h = lerp(colors[0], colors[1], t * 2);
+                    } else {
+                        h = lerp(colors[1], colors[2], (t - 0.5) * 2);
+                    }
+                } else {
+                    if (t < 1/3) {
+                        h = lerp(colors[0], colors[1], t * 3);
+                    } else if (t < 2/3) {
+                        h = lerp(colors[1], colors[2], (t - 1/3) * 3);
+                    } else {
+                        h = lerp(colors[2], colors[3], (t - 2/3) * 3);
+                    }
+                }
+                
+                tex.fill(h, 100, 100, alpha);
+                tex.rect(0, y, tex.width, 1);
+            }
+            
+            // Add wave pattern
+            tex.loadPixels();
+            for (let y = 0; y < tex.height; y++) {
+                for (let x = 0; x < tex.width; x++) {
+                    const idx = 4 * (y * tex.width + x);
+                    const wave = 0.65 + 0.35 * sin((x / tex.width) * TWO_PI * 2.0);
+                    tex.pixels[idx + 3] = tex.pixels[idx + 3] * wave;
+                }
+            }
+            tex.updatePixels();
+            
+            return tex;
+        }
+        
+        function findNearbyBlocks(x, z) {
+            let nearby = [];
+            for (let block of blocks) {
+                let dist = sqrt((x - block.x) ** 2 + (z - block.z) ** 2);
+                if (dist < CONNECTION_DISTANCE && dist > 5) {
+                    nearby.push({block: block, distance: dist});
+                }
+            }
+            nearby.sort((a, b) => a.distance - b.distance);
+            return nearby.map(item => item.block);
+        }
+        
+        function findCooperativeClicks(x, z) {
+            let now = millis();
+            let nearby = [];
+            
+            for (let click of recentClicks) {
+                if (now - click.time > CLICK_WINDOW) continue;
+                let dist = sqrt((x - click.x) ** 2 + (z - click.z) ** 2);
+                if (dist < CONNECTION_DISTANCE && dist > 5) {
+                    nearby.push(click);
+                }
+            }
+            
+            return nearby;
+        }
+        
+        function buildCooperativeStructure(baseBlocks, level) {
+            // Calculate center point
+            let centerX = baseBlocks.reduce((sum, b) => sum + b.x, 0) / baseBlocks.length;
+            let centerZ = baseBlocks.reduce((sum, b) => sum + b.z, 0) / baseBlocks.length;
+            
+            // Find highest base
+            let maxBaseY = Math.min(...baseBlocks.map(b => b.y));
+            
+            // Create new block on top
+            let newBlock = createBlock(centerX, centerZ, maxBaseY, level);
+            blocks.push(newBlock);
+            totalBlocks++;
+            
+            // Create connections
+            for (let baseBlock of baseBlocks) {
+                connections.push({
+                    from: baseBlock,
+                    to: newBlock,
+                    birthTime: millis(),
+                    hue: random(palette)
+                });
+                totalConnections++;
+            }
+            
+            maxHeight = max(maxHeight, level);
+            
+            return newBlock;
+        }
+        
+        function updateCameraDistance() {
+            if (blocks.length === 0) return;
+            
+            // Calculate bounding box of all blocks
+            let minX = Infinity, maxX = -Infinity;
+            let minY = Infinity, maxY = -Infinity;
+            let minZ = Infinity, maxZ = -Infinity;
+            
+            for (let block of blocks) {
+                minX = min(minX, block.x - block.w / 2);
+                maxX = max(maxX, block.x + block.w / 2);
+                minY = min(minY, block.y - block.h / 2);
+                maxY = max(maxY, block.y + block.h / 2);
+                minZ = min(minZ, block.z - block.d / 2);
+                maxZ = max(maxZ, block.z + block.d / 2);
+            }
+            
+            // Calculate structure size
+            let width = maxX - minX;
+            let height = maxY - minY;
+            let depth = maxZ - minZ;
+            let maxDimension = max(width, height, depth);
+            
+            // Set target camera distance based on structure size
+            targetCamDistance = maxDimension * 1.5 + 400;
+            targetCamDistance = max(targetCamDistance, 600); // minimum distance
+            targetCamDistance = min(targetCamDistance, 2000); // maximum distance
+        }
+        
+        function screenToWorld(screenX, screenY) {
+            // Get current camera position
+            let camX = cos(camAngle) * camDistance;
+            let camY = -200;
+            let camZ = sin(camAngle) * camDistance;
+            
+            // Simple ray casting approximation
+            // Project from screen to ground plane (y = 0)
+            let centerX = width / 2;
+            let centerY = height / 2;
+            
+            let dx = (screenX - centerX) / centerX;
+            let dy = (screenY - centerY) / centerY;
+            
+            // Approximate world position (considering camera orbit)
+            let worldX = dx * camDistance * 0.8;
+            let worldZ = dy * camDistance * 0.8;
+            
+            // Rotate based on camera angle
+            let rotatedX = worldX * cos(-camAngle) - worldZ * sin(-camAngle);
+            let rotatedZ = worldX * sin(-camAngle) + worldZ * cos(-camAngle);
+            
+            return {x: rotatedX, z: rotatedZ};
+        }
+        
+        function findBlockAtPosition(worldX, worldZ) {
+            // Find if click is near any existing block
+            for (let block of blocks) {
+                let dist = sqrt((worldX - block.x) ** 2 + (worldZ - block.z) ** 2);
+                if (dist < block.w * 0.7) {
+                    return block;
+                }
+            }
+            return null;
+        }
+        
+        function showMessage(text) {
+            let msgEl = document.getElementById('message');
+            msgEl.textContent = text;
+            msgEl.classList.add('show');
+            setTimeout(() => {
+                msgEl.classList.remove('show');
+            }, 2500);
+        }
+        
+        function updateStats() {
+            document.getElementById('blocks-count').textContent = totalBlocks;
+            document.getElementById('connections-count').textContent = totalConnections;
+            document.getElementById('height-count').textContent = maxHeight;
+            document.getElementById('cooperators-count').textContent = currentCooperators;
+        }
+        
+        function mousePressed() {
+            // Convert screen space to world space
+            let world = screenToWorld(mouseX, mouseY);
+            let x = world.x;
+            let z = world.z;
+            
+            // Check if clicking on an existing block
+            let clickedBlock = findBlockAtPosition(x, z);
+            
+            if (clickedBlock) {
+                // Build on top of this block
+                let newLevel = clickedBlock.level + 1;
+                let newBlock = createBlock(
+                    clickedBlock.x,
+                    clickedBlock.z,
+                    clickedBlock.y,
+                    newLevel
+                );
+                blocks.push(newBlock);
+                totalBlocks++;
+                
+                connections.push({
+                    from: clickedBlock,
+                    to: newBlock,
+                    birthTime: millis(),
+                    hue: random(palette)
+                });
+                totalConnections++;
+                
+                maxHeight = max(maxHeight, newLevel);
+                showMessage("Building higher!");
+                updateStats();
+                updateCameraDistance();
+                return;
+            }
+            
+            // Record this click
+            let clickRecord = {
+                x: x,
+                z: z,
+                time: millis()
+            };
+            recentClicks.push(clickRecord);
+            
+            // Find nearby existing blocks
+            let nearbyBlocks = findNearbyBlocks(x, z);
+            
+            // Find other recent clicks nearby
+            let cooperativeClicks = findCooperativeClicks(x, z);
+            
+            if (nearbyBlocks.length === 0) {
+                // Place foundation block
+                let newBlock = createBlock(x, z, 0, 1);
+                blocks.push(newBlock);
+                totalBlocks++;
+                showMessage("Foundation placed");
+                
+            } else if (cooperativeClicks.length > 0) {
+                // COOPERATIVE BUILD!
+                let allBaseBlocks = [...new Set([...nearbyBlocks.slice(0, 3)])];
+                let avgLevel = allBaseBlocks.reduce((sum, b) => sum + b.level, 0) / allBaseBlocks.length;
+                let newLevel = Math.floor(avgLevel) + 1;
+                
+                let newBlock = buildCooperativeStructure(allBaseBlocks, newLevel);
+                
+                if (cooperativeClicks.length === 1) {
+                    showMessage("Two builders connect — structure grows!");
+                } else {
+                    showMessage(`${cooperativeClicks.length + 1} builders unite — tower rises!`);
+                }
+                
+                // Spawn additional possibilities
+                if (newLevel >= 3 && random() < 0.4) {
+                    // Spawn new foundation blocks around the structure
+                    for (let i = 0; i < 2; i++) {
+                        let angle = random(TWO_PI);
+                        let radius = random(150, 250);
+                        let spawnX = newBlock.x + cos(angle) * radius;
+                        let spawnZ = newBlock.z + sin(angle) * radius;
+                        
+                        setTimeout(() => {
+                            blocks.push(createBlock(spawnX, spawnZ, 0, 1));
+                            totalBlocks++;
+                            showMessage("New possibilities emerge...");
+                            updateCameraDistance();
+                        }, 500 + i * 300);
+                    }
+                }
+                
+            } else {
+                // Connect to nearest block
+                let nearestBlock = nearbyBlocks[0];
+                let newLevel = nearestBlock.level + 1;
+                
+                let newBlock = createBlock(x, z, nearestBlock.y, newLevel);
+                blocks.push(newBlock);
+                totalBlocks++;
+                
+                connections.push({
+                    from: nearestBlock,
+                    to: newBlock,
+                    birthTime: millis(),
+                    hue: random(palette)
+                });
+                totalConnections++;
+                
+                maxHeight = max(maxHeight, newLevel);
+                showMessage("Building upward...");
+            }
+            
+            updateStats();
+            updateCameraDistance();
+        }
+        
+        function draw() {
+            background(10, 15, 8);
+            
+            // Smoothly interpolate camera distance
+            camDistance = lerp(camDistance, targetCamDistance, 0.05);
+            
+            // Update camera
+            camAngle += 0.002;
+            let camX = cos(camAngle) * camDistance;
+            let camY = -200;
+            let camZ = sin(camAngle) * camDistance;
+            camera(camX, camY, camZ, 0, 0, 0, 0, 1, 0);
+            
+            // Lighting
+            ambientLight(60, 20, 40);
+            directionalLight(200, 80, 100, 0.3, -1, -0.5);
+            pointLight(100, 100, 255, 0, -300, 0);
+            
+            // Update cooperators count
+            let now = millis();
+            recentClicks = recentClicks.filter(c => now - c.time < CLICK_WINDOW);
+            currentCooperators = recentClicks.length;
+            
+            // Draw ground grid
+            push();
+            stroke(0, 0, 30, 50);
+            strokeWeight(1);
+            for (let x = -500; x <= 500; x += 50) {
+                line(x, 0, -500, x, 0, 500);
+            }
+            for (let z = -500; z <= 500; z += 50) {
+                line(-500, 0, z, 500, 0, z);
+            }
+            pop();
+            
+            // Draw connections
+            strokeWeight(3);
+            for (let conn of connections) {
+                let age = millis() - conn.birthTime;
+                let alpha = age < 1000 ? map(age, 0, 1000, 0, 150) : 150;
+                
+                stroke(conn.hue, 80, 90, alpha);
+                line(conn.from.x, conn.from.y, conn.from.z,
+                     conn.to.x, conn.to.y, conn.to.z);
+                
+                // Glow
+                stroke(conn.hue, 60, 100, alpha * 0.3);
+                strokeWeight(8);
+                line(conn.from.x, conn.from.y, conn.from.z,
+                     conn.to.x, conn.to.y, conn.to.z);
+            }
+            
+            // Draw blocks
+            noStroke();
+            for (let block of blocks) {
+                let age = millis() - block.birthTime;
+                let pulse = sin(age * 0.003 + block.pulseOffset) * 0.05 + 1;
+                
+                push();
+                translate(block.x, block.y, block.z);
+                
+                // Scale in animation
+                let scaleAmount = age < 500 ? map(age, 0, 500, 0, 1) : 1;
+                scaleAmount *= pulse;
+                
+                push();
+                scale(scaleAmount);
+                texture(block.tex);
+                box(block.w, block.h, block.d);
+                pop();
+                
+                // Glow for higher levels
+                if (block.level > 2) {
+                    fill(0, 0, 100, 20);
+                    sphere(block.w * 0.8);
+                }
+                
+                pop();
+            }
+            
+            // Draw recent click indicators
+            for (let click of recentClicks) {
+                let age = millis() - click.time;
+                let alpha = map(age, 0, CLICK_WINDOW, 150, 0);
+                let radius = map(age, 0, CLICK_WINDOW, 10, CONNECTION_DISTANCE);
+                
+                push();
+                translate(click.x, 5, click.z);
+                rotateX(HALF_PI);
+                noFill();
+                stroke(60, 80, 100, alpha * 0.5);
+                strokeWeight(2);
+                circle(0, 0, radius * 2);
+                pop();
+            }
+            
+            if (frameCount % 60 === 0) {
+                updateStats();
+            }
+        }
+        
+        function windowResized() {
+            cs = min(windowWidth, windowHeight);
+            resizeCanvas(cs, cs);
+        }
+        
+        // Touch support
+        function touchStarted() {
+            mousePressed();
+            return false;
+        }
+    </script>
+</body>
+</html>

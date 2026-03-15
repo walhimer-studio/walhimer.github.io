@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #ffffff; }
+  </style>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  function hsbToHex(h, s, b) {
+    s /= 100; b /= 100;
+    const k = n => (n + h / 60) % 6;
+    const f = n => b - b * s * Math.max(0, Math.min(k(n), 4 - k(n), 1));
+    return (Math.round(f(5)*255) << 16) | (Math.round(f(3)*255) << 8) | Math.round(f(1)*255);
+  }
+
+  const palette = [310, 45, 30, 210, 270];
+
+  function makeGradientTexture() {
+    const hue1 = palette[Math.floor(Math.random() * palette.length)];
+    const hue2 = palette[Math.floor(Math.random() * palette.length)];
+    const sat = 80 + Math.random() * 20;
+    const bri = 80 + Math.random() * 20;
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    for (let y = 0; y < 256; y++) {
+      const t = y / 256;
+      const h = hue1 + (hue2 - hue1) * t;
+      const hex = hsbToHex(h, sat, bri);
+      ctx.fillStyle = `rgb(${(hex>>16)&255},${(hex>>8)&255},${hex&255})`;
+      ctx.fillRect(0, y, 64, 1);
+    }
+    return new THREE.CanvasTexture(canvas);
+  }
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 12);
+  camera.lookAt(0, 0, -7);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setClearColor(0xffffff, 1);
+  renderer.setPixelRatio(devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dir1 = new THREE.DirectionalLight(0xffffff, 1.0);
+  dir1.position.set(5, 8, 5);
+  scene.add(dir1);
+
+  const MAX_OPACITY = 0.20;
+  const MIN_OPACITY = 0.01;
+  const breathPeriod = 12.0;
+
+  const NUM_CUBES = 5;
+  const SPACING = 3.5; // gap between cube centres along Z
+
+  const cubes = []; // { outerMesh, innerMesh, outerMats, innerMats, outerPhases, innerPhases }
+
+  for (let i = 0; i < NUM_CUBES; i++) {
+    const zPos = -i * SPACING;
+    const w = 1.0 + Math.random() * 2.5;  // width  1.0 – 3.5
+    const h = 1.0 + Math.random() * 3.5;  // height 1.0 – 4.5
+    const d = 1.0 + Math.random() * 2.5;  // depth  1.0 – 3.5
+    const geo = new THREE.BoxGeometry(w, h, d);
+    const innerGeo = new THREE.BoxGeometry(w * 0.5, h * 0.5, d * 0.5);
+
+    const outerMats = Array.from({ length: 6 }, () =>
+      new THREE.MeshBasicMaterial({
+        map: makeGradientTexture(),
+        transparent: true,
+        opacity: MAX_OPACITY,
+        side: THREE.DoubleSide,
+      })
+    );
+    const outerPhases = outerMats.map(() => Math.random() * Math.PI * 2);
+    const outerMesh = new THREE.Mesh(geo, outerMats);
+    outerMesh.position.z = zPos;
+    scene.add(outerMesh);
+
+    const innerMats = Array.from({ length: 6 }, () =>
+      new THREE.MeshBasicMaterial({
+        map: makeGradientTexture(),
+        transparent: true,
+        opacity: MAX_OPACITY * 0.5,
+        side: THREE.DoubleSide,
+      })
+    );
+    const innerPhases = innerMats.map(() => Math.random() * Math.PI * 2);
+    const innerMesh = new THREE.Mesh(innerGeo, innerMats);
+    innerMesh.position.z = zPos;
+    scene.add(innerMesh);
+
+    cubes.push({ outerMesh, innerMesh, outerMats, innerMats, outerPhases, innerPhases });
+  }
+
+
+  // Label
+  const label = document.createElement('div');
+  label.innerText = 'Three.js · Breathing Cube';
+  label.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    color:rgba(0,0,0,0.3);font-size:11px;letter-spacing:0.3em;
+    font-family:monospace;text-transform:uppercase;pointer-events:none;`;
+  document.body.appendChild(label);
+
+  const clock = new THREE.Clock();
+  let lastTime = 0;
+  const fpsInterval = 1000 / 60;
+  const camStartZ = 12;
+  const camEndZ = -18; // travel past all 5 cubes
+  const journeyDuration = 120.0; // seconds to travel full length
+
+  function animate(timestamp) {
+    requestAnimationFrame(animate);
+    const elapsed = timestamp - lastTime;
+    if (elapsed < fpsInterval) return;
+    lastTime = timestamp - (elapsed % fpsInterval);
+    const t = clock.getElapsedTime();
+
+    // Move camera forward along Z, loop when it reaches the end
+    const progress = (t % journeyDuration) / journeyDuration;
+    const camZ = camStartZ + (camEndZ - camStartZ) * progress;
+    camera.position.z = camZ;
+    camera.lookAt(0, 0, camZ - 5);
+
+    cubes.forEach(({ outerMats, innerMats, outerPhases, innerPhases }) => {
+      outerMats.forEach((m, i) => {
+        const breath = (Math.sin((t / breathPeriod) * Math.PI * 2 + outerPhases[i]) + 1) / 2;
+        m.opacity = MIN_OPACITY + (MAX_OPACITY - MIN_OPACITY) * breath;
+      });
+      innerMats.forEach((m, i) => {
+        const breath = (Math.sin((t / breathPeriod) * Math.PI * 2 + innerPhases[i]) + 1) / 2;
+        m.opacity = (MIN_OPACITY * 0.5) + ((MAX_OPACITY * 0.5) - (MIN_OPACITY * 0.5)) * breath;
+      });
+    });
+
+
+
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+</script>
+</body>
+</html>

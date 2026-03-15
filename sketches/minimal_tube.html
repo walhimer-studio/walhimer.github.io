@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ONE TUBE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; }
+        #info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-family: monospace;
+            font-size: 24px;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        button {
+            width: 200px;
+            padding: 15px;
+            font-size: 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        #start { background: #4caf50; color: white; }
+        #start.playing { background: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <div>BPM: <span id="bpm">120</span></div>
+        <input type="range" min="30" max="240" value="120" style="width:200px" onchange="bpm=this.value; document.getElementById('bpm').textContent=bpm">
+        <br><button id="start" onclick="togglePlay()">▶ START</button>
+    </div>
+
+    <script>
+        let intensity = 0;
+        let playing = false;
+        let bpm = 120;
+        let nextBeat = 0;
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+        }
+
+        function draw() {
+            background(0);
+            
+            // Lights
+            ambientLight(150);
+            pointLight(255, 255, 255, 0, -200, 300);
+            
+            // Camera
+            camera(0, -50, 250, 0, 0, 0, 0, 1, 0);
+            
+            // Beat check
+            if (playing && millis() >= nextBeat) {
+                intensity = 1.0;
+                nextBeat = millis() + (60000 / bpm);
+                console.log('FLASH');
+            }
+            
+            // Fade
+            intensity *= 0.85;
+            
+            // Draw tube - ALWAYS VISIBLE
+            let bright = max(intensity * 255 * 100, 50); // Always at least 50 brightness
+            
+            fill(255);
+            emissiveMaterial(bright, bright, bright);
+            cylinder(20, 400);
+            
+            // Top
+            push();
+            translate(0, -200, 0);
+            sphere(30);
+            pop();
+            
+            // Bottom  
+            push();
+            translate(0, 200, 0);
+            sphere(30);
+            pop();
+        }
+
+        function togglePlay() {
+            playing = !playing;
+            let btn = document.getElementById('start');
+            if (playing) {
+                btn.textContent = '⏸ STOP';
+                btn.className = 'playing';
+                intensity = 1.0;
+                nextBeat = millis() + (60000 / bpm);
+            } else {
+                btn.textContent = '▶ START';
+                btn.className = '';
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>

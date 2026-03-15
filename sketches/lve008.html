@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Gradient Nested Boxes</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+<style>
+body{
+margin:0;
+overflow:hidden;
+background:white;
+}
+</style>
+
+</head>
+
+<body>
+
+<script>
+
+let gradientTextures = [];
+let rectCount = 6;
+let baseSize = 500;
+
+let palettes = [
+[310,45],
+[30,210],
+[270,120],
+[10,180],
+[300,90],
+[60,250]
+];
+
+function setup(){
+
+createCanvas(1000,1000,WEBGL);
+
+colorMode(HSB,360,100,100,255);
+noStroke();
+
+for(let i=0;i<rectCount;i++){
+
+let hue1 = palettes[i][0];
+let hue2 = palettes[i][1];
+
+let tex = createGraphics(256,256);
+
+tex.colorMode(HSB,360,100,100,255);
+
+for(let y=0;y<256;y++){
+
+let t = map(y,0,255,0,1);
+
+let h = lerp(hue1,hue2,t);
+let c = color(h,90,100,255);
+
+tex.stroke(c);
+tex.line(0,y,256,y);
+
+}
+
+gradientTextures.push(tex);
+
+}
+
+}
+
+function draw(){
+
+background(0,0,100);
+
+let pulse = map(sin(frameCount*0.03),-1,1,120,220);
+
+rotateY(frameCount*0.01);
+
+for(let i=0;i<rectCount;i++){
+
+push();
+
+let s = baseSize - i*70;
+
+texture(gradientTextures[i]);
+tint(255,pulse);
+
+translate(0,0,i*2);
+
+plane(s,s);
+
+pop();
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>String Art — Animated Thread — WebGL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Syne:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0c;
+    color: #d4d4d8;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  #sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: #111114;
+    border-right: 1px solid #1e1e24;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+
+  #sidebar h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  #sidebar .subtitle {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .control-group label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .control-group .value-display {
+    font-size: 11px;
+    color: #aaa;
+    float: right;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #222;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+  }
+
+  select {
+    background: #1a1a1f;
+    color: #d4d4d8;
+    border: 1px solid #2a2a30;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  select:hover { border-color: #444; }
+
+  button {
+    background: #fff;
+    color: #0a0a0c;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background: #e0e0e0;
+    transform: translateY(-1px);
+  }
+
+  button.secondary {
+    background: #1a1a1f;
+    color: #d4d4d8;
+    border: 1px solid #2a2a30;
+    font-weight: 400;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+
+  button.secondary:hover {
+    background: #222;
+    border-color: #444;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .divider {
+    height: 1px;
+    background: #1e1e24;
+    margin: 2px 0;
+  }
+
+  #canvas-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+
+  canvas { display: block; }
+
+  .color-scheme-preview {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+  }
+
+  .color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  #progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #222;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  #progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff0078, #00ffc8, #7800ff);
+    width: 0%;
+    transition: width 0.1s;
+    border-radius: 2px;
+  }
+
+  #status {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+  }
+
+  .shape-toggle {
+    display: flex;
+    gap: 4px;
+  }
+
+  .shape-btn {
+    flex: 1;
+    background: #1a1a1f;
+    color: #888;
+    border: 1px solid #2a2a30;
+    padding: 8px 0;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .shape-btn.active {
+    background: #fff;
+    color: #0a0a0c;
+    border-color: #fff;
+    font-weight: bold;
+  }
+
+  .shape-btn:hover:not(.active) {
+    border-color: #555;
+    color: #ccc;
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div>
+    <h1>String Art</h1>
+    <div class="subtitle">Animated Thread · WebGL</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Shape</label>
+    <div class="shape-toggle">
+      <div class="shape-btn active" data-shape="rectangle" id="btnRect">Rectangle</div>
+      <div class="shape-btn" data-shape="circle" id="btnCircle">Circle</div>
+    </div>
+  </div>
+
+  <div class="control-group" id="rectControls">
+    <label>Width <span class="value-display" id="wVal">700</span></label>
+    <input type="range" id="canvasW" min="200" max="1000" value="700" step="10">
+    <label style="margin-top:4px">Height <span class="value-display" id="hVal">700</span></label>
+    <input type="range" id="canvasH" min="200" max="1000" value="700" step="10">
+  </div>
+
+  <div class="control-group" id="circleControls" style="display:none">
+    <label>Diameter <span class="value-display" id="dVal">700</span></label>
+    <input type="range" id="diameter" min="200" max="1000" value="700" step="10">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Nails <span class="value-display" id="ncVal">40</span></label>
+    <input type="range" id="nailCount" min="8" max="120" value="40" step="2">
+  </div>
+
+  <div class="control-group">
+    <label>Total Connections <span class="value-display" id="tcVal">300</span></label>
+    <input type="range" id="totalConnections" min="20" max="2000" value="300">
+  </div>
+
+  <div class="control-group">
+    <label>Speed <span class="value-display" id="spdVal">8</span></label>
+    <input type="range" id="speed" min="1" max="40" value="8">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>String Opacity <span class="value-display" id="opVal">40</span></label>
+    <input type="range" id="opacity" min="3" max="100" value="40">
+  </div>
+
+  <div class="control-group">
+    <label>String Weight <span class="value-display" id="swVal">1.0</span></label>
+    <input type="range" id="strokeW" min="0.3" max="5" value="1.0" step="0.1">
+  </div>
+
+  <div class="control-group">
+    <label>Nail Size <span class="value-display" id="nsVal">4</span></label>
+    <input type="range" id="nailSize" min="1" max="10" value="4" step="0.5">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Color Palette</label>
+    <select id="palette">
+      <option value="neon">Neon Electric</option>
+      <option value="sunset">Sunset Blaze</option>
+      <option value="ocean">Deep Ocean</option>
+      <option value="aurora">Aurora Borealis</option>
+      <option value="candy">Candy Pop</option>
+      <option value="forest">Emerald Forest</option>
+      <option value="fire">Fire & Ice</option>
+      <option value="rainbow">Full Spectrum</option>
+    </select>
+    <div class="color-scheme-preview" id="palettePreview"></div>
+  </div>
+
+  <div class="control-group">
+    <label>Background</label>
+    <select id="bgColor">
+      <option value="black">Black</option>
+      <option value="dark">Dark Gray</option>
+      <option value="navy">Deep Navy</option>
+      <option value="white">White</option>
+    </select>
+  </div>
+
+  <div class="divider"></div>
+
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="status">Ready</div>
+
+  <div class="btn-row">
+    <button id="startBtn" style="flex:1">▶ Start</button>
+    <button class="secondary" id="pauseBtn" style="flex:1">⏸ Pause</button>
+  </div>
+  <div class="btn-row">
+    <button class="secondary" id="resetBtn" style="flex:1">Reset</button>
+    <button class="secondary" id="saveBtn" style="flex:1">Save PNG</button>
+  </div>
+</div>
+
+<div id="canvas-container"></div>
+
+<script>
+const palettes = {
+  neon:    [[255,0,120],[0,255,200],[120,0,255],[255,255,0],[0,180,255],[255,80,0]],
+  sunset:  [[255,50,50],[255,120,0],[255,200,0],[255,80,120],[200,0,80],[255,160,60]],
+  ocean:   [[0,100,255],[0,200,220],[0,255,180],[80,0,200],[0,150,255],[100,220,255]],
+  aurora:  [[0,255,100],[0,200,255],[120,0,255],[255,0,200],[0,255,200],[200,100,255]],
+  candy:   [[255,100,200],[100,200,255],[255,200,100],[200,100,255],[100,255,200],[255,150,150]],
+  forest:  [[0,200,80],[100,255,0],[0,150,100],[200,255,0],[0,100,60],[50,200,50]],
+  fire:    [[255,0,0],[255,100,0],[255,200,0],[0,150,255],[0,200,255],[255,50,50]],
+  rainbow: [[255,0,0],[255,150,0],[255,255,0],[0,255,0],[0,100,255],[150,0,255]]
+};
+
+const bgs = {
+  black: [10, 10, 12],
+  dark:  [30, 30, 35],
+  navy:  [10, 15, 35],
+  white: [245, 245, 240]
+};
+
+let nails = [];
+let allSegments = []; // pre-computed: [{from, to, color}]
+let drawnCount = 0;
+let animating = false;
+let paused = false;
+let complete = false;
+
+let shapeMode = 'rectangle';
+let margin = 40;
+
+// ─── Shape toggle ───
+document.getElementById('btnRect').addEventListener('click', () => {
+  shapeMode = 'rectangle';
+  document.getElementById('btnRect').classList.add('active');
+  document.getElementById('btnCircle').classList.remove('active');
+  document.getElementById('rectControls').style.display = '';
+  document.getElementById('circleControls').style.display = 'none';
+});
+document.getElementById('btnCircle').addEventListener('click', () => {
+  shapeMode = 'circle';
+  document.getElementById('btnCircle').classList.add('active');
+  document.getElementById('btnRect').classList.remove('active');
+  document.getElementById('circleControls').style.display = '';
+  document.getElementById('rectControls').style.display = 'none';
+});
+
+function setup() {
+  let cnv = createCanvas(760, 760, WEBGL);
+  cnv.parent('canvas-container');
+  pixelDensity(2);
+  noLoop();
+  buildAndPlan();
+  drawFrame();
+}
+
+// ─── Build nails based on shape ───
+function buildNails() {
+  let nc = int(document.getElementById('nailCount').value);
+  if (nc % 2 !== 0) nc++;
+  nails = [];
+
+  if (shapeMode === 'circle') {
+    let d = int(document.getElementById('diameter').value);
+    resizeCanvas(d + 60, d + 60);
+    let R = d / 2;
+    for (let i = 0; i < nc; i++) {
+      let angle = (TWO_PI * i) / nc;
+      nails.push({ x: R * cos(angle), y: R * sin(angle), index: i });
+    }
+  } else {
+    let cw = int(document.getElementById('canvasW').value);
+    let ch = int(document.getElementById('canvasH').value);
+    resizeCanvas(cw, ch);
+    let halfW = cw / 2, halfH = ch / 2;
+    let innerW = cw - margin * 2, innerH = ch - margin * 2;
+    let perimeter = 2 * (innerW + innerH);
+
+    for (let i = 0; i < nc; i++) {
+      let t = i / nc;
+      let d = t * perimeter;
+      let x, y;
+
+      if (d < innerW) {
+        x = -halfW + margin + d; y = -halfH + margin;
+      } else if (d < innerW + innerH) {
+        x = halfW - margin; y = -halfH + margin + (d - innerW);
+      } else if (d < 2 * innerW + innerH) {
+        x = halfW - margin - (d - innerW - innerH); y = halfH - margin;
+      } else {
+        x = -halfW + margin; y = halfH - margin - (d - 2 * innerW - innerH);
+      }
+
+      nails.push({ x, y, index: i });
+    }
+  }
+}
+
+// ─── Find perpendicular partners ───
+function findHorizontalPartner(i) {
+  // Find nail j with closest y to nail i, on the opposite x side
+  let nail = nails[i];
+  let bestIdx = -1, bestDist = Infinity;
+  for (let j = 0; j < nails.length; j++) {
+    if (j === i) continue;
+    let dy = abs(nails[j].y - nail.y);
+    if (dy < 0.5) { // same y within tolerance = horizontal line
+      let dx = abs(nails[j].x - nail.x);
+      if (dx > 10 && dx > bestDist * 0.5) { // prefer the one furthest away
+        if (dx > bestDist) {
+          bestDist = dx;
+          bestIdx = j;
+        }
+      } else if (bestIdx === -1 && dx > 10) {
+        bestDist = dx;
+        bestIdx = j;
+      }
+    }
+  }
+  return bestIdx;
+}
+
+function findVerticalPartner(i) {
+  let nail = nails[i];
+  let bestIdx = -1, bestDist = 0;
+  for (let j = 0; j < nails.length; j++) {
+    if (j === i) continue;
+    let dx = abs(nails[j].x - nail.x);
+    if (dx < 0.5) { // same x = vertical line
+      let dy = abs(nails[j].y - nail.y);
+      if (dy > 10 && dy > bestDist) {
+        bestDist = dy;
+        bestIdx = j;
+      }
+    }
+  }
+  return bestIdx;
+}
+
+// For circle: use the math-based approach
+function circleHPartner(i) {
+  let N = nails.length;
+  let j = ((N / 2) - i + N) % N;
+  return j !== i ? j : -1;
+}
+
+function circleVPartner(i) {
+  let N = nails.length;
+  let j = (N - i) % N;
+  return j !== i ? j : -1;
+}
+
+function getPartner(i, horizontal) {
+  if (shapeMode === 'circle') {
+    return horizontal ? circleHPartner(i) : circleVPartner(i);
+  } else {
+    return horizontal ? findHorizontalPartner(i) : findVerticalPartner(i);
+  }
+}
+
+// ─── Pre-compute the entire thread path ───
+function buildAndPlan() {
+  buildNails();
+  let totalConn = int(document.getElementById('totalConnections').value);
+  let pal = palettes[document.getElementById('palette').value];
+
+  allSegments = [];
+  drawnCount = 0;
+  complete = false;
+
+  if (nails.length < 2) return;
+
+  let currentIdx = int(random(nails.length));
+  let colorIdx = int(random(pal.length));
+  let lastDirection = -1; // 0 = horiz, 1 = vert
+
+  for (let s = 0; s < totalConn; s++) {
+    // Alternate or pick random direction, try to avoid repeating same
+    let tryHoriz;
+    if (lastDirection === 0) {
+      tryHoriz = random() < 0.25; // bias toward switching
+    } else if (lastDirection === 1) {
+      tryHoriz = random() < 0.75;
+    } else {
+      tryHoriz = random() < 0.5;
+    }
+
+    let partnerIdx = getPartner(currentIdx, tryHoriz);
+
+    // If no partner, try other direction
+    if (partnerIdx < 0) {
+      tryHoriz = !tryHoriz;
+      partnerIdx = getPartner(currentIdx, tryHoriz);
+    }
+
+    // If still no partner, slide to a neighbor and try again
+    if (partnerIdx < 0) {
+      currentIdx = (currentIdx + 1) % nails.length;
+      continue;
+    }
+
+    colorIdx = (colorIdx + int(random(1, pal.length))) % pal.length;
+    allSegments.push({
+      from: nails[currentIdx],
+      to: nails[partnerIdx],
+      color: pal[colorIdx]
+    });
+
+    lastDirection = tryHoriz ? 0 : 1;
+
+    // Slide along edge to a new nail
+    let shift = int(random(1, max(2, int(nails.length / 5))));
+    if (random() < 0.5) shift = -shift;
+    let nextIdx = ((partnerIdx + shift) % nails.length + nails.length) % nails.length;
+
+    // Add the slide segment along the border
+    colorIdx = (colorIdx + int(random(1, pal.length))) % pal.length;
+    allSegments.push({
+      from: nails[partnerIdx],
+      to: nails[nextIdx],
+      color: pal[colorIdx]
+    });
+
+    currentIdx = nextIdx;
+  }
+
+  updateStatus();
+}
+
+function updateStatus() {
+  let total = allSegments.length;
+  let pct = total > 0 ? (drawnCount / total * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  if (complete) {
+    document.getElementById('status').textContent = `Complete · ${drawnCount} segments`;
+  } else if (paused) {
+    document.getElementById('status').textContent = `Paused · ${drawnCount} / ${total}`;
+  } else if (animating) {
+    document.getElementById('status').textContent = `Drawing · ${drawnCount} / ${total}`;
+  } else {
+    document.getElementById('status').textContent = `Ready · ${total} segments planned`;
+  }
+}
+
+// ─── Animation loop ───
+function draw() {
+  let bg = bgs[document.getElementById('bgColor').value] || bgs.black;
+  background(bg[0], bg[1], bg[2]);
+
+  let opacityVal = float(document.getElementById('opacity').value) / 100 * 255;
+  let sw = float(document.getElementById('strokeW').value);
+  let ns = float(document.getElementById('nailSize').value);
+  let bgKey = document.getElementById('bgColor').value;
+  let nailFill = bgKey === 'white' ? [60, 60, 60, 220] : [200, 200, 200, 220];
+
+  // Draw completed segments
+  for (let i = 0; i < drawnCount && i < allSegments.length; i++) {
+    let seg = allSegments[i];
+    stroke(seg.color[0], seg.color[1], seg.color[2], opacityVal);
+    strokeWeight(sw);
+    line(seg.from.x, seg.from.y, 0, seg.to.x, seg.to.y, 0);
+  }
+
+  // Draw the currently animating segment with a bright leading edge
+  if (animating && !paused && drawnCount < allSegments.length) {
+    let seg = allSegments[drawnCount];
+    // Animated progress of current segment
+    let progress = (frameCount % 6) / 5;
+    let cx = lerp(seg.from.x, seg.to.x, progress);
+    let cy = lerp(seg.from.y, seg.to.y, progress);
+
+    // The thread being drawn — brighter
+    stroke(seg.color[0], seg.color[1], seg.color[2], min(255, opacityVal * 2.5));
+    strokeWeight(sw * 1.5);
+    line(seg.from.x, seg.from.y, 0, cx, cy, 0);
+
+    // Glowing tip
+    noStroke();
+    fill(255, 255, 255, 180);
+    push();
+    translate(cx, cy, 2);
+    circle(0, 0, sw * 3);
+    pop();
+  }
+
+  // Draw nails
+  noStroke();
+  fill(nailFill[0], nailFill[1], nailFill[2], nailFill[3]);
+  for (let nail of nails) {
+    push();
+    translate(nail.x, nail.y, 1);
+    circle(0, 0, ns);
+    pop();
+  }
+
+  // Highlight current nail
+  if (drawnCount < allSegments.length && animating) {
+    let activeNail = allSegments[min(drawnCount, allSegments.length - 1)].from;
+    fill(255, 255, 255, 200);
+    push();
+    translate(activeNail.x, activeNail.y, 2);
+    circle(0, 0, ns * 2);
+    pop();
+  }
+
+  // Advance
+  if (animating && !paused && !complete) {
+    let spd = int(document.getElementById('speed').value);
+    for (let s = 0; s < spd; s++) {
+      if (drawnCount < allSegments.length) {
+        drawnCount++;
+      } else {
+        complete = true;
+        animating = false;
+        break;
+      }
+    }
+    updateStatus();
+  }
+
+  if (animating && !paused && !complete) {
+    // keep looping
+  } else if (!animating || paused) {
+    noLoop();
+  }
+}
+
+function drawFrame() {
+  loop();
+  // Draw one frame then stop
+  setTimeout(() => { if (!animating) noLoop(); }, 50);
+}
+
+// ─── Controls ───
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (complete) {
+    // Re-plan and restart
+    buildAndPlan();
+  }
+  if (drawnCount === 0) {
+    buildAndPlan();
+  }
+  animating = true;
+  paused = false;
+  updateStatus();
+  loop();
+});
+
+document.getElementById('pauseBtn').addEventListener('click', () => {
+  if (animating) {
+    paused = !paused;
+    document.getElementById('pauseBtn').textContent = paused ? '▶ Resume' : '⏸ Pause';
+    updateStatus();
+    if (!paused) loop();
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  animating = false;
+  paused = false;
+  complete = false;
+  drawnCount = 0;
+  document.getElementById('pauseBtn').textContent = '⏸ Pause';
+  buildAndPlan();
+  drawFrame();
+});
+
+document.getElementById('saveBtn').addEventListener('click', () => saveCanvas('string-art-animated', 'png'));
+
+// Slider bindings
+function bindSlider(id, displayId) {
+  let el = document.getElementById(id);
+  let disp = document.getElementById(displayId);
+  if (el && disp) {
+    el.addEventListener('input', () => { disp.textContent = el.value; });
+  }
+}
+
+bindSlider('canvasW', 'wVal');
+bindSlider('canvasH', 'hVal');
+bindSlider('diameter', 'dVal');
+bindSlider('nailCount', 'ncVal');
+bindSlider('totalConnections', 'tcVal');
+bindSlider('speed', 'spdVal');
+bindSlider('opacity', 'opVal');
+bindSlider('strokeW', 'swVal');
+bindSlider('nailSize', 'nsVal');
+
+// Live redraw for visual-only changes
+['opacity', 'strokeW', 'nailSize'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    if (!animating || paused) drawFrame();
+  });
+});
+
+document.getElementById('bgColor').addEventListener('change', () => {
+  if (!animating || paused) drawFrame();
+});
+
+document.getElementById('palette').addEventListener('change', updatePalettePreview);
+
+function updatePalettePreview() {
+  let pal = palettes[document.getElementById('palette').value];
+  let container = document.getElementById('palettePreview');
+  container.innerHTML = '';
+  for (let c of pal) {
+    let dot = document.createElement('div');
+    dot.className = 'color-dot';
+    dot.style.background = `rgb(${c[0]},${c[1]},${c[2]})`;
+    container.appendChild(dot);
+  }
+}
+
+updatePalettePreview();
+</script>
+
+</body>
+</html>

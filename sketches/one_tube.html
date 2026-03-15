@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONE TUBE - Beat Sync</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        #start-btn {
+            padding: 30px 60px;
+            font-size: 32px;
+            background: #00d4ff;
+            color: #000;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            z-index: 10;
+        }
+        .bpm {
+            font-size: 48px;
+            font-weight: bold;
+            color: #00d4ff;
+            text-align: center;
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        #play-btn {
+            background: #4caf50;
+            color: white;
+        }
+        #play-btn.playing {
+            background: #ff6b6b;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div id="start-screen">
+        <button id="start-btn">START</button>
+    </div>
+    
+    <div id="controls">
+        <div style="color: #888; font-size: 14px;">BPM</div>
+        <div class="bpm" id="bpm-display">120</div>
+        <input type="range" min="30" max="240" value="120" id="bpm-slider">
+        <button id="play-btn">▶ START</button>
+    </div>
+
+    <script>
+        let synth;
+        let tubeIntensity = 0;
+        let isPlaying = false;
+        let bpm = 120;
+        let nextBeatTime = 0;
+        let started = false;
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+            console.log('Setup complete');
+        }
+
+        function draw() {
+            if (!started) return;
+
+            background(0);
+            
+            // Bright lights
+            ambientLight(100);
+            pointLight(255, 255, 255, 0, -300, 400);
+            
+            // Simple centered camera
+            camera(0, -50, 300, 0, 0, 0, 0, 1, 0);
+            
+            // Beat timing
+            if (isPlaying && millis() >= nextBeatTime) {
+                beat();
+            }
+            
+            // Fade out
+            tubeIntensity *= 0.88;
+            
+            // Draw ONE tube
+            if (tubeIntensity > 0.01) {
+                let brightness = tubeIntensity * 255 * 50; // SUPER BRIGHT
+                
+                fill(255);
+                ambientMaterial(brightness, brightness, brightness);
+                emissiveMaterial(brightness, brightness, brightness);
+                
+                cylinder(15, 400);
+                
+                // Top cap
+                push();
+                translate(0, -200, 0);
+                sphere(25);
+                pop();
+                
+                // Bottom cap
+                push();
+                translate(0, 200, 0);
+                sphere(25);
+                pop();
+            }
+        }
+
+        function beat() {
+            console.log('BEAT');
+            tubeIntensity = 1.0;
+            
+            // Play sound
+            if (synth) {
+                synth.triggerAttackRelease('C5', '32n');
+            }
+            
+            // Schedule next beat
+            let interval = (60.0 / bpm) * 1000.0;
+            nextBeatTime = millis() + interval;
+        }
+
+        // Controls
+        document.getElementById('bpm-slider').oninput = function() {
+            bpm = parseInt(this.value);
+            document.getElementById('bpm-display').textContent = bpm;
+        };
+
+        document.getElementById('play-btn').onclick = function() {
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                this.textContent = '⏸ STOP';
+                this.classList.add('playing');
+                beat(); // First beat immediately
+                console.log('Playing at ' + bpm + ' BPM');
+            } else {
+                this.textContent = '▶ START';
+                this.classList.remove('playing');
+                console.log('Stopped');
+            }
+        };
+
+        document.getElementById('start-btn').onclick = async function() {
+            await Tone.start();
+            synth = new Tone.Synth().toDestination();
+            started = true;
+            document.getElementById('start-screen').style.display = 'none';
+            console.log('Ready!');
+        };
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>

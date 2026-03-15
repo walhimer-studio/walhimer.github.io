@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Shelves WebGL</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+<script>
+let shelves = [];
+let palette = [310, 45, 30, 210, 270];
+let gradientTextures = [];
+let shelfSlider, cubeSlider, distanceSlider, cubesPerShelfSlider;
+let transparencySlider, hueSlider, saturationSlider;
+let shelfLabel, cubeLabel, distanceLabel, cubesPerShelfLabel;
+let transparencyLabel, hueLabel, saturationLabel;
+
+let baseWidth, baseHeight;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  pixelDensity(2);
+  frameRate(60);
+  colorMode(HSB, 360, 100, 100, 255);
+  noStroke();
+  setAttributes('alpha', true);
+  textureWrap(CLAMP);
+
+  baseWidth = windowWidth;
+  baseHeight = windowHeight;
+
+  // Sliders + Labels
+  shelfLabel = createDiv('Number of Shelves');
+  shelfLabel.position(20, 0);
+  shelfSlider = createSlider(1, 8, 3, 1);
+  shelfSlider.position(20, 20);
+
+  cubeLabel = createDiv('Number of Cubes (Global)');
+  cubeLabel.position(20, 40);
+  cubeSlider = createSlider(0, 10, 5, 1);
+  cubeSlider.position(20, 60);
+
+  distanceLabel = createDiv('Distance Between Shelves');
+  distanceLabel.position(20, 80);
+  distanceSlider = createSlider(50, 300, 120, 1);
+  distanceSlider.position(20, 100);
+
+  cubesPerShelfLabel = createDiv('Cubes Per Shelf');
+  cubesPerShelfLabel.position(20, 120);
+  cubesPerShelfSlider = createSlider(0, 10, 5, 1);
+  cubesPerShelfSlider.position(20, 140);
+
+  transparencyLabel = createDiv('Transparency');
+  transparencyLabel.position(20, 160);
+  transparencySlider = createSlider(0, 255, 255, 1);
+  transparencySlider.position(20, 180);
+
+  hueLabel = createDiv('Hue Shift');
+  hueLabel.position(20, 200);
+  hueSlider = createSlider(-180, 180, 0, 1);
+  hueSlider.position(20, 220);
+
+  saturationLabel = createDiv('Saturation');
+  saturationLabel.position(20, 240);
+  saturationSlider = createSlider(0, 100, 100, 1);
+  saturationSlider.position(20, 260);
+
+  rebuildTextures(100);
+
+  shelfSlider.input(regenerateShelves);
+  cubeSlider.input(regenerateShelves);
+  distanceSlider.input(regenerateShelves);
+  cubesPerShelfSlider.input(regenerateShelves);
+  transparencySlider.input(redraw);
+  hueSlider.input(redraw);
+  saturationSlider.input(() => {
+    rebuildTextures(saturationSlider.value());
+    redraw();
+  });
+
+  regenerateShelves();
+  noLoop();
+}
+
+// ✅ FIX: objects now visually resize when window changes
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  redraw();
+}
+
+function rebuildTextures(satVal) {
+  gradientTextures = [];
+  for (let i = 0; i < 10; i++) {
+    let hue1 = random(palette);
+    let hue2 = random(palette);
+    let tex = createGraphics(64, 256);
+    tex.colorMode(HSB, 360, 100, 100, 255);
+    tex.noStroke();
+    for (let y = 0; y < tex.height; y++) {
+      let inter = map(y, 0, tex.height, 0, 1);
+      let hBlend = lerp(hue1, hue2, inter);
+      tex.fill(hBlend, satVal, 100, 100);
+      tex.rect(0, y, tex.width, 1);
+    }
+    gradientTextures.push(tex);
+  }
+}
+
+function regenerateShelves() {
+  rebuildTextures(saturationSlider.value());
+  shelves = [];
+  let numShelves = shelfSlider.value();
+  let margin = distanceSlider.value();
+  let availableHeight = baseHeight - margin * 2;
+
+  for (let i = 0; i < numShelves; i++) {
+    let y = numShelves === 1 ? 0 : map(i, 0, numShelves - 1, -availableHeight / 2, availableHeight / 2);
+    let shelfWidth = random(400, baseWidth * 0.9);
+    let shelfHeight = random(20, 60);
+    let shelfDepth = 100;
+
+    let numCubes = cubesPerShelfSlider.value();
+    let cubes = [];
+    for (let j = 0; j < numCubes; j++) {
+      let cubeSize = random(50, 150);
+      let cubeX = random(-shelfWidth / 2 + cubeSize / 2, shelfWidth / 2 - cubeSize / 2);
+      let tex = gradientTextures[int(random(gradientTextures.length))];
+      cubes.push({ x: cubeX, y: -shelfHeight / 2 - cubeSize / 2, z: 0, s: cubeSize, tex });
+    }
+
+    shelves.push({
+      y,
+      w: shelfWidth,
+      h: shelfHeight,
+      d: shelfDepth,
+      tex: random(gradientTextures),
+      cubes
+    });
+  }
+  redraw();
+}
+
+function draw() {
+  background(0, 0, 100);
+  ambientLight(255);
+  directionalLight(255, 255, 255, 0.3, -1, -0.5);
+
+  // calculate scale relative to base window size
+  let scaleFactor = min(windowWidth / baseWidth, windowHeight / baseHeight);
+
+  // ✅ FIXED: adjust camera distance dynamically for true visual scaling
+  camera(0, 0, (baseHeight * 0.8) / scaleFactor, 0, 0, 0, 0, 1, 0);
+
+  let hueShift = hueSlider.value();
+  let alphaVal = transparencySlider.value();
+  let satVal = saturationSlider.value();
+
+  for (let s of shelves) {
+    push();
+    texture(s.tex);
+    translate(0, s.y, 0);
+    box(s.w, s.h, s.d);
+    pop();
+
+    for (let c of s.cubes) {
+      push();
+      colorMode(HSB, 360, 100, 100, 255);
+      tint((180 + hueShift) % 360, satVal, 100, constrain(alphaVal, 20, 255));
+      texture(c.tex);
+      translate(c.x, s.y + c.y, c.z);
+      box(c.s);
+      noTint();
+      pop();
+    }
+  }
+}
+</script>
+</body>
+</html>

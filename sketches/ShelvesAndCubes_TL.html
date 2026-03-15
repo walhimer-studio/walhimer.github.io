@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Shelves & Cubes – Transient Labs Generative</title>
+<style>
+  html,body{margin:0;padding:0;background:#fff;overflow:hidden;}
+  canvas{display:block;margin:auto;}
+</style>
+
+<!-- p5.js (you can inline later if TL requires single-file) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
+
+<script>
+/* ---------------- Seeded RNG ---------------- */
+function mulberry32(a){
+  return function(){
+    let t=a+=0x6D2B79F5;
+    t=Math.imul(t^(t>>>15),t|1);
+    t^=t+Math.imul(t^(t>>>7),t|61);
+    return ((t^(t>>>14))>>>0)/4294967296;
+  };
+}
+
+function hashHexToInt(hex){
+  hex=(hex||"").replace(/^0x/i,"");
+  if(!hex.length)return 0x12345678;
+  let h=0;
+  for(let i=0;i<hex.length;i+=8){
+    const chunk=hex.slice(i,i+8);
+    const val=parseInt(chunk,16)>>>0;
+    h=(h^val)>>>0;
+    h=Math.imul(h^(h>>>16),0x85ebca6b)>>>0;
+    h=Math.imul(h^(h>>>13),0xc2b2ae35)>>>0;
+  }
+  return h>>>0||0x9e3779b9;
+}
+
+/* ✅ Updated function with default seed for local viewing */
+function getSeedFromURL(){
+  const params=new URLSearchParams(window.location.search);
+  let s=params.get("seed")||params.get("hash")||params.get("tokenId");
+  if(!s&&window.location.hash)s=window.location.hash.replace(/^#/,"");
+  // default local seed
+  if(!s)s="0x123abc";
+  if(/^0x?[0-9a-f]+$/i.test(s))return hashHexToInt(s);
+  let h=2166136261>>>0;
+  for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}
+  return h>>>0;
+}
+
+let rng;
+function rnd(){return rng();}
+function rndRange(a,b){return a+(b-a)*rnd();}
+function rndInt(a,b){return Math.floor(rndRange(a,b+1));}
+function pick(a){return a[Math.floor(rnd()*a.length)];}
+
+/* ---------------- Artwork ---------------- */
+let shelves=[],palette=[310,45,30,210,270],gradientTextures=[];
+
+function setup(){
+  const seedInt=getSeedFromURL();
+  rng=mulberry32(seedInt);
+
+  pixelDensity(1);
+  createCanvas(1000,1000,WEBGL);
+  colorMode(HSB,360,100,100,255);
+  noStroke();
+  setAttributes('alpha',true);
+  textureWrap(CLAMP);
+
+  // Pre-generate gradient textures
+  for(let i=0;i<10;i++){
+    const hue1=pick(palette),hue2=pick(palette);
+    const tex=createGraphics(64,256);
+    tex.colorMode(HSB,360,100,100,255);
+    tex.noStroke();
+    for(let y=0;y<tex.height;y++){
+      const inter=y/(tex.height-1);
+      const hBlend=lerp(hue1,hue2,inter);
+      tex.fill(hBlend,100,100,100);
+      tex.rect(0,y,tex.width,1);
+    }
+    gradientTextures.push(tex);
+  }
+
+  const numShelves=rndInt(1,8);
+  for(let i=0;i<numShelves;i++){
+    const y=numShelves===1?0:map(i,0,numShelves-1,-400,400);
+    const shelfWidth=rndRange(400,900);
+    const shelfHeight=rndRange(20,60);
+    const shelfDepth=100;
+    const numCubes=rndInt(0,5);
+    const cubes=[];
+    for(let j=0;j<numCubes;j++){
+      const cubeSize=rndRange(50,150);
+      const cubeX=rndRange(-shelfWidth/2+cubeSize/2,shelfWidth/2-cubeSize/2);
+      const tex=pick(gradientTextures);
+      cubes.push({x:cubeX,yOff:-shelfHeight/2-cubeSize/2,z:0,s:cubeSize,tex});
+    }
+    shelves.push({
+      y:y,
+      w:shelfWidth,
+      h:shelfHeight,
+      d:shelfDepth,
+      tex:pick(gradientTextures),
+      cubes:cubes
+    });
+  }
+
+  noLoop();
+}
+
+function draw(){
+  background(0,0,100);
+  ambientLight(255);
+  directionalLight(255,255,255,0.3,-1,-0.5);
+  camera(0,0,800,0,0,0,0,1,0);
+
+  for(const s of shelves){
+    push();
+    texture(s.tex);
+    translate(0,s.y,0);
+    box(s.w,s.h,s.d);
+    pop();
+
+    for(const c of s.cubes){
+      push();
+      texture(c.tex);
+      translate(c.x,s.y+c.yOff,c.z);
+      box(c.s);
+      pop();
+    }
+  }
+}
+</script>
+</head>
+<body></body>
+</html>
+

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>String Art — Circle — Generative WebGL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400&family=Syne:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0c;
+    color: #d4d4d8;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  #sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: #111114;
+    border-right: 1px solid #1e1e24;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow-y: auto;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+
+  #sidebar h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  #sidebar .subtitle {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .control-group label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .control-group .value-display {
+    font-size: 11px;
+    color: #aaa;
+    float: right;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #222;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+  }
+
+  select {
+    background: #1a1a1f;
+    color: #d4d4d8;
+    border: 1px solid #2a2a30;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  select:hover { border-color: #444; }
+
+  button {
+    background: #fff;
+    color: #0a0a0c;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background: #e0e0e0;
+    transform: translateY(-1px);
+  }
+
+  button.secondary {
+    background: #1a1a1f;
+    color: #d4d4d8;
+    border: 1px solid #2a2a30;
+    font-weight: 400;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+
+  button.secondary:hover {
+    background: #222;
+    border-color: #444;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .divider {
+    height: 1px;
+    background: #1e1e24;
+    margin: 4px 0;
+  }
+
+  #canvas-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+
+  canvas { display: block; }
+
+  .color-scheme-preview {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+  }
+
+  .color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div>
+    <h1>String Art</h1>
+    <div class="subtitle">Circle · Generative WebGL</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Diameter <span class="value-display" id="dVal">700</span></label>
+    <input type="range" id="diameter" min="200" max="1000" value="700" step="10">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Nail Count <span class="value-display" id="ncVal">80</span></label>
+    <input type="range" id="nailCount" min="12" max="200" value="80" step="2">
+  </div>
+
+  <div class="control-group">
+    <label>String Count <span class="value-display" id="strVal">250</span></label>
+    <input type="range" id="stringCount" min="10" max="1000" value="250">
+  </div>
+
+  <div class="control-group">
+    <label>Max Segments <span class="value-display" id="segVal">10</span></label>
+    <input type="range" id="maxSegments" min="2" max="30" value="10">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>String Opacity <span class="value-display" id="opVal">30</span></label>
+    <input type="range" id="opacity" min="3" max="100" value="30">
+  </div>
+
+  <div class="control-group">
+    <label>String Weight <span class="value-display" id="swVal">1.2</span></label>
+    <input type="range" id="strokeW" min="0.3" max="5" value="1.2" step="0.1">
+  </div>
+
+  <div class="control-group">
+    <label>Nail Size <span class="value-display" id="nsVal">4</span></label>
+    <input type="range" id="nailSize" min="1" max="10" value="4" step="0.5">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Start Pattern</label>
+    <select id="pattern">
+      <option value="mixed">Mixed</option>
+      <option value="top">Top Arc</option>
+      <option value="bottom">Bottom Arc</option>
+      <option value="left">Left Arc</option>
+      <option value="right">Right Arc</option>
+      <option value="quarter-tl">Top-Left Quarter</option>
+      <option value="quarter-tr">Top-Right Quarter</option>
+      <option value="quarter-bl">Bottom-Left Quarter</option>
+      <option value="quarter-br">Bottom-Right Quarter</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>Color Palette</label>
+    <select id="palette">
+      <option value="neon">Neon Electric</option>
+      <option value="sunset">Sunset Blaze</option>
+      <option value="ocean">Deep Ocean</option>
+      <option value="aurora">Aurora Borealis</option>
+      <option value="candy">Candy Pop</option>
+      <option value="forest">Emerald Forest</option>
+      <option value="fire">Fire & Ice</option>
+      <option value="rainbow">Full Spectrum</option>
+    </select>
+    <div class="color-scheme-preview" id="palettePreview"></div>
+  </div>
+
+  <div class="control-group">
+    <label>Background</label>
+    <select id="bgColor">
+      <option value="black">Black</option>
+      <option value="dark">Dark Gray</option>
+      <option value="navy">Deep Navy</option>
+      <option value="white">White</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>Show Circle Outline</label>
+    <select id="showOutline">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="btn-row">
+    <button id="generateBtn" style="flex:1">Generate</button>
+  </div>
+  <div class="btn-row">
+    <button class="secondary" id="saveBtn" style="flex:1">Save PNG</button>
+  </div>
+</div>
+
+<div id="canvas-container"></div>
+
+<script>
+const palettes = {
+  neon:    [[255,0,120],[0,255,200],[120,0,255],[255,255,0],[0,180,255],[255,80,0]],
+  sunset:  [[255,50,50],[255,120,0],[255,200,0],[255,80,120],[200,0,80],[255,160,60]],
+  ocean:   [[0,100,255],[0,200,220],[0,255,180],[80,0,200],[0,150,255],[100,220,255]],
+  aurora:  [[0,255,100],[0,200,255],[120,0,255],[255,0,200],[0,255,200],[200,100,255]],
+  candy:   [[255,100,200],[100,200,255],[255,200,100],[200,100,255],[100,255,200],[255,150,150]],
+  forest:  [[0,200,80],[100,255,0],[0,150,100],[200,255,0],[0,100,60],[50,200,50]],
+  fire:    [[255,0,0],[255,100,0],[255,200,0],[0,150,255],[0,200,255],[255,50,50]],
+  rainbow: [[255,0,0],[255,150,0],[255,255,0],[0,255,0],[0,100,255],[150,0,255]]
+};
+
+const bgs = {
+  black: [10, 10, 12],
+  dark:  [30, 30, 35],
+  navy:  [10, 15, 35],
+  white: [245, 245, 240]
+};
+
+let artStrings = [];
+let nails = [];
+let N, R;
+
+function setup() {
+  let d = int(document.getElementById('diameter').value);
+  let cnv = createCanvas(d + 60, d + 60, WEBGL);
+  cnv.parent('canvas-container');
+  pixelDensity(2);
+  generateArt();
+}
+
+/*
+  NAIL LAYOUT: N nails evenly spaced around a circle of radius R.
+  Nail i sits at angle θ_i = 2πi/N
+  Position: (R·cos(θ_i), R·sin(θ_i))
+
+  STRICT PERPENDICULAR CONNECTIONS (N must be even):
+
+  Horizontal partner of nail i: nail j where sin(θ_j) = sin(θ_i)
+    → θ_j = π − θ_i → j = (N/2 − i + N) % N
+    Both nails share the same y, so the line between them is perfectly horizontal.
+
+  Vertical partner of nail i: nail j where cos(θ_j) = cos(θ_i)
+    → θ_j = −θ_i → j = (N − i) % N
+    Both nails share the same x, so the line between them is perfectly vertical.
+
+  Special cases (nail is its own partner): nails at 0°, 90°, 180°, 270°
+  — these are skipped for that direction.
+*/
+
+function buildNails() {
+  N = int(document.getElementById('nailCount').value);
+  // Force even
+  if (N % 2 !== 0) N++;
+  let d = int(document.getElementById('diameter').value);
+  R = d / 2;
+
+  nails = [];
+  for (let i = 0; i < N; i++) {
+    let angle = (TWO_PI * i) / N;
+    nails.push({
+      x: R * cos(angle),
+      y: R * sin(angle),
+      index: i,
+      angle: angle
+    });
+  }
+}
+
+function getHorizontalPartner(i) {
+  let j = ((N / 2) - i + N) % N;
+  return j !== i ? j : -1;
+}
+
+function getVerticalPartner(i) {
+  let j = (N - i) % N;
+  return j !== i ? j : -1;
+}
+
+function generateArt() {
+  let d = int(document.getElementById('diameter').value);
+  resizeCanvas(d + 60, d + 60);
+  buildNails();
+
+  artStrings = [];
+  let count = int(document.getElementById('stringCount').value);
+  let maxSeg = int(document.getElementById('maxSegments').value);
+  let patternType = document.getElementById('pattern').value;
+  let pal = palettes[document.getElementById('palette').value];
+
+  for (let i = 0; i < count; i++) {
+    let path = generatePath(patternType, pal, maxSeg);
+    if (path.length >= 2) artStrings.push(path);
+  }
+
+  redraw();
+}
+
+function generatePath(patternType, pal, maxSeg) {
+  let path = [];
+  let startIdx = pickStartNail(patternType);
+  let currentIdx = startIdx;
+  let colorIdx = int(random(pal.length));
+  let segCount = int(random(2, maxSeg + 1));
+
+  path.push({ nail: nails[currentIdx], color: pal[colorIdx] });
+
+  for (let s = 0; s < segCount; s++) {
+    // STEP 1: CROSS — go horizontal or vertical to partner
+    let useHoriz = random() < 0.5;
+    let partnerIdx = useHoriz
+      ? getHorizontalPartner(currentIdx)
+      : getVerticalPartner(currentIdx);
+
+    // If no valid partner in chosen direction, try the other
+    if (partnerIdx < 0) {
+      partnerIdx = useHoriz
+        ? getVerticalPartner(currentIdx)
+        : getHorizontalPartner(currentIdx);
+    }
+    if (partnerIdx < 0) break; // stuck at a pole nail
+
+    colorIdx = (colorIdx + int(random(1, pal.length))) % pal.length;
+    path.push({ nail: nails[partnerIdx], color: pal[colorIdx] });
+
+    // STEP 2: SLIDE — move along the circumference to a nearby nail
+    let shift = int(random(1, max(2, int(N / 6))));
+    if (random() < 0.5) shift = -shift;
+    let nextIdx = ((partnerIdx + shift) % N + N) % N;
+
+    colorIdx = (colorIdx + int(random(1, pal.length))) % pal.length;
+    path.push({ nail: nails[nextIdx], color: pal[colorIdx] });
+
+    currentIdx = nextIdx;
+  }
+
+  return path;
+}
+
+function pickStartNail(patternType) {
+  let quarter = int(N / 4);
+  switch (patternType) {
+    case 'top':
+      // Top arc: roughly nail indices around 3π/2 (top in screen coords where y is flipped in WEBGL)
+      // angle = 3π/2 → index = 3N/4
+      return int(random(int(N * 0.625), int(N * 0.875))) % N;
+    case 'bottom':
+      // Bottom arc: around π/2 → index = N/4
+      return int(random(int(N * 0.125), int(N * 0.375))) % N;
+    case 'left':
+      // Left arc: around π → index = N/2
+      return int(random(int(N * 0.375), int(N * 0.625))) % N;
+    case 'right':
+      // Right arc: around 0 → index near 0 or N
+      return random() < 0.5
+        ? int(random(0, int(N * 0.125)))
+        : int(random(int(N * 0.875), N)) % N;
+    case 'quarter-tl':
+      return int(random(int(N * 0.5), int(N * 0.75))) % N;
+    case 'quarter-tr':
+      return int(random(int(N * 0.75), N)) % N;
+    case 'quarter-bl':
+      return int(random(int(N * 0.25), int(N * 0.5))) % N;
+    case 'quarter-br':
+      return int(random(0, int(N * 0.25))) % N;
+    case 'mixed':
+    default:
+      return int(random(N));
+  }
+}
+
+function draw() {
+  let bg = bgs[document.getElementById('bgColor').value] || bgs.black;
+  background(bg[0], bg[1], bg[2]);
+
+  let opacityVal = float(document.getElementById('opacity').value) / 100 * 255;
+  let sw = float(document.getElementById('strokeW').value);
+  let ns = float(document.getElementById('nailSize').value);
+  let bgKey = document.getElementById('bgColor').value;
+  let nailFill = bgKey === 'white' ? [60, 60, 60, 220] : [200, 200, 200, 220];
+  let showOutline = document.getElementById('showOutline').value === 'yes';
+
+  // Optional circle outline
+  if (showOutline) {
+    noFill();
+    stroke(bgKey === 'white' ? 180 : 50);
+    strokeWeight(1);
+    ellipse(0, 0, R * 2, R * 2);
+  }
+
+  // Draw strings
+  for (let s of artStrings) {
+    for (let i = 0; i < s.length - 1; i++) {
+      let from = s[i];
+      let to = s[i + 1];
+      let col = to.color;
+      stroke(col[0], col[1], col[2], opacityVal);
+      strokeWeight(sw);
+      line(from.nail.x, from.nail.y, 0, to.nail.x, to.nail.y, 0);
+    }
+  }
+
+  // Draw nails
+  noStroke();
+  fill(nailFill[0], nailFill[1], nailFill[2], nailFill[3]);
+  for (let nail of nails) {
+    push();
+    translate(nail.x, nail.y, 1);
+    circle(0, 0, ns);
+    pop();
+  }
+
+  noLoop();
+}
+
+// UI bindings
+function bindSlider(id, displayId, redrawOnly) {
+  let el = document.getElementById(id);
+  let disp = document.getElementById(displayId);
+  el.addEventListener('input', () => {
+    disp.textContent = el.value;
+    if (redrawOnly) loop();
+  });
+}
+
+bindSlider('diameter', 'dVal', false);
+bindSlider('nailCount', 'ncVal', false);
+bindSlider('stringCount', 'strVal', false);
+bindSlider('maxSegments', 'segVal', false);
+bindSlider('opacity', 'opVal', true);
+bindSlider('strokeW', 'swVal', true);
+bindSlider('nailSize', 'nsVal', true);
+
+document.getElementById('bgColor').addEventListener('change', () => loop());
+document.getElementById('showOutline').addEventListener('change', () => loop());
+document.getElementById('generateBtn').addEventListener('click', generateArt);
+document.getElementById('saveBtn').addEventListener('click', () => saveCanvas('string-art-circle', 'png'));
+document.getElementById('palette').addEventListener('change', updatePalettePreview);
+
+function updatePalettePreview() {
+  let pal = palettes[document.getElementById('palette').value];
+  let container = document.getElementById('palettePreview');
+  container.innerHTML = '';
+  for (let c of pal) {
+    let dot = document.createElement('div');
+    dot.className = 'color-dot';
+    dot.style.background = `rgb(${c[0]},${c[1]},${c[2]})`;
+    container.appendChild(dot);
+  }
+}
+
+updatePalettePreview();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intersection Commons - Draw & Connect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #f5f2ea;
+            --beige: #e8e3d5;
+            --line-color: rgba(100, 90, 80, 0.4);
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: var(--cream);
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+            position: relative;
+        }
+
+        /* Subtle paper texture */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #title-block {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #title {
+            font-size: 42px;
+            font-weight: 300;
+            color: rgba(50, 45, 40, 0.8);
+            letter-spacing: 4px;
+            margin-bottom: 6px;
+        }
+
+        #subtitle {
+            font-size: 13px;
+            color: rgba(100, 90, 80, 0.6);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            font-family: 'Futura', 'Century Gothic', sans-serif;
+            font-weight: 300;
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            max-width: 380px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 24px;
+            border-radius: 0;
+            border-left: 4px solid rgba(100, 90, 80, 0.3);
+            box-shadow: 2px 2px 15px rgba(0,0,0,0.08);
+        }
+
+        #instructions h3 {
+            font-size: 18px;
+            color: rgba(50, 45, 40, 0.9);
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        #instructions p {
+            font-size: 13px;
+            line-height: 1.7;
+            color: rgba(80, 70, 60, 0.85);
+            margin-bottom: 10px;
+            font-family: 'Garamond', 'Times New Roman', serif;
+        }
+
+        #instructions .emphasis {
+            font-weight: 600;
+            color: rgba(50, 45, 40, 0.95);
+        }
+
+        #instructions .note {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(100, 90, 80, 0.2);
+            font-style: italic;
+            color: rgba(100, 90, 80, 0.7);
+            font-size: 12px;
+        }
+
+        #stats-panel {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 20px 28px;
+            border-radius: 0;
+            border-right: 4px solid rgba(100, 90, 80, 0.3);
+            box-shadow: 2px 2px 15px rgba(0,0,0,0.08);
+            min-width: 160px;
+        }
+
+        .stat {
+            margin-bottom: 16px;
+        }
+
+        .stat:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(80, 70, 60, 0.7);
+            margin-bottom: 4px;
+            font-family: 'Futura', sans-serif;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 300;
+            color: rgba(50, 45, 40, 0.9);
+            font-family: 'Georgia', serif;
+        }
+
+        #message-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            color: rgba(50, 45, 40, 0.85);
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s ease;
+            max-width: 80%;
+            line-height: 1.5;
+            font-weight: 300;
+            letter-spacing: 1px;
+            z-index: 100;
+        }
+
+        #message-overlay.show {
+            opacity: 1;
+        }
+
+        #clear-button {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            padding: 12px 24px;
+            background: rgba(80, 70, 60, 0.85);
+            color: var(--cream);
+            border: none;
+            font-family: 'Futura', sans-serif;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.15);
+        }
+
+        #clear-button:hover {
+            background: rgba(50, 45, 40, 0.95);
+            transform: translateY(-2px);
+            box-shadow: 3px 3px 14px rgba(0,0,0,0.25);
+        }
+
+        @media (max-width: 768px) {
+            #title {
+                font-size: 28px;
+            }
+            #subtitle {
+                font-size: 11px;
+            }
+            #instructions, #stats-panel {
+                position: relative;
+                margin: 15px;
+                max-width: calc(100% - 30px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div id="title-block">
+        <div id="title">INTERSECTION COMMONS</div>
+        <div id="subtitle">DRAW · INTERSECT · EMERGE</div>
+    </div>
+
+    <div id="message-overlay"></div>
+
+    <div id="instructions">
+        <h3>How to Create</h3>
+        <p><span class="emphasis">Draw freely anywhere</span> on the canvas by dragging your mouse or finger.</p>
+        <p><span class="emphasis">When two lines intersect</span>, a colorful node emerges at the crossing point and begins to float.</p>
+        <p><span class="emphasis">Draw from intersections</span> to create new lines starting from these drifting colorful nodes.</p>
+        <p class="note">
+            The canvas begins plain. Through intersection and cooperation, color and movement emerge.
+        </p>
+    </div>
+
+    <div id="stats-panel">
+        <div class="stat">
+            <div class="stat-label">Lines</div>
+            <div class="stat-value" id="lines-count">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Nodes</div>
+            <div class="stat-value" id="nodes-count">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Colors</div>
+            <div class="stat-value" id="colors-count">0</div>
+        </div>
+    </div>
+
+    <button id="clear-button">Clear Canvas</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // State - declare all variables first
+        let lines = [];
+        let intersectionNodes = [];
+        let isDragging = false;
+        let currentLine = null;
+        let startPoint = null;
+        let activeTouches = new Map();
+        let nextColorIndex = 0;
+
+        // Color palette - vibrant colors that emerge from intersections
+        const colorPalette = [
+            '#00ffff', // cyan
+            '#ff00ff', // magenta
+            '#ffff00', // yellow
+            '#00ff88', // green-cyan
+            '#ff6b9d', // pink
+            '#4a7c7e', // teal
+            '#d4a574', // gold
+            '#8b7fff', // purple
+            '#ff8844', // orange
+            '#00ddaa'  // turquoise
+        ];
+
+        // Resize canvas
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            redraw();
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function getNextColor() {
+            const color = colorPalette[nextColorIndex % colorPalette.length];
+            nextColorIndex++;
+            return color;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function findIntersections(newLine) {
+            let intersections = [];
+            
+            for (let line of lines) {
+                if (line === newLine) continue;
+                
+                let intersection = lineIntersection(
+                    newLine.x1, newLine.y1, newLine.x2, newLine.y2,
+                    line.x1, line.y1, line.x2, line.y2
+                );
+                
+                if (intersection) {
+                    // Check if intersection already exists at this location
+                    let existing = intersectionNodes.find(node => 
+                        Math.hypot(node.x - intersection.x, node.y - intersection.y) < 10
+                    );
+                    
+                    if (!existing) {
+                        intersections.push({
+                            x: intersection.x,
+                            y: intersection.y,
+                            lines: [newLine, line],
+                            color: getNextColor(),
+                            timestamp: Date.now(),
+                            vx: (Math.random() - 0.5) * 0.3,
+                            vy: (Math.random() - 0.5) * 0.3
+                        });
+                    }
+                }
+            }
+            
+            return intersections;
+        }
+
+        function lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+            const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+            if (Math.abs(denom) < 0.001) return null;
+            
+            const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+            const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+            
+            if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+                return {
+                    x: x1 + t * (x2 - x1),
+                    y: y1 + t * (y2 - y1)
+                };
+            }
+            
+            return null;
+        }
+
+        function isNearIntersection(x, y) {
+            for (let node of intersectionNodes) {
+                let dist = Math.hypot(x - node.x, y - node.y);
+                if (dist < 25) {
+                    return node;
+                }
+            }
+            return null;
+        }
+
+        function showMessage(text) {
+            const msgEl = document.getElementById('message-overlay');
+            msgEl.textContent = text;
+            msgEl.classList.add('show');
+            setTimeout(() => msgEl.classList.remove('show'), 2500);
+        }
+
+        function updateStats() {
+            document.getElementById('lines-count').textContent = lines.length;
+            document.getElementById('nodes-count').textContent = intersectionNodes.length;
+            
+            // Count unique colors used
+            let uniqueColors = new Set(intersectionNodes.map(n => n.color));
+            document.getElementById('colors-count').textContent = uniqueColors.size;
+        }
+
+        function updateNodes() {
+            for (let node of intersectionNodes) {
+                // Very slow, intentional drift
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                // Simple bounce off edges
+                if (node.x < 0 || node.x > canvas.width) {
+                    node.vx *= -1;
+                    node.x = Math.max(0, Math.min(canvas.width, node.x));
+                }
+                if (node.y < 0 || node.y > canvas.height) {
+                    node.vy *= -1;
+                    node.y = Math.max(0, Math.min(canvas.height, node.y));
+                }
+            }
+        }
+
+        function redraw() {
+            // Clear with beige background
+            ctx.fillStyle = '#f5f2ea';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw all lines
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            for (let line of lines) {
+                ctx.strokeStyle = 'rgba(100, 90, 80, 0.4)';
+                ctx.lineWidth = 2;
+                
+                ctx.beginPath();
+                ctx.moveTo(line.x1, line.y1);
+                ctx.lineTo(line.x2, line.y2);
+                ctx.stroke();
+            }
+            
+            // Draw current line being drawn
+            if (currentLine) {
+                ctx.strokeStyle = 'rgba(100, 90, 80, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([8, 8]);
+                
+                ctx.beginPath();
+                ctx.moveTo(currentLine.x1, currentLine.y1);
+                ctx.lineTo(currentLine.x2, currentLine.y2);
+                ctx.stroke();
+                
+                ctx.setLineDash([]);
+            }
+            
+            // Draw intersection nodes with breathing glow
+            for (let node of intersectionNodes) {
+                let age = Date.now() - node.timestamp;
+                // Very slow breathing pulse like Living Commons
+                let pulse = Math.sin(age * 0.003) * 0.3 + 0.7; // ranges from 0.4 to 1.0
+                
+                // Parse color for glow layers
+                let rgb = hexToRgb(node.color);
+                
+                // Outer glow
+                let gradient1 = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 35 * pulse);
+                gradient1.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`);
+                gradient1.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+                ctx.fillStyle = gradient1;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 35 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Middle glow
+                let gradient2 = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 20 * pulse);
+                gradient2.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`);
+                gradient2.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+                ctx.fillStyle = gradient2;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 20 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Core
+                ctx.fillStyle = node.color;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 10 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bright center
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 4 * pulse, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function startDrawing(x, y) {
+            // Check if starting near an intersection node
+            let nearNode = isNearIntersection(x, y);
+            
+            if (nearNode) {
+                // Start from the intersection node
+                startPoint = { x: nearNode.x, y: nearNode.y, fromNode: true };
+                showMessage("Drawing from intersection");
+            } else {
+                // Start from anywhere
+                startPoint = { x: x, y: y, fromNode: false };
+            }
+            
+            currentLine = {
+                x1: startPoint.x,
+                y1: startPoint.y,
+                x2: x,
+                y2: y
+            };
+            
+            isDragging = true;
+        }
+
+        function continueDrawing(x, y) {
+            if (!isDragging || !currentLine) return;
+            
+            currentLine.x2 = x;
+            currentLine.y2 = y;
+            redraw();
+        }
+
+        function endDrawing(x, y) {
+            if (!isDragging || !currentLine) return;
+            
+            currentLine.x2 = x;
+            currentLine.y2 = y;
+            
+            // Only add if line is long enough
+            let length = Math.hypot(currentLine.x2 - currentLine.x1, currentLine.y2 - currentLine.y1);
+            
+            if (length > 20) {
+                lines.push({...currentLine});
+                
+                // Find all intersections with existing lines
+                let newIntersections = findIntersections(currentLine);
+                
+                if (newIntersections.length > 0) {
+                    intersectionNodes.push(...newIntersections);
+                    
+                    if (newIntersections.length === 1) {
+                        showMessage("An intersection emerges");
+                    } else {
+                        showMessage(`${newIntersections.length} intersections emerge`);
+                    }
+                }
+                
+                updateStats();
+            }
+            
+            isDragging = false;
+            currentLine = null;
+            startPoint = null;
+            redraw();
+        }
+
+        // Mouse events
+        canvas.addEventListener('mousedown', (e) => {
+            startDrawing(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            continueDrawing(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            endDrawing(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('mouseleave', (e) => {
+            if (isDragging) {
+                endDrawing(e.clientX, e.clientY);
+            }
+        });
+
+        // Touch events for multi-touch
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            
+            for (let touch of e.touches) {
+                if (!activeTouches.has(touch.identifier)) {
+                    let nearNode = isNearIntersection(touch.clientX, touch.clientY);
+                    
+                    activeTouches.set(touch.identifier, {
+                        x1: nearNode ? nearNode.x : touch.clientX,
+                        y1: nearNode ? nearNode.y : touch.clientY,
+                        x2: touch.clientX,
+                        y2: touch.clientY,
+                        fromNode: !!nearNode
+                    });
+                }
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            
+            for (let touch of e.touches) {
+                let line = activeTouches.get(touch.identifier);
+                if (line) {
+                    line.x2 = touch.clientX;
+                    line.y2 = touch.clientY;
+                }
+            }
+            
+            // Redraw with all active touch lines
+            redraw();
+            
+            for (let [id, line] of activeTouches) {
+                ctx.strokeStyle = 'rgba(100, 90, 80, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([8, 8]);
+                
+                ctx.beginPath();
+                ctx.moveTo(line.x1, line.y1);
+                ctx.lineTo(line.x2, line.y2);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            
+            for (let touch of e.changedTouches) {
+                let line = activeTouches.get(touch.identifier);
+                if (line) {
+                    line.x2 = touch.clientX;
+                    line.y2 = touch.clientY;
+                    
+                    let length = Math.hypot(line.x2 - line.x1, line.y2 - line.y1);
+                    
+                    if (length > 20) {
+                        lines.push({...line});
+                        let newIntersections = findIntersections(line);
+                        
+                        if (newIntersections.length > 0) {
+                            intersectionNodes.push(...newIntersections);
+                        }
+                    }
+                    
+                    activeTouches.delete(touch.identifier);
+                }
+            }
+            
+            updateStats();
+            redraw();
+        });
+
+        // Clear button
+        document.getElementById('clear-button').addEventListener('click', () => {
+            lines = [];
+            intersectionNodes = [];
+            nextColorIndex = 0;
+            updateStats();
+            redraw();
+            showMessage("Canvas cleared, ready for new emergence");
+        });
+
+        // Animate nodes
+        function animate() {
+            updateNodes();
+            redraw();
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Initial draw
+        updateStats();
+    </script>
+</body>
+</html>

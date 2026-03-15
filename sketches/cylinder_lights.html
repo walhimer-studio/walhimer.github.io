@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Cylinders with Controllable Lights</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            font-family: Arial, sans-serif;
+        }
+        #canvas-container {
+            display: flex;
+            gap: 20px;
+        }
+        #controls {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .cylinder-control {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        .cylinder-control h3 {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .light-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 10px;
+            color: white;
+        }
+        .light-btn.on {
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+        }
+        .light-btn.off {
+            background: #333;
+        }
+        .control-buttons {
+            margin-top: 8px;
+            display: flex;
+            gap: 5px;
+        }
+        .control-buttons button {
+            padding: 5px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+            background: #444;
+            color: white;
+        }
+        .control-buttons button:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div id="p5-canvas"></div>
+        <div id="controls"></div>
+    </div>
+
+    <script>
+        // State management
+        let cylinderLights = [];
+        const NUM_CYLINDERS = 10;
+        const SECTIONS_PER_CYLINDER = 10;
+        
+        // Initialize all lights to ON
+        for (let i = 0; i < NUM_CYLINDERS; i++) {
+            cylinderLights[i] = [];
+            for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                cylinderLights[i][j] = true; // true = ON, false = OFF
+            }
+        }
+
+        function setup() {
+            let canvas = createCanvas(800, 600, WEBGL);
+            canvas.parent('p5-canvas');
+            
+            // Create control panel
+            createControls();
+        }
+
+        function draw() {
+            background(20);
+            
+            // Lighting
+            ambientLight(50);
+            directionalLight(255, 255, 255, 0, 1, -1);
+            
+            // Camera rotation
+            orbitControl();
+            
+            // Draw all cylinders
+            let spacing = 80;
+            let startX = -(NUM_CYLINDERS - 1) * spacing / 2;
+            
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                push();
+                translate(startX + i * spacing, 0, 0);
+                drawCylinder(i);
+                pop();
+            }
+        }
+
+        function drawCylinder(cylinderIndex) {
+            let cylinderHeight = 300;
+            let cylinderRadius = 20;
+            let sectionHeight = cylinderHeight / SECTIONS_PER_CYLINDER;
+            
+            push();
+            rotateX(HALF_PI);
+            
+            // Draw each section
+            for (let i = 0; i < SECTIONS_PER_CYLINDER; i++) {
+                push();
+                translate(0, 0, -cylinderHeight/2 + i * sectionHeight + sectionHeight/2);
+                
+                // Set color based on light state
+                if (cylinderLights[cylinderIndex][i]) {
+                    // Light is ON - bright green
+                    ambientMaterial(0, 255, 136);
+                    emissiveMaterial(0, 100, 50);
+                } else {
+                    // Light is OFF - dark gray
+                    ambientMaterial(40, 40, 40);
+                }
+                
+                // Draw the section as a cylinder
+                cylinder(cylinderRadius, sectionHeight);
+                
+                // Draw separator ring
+                if (i < SECTIONS_PER_CYLINDER - 1) {
+                    push();
+                    translate(0, 0, sectionHeight/2);
+                    ambientMaterial(10, 10, 10);
+                    torus(cylinderRadius, 1);
+                    pop();
+                }
+                
+                pop();
+            }
+            
+            pop();
+        }
+
+        function createControls() {
+            let controlsDiv = document.getElementById('controls');
+            
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                let cylinderDiv = document.createElement('div');
+                cylinderDiv.className = 'cylinder-control';
+                
+                let title = document.createElement('h3');
+                title.textContent = `Cylinder ${i + 1}`;
+                cylinderDiv.appendChild(title);
+                
+                let grid = document.createElement('div');
+                grid.className = 'section-grid';
+                
+                for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                    let btn = document.createElement('button');
+                    btn.className = 'light-btn on';
+                    btn.textContent = j + 1;
+                    btn.onclick = () => toggleLight(i, j, btn);
+                    grid.appendChild(btn);
+                }
+                
+                cylinderDiv.appendChild(grid);
+                
+                // Add control buttons
+                let controlBtns = document.createElement('div');
+                controlBtns.className = 'control-buttons';
+                
+                let allOnBtn = document.createElement('button');
+                allOnBtn.textContent = 'All ON';
+                allOnBtn.onclick = () => setAllLights(i, true);
+                
+                let allOffBtn = document.createElement('button');
+                allOffBtn.textContent = 'All OFF';
+                allOffBtn.onclick = () => setAllLights(i, false);
+                
+                controlBtns.appendChild(allOnBtn);
+                controlBtns.appendChild(allOffBtn);
+                cylinderDiv.appendChild(controlBtns);
+                
+                controlsDiv.appendChild(cylinderDiv);
+            }
+        }
+
+        function toggleLight(cylinderIndex, sectionIndex, btnElement) {
+            cylinderLights[cylinderIndex][sectionIndex] = !cylinderLights[cylinderIndex][sectionIndex];
+            
+            if (cylinderLights[cylinderIndex][sectionIndex]) {
+                btnElement.classList.remove('off');
+                btnElement.classList.add('on');
+            } else {
+                btnElement.classList.remove('on');
+                btnElement.classList.add('off');
+            }
+        }
+
+        function setAllLights(cylinderIndex, state) {
+            for (let i = 0; i < SECTIONS_PER_CYLINDER; i++) {
+                cylinderLights[cylinderIndex][i] = state;
+            }
+            
+            // Update button states
+            let controls = document.getElementById('controls');
+            let cylinderDiv = controls.children[cylinderIndex];
+            let buttons = cylinderDiv.querySelectorAll('.light-btn');
+            
+            buttons.forEach(btn => {
+                if (state) {
+                    btn.classList.remove('off');
+                    btn.classList.add('on');
+                } else {
+                    btn.classList.remove('on');
+                    btn.classList.add('off');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

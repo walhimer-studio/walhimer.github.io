@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>p5.js WEBGL Grid Cubes + Sliders</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    /* p5 creates canvas + DOM; keep overlay on top */
+    #uiOverlay {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 10;
+      color: #000;
+      user-select: none;
+    }
+    #uiOverlay > div {
+      margin-bottom: 6px;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+    #uiOverlay input[type="range"] {
+      width: 220px;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.2/lib/p5.min.js"></script>
+</head>
+<body>
+  <div id="uiOverlay"></div>
+
+  <script>
+    // KEEP ITEM #1 EXACTLY THE SAME + ADD ITEM #2 SLIDERS (only)
+    // (No other changes to logic or visuals.)
+
+    let points = [];
+    let cols = 6;
+    let rows = 6;
+    let depths = 6;
+    let spacing = 150;
+    let cubeSize = spacing * (cols - 1);
+
+    let faceColors;
+
+    // --- sliders from item #2 ---
+    let viscositySlider, turbulenceSlider, flowXSlider, speedSlider;
+    // ----------------------------
+
+    function setup() {
+      createCanvas(1000, 1000, WEBGL);
+
+      // --- slider vars from item #2 (defined but NOT used in item #1) ---
+      let viscosity = 0.92;
+      let turbulenceStrength = 0.05;
+      let flowBias = createVector(0.03, 0.01, 0);
+      let timeSpeed = 0.01;
+
+      // UI elements grouped neatly in top-left overlay
+      // (Same labels + ranges as item #2, but mounted into #uiOverlay)
+      let ui = select('#uiOverlay');
+
+      createDiv('Viscosity (fluid thickness)').parent(ui);
+      viscositySlider = createSlider(0.7, 0.995, viscosity, 0.005).parent(ui);
+
+      createDiv('Turbulence (chaotic motion)').parent(ui);
+      turbulenceSlider = createSlider(0, 0.5, turbulenceStrength, 0.01).parent(ui);
+
+      createDiv('Flow (X direction)').parent(ui);
+      flowXSlider = createSlider(-0.5, 0.5, flowBias.x, 0.01).parent(ui);
+
+      createDiv('Speed (simulation rate)').parent(ui);
+      speedSlider = createSlider(0.001, 0.2, timeSpeed, 0.001).parent(ui);
+      // ---------------------------------------------------------------
+
+      faceColors = [
+        color(255, 105, 180, 180),  // Front – pink
+        color(0, 191, 255, 180),    // Back – blue
+        color(255, 165, 0, 180),    // Left – orange
+        color(255, 255, 0, 180),    // Right – yellow
+        color(148, 0, 211, 180),    // Top – violet
+        color(50, 205, 50, 180)     // Bottom – green
+      ];
+
+      for (let z = 0; z < depths; z++) {
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            let baseX = -cubeSize / 2 + x * spacing;
+            let baseY = -cubeSize / 2 + y * spacing;
+            let baseZ = -cubeSize / 2 + z * spacing;
+
+            points.push({
+              base: createVector(baseX, baseY, baseZ),
+              pos: createVector(baseX, baseY, baseZ),
+              vel: createVector(0, 0, 0),
+              prev: createVector(baseX, baseY, baseZ)
+            });
+          }
+        }
+      }
+    }
+
+    function draw() {
+      background(255);
+      orbitControl();
+      rotateX(-0.3);
+      rotateY(frameCount * 0.002);
+
+      let t = frameCount * 0.01;
+
+      for (let pt of points) {
+        pt.prev.set(pt.pos);
+
+        let influence = createVector(0, 0, 0);
+        for (let neighbor of points) {
+          let d = p5.Vector.dist(pt.base, neighbor.base);
+          if (d > 0 && d < spacing * 1.5) {
+            let delta = p5.Vector.sub(neighbor.pos, pt.pos);
+            delta.mult(0.002 / d);
+            influence.add(delta);
+          }
+        }
+
+        pt.vel.x += map(noise(pt.base.y * 0.01, pt.base.z * 0.01, t), 0, 1, -0.05, 0.05);
+        pt.vel.y += map(noise(pt.base.z * 0.01, pt.base.x * 0.01, t + 100), 0, 1, -0.05, 0.05);
+        pt.vel.z += map(noise(pt.base.x * 0.01, pt.base.y * 0.01, t + 200), 0, 1, -0.05, 0.05);
+
+        let pulse = sin(t * 0.3) * 0.1;
+        pt.vel.x += 0.02 + pulse;
+        pt.vel.add(influence);
+        pt.vel.mult(0.98);
+        pt.pos.add(pt.vel);
+
+        pt.pos.x = constrain(pt.pos.x, pt.base.x - spacing / 2 + 10, pt.base.x + spacing / 2 - 10);
+        pt.pos.y = constrain(pt.pos.y, pt.base.y - spacing / 2 + 10, pt.base.y + spacing / 2 - 10);
+        pt.pos.z = constrain(pt.pos.z, pt.base.z - spacing / 2 + 10, pt.base.z + spacing / 2 - 10);
+
+        push();
+        stroke(0, 255, 255);
+        line(
+          pt.pos.x, pt.pos.y, pt.pos.z,
+          pt.pos.x + pt.vel.x * 20,
+          pt.pos.y + pt.vel.y * 20,
+          pt.pos.z + pt.vel.z * 20
+        );
+        pop();
+
+        push();
+        stroke(0, 100, 255, 80);
+        line(pt.prev.x, pt.prev.y, pt.prev.z, pt.pos.x, pt.pos.y, pt.pos.z);
+        pop();
+
+        push();
+        translate(pt.pos.x, pt.pos.y, pt.pos.z);
+        rotateX(frameCount * 0.01);
+        rotateY(frameCount * 0.01);
+        drawGradientCube(30, faceColors);
+        pop();
+      }
+    }
+
+    function drawGradientCube(size, faceColors) {
+      noStroke();
+
+      // Front
+      fill(faceColors[0]);
+      beginShape();
+      vertex(-size / 2, -size / 2,  size / 2);
+      vertex( size / 2, -size / 2,  size / 2);
+      vertex( size / 2,  size / 2,  size / 2);
+      vertex(-size / 2,  size / 2,  size / 2);
+      endShape(CLOSE);
+
+      // Back
+      fill(faceColors[1]);
+      beginShape();
+      vertex(-size / 2, -size / 2, -size / 2);
+      vertex( size / 2, -size / 2, -size / 2);
+      vertex( size / 2,  size / 2, -size / 2);
+      vertex(-size / 2,  size / 2, -size / 2);
+      endShape(CLOSE);
+
+      // Left
+      fill(faceColors[2]);
+      beginShape();
+      vertex(-size / 2, -size / 2, -size / 2);
+      vertex(-size / 2, -size / 2,  size / 2);
+      vertex(-size / 2,  size / 2,  size / 2);
+      vertex(-size / 2,  size / 2, -size / 2);
+      endShape(CLOSE);
+
+      // Right
+      fill(faceColors[3]);
+      beginShape();
+      vertex(size / 2, -size / 2, -size / 2);
+      vertex(size / 2, -size / 2,  size / 2);
+      vertex(size / 2,  size / 2,  size / 2);
+      vertex(size / 2,  size / 2, -size / 2);
+      endShape(CLOSE);
+
+      // Top
+      fill(faceColors[4]);
+      beginShape();
+      vertex(-size / 2, -size / 2, -size / 2);
+      vertex( size / 2, -size / 2, -size / 2);
+      vertex( size / 2, -size / 2,  size / 2);
+      vertex(-size / 2, -size / 2,  size / 2);
+      endShape(CLOSE);
+
+      // Bottom
+      fill(faceColors[5]);
+      beginShape();
+      vertex(-size / 2, size / 2, -size / 2);
+      vertex( size / 2, size / 2, -size / 2);
+      vertex( size / 2, size / 2,  size / 2);
+      vertex(-size / 2, size / 2,  size / 2);
+      endShape(CLOSE);
+    }
+  </script>
+</body>
+</html>

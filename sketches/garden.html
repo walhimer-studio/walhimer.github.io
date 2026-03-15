@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garden — Mark Walhimer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { background: #fff; overflow: hidden; height: 100%; width: 100%; }
+    canvas { display: block; }
+
+    /* life bar — bottom of screen, gray, grows left to right */
+    #lifebar-wrap {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(0,0,0,0.07);
+    }
+    #lifebar {
+      height: 100%;
+      width: 0%;
+      background: rgba(0,0,0,0.22);
+      transition: width 0.1s linear;
+    }
+
+    #label {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.15);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="lifebar-wrap"><div id="lifebar"></div></div>
+<div id="label">Garden &nbsp;·&nbsp; Mark Walhimer</div>
+
+<script>
+"use strict";
+
+const canvas  = document.getElementById('c');
+const ctx     = canvas.getContext('2d');
+const lifebar = document.getElementById('lifebar');
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── RANDOM
+class Rand {
+  constructor(seed) { this.s = Math.abs(seed) + 1; }
+  next() { const x = Math.sin(this.s++) * 10000; return x - Math.floor(x); }
+  range(a, b) { return a + this.next() * (b - a); }
+}
+
+// ── COLOR — rich, like original bloom.html
+// returns [r,g,b] 0-1 from HSB 0-360/0-100/0-100
+function hsbToRgb(h, s, b) {
+  s /= 100; b /= 100;
+  const k = n => (n + h / 60) % 6;
+  const f = n => b - b * s * Math.max(0, Math.min(k(n), 4 - k(n), 1));
+  return [f(5), f(3), f(1)];
+}
+
+function rgbaStr(rgb, a) {
+  return `rgba(${(rgb[0]*255)|0},${(rgb[1]*255)|0},${(rgb[2]*255)|0},${a.toFixed(3)})`;
+}
+
+// ── BLOOM
+class Bloom {
+  constructor(rng, W, H) {
+    // scatter position
+    this.x = rng.range(W * 0.1, W * 0.9);
+    this.y = rng.range(H * 0.1, H * 0.9);
+
+    // three harmonic hues — rich saturation
+    const h0 = rng.range(0, 360);
+    this.c1 = hsbToRgb(h0,                          rng.range(80, 100), 100);
+    this.c2 = hsbToRgb((h0 + rng.range(30, 80)) % 360,  rng.range(70, 95),  100);
+    this.c3 = hsbToRgb((h0 + rng.range(140,200)) % 360, rng.range(60, 85),  95);
+
+    // size — grows to fill meaningful space
+    this.maxR = rng.range(80, 200);
+
+    // layers — soft, overlapping, like original bloom
+    this.layerCount = Math.floor(rng.range(4, 8));
+    this.layers = Array.from({length: this.layerCount}, (_, i) => ({
+      dx:     rng.range(-12, 12),
+      dy:     rng.range(-12, 12),
+      rScale: 1.0 - i * (0.38 / this.layerCount),
+      alpha:  0.35 - i * (0.06 / this.layerCount),  // soft, like original 0.35
+    }));
+
+    // breath
+    this.breathAmp   = rng.range(0.05, 0.10);
+    this.breathSpeed = rng.range(0.6, 1.5);
+    this.breathPhase = rng.range(0, Math.PI * 2);
+
+    // growth — slow and deliberate
+    this.growSpeed = rng.range(0.018, 0.038);  // fraction of maxR per frame at 60fps
+    this.currentR  = 0;
+    this.growing   = true;  // still expanding
+
+    // fade — birth and death are the same gesture
+    this.dying     = false;
+    this.fadeAlpha = 0.0;               // starts invisible
+    this.fadeSpeed = rng.range(0.0008, 0.002);
+    this.fadeInSpeed = rng.range(0.0006, 0.0015); // very slow, gentle arrival
+
+    this.dead = false;
+  }
+
+  update(dt) {
+    const step = dt / 16.67;
+    if (this.growing) {
+      this.currentR += this.maxR * this.growSpeed * step;
+      if (this.currentR >= this.maxR) {
+        this.currentR = this.maxR;
+        this.growing  = false;
+      }
+      // fade in during growth — arrives at full alpha as it reaches full size
+      this.fadeAlpha = Math.min(this.fadeAlpha + this.fadeInSpeed * step, 1.0);
+    }
+    if (this.dying) {
+      this.fadeAlpha -= this.fadeSpeed * step;
+      if (this.fadeAlpha <= 0) { this.dead = true; }
+    }
+  }
+
+  startDying() { this.dying = true; }
+
+  draw(ctx, t) {
+    if (this.dead) return;
+    const breath = 1.0 + this.breathAmp * Math.sin(
+      t * 0.001 * this.breathSpeed + this.breathPhase
+    );
+    const r = this.currentR * (this.growing ? 1.0 : breath);
+    if (r < 1) return;
+
+    for (const L of this.layers) {
+      const cx = this.x + L.dx * (r / this.maxR);
+      const cy = this.y + L.dy * (r / this.maxR);
+      const lr = r * L.rScale;
+      const la = L.alpha * this.fadeAlpha;
+
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, lr);
+      grad.addColorStop(0.0, rgbaStr(this.c1, la * 0.95));
+      grad.addColorStop(0.3, rgbaStr(this.c2, la * 0.60));
+      grad.addColorStop(0.7, rgbaStr(this.c3, la * 0.28));
+      grad.addColorStop(1.0, rgbaStr(this.c3, 0));
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, lr, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+  }
+}
+
+// ── GARDEN ORCHESTRATOR
+const rng = new Rand(Date.now() % 99991);
+
+const TOTAL_BLOOMS   = 22;      // how many until garden is full
+const SPAWN_INTERVAL = 1800;    // ms between each new bloom appearing
+const HOLD_AFTER_FULL = 8000;   // ms to breathe before slow dying begins
+const TOTAL_LIFE = TOTAL_BLOOMS * SPAWN_INTERVAL + HOLD_AFTER_FULL + 30000;
+
+let blooms       = [];
+let spawnCount   = 0;
+let nextSpawn    = 600;          // first bloom appears quickly
+let gardenFull   = false;
+let fullAt       = -1;
+let dyingStarted = false;
+let startTime    = null;
+
+function update(t, dt) {
+  if (!startTime) startTime = t;
+  const elapsed = t - startTime;
+
+  // spawn next bloom
+  if (spawnCount < TOTAL_BLOOMS && t > nextSpawn) {
+    blooms.push(new Bloom(rng, canvas.width, canvas.height));
+    spawnCount++;
+    nextSpawn = t + SPAWN_INTERVAL;
+
+    if (spawnCount === TOTAL_BLOOMS) {
+      gardenFull = true;
+      fullAt = t;
+    }
+  }
+
+  // after hold period, begin slow death — oldest first
+  if (gardenFull && !dyingStarted && t > fullAt + HOLD_AFTER_FULL) {
+    dyingStarted = true;
+    // stagger dying — older blooms start fading first
+    blooms.forEach((b, i) => {
+      setTimeout(() => b.startDying(), i * 600);
+    });
+  }
+
+  // update each bloom
+  blooms.forEach(b => b.update(dt));
+
+  // life bar — grows over the full arc
+  const pct = Math.min(elapsed / TOTAL_LIFE * 100, 100);
+  lifebar.style.width = pct.toFixed(2) + '%';
+
+  // when all dead — restart
+  if (dyingStarted && blooms.every(b => b.dead)) {
+    blooms = [];
+    spawnCount = 0;
+    nextSpawn  = t + 600;
+    gardenFull = false;
+    fullAt     = -1;
+    dyingStarted = false;
+    startTime  = t;
+  }
+}
+
+function draw(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // draw largest first so smaller sit on top
+  const sorted = [...blooms].sort((a, b) => b.maxR - a.maxR);
+  sorted.forEach(b => b.draw(ctx, t));
+}
+
+let last = null;
+function loop(t) {
+  const dt = last ? t - last : 16.67;
+  last = t;
+  update(t, dt);
+  draw(t);
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

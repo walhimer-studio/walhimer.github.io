@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pentatonic Piano — Event-Triggered</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #070705;
+    color: #c8a882;
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    padding: 40px;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap');
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    color: #e8d5b8;
+  }
+
+  .note {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: rgba(200,168,130,0.45);
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 2;
+    max-width: 480px;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .btn {
+    background: none;
+    border: 1px solid rgba(200,168,130,0.35);
+    color: rgba(200,168,130,0.5);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: color 0.3s, border-color 0.3s;
+    width: 100%;
+  }
+  .btn:hover { border-color: rgba(200,168,130,0.7); color: rgba(200,168,130,0.9); }
+  .btn.active { color: rgba(200,168,130,0.9); border-color: rgba(200,168,130,0.6); }
+
+  .trigger-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .trigger {
+    background: none;
+    border: 1px solid rgba(200,168,130,0.2);
+    color: rgba(200,168,130,0.4);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .trigger:hover { border-color: rgba(200,168,130,0.6); color: rgba(200,168,130,0.9); }
+  .trigger.flash {
+    border-color: rgba(200,168,130,0.9);
+    color: rgba(200,168,130,1);
+    background: rgba(200,168,130,0.06);
+  }
+
+  .log {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(200,168,130,0.3);
+    text-align: center;
+    height: 18px;
+    transition: color 0.3s;
+  }
+
+  .status {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(200,168,130,0.25);
+    text-transform: uppercase;
+  }
+  .status.ready { color: rgba(200,168,130,0.55); }
+
+  hr {
+    border: none;
+    border-top: 1px solid rgba(200,168,130,0.1);
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .code-block {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: rgba(200,168,130,0.3);
+    line-height: 1.9;
+    max-width: 520px;
+    text-align: left;
+    white-space: pre;
+  }
+  .trigger .key {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: rgba(200,168,130,0.6);
+    font-weight: 400;
+  }
+
+  .keyboard-hint {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(200,168,130,0.25);
+    text-transform: uppercase;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<h1>Pentatonic Piano</h1>
+<p class="note">
+  Event-triggered · Salamander Grand samples · C pentatonic<br>
+  Click to activate audio · then trigger events below
+</p>
+
+<div class="controls">
+  <button class="btn" id="sound-btn" onclick="toggleSound()">▶ activate audio</button>
+
+  <div class="trigger-grid">
+    <button class="trigger" id="btn-a" onclick="triggerA()">History A<br>low register<br>C2 – E3<br><span class="key">T &nbsp; B</span></button>
+    <button class="trigger" id="btn-b" onclick="triggerB()">History B<br>mid register<br>G3 – G4<br><span class="key">Y &nbsp; N</span></button>
+    <button class="trigger" id="btn-bloom" onclick="triggerBloom()">Convergence<br>bloom<br>C5 – A5<br><span class="key">U &nbsp; M</span></button>
+  </div>
+
+  <div class="log" id="log">—</div>
+  <div class="keyboard-hint">hold multiple keys simultaneously to chord</div>
+  <div class="status" id="status">samples loading after first click</div>
+</div>
+
+<hr>
+
+<div class="code-block">
+<span>// C pentatonic pools — any combo sounds consonant</span>
+const pentatonicA    = ['C2','D2','E2','G2','A2','C3','D3','E3'];
+const pentatonicB    = ['G3','A3','C4','D4','E4','G4'];
+const pentatonicBloom = ['C5','E5','G5','A5'];
+
+<span>// Wire to your events:</span>
+function onPhotoA()    { playNote(pentatonicA,     0.25 + Math.random() * 0.15); }
+function onPhotoB()    { playNote(pentatonicB,     0.25 + Math.random() * 0.15); }
+function onConverge()  { playNote(pentatonicBloom, 0.30 + Math.random() * 0.15); }
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+<script>
+
+const pentatonicA     = ['C2','D2','E2','G2','A2','C3','D3','E3'];
+const pentatonicB     = ['G3','A3','C4','D4','E4','G4'];
+const pentatonicBloom = ['C5','E5','G5','A5'];
+
+let piano = null;
+let pianoReady = false;
+let soundOn = false;
+
+function buildPiano() {
+  if (pianoReady) return;
+  pianoReady = true;
+  setStatus('loading samples…');
+  piano = new Tone.Sampler({
+    urls: {
+      C2:'C2.mp3', 'D#2':'Ds2.mp3', 'F#2':'Fs2.mp3', A2:'A2.mp3',
+      C3:'C3.mp3', 'D#3':'Ds3.mp3', 'F#3':'Fs3.mp3', A3:'A3.mp3',
+      C4:'C4.mp3', 'D#4':'Ds4.mp3', 'F#4':'Fs4.mp3', A4:'A4.mp3',
+      C5:'C5.mp3', 'D#5':'Ds5.mp3', 'F#5':'Fs5.mp3', A5:'A5.mp3',
+    },
+    release: 4,
+    baseUrl: 'https://tonejs.github.io/audio/salamander/',
+    onload: () => {
+      setStatus('ready — trigger events above');
+      document.getElementById('status').classList.add('ready');
+    }
+  }).toDestination();
+  Tone.getDestination().volume.value = -8;
+}
+
+function playNote(pool, velocity) {
+  if (!soundOn || !pianoReady || !piano) return;
+  const note = pool[Math.floor(Math.random() * pool.length)];
+  piano.triggerAttackRelease(note, '2n', Tone.now(), velocity);
+  setLog(note);
+  return note;
+}
+
+function triggerA() {
+  const n = playNote(pentatonicA, 0.25 + Math.random() * 0.15);
+  flash('btn-a', n);
+}
+function triggerB() {
+  const n = playNote(pentatonicB, 0.25 + Math.random() * 0.15);
+  flash('btn-b', n);
+}
+function triggerBloom() {
+  const n = playNote(pentatonicBloom, 0.30 + Math.random() * 0.15);
+  flash('btn-bloom', n);
+}
+
+function flash(id, note) {
+  const el = document.getElementById(id);
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 300);
+}
+
+function toggleSound() {
+  Tone.start();
+  if (!pianoReady) buildPiano();
+  soundOn = true;
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = '◼ audio active';
+  btn.classList.add('active');
+  btn.onclick = null; // one-time activation
+}
+
+function setLog(note) {
+  const el = document.getElementById('log');
+  el.textContent = `→ ${note}`;
+  el.style.color = 'rgba(200,168,130,0.75)';
+  setTimeout(() => { el.style.color = 'rgba(200,168,130,0.3)'; }, 1200);
+}
+
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+
+// ── KEYBOARD MAPPING ─────────────────────────────────────────────────
+// Standard DAW layout: T/B = History A, Y/N = History B, U/M = Bloom
+// Hold multiple keys simultaneously to chord
+const keyMap = {
+  't': { trigger: triggerA, pool: pentatonicA },
+  'b': { trigger: triggerA, pool: pentatonicA },
+  'y': { trigger: triggerB, pool: pentatonicB },
+  'n': { trigger: triggerB, pool: pentatonicB },
+  'u': { trigger: triggerBloom, pool: pentatonicBloom },
+  'm': { trigger: triggerBloom, pool: pentatonicBloom },
+};
+const heldNotes = {}; // key → note currently held
+
+document.addEventListener('keydown', e => {
+  const key = e.key.toLowerCase();
+  if (!keyMap[key] || heldNotes[key]) return;
+  if (!soundOn) toggleSound();
+  const pool = keyMap[key].pool;
+  const note = pool[Math.floor(Math.random() * pool.length)];
+  heldNotes[key] = note;
+  piano && piano.triggerAttack(note, Tone.now(), 0.3 + Math.random() * 0.15);
+  flash(key === 't' || key === 'b' ? 'btn-a' : key === 'y' || key === 'n' ? 'btn-b' : 'btn-bloom', note);
+  setLog(note + ' ↓');
+});
+
+document.addEventListener('keyup', e => {
+  const key = e.key.toLowerCase();
+  const note = heldNotes[key];
+  if (!note) return;
+  piano && piano.triggerRelease(note, Tone.now());
+  delete heldNotes[key];
+  setLog(note + ' ↑');
+});
+
+</script>
+</body>
+</html>

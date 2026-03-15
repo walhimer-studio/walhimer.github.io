@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Emergent DNA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+    
+    /* Control Panel */
+    #controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      width: 280px;
+      max-height: 90vh;
+      overflow-y: auto;
+      z-index: 1000;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    
+    #controls.hidden {
+      transform: translateX(320px);
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    #controls h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #000;
+    }
+    
+    .control-group {
+      margin-bottom: 20px;
+    }
+    
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #e0e0e0;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #000;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    
+    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #000;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.1s ease;
+    }
+    
+    .control-group input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+    }
+    
+    .value-display {
+      font-size: 14px;
+      color: #000;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    
+    /* Toggle Button */
+    #toggleControls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      z-index: 999;
+      transition: transform 0.2s ease;
+    }
+    
+    #toggleControls:hover {
+      transform: scale(1.1);
+    }
+    
+    #toggleControls.hidden {
+      display: none;
+    }
+    
+    /* Info Badge */
+    #info {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #666;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    #info strong {
+      color: #000;
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    /* Start Button */
+    #startButton {
+      width: 100%;
+      background: black;
+      color: white;
+      border: none;
+      padding: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin-bottom: 20px;
+    }
+    
+    #startButton:hover {
+      transform: scale(1.02);
+      background: #333;
+    }
+    
+    #startButton.started {
+      display: none;
+    }
+    
+    #countdown {
+      width: 100%;
+      background: black;
+      color: white;
+      padding: 20px;
+      font-size: 48px;
+      font-weight: 700;
+      border-radius: 8px;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    #countdown.active {
+      display: block;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      #controls {
+        width: calc(100vw - 40px);
+        max-width: 320px;
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        max-height: 60vh;
+      }
+      
+      #controls.hidden {
+        transform: translateY(calc(100% + 40px));
+      }
+      
+      #toggleControls {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Toggle Button -->
+  <button id="toggleControls">⚙️</button>
+  
+  <!-- Control Panel -->
+  <div id="controls">
+    <h2>DNA Parameters</h2>
+    
+    <button id="startButton">START</button>
+    <div id="countdown"></div>
+    
+    <div class="control-group">
+      <label>Lifespan</label>
+      <input type="range" id="lifespan" min="0" max="17" step="1" value="9">
+      <div class="value-display" id="lifespanValue">6h</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Rotation Speed</label>
+      <input type="range" id="rotSpeed" min="0.1" max="3.0" step="0.1" value="1.0">
+      <div class="value-display" id="rotSpeedValue">1.0</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Breath Speed</label>
+      <input type="range" id="breathSpeed" min="0.1" max="3.0" step="0.1" value="1.0">
+      <div class="value-display" id="breathSpeedValue">1.0</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Box Size</label>
+      <input type="range" id="boxSize" min="0.3" max="2.0" step="0.1" value="1.0">
+      <div class="value-display" id="boxSizeValue">1.0</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Alpha Min</label>
+      <input type="range" id="alphaMin" min="0.05" max="0.8" step="0.05" value="0.35">
+      <div class="value-display" id="alphaMinValue">0.35</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Alpha Max</label>
+      <input type="range" id="alphaMax" min="0.5" max="1.0" step="0.02" value="0.92">
+      <div class="value-display" id="alphaMaxValue">0.92</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Saturation</label>
+      <input type="range" id="saturation" min="0" max="100" step="5" value="80">
+      <div class="value-display" id="saturationValue">80</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Brightness</label>
+      <input type="range" id="brightness" min="50" max="100" step="5" value="95">
+      <div class="value-display" id="brightnessValue">95</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Hue Spread</label>
+      <input type="range" id="hueSpread" min="0" max="360" step="10" value="140">
+      <div class="value-display" id="hueSpreadValue">140</div>
+    </div>
+    
+    <div class="control-group">
+      <label>Background Color</label>
+      <input type="range" id="bgColor" min="0" max="9" step="1" value="0">
+      <div class="value-display" id="bgColorValue">White</div>
+    </div>
+  </div>
+  
+  <!-- Info Badge -->
+  <div id="info">
+    <strong>Emergent DNA</strong>
+    Mark Walhimer
+  </div>
+
+  <script>
+    "use strict";
+    
+    // ============================================
+    // SEEDED RANDOM GENERATOR (Manifold Compatible)
+    // ============================================
+    
+    // Get token ID from URL or use default for testing
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenId = urlParams.get('tokenId') || '0';
+    
+    // Simple hash function for seed generation
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return hash;
+    }
+    
+    // Seeded random number generator
+    class SeededRandom {
+      constructor(seed) {
+        this.seed = seed;
+      }
+      
+      random() {
+        const x = Math.sin(this.seed++) * 10000;
+        return x - Math.floor(x);
+      }
+    }
+    
+    const seed = hashCode(tokenId);
+    const seededRandom = new SeededRandom(seed);
+    
+    // ============================================
+    // PARAMETERS
+    // ============================================
+    
+    // Background color presets (HSB values)
+    const BG_PRESETS = [
+      { label: "White", h: 0, s: 0, b: 100 },
+      { label: "Grey", h: 0, s: 0, b: 60 },
+      { label: "Beige", h: 40, s: 20, b: 85 },
+      { label: "Light Blue", h: 200, s: 30, b: 80 },
+      { label: "Pink", h: 330, s: 25, b: 90 },
+      { label: "Orange", h: 30, s: 35, b: 85 },
+      { label: "Yellow", h: 50, s: 30, b: 95 },
+      { label: "Cream", h: 45, s: 15, b: 95 },
+      { label: "Green", h: 120, s: 25, b: 75 },
+      { label: "Black", h: 0, s: 0, b: 10 }
+    ];
+    
+    const params = {
+      rotSpeed: 1.0,
+      breathSpeed: 1.0,
+      boxSize: 1.0,
+      alphaMin: 0.35,
+      alphaMax: 0.92,
+      saturation: 80,
+      brightness: 95,
+      hueSpread: 140,
+      bgColor: 0,
+      lifespan: 9
+    };
+    
+    // Lifespan presets (seconds and max boxes)
+    const LIFESPAN_OPTIONS = [
+      { label: "30s", seconds: 30, maxBoxes: 50 },
+      { label: "1m", seconds: 60, maxBoxes: 100 },
+      { label: "2m", seconds: 120, maxBoxes: 150 },
+      { label: "5m", seconds: 300, maxBoxes: 250 },
+      { label: "10m", seconds: 600, maxBoxes: 350 },
+      { label: "20m", seconds: 1200, maxBoxes: 500 },
+      { label: "30m", seconds: 1800, maxBoxes: 650 },
+      { label: "1h", seconds: 3600, maxBoxes: 800 },
+      { label: "2h", seconds: 7200, maxBoxes: 1000 },
+      { label: "6h", seconds: 21600, maxBoxes: 1200 },
+      { label: "12h", seconds: 43200, maxBoxes: 1400 },
+      { label: "1d", seconds: 86400, maxBoxes: 1600 },
+      { label: "2d", seconds: 172800, maxBoxes: 1800 },
+      { label: "1w", seconds: 604800, maxBoxes: 2000 },
+      { label: "2w", seconds: 1209600, maxBoxes: 2000 },
+      { label: "1mo", seconds: 2592000, maxBoxes: 2000 },
+      { label: "2mo", seconds: 5184000, maxBoxes: 2000 },
+      { label: "3mo", seconds: 7776000, maxBoxes: 2000 }
+    ];
+    
+    // ============================================
+    // UI CONTROLS
+    // ============================================
+    
+    // Update parameter values from sliders
+    function setupControls() {
+      const controls = [
+        'rotSpeed', 'breathSpeed', 'boxSize', 'alphaMin', 
+        'alphaMax', 'saturation', 'brightness', 'hueSpread', 'bgColor', 'lifespan'
+      ];
+      
+      controls.forEach(name => {
+        const slider = document.getElementById(name);
+        const display = document.getElementById(name + 'Value');
+        
+        slider.addEventListener('input', (e) => {
+          const value = parseFloat(e.target.value);
+          params[name] = value;
+          
+          // Special display for lifespan
+          if (name === 'lifespan') {
+            const idx = Math.floor(value);
+            display.textContent = LIFESPAN_OPTIONS[idx].label;
+            // Reset growth when lifespan changes
+            if (hasStarted) {
+              startTime = millis();
+            }
+          } else if (name === 'bgColor') {
+            const idx = Math.floor(value);
+            display.textContent = BG_PRESETS[idx].label;
+          } else {
+            display.textContent = value;
+          }
+        });
+        
+        // Initialize display values
+        if (name === 'lifespan') {
+          const idx = Math.floor(params[name]);
+          display.textContent = LIFESPAN_OPTIONS[idx].label;
+        } else if (name === 'bgColor') {
+          const idx = Math.floor(params[name]);
+          display.textContent = BG_PRESETS[idx].label;
+        } else {
+          display.textContent = params[name];
+        }
+      });
+      
+      // Toggle controls visibility
+      const toggleBtn = document.getElementById('toggleControls');
+      const controlsPanel = document.getElementById('controls');
+      let controlsVisible = true;
+      
+      toggleBtn.addEventListener('click', () => {
+        controlsVisible = !controlsVisible;
+        if (controlsVisible) {
+          controlsPanel.classList.remove('hidden');
+          toggleBtn.classList.remove('hidden');
+        } else {
+          controlsPanel.classList.add('hidden');
+        }
+      });
+    }
+    
+    // ============================================
+    // P5.JS SKETCH
+    // ============================================
+    
+    let dnaState;
+    let startTime;
+    let hasStarted = false;
+    let isCountingDown = false;
+    let countdownValue = 10;
+    
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      pixelDensity(displayDensity());
+      colorMode(HSB, 360, 100, 100, 1);
+      noStroke();
+      dnaState = buildDNAState();
+      setupControls();
+      setupStartButton();
+    }
+    
+    function setupStartButton() {
+      const startButton = document.getElementById('startButton');
+      const countdownDisplay = document.getElementById('countdown');
+      
+      startButton.addEventListener('click', () => {
+        // Hide button, show countdown
+        isCountingDown = true;
+        startButton.classList.add('started');
+        countdownDisplay.classList.add('active');
+        countdownDisplay.textContent = countdownValue;
+        
+        // Countdown interval
+        const countdownInterval = setInterval(() => {
+          countdownValue--;
+          if (countdownValue > 0) {
+            countdownDisplay.textContent = countdownValue;
+          } else {
+            clearInterval(countdownInterval);
+            // Start the actual timer
+            isCountingDown = false;
+            hasStarted = true;
+            startTime = millis();
+            // Hide countdown
+            countdownDisplay.classList.remove('active');
+          }
+        }, 1000);
+      });
+    }
+    
+    function buildDNAState() {
+      // Generate boxes with birth times (0-1 normalized)
+      // We'll generate enough for the longest lifespan option
+      const maxPossibleBoxes = 2000;
+      const boxes = [];
+      
+      for (let i = 0; i < maxPossibleBoxes; i++) {
+        boxes.push({
+          w: 400 * (0.4 + seededRandom.random() * 0.8),
+          h: 300 * (0.4 + seededRandom.random() * 0.8),
+          d: 200 * (0.4 + seededRandom.random() * 0.8),
+          hueOffset: seededRandom.random() * 360,
+          pos: {
+            x: seededRandom.random() * 500 - 250,
+            y: seededRandom.random() * 600 - 300,
+            z: seededRandom.random() * 400 - 200
+          },
+          rotOffset: seededRandom.random() * TWO_PI,
+          birthTime: i / maxPossibleBoxes  // Evenly distributed 0-1
+        });
+      }
+      return { boxes };
+    }
+    
+    function draw() {
+      // Background - use preset color
+      const bgPreset = BG_PRESETS[Math.floor(params.bgColor)];
+      background(bgPreset.h, bgPreset.s, bgPreset.b);
+      
+      const t = millis();
+      
+      // PREVIEW MODE - show one rotating cube in center before start
+      if (!hasStarted) {
+        const globalRotation = t * 0.0002 * params.rotSpeed;
+        const breathCycle = (sin(t * 0.001 * params.breathSpeed) + 1) * 0.5;
+        const currentAlpha = lerp(params.alphaMin, params.alphaMax, breathCycle);
+        
+        // Lighting
+        ambientLight(200);
+        directionalLight(255, 255, 255, 1, 1, -1);
+        
+        push();
+        // Rotating preview cube
+        rotateY(globalRotation);
+        rotateX(globalRotation * 0.5);
+        
+        const h1 = 180;  // Preview colors
+        const h2 = (180 + params.hueSpread) % 360;
+        
+        // CUBE - all sides equal
+        const cubeSize = 350 * params.boxSize;
+        drawSoftBox(
+          cubeSize,
+          cubeSize, 
+          cubeSize,
+          h1, h2, currentAlpha
+        );
+        pop();
+        return;
+      }
+      
+      const elapsedSeconds = (t - startTime) / 1000;
+      
+      // Get current lifespan settings
+      const lifespanIdx = Math.floor(params.lifespan);
+      const lifespanData = LIFESPAN_OPTIONS[lifespanIdx];
+      const totalLifeSeconds = lifespanData.seconds;
+      const maxBoxes = lifespanData.maxBoxes;
+      
+      // Calculate life progress (0-1)
+      const lifeProgress = Math.min(elapsedSeconds / totalLifeSeconds, 1.0);
+      
+      // Determine how many boxes should be visible
+      const visibleCount = Math.floor(lifeProgress * maxBoxes);
+      
+      // Camera rotates around the garden (not the boxes)
+      const globalRotation = t * 0.0002 * params.rotSpeed;
+      const breathCycle = (sin(t * 0.001 * params.breathSpeed) + 1) * 0.5;
+      const currentAlpha = lerp(params.alphaMin, params.alphaMax, breathCycle);
+      
+      // Lighting
+      ambientLight(200);
+      directionalLight(255, 255, 255, 1, 1, -1);
+      
+      push();
+      // Camera orbits the stationary garden
+      rotateY(globalRotation);
+      rotateX(globalRotation * 0.5);
+      
+      // Boxes stay in place - we move around them
+      // Show only boxes that have been "born"
+      for (let i = 0; i < visibleCount; i++) {
+        const b = dnaState.boxes[i];
+        
+        // Calculate birth animation (fade in over 1 second)
+        const boxBirthProgress = i / maxBoxes;  // When this box should be born (0-1)
+        const boxBirthTime = boxBirthProgress * totalLifeSeconds;  // Actual birth time in seconds
+        const timeSinceBirth = elapsedSeconds - boxBirthTime;  // How long since this box was born
+        const fadeInDuration = 1.0;  // Fade in over 1 second
+        const fadeInProgress = constrain(timeSinceBirth / fadeInDuration, 0, 1);
+        
+        // Apply fade-in to alpha
+        const boxAlpha = currentAlpha * fadeInProgress;
+        
+        push();
+        translate(b.pos.x, b.pos.y, b.pos.z);
+        rotateZ(b.rotOffset + globalRotation);
+        
+        const h1 = (b.hueOffset) % 360;
+        const h2 = (b.hueOffset + params.hueSpread) % 360;
+        drawSoftBox(
+          b.w * params.boxSize, 
+          b.h * params.boxSize, 
+          b.d * params.boxSize, 
+          h1, h2, boxAlpha
+        );
+        pop();
+      }
+      pop();
+    }
+    
+    function drawSoftBox(W, H, D, h1, h2, a) {
+      const w = W / 2, h = H / 2, d = D / 2;
+      const c1 = color(h1, params.saturation, params.brightness, a);
+      const c2 = color(h2, params.saturation, params.brightness, a);
+      
+      // Front face
+      beginShape();
+      fill(c1); vertex(-w, -h, d);
+      fill(c2); vertex(w, -h, d);
+      fill(c1); vertex(w, h, d);
+      fill(c2); vertex(-w, h, d);
+      endShape(CLOSE);
+      
+      // Back face
+      beginShape();
+      fill(c2); vertex(w, -h, -d);
+      fill(c1); vertex(-w, -h, -d);
+      fill(c2); vertex(-w, h, -d);
+      fill(c1); vertex(w, h, -d);
+      endShape(CLOSE);
+      
+      // Left side
+      beginShape();
+      fill(c1); vertex(-w, -h, d);
+      vertex(-w, h, d);
+      fill(c2); vertex(-w, h, -d);
+      vertex(-w, -h, -d);
+      endShape(CLOSE);
+      
+      // Right side
+      beginShape();
+      fill(c2); vertex(w, -h, d);
+      vertex(w, h, d);
+      fill(c1); vertex(w, h, -d);
+      vertex(w, -h, -d);
+      endShape(CLOSE);
+      
+      // Bottom face
+      beginShape();
+      fill(c1); vertex(-w, -h, -d);
+      fill(c2); vertex(w, -h, -d);
+      fill(c1); vertex(-w, -h, d);
+      fill(c2); vertex(w, -h, d);
+      endShape(CLOSE);
+    }
+    
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Color Translucent Gradient Box Column</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background: #1a1a1a;
+      color: #ffffff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    #controls {
+      background: #2a2a2a;
+      padding: 25px;
+      width: 350px;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+      flex-shrink: 0;
+    }
+    
+    #canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a1a;
+    }
+    
+    .control-group {
+      margin-bottom: 20px;
+    }
+    
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #cccccc;
+    }
+    
+    .value-display {
+      color: #4CAF50;
+      font-weight: bold;
+      float: right;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #444;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+      border: none;
+    }
+    
+    input[type="number"] {
+      width: 120px;
+      padding: 8px;
+      background: #333;
+      border: 1px solid #555;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 14px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 10px;
+      transition: background 0.3s;
+    }
+    
+    button:hover {
+      background: #45a049;
+    }
+    
+    .seed-control {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .seed-control input[type="number"] {
+      width: 100%;
+    }
+    
+    .seed-control button {
+      margin-left: 0;
+      width: 100%;
+    }
+    
+    #recording-controls {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #444;
+    }
+    
+    .record-btn, .download-btn {
+      width: 100%;
+      margin-left: 0;
+      margin-bottom: 10px;
+    }
+    
+    .record-btn {
+      background: #f44336;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .record-btn:hover {
+      background: #da190b;
+    }
+    
+    .record-btn.recording {
+      background: #ff9800;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .record-btn.recording:hover {
+      background: #fb8c00;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .download-btn {
+      background: #2196F3;
+      display: none;
+    }
+    
+    .download-btn:hover {
+      background: #0b7dda;
+    }
+    
+    #recordingStatus {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #ff9800;
+      font-weight: bold;
+    }
+    
+    .pause-btn {
+      background: #9C27B0;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+    .pause-btn:hover {
+      background: #7B1FA2;
+    }
+    
+    .pause-btn.paused {
+      background: #FF9800;
+    }
+    
+    .pause-btn.paused:hover {
+      background: #F57C00;
+    }
+    
+    input[type="color"] {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #555;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #333;
+    }
+    
+    .toggle-btn {
+      background: #607D8B;
+      width: 100%;
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+    
+    .toggle-btn:hover {
+      background: #546E7A;
+    }
+    
+    .toggle-btn.active {
+      background: #FFC107;
+    }
+    
+    .toggle-btn.active:hover {
+      background: #FFB300;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <div class="control-group">
+      <label>
+        Box Count: <span class="value-display" id="boxCountValue">5</span>
+      </label>
+      <input type="range" id="boxCountSlider" min="1" max="20" value="5" step="1">
+    </div>
+    
+    <div class="control-group">
+      <label>
+        Spacing: <span class="value-display" id="spacingValue">300</span>
+      </label>
+      <input type="range" id="spacingSlider" min="100" max="800" value="300" step="10">
+    </div>
+    
+    <div class="control-group">
+      <label>
+        Box Speed: <span class="value-display" id="boxSpeedValue">1.0</span>
+      </label>
+      <input type="range" id="boxSpeedSlider" min="0" max="5" value="1" step="0.1">
+    </div>
+    
+    <div class="control-group">
+      <label>
+        Box Alpha (Translucency): <span class="value-display" id="boxAlphaValue">110</span>
+      </label>
+      <input type="range" id="boxAlphaSlider" min="20" max="255" value="110" step="5">
+    </div>
+    
+    <div class="control-group">
+      <label>Random Seed:</label>
+      <div class="seed-control">
+        <input type="number" id="seedInput" value="12345">
+        <button id="randomSeedBtn">Randomize</button>
+        <button id="applySeedBtn">Apply</button>
+      </div>
+    </div>
+    
+    <div class="control-group">
+      <label>Background Color:</label>
+      <input type="color" id="bgColorPicker" value="#ffffff">
+    </div>
+    
+    <div class="control-group">
+      <button id="centerLightBtn" class="toggle-btn">💡 Center Light: OFF</button>
+    </div>
+    
+    <div class="control-group">
+      <button id="pauseBtn" class="pause-btn">⏸ Pause</button>
+    </div>
+    
+    <div id="recording-controls">
+      <button id="recordBtn" class="record-btn">● Start Recording</button>
+      <button id="downloadBtn" class="download-btn">⬇ Download Video</button>
+      <div id="recordingStatus"></div>
+    </div>
+  </div>
+  
+  <div id="canvas-container"></div>
+
+  <script>
+    // =====================================================
+    // P5.JS WEBGL — MULTI-COLOR TRANSLUCENT GRADIENT BOX COLUMN
+    // - Exact BOX_COUNT boxes (no recycling)
+    // - Each box uses its own multi-color translucent gradient texture
+    // - Standalone HTML with sliders and seed control
+    // =====================================================
+    let city = [];
+    let cs;
+    
+    // === USER CONTROLS (controlled by sliders) ===
+    let BOX_COUNT = 5;
+    let spacing = 300;
+    let boxSpeed = 1;
+    let BOX_ALPHA = 110;
+    let currentSeed = 12345;
+    // ==============================================
+    
+    // === VIDEO RECORDING ===
+    let mediaRecorder;
+    let recordedChunks = [];
+    let isRecording = false;
+    let recordingStartTime = 0;
+    // =======================
+    
+    // === PAUSE & BACKGROUND ===
+    let isPaused = false;
+    let bgColor;
+    let centerLightOn = false;
+    // ==========================
+    
+    let palette = [310, 45, 30, 210, 270];
+    let camZ = 500;
+    
+    function setup() {
+      // Calculate canvas size based on available viewport space
+      const availableWidth = windowWidth - 350; // Subtract controls width
+      cs = min(availableWidth, windowHeight) * 0.9; // 90% of available space
+      
+      let canvas = createCanvas(cs, cs, WEBGL);
+      canvas.parent('canvas-container');
+      pixelDensity(2);
+      frameRate(60);
+      colorMode(HSB, 360, 100, 100, 255);
+      noStroke();
+      setAttributes('alpha', true);
+      textureWrap(CLAMP);
+      
+      bgColor = color(0, 0, 100); // Default white background
+      
+      setSeeds();
+      setupSliders();
+      rebuildCity();
+    }
+    
+    function setSeeds() {
+      randomSeed(currentSeed);
+      noiseSeed(currentSeed);
+    }
+    
+    function rebuildCity() {
+      setSeeds();
+      city = [];
+      for (let i = 0; i < BOX_COUNT; i++) {
+        city.push(makeBox(-i * spacing));
+      }
+    }
+    
+    function makeBox(zPos) {
+      return {
+        x: 0,
+        z: zPos,
+        w: random(120, 220),
+        h: random(120, 320),
+        d: random(120, 220),
+        tex: makeMultiColorGradientTexture()
+      };
+    }
+    
+    function makeMultiColorGradientTexture() {
+      const tex = createGraphics(128, 256);
+      tex.pixelDensity(2);
+      tex.colorMode(HSB, 360, 100, 100, 255);
+      tex.noStroke();
+      
+      const h1 = random(palette);
+      const h2 = random(palette);
+      const h3 = random(palette);
+      const h4 = random(palette);
+      const a = BOX_ALPHA;
+      
+      for (let y = 0; y < tex.height; y++) {
+        const t = y / (tex.height - 1);
+        let h;
+        if (t < 1 / 3) {
+          h = lerp(h1, h2, t * 3);
+        } else if (t < 2 / 3) {
+          h = lerp(h2, h3, (t - 1 / 3) * 3);
+        } else {
+          h = lerp(h3, h4, (t - 2 / 3) * 3);
+        }
+        tex.fill(h, 100, 100, a);
+        tex.rect(0, y, tex.width, 1);
+      }
+      
+      tex.loadPixels();
+      for (let y = 0; y < tex.height; y++) {
+        for (let x = 0; x < tex.width; x++) {
+          const idx = 4 * (y * tex.width + x);
+          const wave = 0.65 + 0.35 * sin((x / tex.width) * TWO_PI * 2.0);
+          tex.pixels[idx + 3] = tex.pixels[idx + 3] * wave;
+        }
+      }
+      tex.updatePixels();
+      
+      return tex;
+    }
+    
+    function draw() {
+      background(bgColor);
+      camera(0, 0, camZ, 0, 0, 0, 0, 1, 0);
+      ambientLight(255);
+      directionalLight(255, 255, 255, 0.3, -1, -0.5);
+      
+      // Add center point light if enabled
+      if (centerLightOn) {
+        pointLight(255, 255, 255, 0, 0, 0);
+      }
+      
+      blendMode(BLEND);
+      
+      // Only update box positions if not paused
+      if (!isPaused) {
+        for (let b of city) {
+          b.z += boxSpeed;
+        }
+      }
+      
+      // Always render boxes
+      for (let b of city) {
+        if (b.z > camZ + 100) continue;
+        
+        push();
+        translate(b.x, 0, b.z);
+        texture(b.tex);
+        box(b.w, b.h, b.d);
+        pop();
+      }
+      
+      // Update recording status
+      if (isRecording) {
+        const elapsed = ((millis() - recordingStartTime) / 1000).toFixed(1);
+        select('#recordingStatus').html(`Recording... ${elapsed}s`);
+      }
+    }
+    
+    function setupSliders() {
+      // Box Count Slider
+      const boxCountSlider = select('#boxCountSlider');
+      boxCountSlider.input(() => {
+        BOX_COUNT = int(boxCountSlider.value());
+        select('#boxCountValue').html(BOX_COUNT);
+        rebuildCity();
+      });
+      
+      // Spacing Slider
+      const spacingSlider = select('#spacingSlider');
+      spacingSlider.input(() => {
+        spacing = float(spacingSlider.value());
+        select('#spacingValue').html(spacing);
+        rebuildCity();
+      });
+      
+      // Box Speed Slider
+      const boxSpeedSlider = select('#boxSpeedSlider');
+      boxSpeedSlider.input(() => {
+        boxSpeed = float(boxSpeedSlider.value());
+        select('#boxSpeedValue').html(boxSpeed.toFixed(1));
+      });
+      
+      // Box Alpha Slider
+      const boxAlphaSlider = select('#boxAlphaSlider');
+      boxAlphaSlider.input(() => {
+        BOX_ALPHA = int(boxAlphaSlider.value());
+        select('#boxAlphaValue').html(BOX_ALPHA);
+        rebuildCity();
+      });
+      
+      // Seed Controls
+      const seedInput = select('#seedInput');
+      const randomSeedBtn = select('#randomSeedBtn');
+      const applySeedBtn = select('#applySeedBtn');
+      
+      randomSeedBtn.mousePressed(() => {
+        currentSeed = floor(random(1, 999999));
+        seedInput.value(currentSeed);
+        rebuildCity();
+      });
+      
+      applySeedBtn.mousePressed(() => {
+        currentSeed = int(seedInput.value());
+        rebuildCity();
+      });
+      
+      // Background Color Picker
+      const bgColorPicker = select('#bgColorPicker');
+      bgColorPicker.input(() => {
+        const hexColor = bgColorPicker.value();
+        // Convert hex to RGB
+        const r = parseInt(hexColor.substr(1, 2), 16);
+        const g = parseInt(hexColor.substr(3, 2), 16);
+        const b = parseInt(hexColor.substr(5, 2), 16);
+        // Convert RGB to HSB for p5.js
+        push();
+        colorMode(RGB, 255);
+        bgColor = color(r, g, b);
+        pop();
+      });
+      
+      // Center Light Toggle
+      const centerLightBtn = select('#centerLightBtn');
+      centerLightBtn.mousePressed(() => {
+        centerLightOn = !centerLightOn;
+        if (centerLightOn) {
+          centerLightBtn.html('💡 Center Light: ON');
+          centerLightBtn.addClass('active');
+        } else {
+          centerLightBtn.html('💡 Center Light: OFF');
+          centerLightBtn.removeClass('active');
+        }
+      });
+      
+      // Pause Button
+      const pauseBtn = select('#pauseBtn');
+      pauseBtn.mousePressed(() => {
+        isPaused = !isPaused;
+        if (isPaused) {
+          pauseBtn.html('▶ Resume');
+          pauseBtn.addClass('paused');
+        } else {
+          pauseBtn.html('⏸ Pause');
+          pauseBtn.removeClass('paused');
+        }
+      });
+      
+      // Recording Controls
+      setupRecording();
+    }
+    
+    function setupRecording() {
+      const recordBtn = select('#recordBtn');
+      const downloadBtn = select('#downloadBtn');
+      const statusDiv = select('#recordingStatus');
+      
+      recordBtn.mousePressed(() => {
+        if (!isRecording) {
+          startRecording();
+        } else {
+          stopRecording();
+        }
+      });
+      
+      downloadBtn.mousePressed(() => {
+        downloadVideo();
+      });
+    }
+    
+    function startRecording() {
+      recordedChunks = [];
+      
+      const canvas = document.querySelector('canvas');
+      const stream = canvas.captureStream(60); // 60 FPS
+      
+      mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'video/webm;codecs=vp9',
+        videoBitsPerSecond: 8000000 // 8 Mbps for high quality
+      });
+      
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+      
+      mediaRecorder.onstop = () => {
+        const recordBtn = select('#recordBtn');
+        const downloadBtn = select('#downloadBtn');
+        const statusDiv = select('#recordingStatus');
+        
+        recordBtn.removeClass('recording');
+        recordBtn.html('● Start Recording');
+        downloadBtn.style('display', 'inline-block');
+        statusDiv.html('Recording complete! Click Download to save.');
+        isRecording = false;
+      };
+      
+      mediaRecorder.start();
+      isRecording = true;
+      recordingStartTime = millis();
+      
+      const recordBtn = select('#recordBtn');
+      const downloadBtn = select('#downloadBtn');
+      
+      recordBtn.addClass('recording');
+      recordBtn.html('■ Stop Recording');
+      downloadBtn.style('display', 'none');
+    }
+    
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+    
+    function downloadVideo() {
+      if (recordedChunks.length === 0) return;
+      
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gradient-boxes-${Date.now()}.webm`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      const statusDiv = select('#recordingStatus');
+      statusDiv.html('Video downloaded!');
+      
+      setTimeout(() => {
+        statusDiv.html('');
+      }, 3000);
+    }
+    
+    function windowResized() {
+      const availableWidth = windowWidth - 350;
+      cs = min(availableWidth, windowHeight) * 0.9;
+      resizeCanvas(cs, cs);
+      rebuildCity();
+    }
+  </script>
+</body>
+</html>

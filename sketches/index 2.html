@@ -1,0 +1,1272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cloud Sketch POC</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1620;
+      --panel2:#121c28;
+      --text:#e8eef6;
+      --muted:#93a4b8;
+      --line:rgba(255,255,255,0.08);
+      --accent:#5fd3ff;
+      --bad:#ff6b6b;
+      --good:#45d483;
+      --warn:#ffd166;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      --sans:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);}
+
+    .app{
+      height:100vh;
+      display:grid;
+      grid-template-rows:56px 1fr 28px;
+      min-height:0;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 14px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+      border-bottom:1px solid var(--line);
+      box-sizing:border-box;
+      min-height:56px;
+      flex-wrap:wrap;
+    }
+
+    header .brand{
+      font-weight:650;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      white-space:nowrap;
+    }
+    header .brand .dot{
+      width:9px;height:9px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 0 4px rgba(95,211,255,0.12);
+      display:inline-block;
+      transform:translateY(-1px);
+    }
+    header .brand small{color:var(--muted);font-weight:500;}
+
+    header .spacer{flex:1;}
+
+    header .controls{
+      display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;
+    }
+
+    button, input[type="text"], input[type="number"]{
+      background:rgba(255,255,255,0.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:10px;
+      padding:9px 10px;
+      font-size:13px;
+      outline:none;
+    }
+
+    button{
+      cursor:pointer;
+      user-select:none;
+      transition:transform .04s ease, background .12s ease, border-color .12s ease;
+      white-space:nowrap;
+    }
+    button:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.14);}
+    button:active{transform:translateY(1px);}
+    button.primary{background:rgba(95,211,255,0.16);border-color:rgba(95,211,255,0.35);}
+    button.primary:hover{background:rgba(95,211,255,0.22);border-color:rgba(95,211,255,0.45);}
+    button.danger{background:rgba(255,107,107,0.14);border-color:rgba(255,107,107,0.34);}
+    button:disabled{opacity:.55;cursor:not-allowed;}
+
+    /* Panel toggles in header (ALWAYS visible) */
+    .panelToggles{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:4px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.03);
+      border-radius:12px;
+    }
+    .panelToggles .pt{
+      padding:7px 10px;
+      font-size:12px;
+      border-radius:10px;
+      border:1px solid transparent;
+      background:transparent;
+      color:var(--muted);
+    }
+    .panelToggles .pt.on{
+      background:rgba(95,211,255,0.14);
+      border-color:rgba(95,211,255,0.30);
+      color:var(--text);
+    }
+
+    /* ---------- Layout (draggable columns) ---------- */
+    .work{
+      min-height:0;
+      display:grid;
+      grid-template-columns: var(--wLeft) 10px var(--wMid) 10px var(--wRight);
+      height:100%;
+    }
+
+    .resizer{
+      background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border-left:1px solid var(--line);
+      border-right:1px solid var(--line);
+      cursor:col-resize;
+      position:relative;
+      user-select:none;
+    }
+    .resizer::after{
+      content:"";
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:3px;
+      height:42px;
+      border-radius:99px;
+      background:rgba(255,255,255,0.18);
+      box-shadow: 6px 0 0 rgba(255,255,255,0.12), -6px 0 0 rgba(255,255,255,0.12);
+    }
+    body.resizing{cursor:col-resize;}
+    body.resizing *{user-select:none !important;}
+
+    .left{
+      min-width:0;min-height:0;
+      border-right:1px solid var(--line);
+      background:var(--panel);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .main{
+      min-width:0;min-height:0;
+      background:var(--panel2);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .right{
+      min-width:0;min-height:0;
+      border-left:1px solid var(--line);
+      background:#0c121a;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    .paneHeader{
+      padding:10px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      box-sizing:border-box;
+    }
+    .paneHeader .title{
+      font-weight:650;
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:.25px;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .collapseBtns{display:flex;gap:6px;align-items:center;}
+    .smallBtn{padding:7px 9px;font-size:12px;border-radius:10px;}
+
+    .importRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    input[type="file"]#importFile{
+      width:170px;
+      padding:6px 8px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.04);
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .tree{padding:10px 8px 14px 8px;overflow:auto;flex:1;min-height:0;box-sizing:border-box;}
+    .tree .project{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid transparent;
+      cursor:pointer;
+      gap:10px;
+    }
+    .tree .project:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.08);}
+    .tree .project.active{background:rgba(95,211,255,0.12);border-color:rgba(95,211,255,0.28);}
+    .tree .project .name{font-family:var(--mono);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .tree .project .meta{color:var(--muted);font-size:11px;white-space:nowrap;}
+
+    .tabs{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      box-sizing:border-box;
+    }
+    .chip{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.04);
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .chip strong{color:var(--text);font-weight:650;font-family:var(--mono);font-size:12px;}
+
+    textarea#editor{
+      flex:1;
+      min-height:0;
+      width:100%;
+      border:none;
+      outline:none;
+      resize:none;
+      background:transparent;
+      color:var(--text);
+      font-family:var(--mono);
+      font-size:12.5px;
+      line-height:1.45;
+      padding:14px;
+      box-sizing:border-box;
+    }
+
+    .previewHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      box-sizing:border-box;
+    }
+    .previewHeader .title{
+      font-weight:650;
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:.25px;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .previewWrap{
+      padding:12px;
+      overflow:hidden;
+      flex:1;
+      min-height:0;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .frameShell{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.02);
+      border-radius:14px;
+      overflow:hidden;
+      box-shadow:0 12px 60px rgba(0,0,0,0.35);
+      width:100%;
+      flex:1;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+    iframe#preview{
+      display:block;
+      width:100%;
+      height:100%;
+      border:none;
+      background:#000;
+      flex:1;
+      min-height:0;
+    }
+
+    .videoShell{
+      display:none;
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(255,255,255,0.02);
+      padding:10px;
+      box-sizing:border-box;
+    }
+    .videoShell video{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:10px;
+      background:#000;
+    }
+
+    .renderPanel{
+      padding:12px;
+      border-top:1px solid var(--line);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      align-items:end;
+      box-sizing:border-box;
+    }
+    .renderPanel label{
+      display:block;
+      font-size:11px;
+      color:var(--muted);
+      margin:0 0 6px 2px;
+      letter-spacing:.2px;
+    }
+    .renderPanel .full{
+      grid-column:1/-1;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .statusbar{
+      border-top:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 12px;
+      color:var(--muted);
+      font-size:12px;
+      background:rgba(255,255,255,0.02);
+      box-sizing:border-box;
+      min-height:28px;
+    }
+    .statusDot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.2);}
+    .statusDot.good{background:var(--good);box-shadow:0 0 0 4px rgba(69,212,131,0.10);}
+    .statusDot.bad{background:var(--bad);box-shadow:0 0 0 4px rgba(255,107,107,0.10);}
+    .statusDot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(255,209,102,0.10);}
+
+    @media (max-width:1200px){
+      .work{
+        grid-template-columns:1fr;
+        grid-template-rows:auto auto auto;
+        grid-auto-rows:minmax(200px, 1fr);
+      }
+      .resizer{display:none;}
+      .left,.main,.right{border:none;}
+      .left{border-bottom:1px solid var(--line);}
+      .main{border-bottom:1px solid var(--line);}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <span class="dot"></span>
+        Cloud Sketch POC
+        <small>HTML / p5.js / WebGL</small>
+      </div>
+
+      <div class="panelToggles" aria-label="Panel toggles">
+        <button id="ptLeft" class="pt on" title="Show/Hide Projects">Projects</button>
+        <button id="ptMid" class="pt on" title="Show/Hide Code">Code</button>
+        <button id="ptRight" class="pt on" title="Show/Hide Preview">Preview</button>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="controls">
+        <input id="projectName" type="text" placeholder="project name" style="width:220px" />
+        <button id="newBtn">New</button>
+        <button id="saveBtn" class="primary">Save</button>
+        <button id="runBtn" class="primary">Run</button>
+        <button id="deleteBtn" class="danger">Delete</button>
+        <button id="wipeBtn" class="danger" title="Deletes ALL saved projects from this browser">Wipe All</button>
+      </div>
+    </header>
+
+    <div class="work" id="work">
+      <aside class="left" id="leftPane">
+        <div class="paneHeader">
+          <div class="title">
+            Projects
+            <span class="collapseBtns">
+              <button id="collapseLeft" class="smallBtn" title="Collapse Projects">⟨</button>
+            </span>
+          </div>
+          <div class="importRow">
+            <button id="exportBtn" title="Export current project JSON">Export</button>
+            <button id="importBtn" title="Open file picker">Import</button>
+            <input id="importFile" type="file" accept=".json,application/json,.html,text/html,.js,text/javascript" />
+          </div>
+        </div>
+        <div id="tree" class="tree"></div>
+      </aside>
+
+      <div class="resizer" id="resizerLM" title="Drag to resize"></div>
+
+      <main class="main" id="midPane">
+        <div class="tabs">
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div class="chip"><span>File</span> <strong>index.html</strong></div>
+            <div class="chip"><span>Paste Mode</span> <strong>HTML or JS supported</strong></div>
+          </div>
+          <div class="collapseBtns">
+            <button id="collapseMid" class="smallBtn" title="Collapse Code">⟨</button>
+          </div>
+        </div>
+        <textarea id="editor" spellcheck="false"></textarea>
+      </main>
+
+      <div class="resizer" id="resizerMR" title="Drag to resize"></div>
+
+      <aside class="right" id="rightPane">
+        <div class="previewHeader">
+          <div class="title">
+            Preview
+            <span class="collapseBtns">
+              <button id="collapseRight" class="smallBtn" title="Collapse Preview">⟩</button>
+            </span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="openNewTabBtn">Open</button>
+            <button id="copyLinkBtn">Copy Link</button>
+          </div>
+        </div>
+
+        <div class="previewWrap">
+          <div class="frameShell">
+            <iframe id="preview"
+              src="about:blank"
+              sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-downloads allow-modals"
+              allow="autoplay; fullscreen; clipboard-write"></iframe>
+          </div>
+
+          <div id="videoShell" class="videoShell">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;">
+              <div style="font-size:12px;color:var(--muted);">Rendered WEBM preview</div>
+              <button id="openBlobBtn">Open WEBM (new tab)</button>
+            </div>
+            <video id="videoPreview" controls playsinline></video>
+          </div>
+        </div>
+
+        <div class="renderPanel">
+          <div>
+            <label for="rFps">FPS</label>
+            <input id="rFps" type="number" value="60" min="1" step="1" />
+          </div>
+          <div>
+            <label for="rSeconds">Seconds</label>
+            <input id="rSeconds" type="number" value="10" min="1" step="1" />
+          </div>
+
+          <div class="full">
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+              <button id="renderBtn">Render (WEBM)</button>
+              <button id="downloadBtn" disabled>Download WEBM</button>
+              <button id="stopBtn" disabled class="danger">Stop</button>
+            </div>
+            <div style="color:var(--muted); font-size:12px;">
+              If Download fails: Open WEBM (new tab) → Save As.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="statusbar">
+      <span id="statusDot" class="statusDot"></span>
+      <span id="statusText">Ready.</span>
+      <span style="margin-left:auto; font-family:var(--mono); font-size:11px;" id="statusMeta"></span>
+    </div>
+  </div>
+
+<script>
+  const LS_LAYOUT = "cloudSketchPOC.layout.v4";
+  const LS_KEY = "cloudSketchPOC.projects.v13";
+  const LS_ACTIVE = "cloudSketchPOC.activeProjectId.v13";
+
+  function el(id){ return document.getElementById(id); }
+  function uid(){ return "p_" + Math.random().toString(16).slice(2) + Date.now().toString(16); }
+  function nowISO(){ return new Date().toISOString(); }
+  function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
+
+  const workEl = el("work");
+  const resLM = el("resizerLM");
+  const resMR = el("resizerMR");
+
+  const treeEl = el("tree");
+  const editorEl = el("editor");
+  const nameEl = el("projectName");
+
+  const statusDot = el("statusDot");
+  const statusText = el("statusText");
+  const statusMeta = el("statusMeta");
+
+  const previewFrame = el("preview");
+
+  const rFps = el("rFps");
+  const rSeconds = el("rSeconds");
+
+  const renderBtn = el("renderBtn");
+  const downloadBtn = el("downloadBtn");
+  const stopBtn = el("stopBtn");
+
+  const videoShell = el("videoShell");
+  const videoPreview = el("videoPreview");
+  const openBlobBtn = el("openBlobBtn");
+
+  const ptLeft = el("ptLeft");
+  const ptMid = el("ptMid");
+  const ptRight = el("ptRight");
+
+  let projects = loadProjects();
+  let activeId = localStorage.getItem(LS_ACTIVE) || null;
+
+  let lastBlob = null;
+  let lastBlobUrl = null;
+
+  let recorder = null;
+  let recordedChunks = [];
+  let recordTimer = null;
+
+  const DEFAULT_HTML = [
+    "<!doctype html>",
+    "<html>",
+    "<head>",
+    "  <meta charset='utf-8'/>",
+    "  <meta name='viewport' content='width=device-width,initial-scale=1'/>",
+    "  <title>Sketch</title>",
+    "  <style>html,body{margin:0;height:100%;background:#000;overflow:hidden;}canvas{display:block;}</style>",
+    "  <script src='https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js'></" + "script>",
+    "</head>",
+    "<body>",
+    "  <script>",
+    "    let t=0;",
+    "    function setup(){ createCanvas(window.innerWidth, window.innerHeight, WEBGL); colorMode(HSB,360,100,100,1); noStroke(); }",
+    "    function windowResized(){ resizeCanvas(window.innerWidth, window.innerHeight); }",
+    "    function draw(){",
+    "      background(0); t += 0.01; rotateY(t*0.8); rotateX(t*0.5);",
+    "      for(let i=0;i<140;i++){",
+    "        let a=i/140.0*TWO_PI;",
+    "        let rr=200+70*sin(t*2+i*0.1);",
+    "        push(); translate(cos(a)*rr, sin(a)*rr, 0);",
+    "        fill((i*3+t*60)%360,90,95,0.85); sphere(10);",
+    "        pop();",
+    "      }",
+    "    }",
+    "  </" + "script>",
+    "</body></html>"
+  ].join("\\n");
+
+  function setStatus(type, text, meta){
+    statusDot.classList.remove("good","bad","warn");
+    if(type) statusDot.classList.add(type);
+    statusText.textContent = text || "";
+    statusMeta.textContent = meta || "";
+  }
+
+  window.addEventListener("message", (e) => {
+    if(!e || !e.data) return;
+    if(e.data.type === "SKETCH_READY") setStatus("good","Preview loaded.", e.data.message || "");
+    if(e.data.type === "SKETCH_ERROR") setStatus("bad","Sketch error.", e.data.message || "");
+    if(e.data.type === "SKETCH_LOG") setStatus("warn","Sketch log.", e.data.message || "");
+  });
+
+  function loadProjects(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    }catch(e){ return []; }
+  }
+  function saveProjects(){ localStorage.setItem(LS_KEY, JSON.stringify(projects)); }
+  function getActive(){ return projects.find(p => p.id === activeId) || null; }
+
+  function ensureSomeProject(){
+    if(projects.length === 0){
+      const id = uid();
+      projects.push({ id, name:"starter", html:DEFAULT_HTML, createdAt:nowISO(), updatedAt:nowISO() });
+      activeId = id;
+      localStorage.setItem(LS_ACTIVE, activeId);
+      saveProjects();
+    }
+  }
+
+  function renderTree(){
+    treeEl.innerHTML = "";
+    const sorted = [...projects].sort((a,b)=> String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));
+    for(const p of sorted){
+      const row = document.createElement("div");
+      row.className = "project" + (p.id === activeId ? " active" : "");
+      row.onclick = () => selectProject(p.id);
+
+      const left = document.createElement("div");
+      left.style.minWidth = "0";
+
+      const nm = document.createElement("div");
+      nm.className = "name";
+      nm.textContent = p.name;
+
+      const mt = document.createElement("div");
+      mt.className = "meta";
+      mt.textContent = p.updatedAt ? String(p.updatedAt).replace("T"," ").replace("Z","") : "";
+
+      left.appendChild(nm);
+      left.appendChild(mt);
+
+      const right = document.createElement("div");
+      right.style.fontFamily = "var(--mono)";
+      right.style.fontSize = "11px";
+      right.style.color = "var(--muted)";
+      right.textContent = "index.html";
+
+      row.appendChild(left);
+      row.appendChild(right);
+
+      treeEl.appendChild(row);
+    }
+  }
+
+  function selectProject(id){
+    const p = projects.find(x => x.id === id);
+    if(!p) return;
+    activeId = id;
+    localStorage.setItem(LS_ACTIVE, activeId);
+    nameEl.value = p.name || "";
+    editorEl.value = p.html || "";
+    renderTree();
+    runPreview();
+    setStatus("good","Loaded project.", p.name || "");
+  }
+
+  function createProject(){
+    const id = uid();
+    projects.push({ id, name:"untitled", html:"", createdAt:nowISO(), updatedAt:nowISO() });
+    saveProjects();
+    selectProject(id);
+    setStatus("good","Created new empty project.","Paste code and Run");
+  }
+
+  function deleteProject(){
+    if(!activeId) return;
+    const idx = projects.findIndex(p => p.id === activeId);
+    if(idx < 0) return;
+    const old = projects[idx].name || "";
+    projects.splice(idx,1);
+    saveProjects();
+    activeId = projects.length ? projects[0].id : null;
+    localStorage.setItem(LS_ACTIVE, activeId || "");
+    if(activeId) selectProject(activeId);
+    else{
+      editorEl.value = "";
+      nameEl.value = "";
+      hardResetPreview();
+      setStatus("warn","All projects deleted.","");
+    }
+    setStatus("warn","Deleted project.", old);
+  }
+
+  function wipeAll(){
+    stopRecording();
+    cleanupLastBlob();
+    projects = [];
+    activeId = null;
+    localStorage.removeItem(LS_KEY);
+    localStorage.removeItem(LS_ACTIVE);
+    treeEl.innerHTML = "";
+    editorEl.value = "";
+    nameEl.value = "";
+    hardResetPreview();
+    hideVideoPreview();
+    setStatus("warn","Wiped ALL saved projects.","Reload to start fresh");
+  }
+
+  function saveActive(){
+    const p = getActive();
+    if(!p) return;
+    p.name = (nameEl.value || "untitled").trim();
+    p.html = String(editorEl.value || "");
+    p.updatedAt = nowISO();
+    saveProjects();
+    renderTree();
+    setStatus("good","Saved.", p.name);
+  }
+
+  function exportActive(){
+    const p = getActive();
+    if(!p) return;
+    const payload = { format:"cloudSketchPOC.project.v13", exportedAt:nowISO(), project:p };
+    const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = String((p.name||"project").replace(/[^\w\-]+/g,"_")) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setStatus("good","Exported project JSON.", p.name || "");
+  }
+
+  function importProjectFromFile(file){
+    const name = String(file?.name || "");
+    const ext = name.split(".").pop().toLowerCase();
+
+    const reader = new FileReader();
+    reader.onerror = () => setStatus("bad","Import failed.","FileReader error");
+    reader.onload = () => {
+      try{
+        const text = String(reader.result || "");
+        if(ext === "json" || (text.trim().startsWith("{") && text.includes('"project"'))){
+          const obj = JSON.parse(text);
+          const proj = obj?.project;
+          if(!proj?.html) throw new Error("Invalid project JSON: missing project.html");
+          const p = { id:uid(), name:String(proj.name||"imported"), html:String(proj.html||""), createdAt:nowISO(), updatedAt:nowISO() };
+          projects.push(p); saveProjects(); selectProject(p.id);
+          setStatus("good","Imported project JSON.", p.name);
+          return;
+        }
+        const baseName = name ? name.replace(/\\.[^/.]+$/, "") : "imported";
+        const p2 = { id:uid(), name:baseName||"imported", html:text, createdAt:nowISO(), updatedAt:nowISO() };
+        projects.push(p2); saveProjects(); selectProject(p2.id);
+        setStatus("good","Imported file.", p2.name);
+      }catch(e){
+        setStatus("bad","Import failed.", e?.message || String(e));
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function hardResetPreview(){
+    previewFrame.srcdoc = "<!doctype html><html><head><meta charset='utf-8'></head><body style='margin:0;background:#000'></body></html>";
+  }
+
+  function buildRunnableHTML(paste){
+    const raw = String(paste || "");
+    const t = raw.trim().toLowerCase();
+
+    const isFullHTML = (t.includes("<html")) || (t.includes("<!doctype"));
+    if(isFullHTML) return raw;
+
+    const looksLikeJS =
+      t.includes("function setup") ||
+      t.includes("function draw") ||
+      t.includes("createcanvas") ||
+      t.includes("new p5") ||
+      t.includes("let ") ||
+      t.includes("const ") ||
+      t.includes("var ");
+
+    if(looksLikeJS){
+      return [
+        "<!doctype html>",
+        "<html><head>",
+        "  <meta charset='utf-8'/>",
+        "  <meta name='viewport' content='width=device-width,initial-scale=1'/>",
+        "  <style>html,body{margin:0;height:100%;background:#000;overflow:hidden;}canvas{display:block;}</style>",
+        "  <script src='https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js'></" + "script>",
+        "</head><body>",
+        "  <script>",
+        raw,
+        "  </" + "script>",
+        "</body></html>"
+      ].join("\\n");
+    }
+
+    return [
+      "<!doctype html>",
+      "<html><head><meta charset='utf-8'/><meta name='viewport' content='width=device-width,initial-scale=1'/></head>",
+      "<body>",
+      raw,
+      "</body></html>"
+    ].join("\\n");
+  }
+
+  function injectBridge(html){
+    const bridge = [
+      "<script>",
+      "(function(){",
+      "  function post(type,msg){ try{ parent.postMessage({type:type,message:msg}, '*'); }catch(e){} }",
+      "  post('SKETCH_READY','running');",
+      "  var _log=console.log,_err=console.error;",
+      "  console.log=function(){ try{ post('SKETCH_LOG', Array.from(arguments).map(String).join(' ')); }catch(e){} try{ _log.apply(console, arguments);}catch(e){} };",
+      "  console.error=function(){ try{ post('SKETCH_ERROR', Array.from(arguments).map(String).join(' ')); }catch(e){} try{ _err.apply(console, arguments);}catch(e){} };",
+      "  window.addEventListener('error', function(ev){ try{ post('SKETCH_ERROR', (ev&&ev.message)?ev.message:String(ev)); }catch(e){} });",
+      "  window.addEventListener('unhandledrejection', function(ev){ try{ var r=(ev&&ev.reason)?ev.reason:'Unhandled rejection'; post('SKETCH_ERROR', (r&&r.message)?r.message:String(r)); }catch(e){} });",
+      "})();",
+      "</" + "script>"
+    ].join("\\n");
+
+    const re = /<head[^>]*>/i;
+    if(re.test(html)) return html.replace(re, m => m + "\\n" + bridge + "\\n");
+    return bridge + "\\n" + html;
+  }
+
+  function runPreview(){
+    stopRecording();
+    cleanupLastBlob();
+    hideVideoPreview();
+    setStatus("warn","Running preview…","");
+
+    const raw = String(editorEl.value || "");
+    const html = injectBridge(buildRunnableHTML(raw));
+
+    previewFrame.srcdoc = "";
+    previewFrame.srcdoc = html;
+
+    setTimeout(() => {
+      if(statusText.textContent === "Running preview…"){
+        setStatus("warn","Preview running (no ready ping).","If blank: check errors");
+      }
+    }, 900);
+  }
+
+  function openPreviewInNewTab(){
+    const raw = String(editorEl.value || "");
+    const html = injectBridge(buildRunnableHTML(raw));
+    const blob = new Blob([html], {type:"text/html"});
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank", "noopener,noreferrer");
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+
+  function copyLinkToClipboard(){
+    const raw = String(editorEl.value || "");
+    const html = injectBridge(buildRunnableHTML(raw));
+    const dataUrl = "data:text/html;charset=utf-8," + encodeURIComponent(html);
+    if(navigator.clipboard?.writeText){
+      navigator.clipboard.writeText(dataUrl).then(
+        () => setStatus("good","Copied share link (data URL).","Note: can be large"),
+        () => setStatus("bad","Copy failed.","Clipboard not available")
+      );
+    }else{
+      setStatus("bad","Copy failed.","Clipboard not available");
+    }
+  }
+
+  function cleanupLastBlob(){
+    if(lastBlobUrl){
+      try{ URL.revokeObjectURL(lastBlobUrl); }catch(e){}
+    }
+    lastBlobUrl = null;
+    lastBlob = null;
+    downloadBtn.disabled = true;
+  }
+
+  function hideVideoPreview(){
+    videoShell.style.display = "none";
+    videoPreview.removeAttribute("src");
+    videoPreview.load();
+  }
+
+  function showVideoPreview(url){
+    videoShell.style.display = "block";
+    videoPreview.src = url;
+    videoPreview.load();
+  }
+
+  function openBlobInNewTab(){
+    if(!lastBlobUrl){
+      setStatus("bad","No WEBM to open.","Render first.");
+      return;
+    }
+    window.open(lastBlobUrl, "_blank", "noopener,noreferrer");
+    setStatus("good","Opened WEBM in new tab.","Use browser Save As if needed");
+  }
+
+  function findRecordableCanvas(){
+    try{
+      const doc = previewFrame.contentDocument;
+      if(!doc) return null;
+      return doc.querySelector("canvas");
+    }catch(e){
+      return null;
+    }
+  }
+
+  function pickBestMime(){
+    const candidates = ["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm"];
+    for(const c of candidates){
+      if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) return c;
+    }
+    return "";
+  }
+
+  function stopRecording(){
+    if(recordTimer){ clearTimeout(recordTimer); recordTimer = null; }
+    if(recorder){
+      try{ if(recorder.state !== "inactive") recorder.stop(); }catch(e){}
+    }
+    stopBtn.disabled = true;
+  }
+
+  async function renderWebM(){
+    cleanupLastBlob();
+    hideVideoPreview();
+
+    const fps = Math.max(1, parseInt(rFps.value,10) || 60);
+    const seconds = Math.max(1, parseInt(rSeconds.value,10) || 10);
+
+    const canvas = findRecordableCanvas();
+    if(!canvas){ setStatus("bad","No canvas found to record.","Run the sketch first."); return; }
+    if(!canvas.captureStream){ setStatus("bad","captureStream not supported.","Try Chrome desktop."); return; }
+    if(!window.MediaRecorder){ setStatus("bad","MediaRecorder not supported.","Try Chrome desktop."); return; }
+
+    setStatus("warn","Preparing recorder…", fps + "fps / " + seconds + "s");
+
+    const stream = canvas.captureStream(fps);
+    recordedChunks = [];
+
+    const mimeType = pickBestMime();
+    let rec;
+    try{
+      rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    }catch(e){
+      setStatus("bad","MediaRecorder init failed.", e?.message || String(e));
+      return;
+    }
+    recorder = rec;
+
+    recorder.ondataavailable = (ev) => {
+      if(ev.data && ev.data.size > 0) recordedChunks.push(ev.data);
+    };
+    recorder.onerror = (ev) => {
+      setStatus("bad","Recording error.", String(ev?.error || ev));
+      stopRecording();
+    };
+    recorder.onstop = () => {
+      try{
+        const finalType = mimeType || "video/webm";
+        const blob = new Blob(recordedChunks, { type: finalType });
+        lastBlob = blob;
+        lastBlobUrl = URL.createObjectURL(blob);
+        downloadBtn.disabled = false;
+        showVideoPreview(lastBlobUrl);
+        setStatus("good","Render complete.","WEBM ready (" + Math.round(blob.size/1024/1024) + " MB)");
+      }catch(e){
+        setStatus("bad","Failed to build WEBM.", e?.message || String(e));
+      }
+      renderBtn.disabled = false;
+      stopBtn.disabled = true;
+      recorder = null;
+    };
+
+    renderBtn.disabled = true;
+    stopBtn.disabled = false;
+
+    try{
+      recorder.start(200);
+    }catch(e){
+      setStatus("bad","Failed to start recording.", e?.message || String(e));
+      renderBtn.disabled = false;
+      stopBtn.disabled = true;
+      recorder = null;
+      return;
+    }
+
+    setStatus("warn","Recording…", seconds + "s");
+    recordTimer = window.setTimeout(() => {
+      setStatus("warn","Stopping…","done");
+      stopRecording();
+    }, seconds * 1000);
+  }
+
+  function downloadWebM(){
+    if(!lastBlob || !lastBlobUrl){
+      setStatus("bad","No WEBM to download.","Render first.");
+      return;
+    }
+    const p = getActive();
+    const nm = (p?.name || "render").replace(/[^\w\-]+/g,"_");
+    const filename = nm + ".webm";
+
+    try{
+      const a = document.createElement("a");
+      a.href = lastBlobUrl;
+      a.download = filename;
+      a.rel = "noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setStatus("good","Download triggered.", filename);
+    }catch(e){
+      setStatus("bad","Download failed.", e?.message || String(e));
+    }
+  }
+
+  const DEFAULT_LAYOUT = {
+    wLeft: 280,
+    wMid:  720,
+    wRight: 520,
+    collapsedLeft: false,
+    collapsedMid: false,
+    collapsedRight: false,
+    lastNonCollapsed: { wLeft:280, wMid:720, wRight:520 }
+  };
+
+  function loadLayout(){
+    try{
+      const raw = localStorage.getItem(LS_LAYOUT);
+      if(!raw) return JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
+      const obj = JSON.parse(raw);
+      return Object.assign(JSON.parse(JSON.stringify(DEFAULT_LAYOUT)), obj);
+    }catch(e){
+      return JSON.parse(JSON.stringify(DEFAULT_LAYOUT));
+    }
+  }
+  function saveLayout(){ localStorage.setItem(LS_LAYOUT, JSON.stringify(layout)); }
+  let layout = loadLayout();
+
+  function updatePanelToggleUI(){
+    ptLeft.classList.toggle("on", !layout.collapsedLeft);
+    ptMid.classList.toggle("on", !layout.collapsedMid);
+    ptRight.classList.toggle("on", !layout.collapsedRight);
+  }
+
+  function applyLayout(){
+    const total = workEl.getBoundingClientRect().width;
+    const barW = 20;
+
+    let wL = layout.collapsedLeft ? 0 : layout.wLeft;
+    let wM = layout.collapsedMid ? 0 : layout.wMid;
+    let wR = layout.collapsedRight ? 0 : layout.wRight;
+
+    let activeCount = (layout.collapsedLeft?0:1) + (layout.collapsedMid?0:1) + (layout.collapsedRight?0:1);
+    if(activeCount === 0){
+      layout.collapsedMid = false;
+      wM = layout.wMid;
+      activeCount = 1;
+    }
+
+    if(activeCount === 1){
+      if(!layout.collapsedLeft){ wL = total - barW; wM = 0; wR = 0; }
+      if(!layout.collapsedMid){  wM = total - barW; wL = 0; wR = 0; }
+      if(!layout.collapsedRight){ wR = total - barW; wL = 0; wM = 0; }
+    }else{
+      let available = total - barW;
+      if(available < 300) available = 300;
+
+      const minLeft = 180;
+      const minMid = 320;
+      const minRight = 360;
+
+      const parts = [
+        {key:"L", w:wL, min:minLeft, on:!layout.collapsedLeft},
+        {key:"M", w:wM, min:minMid,  on:!layout.collapsedMid},
+        {key:"R", w:wR, min:minRight,on:!layout.collapsedRight}
+      ].filter(p => p.on);
+
+      let sum = parts.reduce((s,p)=>s+p.w,0);
+      if(sum <= 0){
+        const each = Math.floor(available / parts.length);
+        parts.forEach(p => p.w = each);
+        sum = parts.reduce((s,p)=>s+p.w,0);
+      }
+
+      if(sum !== available){
+        const scale = available / sum;
+        parts.forEach(p => p.w = Math.floor(p.w * scale));
+      }
+
+      for(let iter=0; iter<4; iter++){
+        let deficit = 0;
+        for(const p of parts){
+          if(p.w < p.min){ deficit += (p.min - p.w); p.w = p.min; }
+        }
+        if(deficit <= 0) break;
+        for(let k=0; k<deficit; k++){
+          const donor = parts.slice().sort((a,b)=>b.w-a.w)[0];
+          if(donor.w > donor.min) donor.w -= 1;
+        }
+      }
+
+      for(const p of parts){
+        if(p.key==="L") wL = p.w;
+        if(p.key==="M") wM = p.w;
+        if(p.key==="R") wR = p.w;
+      }
+
+      if(layout.collapsedLeft) wL = 0;
+      if(layout.collapsedMid) wM = 0;
+      if(layout.collapsedRight) wR = 0;
+    }
+
+    workEl.style.setProperty("--wLeft",  wL + "px");
+    workEl.style.setProperty("--wMid",   wM + "px");
+    workEl.style.setProperty("--wRight", wR + "px");
+
+    resLM.style.display = (layout.collapsedLeft || layout.collapsedMid) ? "none" : "block";
+    resMR.style.display = (layout.collapsedMid || layout.collapsedRight) ? "none" : "block";
+
+    updatePanelToggleUI();
+  }
+
+  function startResize(which, clientX){
+    document.body.classList.add("resizing");
+    const rect = workEl.getBoundingClientRect();
+    const startX = clientX;
+    const start = { wLeft: layout.wLeft, wMid: layout.wMid, wRight: layout.wRight };
+    const barW = 20;
+    const available = rect.width - barW;
+
+    function onMove(e){
+      const dx = e.clientX - startX;
+
+      if(which === "LM"){
+        let newLeft = start.wLeft + dx;
+        let newMid  = start.wMid - dx;
+
+        newLeft = clamp(newLeft, 180, available - 320 - (layout.collapsedRight ? 0 : 360));
+        newMid  = clamp(newMid,  320, available - 180 - (layout.collapsedRight ? 0 : 360));
+
+        layout.wLeft = newLeft;
+        layout.wMid  = newMid;
+      }
+
+      if(which === "MR"){
+        let newMid = start.wMid + dx;
+        let newRight = start.wRight - dx;
+
+        newRight = clamp(newRight, 360, available - (layout.collapsedLeft ? 0 : 180) - 320);
+        newMid   = clamp(newMid,   320, available - (layout.collapsedLeft ? 0 : 180) - 360);
+
+        layout.wMid   = newMid;
+        layout.wRight = newRight;
+      }
+
+      layout.lastNonCollapsed = { wLeft: layout.wLeft, wMid: layout.wMid, wRight: layout.wRight };
+      applyLayout();
+      saveLayout();
+    }
+
+    function onUp(){
+      document.body.classList.remove("resizing");
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    }
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  }
+
+  function togglePane(pane){
+    if(!layout.collapsedLeft && !layout.collapsedMid && !layout.collapsedRight){
+      layout.lastNonCollapsed = { wLeft: layout.wLeft, wMid: layout.wMid, wRight: layout.wRight };
+    }
+
+    if(pane === "left") layout.collapsedLeft = !layout.collapsedLeft;
+    if(pane === "mid") layout.collapsedMid = !layout.collapsedMid;
+    if(pane === "right") layout.collapsedRight = !layout.collapsedRight;
+
+    // keep at least one panel visible
+    const activeCount = (layout.collapsedLeft?0:1) + (layout.collapsedMid?0:1) + (layout.collapsedRight?0:1);
+    if(activeCount === 0){
+      layout.collapsedMid = false;
+    }
+
+    // if all are open, restore last known widths
+    if(!layout.collapsedLeft && !layout.collapsedMid && !layout.collapsedRight){
+      layout.wLeft  = layout.lastNonCollapsed.wLeft;
+      layout.wMid   = layout.lastNonCollapsed.wMid;
+      layout.wRight = layout.lastNonCollapsed.wRight;
+    }
+
+    applyLayout();
+    saveLayout();
+  }
+
+  function init(){
+    ensureSomeProject();
+    if(!activeId || !projects.find(p => p.id === activeId)){
+      activeId = projects[0].id;
+      localStorage.setItem(LS_ACTIVE, activeId);
+    }
+
+    renderTree();
+    selectProject(activeId);
+
+    el("newBtn").onclick = createProject;
+    el("saveBtn").onclick = saveActive;
+    el("runBtn").onclick = runPreview;
+    el("deleteBtn").onclick = deleteProject;
+    el("wipeBtn").onclick = wipeAll;
+
+    el("exportBtn").onclick = exportActive;
+    el("importBtn").onclick = () => el("importFile").click();
+    el("importFile").addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      if(f) importProjectFromFile(f);
+      e.target.value = "";
+    });
+
+    el("openNewTabBtn").onclick = openPreviewInNewTab;
+    el("copyLinkBtn").onclick = copyLinkToClipboard;
+
+    renderBtn.onclick = renderWebM;
+    downloadBtn.onclick = downloadWebM;
+    stopBtn.onclick = stopRecording;
+
+    openBlobBtn.onclick = openBlobInNewTab;
+
+    el("collapseLeft").onclick = () => togglePane("left");
+    el("collapseMid").onclick  = () => togglePane("mid");
+    el("collapseRight").onclick = () => togglePane("right");
+
+    // Header toggles ALWAYS visible → can always reopen
+    ptLeft.onclick  = () => togglePane("left");
+    ptMid.onclick   = () => togglePane("mid");
+    ptRight.onclick = () => togglePane("right");
+
+    resLM.addEventListener("mousedown", (e) => startResize("LM", e.clientX));
+    resMR.addEventListener("mousedown", (e) => startResize("MR", e.clientX));
+
+    nameEl.addEventListener("input", () => {
+      const p = getActive();
+      if(!p) return;
+      p.name = (nameEl.value || "untitled").trim();
+      renderTree();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      const isMac = String(navigator.platform||"").toUpperCase().includes("MAC");
+      const mod = isMac ? e.metaKey : e.ctrlKey;
+      if(mod && String(e.key||"").toLowerCase() === "s"){
+        e.preventDefault();
+        saveActive();
+      }
+    });
+
+    applyLayout();
+    window.addEventListener("resize", applyLayout);
+
+    setStatus("good","Ready.","Use header toggles to reopen panels");
+  }
+
+  init();
+</script>
+</body>
+</html>

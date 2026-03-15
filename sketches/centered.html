@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Centered NFT - Screen Agnostic</title>
+  <style>
+    /* This CSS handles the "Screen Agnostic" centering and scaling */
+    body { 
+      margin: 0; 
+      padding: 0; 
+      background: #1a1a1a; /* Dark background to frame the art */
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; 
+      width: 100vw;
+      overflow: hidden; 
+    }
+    canvas { 
+      /* This keeps the canvas a perfect square and fits it to any screen */
+      max-width: 95vmin; 
+      max-height: 95vmin; 
+      object-fit: contain;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      background: white;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+</head>
+<body>
+<script>
+let seed, shapes = [], features = {};
+const VIRTUAL_RES = 1000; // The "Internal" resolution that never changes
+
+const PALETTES = [
+  { name: "Solar", colors: [[0, 100, 100, 30], [45, 100, 100, 30]] },
+  { name: "Glacier", colors: [[180, 100, 100, 30], [240, 100, 100, 30]] },
+  { name: "Nebula", colors: [[300, 100, 100, 30], [60, 100, 100, 30]] }
+];
+
+function setup() {
+  // 1. Lock the seed immediately
+  seed = floor(random(1000000));
+  randomSeed(seed);
+  
+  // 2. Create a fixed-size canvas
+  // We use 1000x1000 so the math is always the same
+  createCanvas(VIRTUAL_RES, VIRTUAL_RES, WEBGL);
+  colorMode(HSB, 360, 100, 100, 100);
+  pixelDensity(2); 
+
+  // 3. Generate the data based on the FIXED 1000x1000 scale
+  generateArtData();
+  
+  console.log("%c NFT METADATA ", "background: #222; color: #bada55; pading: 5px;");
+  console.table(features);
+  
+  noLoop();
+}
+
+function generateArtData() {
+  let totalArea = 0;
+  let paletteCounts = {};
+  let shapeCount = floor(random(5, 12));
+
+  for (let i = 0; i < shapeCount; i++) {
+    // Math is now relative to VIRTUAL_RES (1000), not the window
+    let w = random(50, 850);
+    let h = random(50, 850);
+    let pIndex = floor(random(PALETTES.length));
+    let palette = PALETTES[pIndex];
+
+    shapes.push({ w, h, palette });
+
+    totalArea += (w * h);
+    paletteCounts[palette.name] = (paletteCounts[palette.name] || 0) + 1;
+  }
+
+  let dominant = Object.keys(paletteCounts).reduce((a, b) => paletteCounts[a] > paletteCounts[b] ? a : b);
+
+  features = {
+    "Seed": seed,
+    "Dominant Palette": dominant,
+    "Shape Count": shapeCount,
+    "Density": totalArea > (VIRTUAL_RES * VIRTUAL_RES * 0.8) ? "Heavy" : "Light",
+    "Monochrome": Object.keys(paletteCounts).length === 1 ? "Yes" : "No"
+  };
+}
+
+function draw() {
+  background(255);
+  
+  // In WEBGL, (0,0) is the center of the canvas automatically
+  for (let s of shapes) {
+    push();
+    let c1 = color(...s.palette.colors[0]);
+    let c2 = color(...s.palette.colors[1]);
+    
+    noStroke();
+    beginShape();
+    fill(c1); vertex(-s.w / 2, -s.h / 2, 0);
+    fill(c1); vertex(s.w / 2, -s.h / 2, 0);
+    fill(c2); vertex(s.w / 2, s.h / 2, 0);
+    fill(c2); vertex(-s.w / 2, s.h / 2, 0);
+    endShape(CLOSE);
+    pop();
+  }
+}
+
+// Press 'S' to save the high-res 1000x1000 image
+function keyPressed() {
+  if (key === 's' || key === 'S') saveCanvas('NFT_' + seed, 'png');
+}
+</script>
+</body>
+</html>

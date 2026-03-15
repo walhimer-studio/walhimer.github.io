@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Artwork Rewrite Start — Three.js</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+let city = [];
+let cols = 1;
+let rows = 15;
+let spacing = 175;
+let palette = [310, 45, 30, 210, 270];
+let camZ = 2000;
+let targetCamZ = 2000;
+let camSpeed = 0.5;
+let gradientTextures = [];
+let frameCountCustom = 0;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(1, 1, 1);
+
+const camera = new THREE.PerspectiveCamera(45, 1536 / 864, 1, 10000);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true
+});
+renderer.setSize(1536, 864);
+renderer.setPixelRatio(4);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+scene.add(ambient);
+
+const directional = new THREE.DirectionalLight(0xffffff, 1.0);
+scene.add(directional);
+
+function randomValue(a, b) {
+  return Math.random() * (b - a) + a;
+}
+
+function randomFromArray(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function lerpValue(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function mapValue(value, inMin, inMax, outMin, outMax, clampResult = false) {
+  let t = (value - inMin) / (inMax - inMin);
+  let result = outMin + (outMax - outMin) * t;
+
+  if (!clampResult) return result;
+
+  if (outMin < outMax) {
+    return Math.max(outMin, Math.min(outMax, result));
+  } else {
+    return Math.max(outMax, Math.min(outMin, result));
+  }
+}
+
+function hsbToRgb(h, s, v) {
+  s /= 100;
+  v /= 100;
+
+  let c = v * s;
+  let hh = h / 60;
+  let x = c * (1 - Math.abs((hh % 2) - 1));
+
+  let r = 0;
+  let g = 0;
+  let b = 0;
+
+  if (hh >= 0 && hh < 1) {
+    r = c; g = x; b = 0;
+  } else if (hh >= 1 && hh < 2) {
+    r = x; g = c; b = 0;
+  } else if (hh >= 2 && hh < 3) {
+    r = 0; g = c; b = x;
+  } else if (hh >= 3 && hh < 4) {
+    r = 0; g = x; b = c;
+  } else if (hh >= 4 && hh < 5) {
+    r = x; g = 0; b = c;
+  } else {
+    r = c; g = 0; b = x;
+  }
+
+  let m = v - c;
+
+  return {
+    r: r + m,
+    g: g + m,
+    b: b + m
+  };
+}
+
+function makeGradientTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 256;
+
+  const ctx = canvas.getContext("2d");
+
+  const hue1 = randomFromArray(palette);
+  const hue2 = randomFromArray(palette);
+  const sat = randomValue(80, 100);
+  const bri = randomValue(80, 100);
+
+  for (let y = 0; y < canvas.height; y++) {
+    const inter = mapValue(y, 0, canvas.height, 0, 1);
+    const hBlend = lerpValue(hue1, hue2, inter);
+    const rgb = hsbToRgb(hBlend, sat, bri);
+
+    ctx.strokeStyle = `rgba(${Math.round(rgb.r * 255)}, ${Math.round(rgb.g * 255)}, ${Math.round(rgb.b * 255)}, 1)`;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearFilter;
+  tex.needsUpdate = true;
+
+  return tex;
+}
+
+for (let i = 0; i < 10; i++) {
+  gradientTextures.push(makeGradientTexture());
+}
+
+for (let z = -rows / 2; z < rows / 2; z++) {
+  let w = randomValue(200, 400);
+  let d = randomValue(200, 400);
+  let h = randomValue(300, 600);
+  let pulseSpeed = randomValue(0.01, 0.03);
+  let pulseOffset = randomValue(0, Math.PI * 2);
+  let tex = randomFromArray(gradientTextures);
+
+  const geometry = new THREE.BoxGeometry(w, h, d);
+  const material = new THREE.MeshPhongMaterial({
+    map: tex,
+    transparent: true,
+    opacity: 1
+  });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
+
+  city.push({
+    x: 0,
+    z: z * spacing,
+    w,
+    h,
+    d,
+    tex,
+    pulseSpeed,
+    pulseOffset,
+    mesh,
+    baseH: h
+  });
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  frameCountCustom++;
+
+  targetCamZ -= camSpeed;
+  camZ = lerpValue(camZ, targetCamZ, 0.05);
+
+  let camX = Math.sin(frameCountCustom * 0.005) * 50;
+  let camY = 50;
+  let camTargetZ = camZ - 100;
+
+  camera.position.set(camX, camY, camZ);
+  camera.lookAt(0, camY, camTargetZ);
+
+  directional.position.set(
+    Math.sin(frameCountCustom * 0.01),
+    -1,
+    Math.cos(frameCountCustom * 0.01)
+  );
+
+  for (let b of city) {
+    let distanceToCam = Math.abs(b.z - camZ);
+    let alpha = mapValue(distanceToCam, 0, 1000, 1, 0, true);
+    let pulse = 1 + 0.05 * Math.sin(frameCountCustom * b.pulseSpeed + b.pulseOffset);
+    let h = b.baseH * pulse;
+    let baseY = Math.max(160 - h / 2, 0);
+
+    b.mesh.position.set(b.x, baseY, b.z);
+    b.mesh.scale.set(1, h / b.baseH, 1);
+    b.mesh.material.opacity = alpha;
+  }
+
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>

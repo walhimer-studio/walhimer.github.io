@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abstract Technical Drawing Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    color: #e0e0e0;
+    font-family: 'Courier Prime', monospace;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  #sidebar {
+    width: 280px;
+    background: #0a0a0a;
+    border-right: 1px solid #333;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    color: #666;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .value-display {
+    float: right;
+    color: #ccc;
+  }
+
+  input[type="range"] {
+    width: 100%;
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  button {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background: #e0e0e0;
+    transform: translateY(-1px);
+  }
+
+  .divider {
+    height: 1px;
+    background: #333;
+    margin: 8px 0;
+  }
+
+  #canvas-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+  }
+
+  canvas { 
+    display: block;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div>
+    <h1>Technical Drawings</h1>
+    <div class="subtitle">Abstract Architecture Generator</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Canvas Size <span class="value-display" id="sizeVal">800</span></label>
+    <input type="range" id="canvasSize" min="400" max="1200" value="800" step="50">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Complexity <span class="value-display" id="compVal">7</span></label>
+    <input type="range" id="complexity" min="3" max="15" value="7">
+  </div>
+
+  <div class="control-group">
+    <label>Line Weight <span class="value-display" id="lwVal">1.5</span></label>
+    <input type="range" id="lineWeight" min="0.5" max="3" value="1.5" step="0.1">
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="control-group">
+    <label>Elements</label>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showCircles" checked>
+      <label for="showCircles" style="text-transform: none;">Circles</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showCubes" checked>
+      <label for="showCubes" style="text-transform: none;">Cubes</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showArrows" checked>
+      <label for="showArrows" style="text-transform: none;">Arrows</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showZigzags" checked>
+      <label for="showZigzags" style="text-transform: none;">Zigzags</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showDots" checked>
+      <label for="showDots" style="text-transform: none;">Dots</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showText" checked>
+      <label for="showText" style="text-transform: none;">Text Labels</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showGrid" checked>
+      <label for="showGrid" style="text-transform: none;">Grid Lines</label>
+    </div>
+    <div class="checkbox-group">
+      <input type="checkbox" id="showElevation" checked>
+      <label for="showElevation" style="text-transform: none;">Elevation Line</label>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <button onclick="generateNew()">⟳ Generate New</button>
+  <button onclick="saveCanvas('technical-drawing', 'png')">⬇ Download PNG</button>
+</div>
+
+<div id="canvas-container"></div>
+
+<script>
+let cnvSize = 800;
+let elements = [];
+let elevationY = 0; // Store elevation line position
+
+// Technical words for labels
+const techWords = [
+  "VOID", "SUSPENDED", "FLOW", "FIELD", "ZONE", "AXIS",
+  "VECTOR", "NODE", "CONNECTION", "CIRCUIT", "MODULE",
+  "STRUCTURE", "TENSION", "BALANCE", "SEQUENCE", "THRESHOLD",
+  "GRADIENT", "INTERFACE", "MEMBRANE", "PATHWAY", "GRID"
+];
+
+function setup() {
+  cnvSize = int(document.getElementById('canvasSize').value);
+  let canvas = createCanvas(cnvSize, cnvSize);
+  canvas.parent('canvas-container');
+  pixelDensity(2);
+  generateNew();
+}
+
+function generateNew() {
+  cnvSize = int(document.getElementById('canvasSize').value);
+  resizeCanvas(cnvSize, cnvSize);
+  
+  background(0);
+  stroke(255);
+  strokeWeight(float(document.getElementById('lineWeight').value));
+  noFill();
+  
+  let complexity = int(document.getElementById('complexity').value);
+  
+  // Draw grid if enabled
+  if (document.getElementById('showGrid').checked) {
+    drawGrid();
+  }
+  
+  // Draw elevation line
+  elevationY = cnvSize * 0.7; // Position at 70% down
+  if (document.getElementById('showElevation').checked) {
+    drawElevationLine();
+  }
+  
+  // Generate abstract elements
+  elements = [];
+  
+  for (let i = 0; i < complexity; i++) {
+    let type = random(['circle', 'oval', 'rect', 'line', 'curve', 'perspective']);
+    
+    switch(type) {
+      case 'circle':
+        if (document.getElementById('showCircles').checked) drawCircleCluster();
+        break;
+      case 'oval':
+        if (document.getElementById('showCircles').checked) drawOvalShape();
+        break;
+      case 'rect':
+        drawRectPattern();
+        break;
+      case 'line':
+        drawLinearPattern();
+        break;
+      case 'curve':
+        drawCurvePattern();
+        break;
+      case 'perspective':
+        drawPerspectiveLines();
+        break;
+    }
+  }
+  
+  // Add cubes
+  if (document.getElementById('showCubes').checked) {
+    for (let i = 0; i < random(2, 5); i++) {
+      drawIsometricCube();
+    }
+  }
+  
+  // Add decorative elements
+  if (document.getElementById('showArrows').checked) {
+    for (let i = 0; i < random(3, 8); i++) {
+      drawArrow();
+    }
+  }
+  
+  if (document.getElementById('showZigzags').checked) {
+    for (let i = 0; i < random(2, 5); i++) {
+      drawZigzag();
+    }
+  }
+  
+  if (document.getElementById('showDots').checked) {
+    for (let i = 0; i < random(10, 30); i++) {
+      drawDotPattern();
+    }
+  }
+  
+  if (document.getElementById('showText').checked) {
+    for (let i = 0; i < random(2, 5); i++) {
+      drawTextLabel();
+    }
+  }
+}
+
+function drawGrid() {
+  push();
+  stroke(255, 40);
+  strokeWeight(0.5);
+  
+  let spacing = cnvSize / random(8, 12);
+  
+  // Vertical lines
+  for (let x = 0; x < cnvSize; x += spacing) {
+    line(x, 0, x, cnvSize);
+  }
+  
+  // Horizontal lines
+  for (let y = 0; y < cnvSize; y += spacing) {
+    line(0, y, cnvSize, y);
+  }
+  
+  pop();
+}
+
+function drawElevationLine() {
+  push();
+  strokeWeight(float(document.getElementById('lineWeight').value) * 1.5);
+  stroke(255);
+  
+  // Main elevation line
+  line(0, elevationY, cnvSize, elevationY);
+  
+  // Add tick marks every so often
+  let tickSpacing = cnvSize / 8;
+  for (let x = tickSpacing; x < cnvSize; x += tickSpacing) {
+    line(x, elevationY - 5, x, elevationY + 5);
+  }
+  
+  // Add small hatching below to indicate ground
+  stroke(255, 100);
+  strokeWeight(0.5);
+  let hatchSpacing = 15;
+  for (let x = 0; x < cnvSize; x += hatchSpacing) {
+    line(x, elevationY + 2, x - 8, elevationY + 12);
+  }
+  
+  pop();
+}
+
+function drawCircleCluster() {
+  let x = random(cnvSize * 0.2, cnvSize * 0.8);
+  let count = int(random(2, 6));
+  
+  // Sometimes position on elevation line
+  let y;
+  let onElevation = document.getElementById('showElevation').checked && random() < 0.3;
+  
+  push();
+  strokeWeight(float(document.getElementById('lineWeight').value));
+  
+  for (let i = 0; i < count; i++) {
+    let r = random(20, 80);
+    let offsetX = random(-30, 30);
+    let offsetY = random(-30, 30);
+    
+    if (onElevation) {
+      y = elevationY - r/2;
+      offsetY = random(-10, 0); // Keep them near the line
+    } else {
+      y = random(cnvSize * 0.2, cnvSize * 0.8);
+    }
+    
+    circle(x + offsetX, y + offsetY, r);
+    
+    // Sometimes add a filled circle
+    if (random() < 0.3) {
+      fill(200);
+      noStroke();
+      circle(x + offsetX, y + offsetY, r * 0.6);
+      noFill();
+      stroke(255);
+    }
+  }
+  
+  pop();
+}
+
+function drawOvalShape() {
+  let x = random(cnvSize * 0.2, cnvSize * 0.8);
+  let y = random(cnvSize * 0.2, cnvSize * 0.8);
+  
+  push();
+  translate(x, y);
+  rotate(random(TWO_PI));
+  
+  let w = random(40, 120);
+  let h = random(20, 60);
+  ellipse(0, 0, w, h);
+  
+  pop();
+}
+
+function drawRectPattern() {
+  let x = random(cnvSize * 0.1, cnvSize * 0.9);
+  let w = random(50, 150);
+  let h = random(50, 150);
+  
+  // Sometimes make it sit on elevation line
+  let y;
+  if (document.getElementById('showElevation').checked && random() < 0.5) {
+    y = elevationY - h;
+  } else {
+    y = random(cnvSize * 0.1, cnvSize * 0.9);
+  }
+  
+  push();
+  rect(x, y, w, h);
+  
+  // Add internal structure
+  if (random() < 0.5) {
+    line(x, y + h/2, x + w, y + h/2);
+  }
+  if (random() < 0.5) {
+    line(x + w/2, y, x + w/2, y + h);
+  }
+  
+  pop();
+}
+
+function drawLinearPattern() {
+  let x1 = random(cnvSize * 0.1, cnvSize * 0.9);
+  let y1 = random(cnvSize * 0.1, cnvSize * 0.9);
+  let x2 = random(cnvSize * 0.1, cnvSize * 0.9);
+  let y2 = random(cnvSize * 0.1, cnvSize * 0.9);
+  
+  push();
+  line(x1, y1, x2, y2);
+  
+  // Add parallel lines
+  if (random() < 0.6) {
+    let angle = atan2(y2 - y1, x2 - x1);
+    let perpAngle = angle + PI/2;
+    let spacing = 10;
+    
+    for (let i = 1; i <= 2; i++) {
+      let ox = cos(perpAngle) * spacing * i;
+      let oy = sin(perpAngle) * spacing * i;
+      stroke(255, 150);
+      line(x1 + ox, y1 + oy, x2 + ox, y2 + oy);
+    }
+  }
+  
+  pop();
+}
+
+function drawCurvePattern() {
+  let x1 = random(cnvSize * 0.1, cnvSize * 0.9);
+  let y1 = random(cnvSize * 0.1, cnvSize * 0.9);
+  let x2 = random(cnvSize * 0.1, cnvSize * 0.9);
+  let y2 = random(cnvSize * 0.1, cnvSize * 0.9);
+  
+  let cx = (x1 + x2) / 2 + random(-100, 100);
+  let cy = (y1 + y2) / 2 + random(-100, 100);
+  
+  push();
+  noFill();
+  beginShape();
+  vertex(x1, y1);
+  quadraticVertex(cx, cy, x2, y2);
+  endShape();
+  pop();
+}
+
+function drawPerspectiveLines() {
+  let vanishX = random(cnvSize * 0.3, cnvSize * 0.7);
+  let vanishY = random(cnvSize * 0.3, cnvSize * 0.7);
+  
+  push();
+  stroke(255, 120);
+  
+  for (let i = 0; i < random(3, 6); i++) {
+    let startX = random(cnvSize);
+    let startY = random(cnvSize);
+    line(startX, startY, vanishX, vanishY);
+  }
+  
+  pop();
+}
+
+function drawIsometricCube() {
+  let x = random(cnvSize * 0.2, cnvSize * 0.8);
+  let size = random(30, 80);
+  
+  // Position cube so it sits on elevation line
+  let y = elevationY - size;
+  
+  // Isometric angles
+  let angle1 = radians(30);  // Right face
+  let angle2 = radians(150); // Left face
+  
+  push();
+  strokeWeight(float(document.getElementById('lineWeight').value));
+  
+  // Calculate vertices
+  let topCenter = { x: x, y: y };
+  let topRight = { x: x + cos(angle1) * size, y: y + sin(angle1) * size };
+  let topLeft = { x: x + cos(angle2) * size, y: y + sin(angle2) * size };
+  
+  let bottomCenter = { x: x, y: y + size };
+  let bottomRight = { x: topRight.x, y: topRight.y + size };
+  let bottomLeft = { x: topLeft.x, y: topLeft.y + size };
+  
+  // Draw cube edges
+  // Top face
+  line(topCenter.x, topCenter.y, topRight.x, topRight.y);
+  line(topCenter.x, topCenter.y, topLeft.x, topLeft.y);
+  line(topLeft.x, topLeft.y, x + cos(angle1) * size + cos(angle2) * size, 
+       y + sin(angle1) * size + sin(angle2) * size);
+  line(topRight.x, topRight.y, x + cos(angle1) * size + cos(angle2) * size, 
+       y + sin(angle1) * size + sin(angle2) * size);
+  
+  // Vertical edges
+  line(topCenter.x, topCenter.y, bottomCenter.x, bottomCenter.y);
+  line(topRight.x, topRight.y, bottomRight.x, bottomRight.y);
+  line(topLeft.x, topLeft.y, bottomLeft.x, bottomLeft.y);
+  
+  // Bottom edges (only visible ones)
+  line(bottomCenter.x, bottomCenter.y, bottomRight.x, bottomRight.y);
+  line(bottomCenter.x, bottomCenter.y, bottomLeft.x, bottomLeft.y);
+  
+  // Sometimes fill one face
+  if (random() < 0.4) {
+    fill(100);
+    noStroke();
+    beginShape();
+    vertex(topRight.x, topRight.y);
+    vertex(bottomRight.x, bottomRight.y);
+    vertex(bottomCenter.x, bottomCenter.y);
+    vertex(topCenter.x, topCenter.y);
+    endShape(CLOSE);
+    noFill();
+    stroke(255);
+    strokeWeight(float(document.getElementById('lineWeight').value));
+  }
+  
+  pop();
+}
+
+function drawArrow() {
+  let x1 = random(cnvSize * 0.2, cnvSize * 0.8);
+  let y1 = random(cnvSize * 0.2, cnvSize * 0.8);
+  let len = random(40, 100);
+  let angle = random(TWO_PI);
+  
+  let x2 = x1 + cos(angle) * len;
+  let y2 = y1 + sin(angle) * len;
+  
+  push();
+  stroke(255);
+  strokeWeight(float(document.getElementById('lineWeight').value));
+  
+  // Arrow shaft
+  line(x1, y1, x2, y2);
+  
+  // Arrowhead
+  let arrowSize = 12;
+  let arrowAngle = PI / 6;
+  
+  line(x2, y2, 
+       x2 - arrowSize * cos(angle - arrowAngle), 
+       y2 - arrowSize * sin(angle - arrowAngle));
+  line(x2, y2, 
+       x2 - arrowSize * cos(angle + arrowAngle), 
+       y2 - arrowSize * sin(angle + arrowAngle));
+  
+  pop();
+}
+
+function drawZigzag() {
+  let x = random(cnvSize * 0.2, cnvSize * 0.8);
+  let y = random(cnvSize * 0.2, cnvSize * 0.8);
+  let isVertical = random() < 0.5;
+  let count = int(random(5, 12));
+  let amplitude = random(8, 15);
+  let spacing = random(5, 12);
+  
+  push();
+  noFill();
+  beginShape();
+  
+  for (let i = 0; i < count; i++) {
+    if (isVertical) {
+      vertex(x + (i % 2 === 0 ? amplitude : -amplitude), y + i * spacing);
+    } else {
+      vertex(x + i * spacing, y + (i % 2 === 0 ? amplitude : -amplitude));
+    }
+  }
+  
+  endShape();
+  pop();
+}
+
+function drawDotPattern() {
+  let x = random(cnvSize * 0.1, cnvSize * 0.9);
+  let y = random(cnvSize * 0.1, cnvSize * 0.9);
+  let count = int(random(3, 8));
+  let isVertical = random() < 0.5;
+  
+  push();
+  fill(200);
+  noStroke();
+  
+  for (let i = 0; i < count; i++) {
+    let spacing = 8;
+    if (isVertical) {
+      circle(x, y + i * spacing, 4);
+    } else {
+      circle(x + i * spacing, y, 4);
+    }
+  }
+  
+  pop();
+}
+
+function drawTextLabel() {
+  let x = random(cnvSize * 0.1, cnvSize * 0.8);
+  let y = random(cnvSize * 0.1, cnvSize * 0.9);
+  let word = random(techWords);
+  
+  push();
+  fill(255);
+  noStroke();
+  textFont('Courier Prime');
+  textSize(random(10, 14));
+  text(word, x, y);
+  
+  // Sometimes add underline
+  if (random() < 0.3) {
+    stroke(255);
+    strokeWeight(0.5);
+    let w = textWidth(word);
+    line(x, y + 2, x + w, y + 2);
+  }
+  
+  pop();
+}
+
+// Controls
+function bindSlider(id, displayId) {
+  let el = document.getElementById(id);
+  let disp = document.getElementById(displayId);
+  if (el && disp) {
+    el.addEventListener('input', () => { 
+      disp.textContent = el.value;
+    });
+  }
+}
+
+bindSlider('canvasSize', 'sizeVal');
+bindSlider('complexity', 'compVal');
+bindSlider('lineWeight', 'lwVal');
+
+// Regenerate on checkbox change
+['showCircles', 'showCubes', 'showArrows', 'showZigzags', 'showDots', 'showText', 'showGrid', 'showElevation'].forEach(id => {
+  document.getElementById(id).addEventListener('change', generateNew);
+});
+
+// Regenerate on slider change
+['complexity', 'lineWeight'].forEach(id => {
+  document.getElementById(id).addEventListener('input', generateNew);
+});
+</script>
+
+</body>
+</html>

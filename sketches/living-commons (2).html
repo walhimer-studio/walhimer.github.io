@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Living Commons - Mark Walhimer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+            font-family: 'Georgia', serif;
+        }
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-align: center;
+            font-size: 28px;
+            opacity: 0;
+            transition: opacity 1.5s;
+            pointer-events: none;
+            max-width: 80%;
+            line-height: 1.8;
+            text-shadow: 0 0 30px rgba(255,255,255,0.8);
+            font-weight: 300;
+        }
+        #message.show {
+            opacity: 1;
+        }
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.9);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-width: 380px;
+            line-height: 1.6;
+            background: rgba(0,0,0,0.7);
+            padding: 18px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        #info h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            color: #00ffcc;
+            letter-spacing: 1px;
+        }
+        #stats {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: rgba(255,255,255,0.9);
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            text-align: right;
+            background: rgba(0,0,0,0.7);
+            padding: 18px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 10px;
+            margin-bottom: 3px;
+        }
+        .stat-number {
+            font-size: 26px;
+            color: #00ffcc;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="message"></div>
+    <div id="info">
+        <h3>THE LIVING COMMONS</h3>
+        <div><strong>A Civic Operating System</strong></div>
+        <div style="margin-top:12px; line-height:1.5; color:rgba(255,255,255,0.8);">
+            Click to contribute light to the commons.<br>
+            Click near others to form connections:<br>
+            <span style="color:#00ffcc;">• 2 people → dialogue</span><br>
+            <span style="color:#00ffcc;">• 3 people → understanding</span><br>
+            <span style="color:#00ffcc;">• 4+ people → community</span>
+        </div>
+        <div style="margin-top:12px; font-style:italic; color: #00ffcc; font-size:11px;">
+            Culture flows like water, built by many
+        </div>
+    </div>
+    <div id="stats">
+        <div class="stat-label">LIGHTS IN COMMONS</div>
+        <span class="stat-number" id="lights">0</span>
+        <div class="stat-label">CONTRIBUTIONS</div>
+        <span class="stat-number" id="contributions">0</span>
+        <div class="stat-label">COOPERATIVE SHAPES</div>
+        <span class="stat-number" id="shapes">0</span>
+        <div class="stat-label">ACTIVE COOPERATORS</div>
+        <span class="stat-number" id="cooperators">0</span>
+    </div>
+    <script>
+        // THE LIVING COMMONS - Mark Walhimer 2026
+        // A combination of three systems:
+        // 1. Fluid dynamics - culture flows like water
+        // 2. Individual lights - each contribution matters
+        // 3. Cooperative shapes - together we build
+        
+        // === FLUID DYNAMICS (Background Flow) ===
+        let flowParticles = [];
+        let flowTime = 0;
+        
+        // === THE COMMONS (Individual Lights) ===
+        let lights = [];
+        let maxLights = 80;
+        
+        // === TOGETHER WE BUILD (Cooperative Shapes) ===
+        let shapes = [];
+        let recentClicks = [];
+        let totalContributions = 0;
+        let currentCooperators = 0;
+        
+        // === SHARED SETTINGS ===
+        const CLICK_WINDOW = 2500; // 2.5 seconds to cooperate
+        const CONNECTION_DISTANCE = 280; // pixels
+        const POINT_LIFETIME = 180000; // 3 minutes
+        const LINE_LIFETIME = 210000; // 3.5 minutes
+        const TRIANGLE_LIFETIME = 240000; // 4 minutes
+        const POLYGON_LIFETIME = 270000; // 4.5 minutes
+        
+        // === AUDIO ===
+        let audioContext;
+        let soundEnabled = false;
+        
+        // === MESSAGES ===
+        const messages = [
+            "Every community begins with a single voice",
+            "Two voices create dialogue",
+            "Three perspectives form understanding",
+            "Together we illuminate understanding",
+            "Culture flows through participation",
+            "Many hands build community",
+            "A museum is where we see ourselves"
+        ];
+        let messagePhase = 0;
+        let messageTimer = 0;
+        
+        // === COLOR PALETTES ===
+        const colorPalettes = [
+            [330, 70, 95],  // Hot pink
+            [180, 75, 90],  // Cyan
+            [270, 70, 90],  // Purple
+            [45, 75, 90],   // Orange
+            [210, 75, 90],  // Blue
+            [120, 70, 85]   // Green
+        ];
+        
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            colorMode(HSB, 360, 100, 100, 100);
+            strokeCap(ROUND);
+            strokeJoin(ROUND);
+            
+            // Initialize flow particles for background
+            for (let i = 0; i < 400; i++) {
+                flowParticles.push({
+                    x: random(width),
+                    y: random(height),
+                    prevX: random(width),
+                    prevY: random(height),
+                    hue: random(180, 240)  // Cyan to blue range
+                });
+            }
+            
+            // Start with 3 seed lights
+            for (let i = 0; i < 3; i++) {
+                addLight(random(width), random(height), true);
+            }
+        }
+        
+        function draw() {
+            // Dark background with slight color tint
+            let bgHue = (frameCount * 0.05) % 360;
+            background(bgHue, 20, 3, 8);
+            
+            let now = millis();
+            flowTime += 0.008;
+            messageTimer++;
+            
+            // ========================================
+            // LAYER 1: FLUID DYNAMICS (Background)
+            // ========================================
+            for (let particle of flowParticles) {
+                particle.prevX = particle.x;
+                particle.prevY = particle.y;
+                
+                // Perlin noise creates flowing curves
+                let angle = noise(particle.x * 0.004, particle.y * 0.004, flowTime) * TWO_PI * 4;
+                particle.x += cos(angle) * 1.5;
+                particle.y += sin(angle) * 1.5;
+                
+                // Wrap around edges
+                if (particle.x < 0) particle.x = width;
+                if (particle.x > width) particle.x = 0;
+                if (particle.y < 0) particle.y = height;
+                if (particle.y > height) particle.y = 0;
+                
+                // Draw the flow trail
+                stroke(particle.hue, 60, 80, 12);
+                strokeWeight(1.5);
+                line(particle.prevX, particle.prevY, particle.x, particle.y);
+            }
+            
+            // ========================================
+            // LAYER 2: COOPERATIVE SHAPES
+            // ========================================
+            
+            // Clean up expired items
+            recentClicks = recentClicks.filter(c => now - c.time < CLICK_WINDOW);
+            shapes = shapes.filter(shape => {
+                let lifetime = shape.type === 'line' ? LINE_LIFETIME :
+                              shape.type === 'triangle' ? TRIANGLE_LIFETIME :
+                              POLYGON_LIFETIME;
+                return now - shape.birthTime < lifetime;
+            });
+            
+            currentCooperators = recentClicks.length;
+            
+            // Draw shapes
+            for (let shape of shapes) {
+                let age = now - shape.birthTime;
+                let lifetime = shape.type === 'line' ? LINE_LIFETIME :
+                               shape.type === 'triangle' ? TRIANGLE_LIFETIME :
+                               POLYGON_LIFETIME;
+                
+                // Fade out in last 45 seconds
+                let fadeStart = lifetime - 45000;
+                let alpha = age > fadeStart ? 
+                    map(age, fadeStart, lifetime, 1, 0) : 1;
+                
+                if (shape.type === 'line') {
+                    // Draw glow
+                    strokeWeight(10);
+                    stroke(shape.hue, shape.sat - 10, shape.bright, 15 * alpha);
+                    line(shape.p1.x, shape.p1.y, shape.p2.x, shape.p2.y);
+                    
+                    // Draw line
+                    strokeWeight(3);
+                    stroke(shape.hue, shape.sat, shape.bright, 75 * alpha);
+                    line(shape.p1.x, shape.p1.y, shape.p2.x, shape.p2.y);
+                    
+                } else if (shape.type === 'triangle') {
+                    // Filled triangle
+                    noStroke();
+                    fill(shape.hue, shape.sat - 10, shape.bright, 30 * alpha);
+                    triangle(shape.p1.x, shape.p1.y, shape.p2.x, shape.p2.y, shape.p3.x, shape.p3.y);
+                    
+                    // Draw edges
+                    strokeWeight(2.5);
+                    stroke(shape.hue, shape.sat, shape.bright, 80 * alpha);
+                    line(shape.p1.x, shape.p1.y, shape.p2.x, shape.p2.y);
+                    line(shape.p2.x, shape.p2.y, shape.p3.x, shape.p3.y);
+                    line(shape.p3.x, shape.p3.y, shape.p1.x, shape.p1.y);
+                    
+                } else if (shape.type === 'polygon') {
+                    // Complex shapes
+                    noStroke();
+                    fill(shape.hue, shape.sat - 15, shape.bright, 25 * alpha);
+                    beginShape();
+                    for (let p of shape.points) {
+                        vertex(p.x, p.y);
+                    }
+                    endShape(CLOSE);
+                    
+                    // Draw edges
+                    strokeWeight(2.5);
+                    stroke(shape.hue, shape.sat, shape.bright, 75 * alpha);
+                    for (let i = 0; i < shape.points.length; i++) {
+                        let p1 = shape.points[i];
+                        let p2 = shape.points[(i + 1) % shape.points.length];
+                        line(p1.x, p1.y, p2.x, p2.y);
+                    }
+                }
+            }
+            
+            // ========================================
+            // LAYER 3: COMMONS LIGHTS (Individual Contributions)
+            // ========================================
+            
+            // Clean up expired lights
+            lights = lights.filter(light => now - light.birthTime < POINT_LIFETIME);
+            
+            // Draw connections between nearby lights
+            stroke(0, 0, 90, 10);
+            strokeWeight(1);
+            for (let i = 0; i < lights.length; i++) {
+                for (let j = i + 1; j < lights.length; j++) {
+                    let d = dist(lights[i].x, lights[i].y, lights[j].x, lights[j].y);
+                    if (d < 180) {
+                        let alpha = map(d, 0, 180, 18, 0);
+                        stroke(0, 0, 90, alpha);
+                        line(lights[i].x, lights[i].y, lights[j].x, lights[j].y);
+                    }
+                }
+            }
+            
+            // Draw lights
+            noStroke();
+            for (let light of lights) {
+                let age = now - light.birthTime;
+                let pulse = sin(age * 0.003) * 0.5 + 0.5;
+                
+                // Fade in/out
+                let fadeStart = POINT_LIFETIME - 45000;
+                let alpha = age > fadeStart ? 
+                    map(age, fadeStart, POINT_LIFETIME, 1, 0) : 
+                    age < 1000 ? map(age, 0, 1000, 0, 1) : 1;
+                
+                // Subtle drift
+                light.x += light.vx;
+                light.y += light.vy;
+                if (light.x < 0 || light.x > width) light.vx *= -1;
+                if (light.y < 0 || light.y > height) light.vy *= -1;
+                
+                // Outer glow
+                let glowSize = 45 + pulse * 12;
+                for (let r = glowSize; r > 0; r -= glowSize/5) {
+                    let glowAlpha = map(r, 0, glowSize, 40 * alpha, 0);
+                    fill(light.hue, light.sat, light.bright, glowAlpha);
+                    ellipse(light.x, light.y, r * 2);
+                }
+                
+                // Core
+                fill(light.hue, light.sat, light.bright, 90 * alpha);
+                ellipse(light.x, light.y, 14 + pulse * 4);
+                
+                // Highlight
+                fill(0, 0, 100, 70 * alpha);
+                ellipse(light.x, light.y, 5);
+            }
+            
+            // Draw potential connections for recent clicks
+            stroke(180, 50, 90, 20);
+            strokeWeight(1.5);
+            for (let i = 0; i < recentClicks.length; i++) {
+                for (let j = i + 1; j < recentClicks.length; j++) {
+                    let d = dist(recentClicks[i].x, recentClicks[i].y, 
+                                recentClicks[j].x, recentClicks[j].y);
+                    if (d < CONNECTION_DISTANCE) {
+                        let alpha = map(d, 0, CONNECTION_DISTANCE, 50, 5);
+                        stroke(180, 40, 90, alpha);
+                        line(recentClicks[i].x, recentClicks[i].y, 
+                             recentClicks[j].x, recentClicks[j].y);
+                    }
+                }
+            }
+            
+            // Update stats
+            document.getElementById('lights').textContent = lights.length;
+            document.getElementById('contributions').textContent = totalContributions;
+            document.getElementById('shapes').textContent = shapes.length;
+            document.getElementById('cooperators').textContent = currentCooperators;
+        }
+        
+        function mousePressed() {
+            let now = millis();
+            
+            // Choose color from palette
+            let colorChoice = random(colorPalettes);
+            
+            // Create new point/light hybrid
+            let newPoint = {
+                x: mouseX,
+                y: mouseY,
+                birthTime: now,
+                time: now,
+                hue: colorChoice[0],
+                sat: colorChoice[1],
+                bright: colorChoice[2],
+                vx: random(-0.15, 0.15),
+                vy: random(-0.15, 0.15)
+            };
+            
+            // Add to both systems
+            lights.push(newPoint);
+            recentClicks.push(newPoint);
+            totalContributions++;
+            
+            // Play sound (simple beep without oscillators)
+            playTone(400 + totalContributions * 10, 0.1, 100);
+            
+            // Create ripple effect
+            for (let i = 0; i < 2; i++) {
+                let angle = random(TWO_PI);
+                let distance = random(25, 70);
+                let px = mouseX + cos(angle) * distance;
+                let py = mouseY + sin(angle) * distance;
+                setTimeout(() => addLight(px, py, false), i * 150);
+            }
+            
+            // Check for cooperation
+            let nearby = recentClicks.filter(c => {
+                let d = dist(mouseX, mouseY, c.x, c.y);
+                return d < CONNECTION_DISTANCE && d > 5;
+            });
+            
+            if (nearby.length >= 1) {
+                nearby.sort((a, b) => {
+                    let da = dist(mouseX, mouseY, a.x, a.y);
+                    let db = dist(mouseX, mouseY, b.x, b.y);
+                    return da - db;
+                });
+                
+                let avgColor = averageColors([newPoint, ...nearby]);
+                
+                if (nearby.length === 1) {
+                    createLine(newPoint, nearby[0], avgColor);
+                    playTone(600, 0.15, 150);
+                    showMessage("Two voices create dialogue");
+                    
+                } else if (nearby.length === 2) {
+                    createTriangle(newPoint, nearby[0], nearby[1], avgColor);
+                    playTone(800, 0.2, 200);
+                    showMessage("Three perspectives form understanding");
+                    
+                } else if (nearby.length >= 3) {
+                    createPolygon(newPoint, nearby.slice(0, min(nearby.length, 6)), avgColor);
+                    playTone(1000, 0.25, 250);
+                    showMessage("Together we create what alone we cannot");
+                }
+            }
+        }
+        
+        function addLight(x, y, isSeed = false) {
+            if (lights.length >= maxLights && !isSeed) {
+                lights.shift();
+            }
+            
+            let colorChoice = random(colorPalettes);
+            
+            lights.push({
+                x: x,
+                y: y,
+                birthTime: millis(),
+                time: millis(),
+                hue: colorChoice[0],
+                sat: colorChoice[1],
+                bright: colorChoice[2],
+                vx: random(-0.15, 0.15),
+                vy: random(-0.15, 0.15)
+            });
+        }
+        
+        function averageColors(points) {
+            let avgHue = points.reduce((sum, p) => sum + p.hue, 0) / points.length;
+            let avgSat = points.reduce((sum, p) => sum + p.sat, 0) / points.length;
+            let avgBright = points.reduce((sum, p) => sum + p.bright, 0) / points.length;
+            return [avgHue, avgSat, avgBright];
+        }
+        
+        function createLine(p1, p2, color) {
+            shapes.push({
+                type: 'line',
+                p1: {x: p1.x, y: p1.y},
+                p2: {x: p2.x, y: p2.y},
+                hue: color[0],
+                sat: color[1],
+                bright: color[2],
+                birthTime: millis()
+            });
+        }
+        
+        function createTriangle(p1, p2, p3, color) {
+            shapes.push({
+                type: 'triangle',
+                p1: {x: p1.x, y: p1.y},
+                p2: {x: p2.x, y: p2.y},
+                p3: {x: p3.x, y: p3.y},
+                hue: color[0],
+                sat: color[1],
+                bright: color[2],
+                birthTime: millis()
+            });
+        }
+        
+        function createPolygon(center, others, color) {
+            let allPoints = [center, ...others];
+            let cx = allPoints.reduce((sum, p) => sum + p.x, 0) / allPoints.length;
+            let cy = allPoints.reduce((sum, p) => sum + p.y, 0) / allPoints.length;
+            
+            allPoints.sort((a, b) => {
+                return atan2(a.y - cy, a.x - cx) - atan2(b.y - cy, b.x - cx);
+            });
+            
+            shapes.push({
+                type: 'polygon',
+                points: allPoints.map(p => ({x: p.x, y: p.y})),
+                hue: color[0],
+                sat: color[1],
+                bright: color[2],
+                birthTime: millis()
+            });
+        }
+        
+        function playTone(frequency, volume, duration) {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                let osc = audioContext.createOscillator();
+                let gain = audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.frequency.value = frequency;
+                osc.type = 'sine';
+                
+                gain.gain.setValueAtTime(volume, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration/1000);
+                
+                osc.start(audioContext.currentTime);
+                osc.stop(audioContext.currentTime + duration/1000);
+            } catch(e) {
+                // Silent fail if audio doesn't work
+            }
+        }
+        
+        function showMessage(text) {
+            let msgElement = document.getElementById('message');
+            msgElement.textContent = text;
+            msgElement.classList.add('show');
+            
+            setTimeout(() => {
+                msgElement.classList.remove('show');
+            }, 3500);
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+        
+        // Auto-add occasional lights
+        setInterval(() => {
+            if (lights.length < 20) {
+                addLight(random(width), random(height), false);
+            }
+        }, 4000);
+        
+        // Periodic messages
+        setInterval(() => {
+            if (lights.length > 10 && messageTimer > 800) {
+                showMessage(random(messages));
+                messageTimer = 0;
+            }
+        }, 6000);
+    </script>
+</body>
+</html>

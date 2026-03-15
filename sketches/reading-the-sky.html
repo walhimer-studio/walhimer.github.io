@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading the Sky — Mark Walhimer</title>
+<meta name="description" content="Constellations of attention, care, and meaning — text and generative art by Mark Walhimer.">
+
+<style>
+:root {
+  --bg:#fafafa;
+  --ink:#111;
+  --sub:#222;
+  --muted:#777;
+  --dash:#aaa;
+  --card:#f3f3f3;
+  --maxw:760px;
+  --pad:48px;
+  --fade:0.9s;
+  --dot:#ccc;
+  --dot-active:#111;
+}
+
+html, body {
+  margin:0;
+  padding:0;
+  height:100%;
+  color:var(--ink);
+  background:var(--bg);
+  font-family:-apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height:1.6;
+  scroll-snap-type:y mandatory;
+  overflow-y:scroll;
+  scroll-behavior:smooth;
+}
+
+header, section, footer {
+  min-height:100vh;
+  box-sizing:border-box;
+  scroll-snap-align:start;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:var(--pad);
+}
+
+.wrap {
+  max-width:var(--maxw);
+  width:100%;
+  margin:0 auto;
+  text-align:left;
+}
+
+h1 {
+  font-size:clamp(28px,4vw,40px);
+  letter-spacing:0.02em;
+  margin:0 0 0.35em;
+  text-align:center;
+}
+h2 {
+  font-size:clamp(22px,3vw,28px);
+  color:var(--sub);
+  margin:0 0 0.5em;
+  line-height:1.35;
+  text-align:center;
+}
+p {margin:0 0 0.9em;}
+ul{padding-left:1.2em;}
+li{margin:0.35em 0;}
+footer{color:var(--muted);font-size:0.95rem;}
+
+.fade {
+  opacity:0;
+  transform:translateY(14px);
+  transition:opacity var(--fade) ease, transform var(--fade) ease;
+}
+.visible {
+  opacity:1!important;
+  transform:translateY(0)!important;
+}
+
+/* Right-side dot navigation */
+.dot-nav {
+  position:fixed;
+  right:20px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  z-index:1000;
+}
+.dot {
+  width:12px;
+  height:12px;
+  margin:6px 0;
+  border-radius:50%;
+  background:var(--dot);
+  cursor:pointer;
+  transition:background 0.3s, transform 0.3s;
+}
+.dot.active {
+  background:var(--dot-active);
+  transform:scale(1.3);
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  .fade{transition:none!important;}
+}
+@media (max-width:640px){
+  :root{--pad:32px;}
+}
+</style>
+</head>
+<body>
+
+<header><div class="wrap fade">
+  <h1>Reading the Sky</h1>
+  <p style="text-align:center;margin:-0.2em 0 1em;"><em>October 8, 2025</em></p>
+  <p class="lede">These notes began as private reflections during a time of rebuilding. They are small constellations — moments of attention, patience, and care that helped me find direction again.</p>
+</div></header>
+
+<section><div class="wrap fade">
+  <h2>Reading the Sky — companionship in thought</h2>
+  <p>I look for companionship in thought. To me, a real conversation is not a contest of knowledge but a shared act of navigation — two people tracing constellations together, finding new patterns between familiar stars.</p>
+  <p>Some can read the sky by rote, jumping from one known point to the next. I read by connection, by meaning. I pause because I’m feeling for direction, not because I’m lost.</p>
+  <p>What matters to me isn’t impressing or convincing; it’s the moment when another mind joins mine in curiosity and we both see something neither of us saw before.</p>
+  <p>That is friendship, and that is love: learning the sky together.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>1. The Gift of Noticing — attention as care</h2>
+  <p>I notice small things: the extra bag, a pause before someone speaks, the way light catches a wall. To me, noticing is not intrusion but care — a quiet way of saying I see you.</p>
+  <p>Some people mistake attention for judgment, but it’s only love trying to help the world stay in focus. To notice is to participate in grace.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>2. Intimacy as Cooperation — connection through shared action</h2>
+  <p>Connection is built in motion: one person holding the door, another carrying the bag. It’s not about control, it’s choreography — shared movement toward ease.</p>
+  <p>Love, in its simplest form, is the instinct to lighten another person’s small burdens without needing applause.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>3. Practicing Faith Without Religion — awareness as sacred practice</h2>
+  <p>I have no creed but awareness. The sacred begins where attention deepens — in the act of listening, in the patience to see someone whole.</p>
+  <p>If holiness exists, it lives in kindness, in curiosity, in every moment we choose to understand before we judge.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>4. The Work of Meaning — creation as understanding</h2>
+  <p>I build things — code, exhibits, systems — not to impress but to understand. Each project asks the same question: what does this reveal about being human?</p>
+  <p>Art and science share a discipline: listening until the truth speaks back. Meaning is the only lasting material.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>5. Companionship in Solitude — authenticity over pretense</h2>
+  <p>I would rather be alone than counterfeit closeness. Solitude, when honest, is still a conversation — between the self I am and the self I’m becoming.</p>
+  <p>Better to stay with sincerity than share space with pretense. Silence can be faithful company.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>6. The Compass of Kindness — moral direction through gentleness</h2>
+  <p>Some people talk about virtue; others practice it by accident. The compass I trust isn’t doctrine but decency — noticing, helping, staying gentle even when misunderstood.</p>
+  <p>Goodness doesn’t need a name; it’s simply the direction I keep trying to walk.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>7. The Ethics of Attention</h2>
+  <p>Attention is the rarest currency. To give it freely is to affirm that another life matters.</p>
+  <p>Distraction is indifference; attention is love made visible.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>8. The Architecture of Listening</h2>
+  <p>Listening is invisible design. Every good space — museum, classroom, or friendship — depends on proportion: silence enough to let another’s voice ring true.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>9. The Courage of Gentleness</h2>
+  <p>Gentleness is not weakness; it is skill. It takes strength to stay soft in a hard room, to answer aggression with calm, to build rather than break.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>10. The Practice of Returning</h2>
+  <p>Each night I return — to the museum, to code, to reflection — not to escape the world but to remember it. Work becomes prayer when it steadies the mind and opens the heart.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>11. The Geometry of Empathy</h2>
+  <p>Empathy isn’t softness; it’s structure — a way of holding space for someone without collapsing your own.</p>
+</div></section>
+
+<section><div class="wrap fade">
+  <h2>12. The Patience of Systems</h2>
+  <p>Everything real takes time to reveal itself; patience is the architecture of truth.</p>
+</div></section>
+
+<footer><div class="wrap fade" style="text-align:center;">
+  <p>&copy; 2025 Mark Walhimer</p>
+</div></footer>
+
+<div class="dot-nav" id="dotNav"></div>
+
+<script>
+// Fade-in on scroll
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:0.18});
+document.querySelectorAll('.fade').forEach(el=>observer.observe(el));
+
+// Build dots dynamically
+const sections = document.querySelectorAll('header, section, footer');
+const dotNav = document.getElementById('dotNav');
+sections.forEach((_,i)=>{
+  const dot=document.createElement('div');
+  dot.classList.add('dot');
+  dot.addEventListener('click',()=>sections[i].scrollIntoView({behavior:'smooth'}));
+  dotNav.appendChild(dot);
+});
+const dots = document.querySelectorAll('.dot');
+
+// Highlight active dot
+const activeObserver = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const index=[...sections].indexOf(entry.target);
+      dots.forEach(d=>d.classList.remove('active'));
+      if(dots[index]) dots[index].classList.add('active');
+      current=index;
+    }
+  });
+},{threshold:0.6});
+sections.forEach(s=>activeObserver.observe(s));
+
+// Arrow key navigation (looping)
+let current=0;
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown' || e.key==='PageDown'){
+    e.preventDefault();
+    current=(current+1)%sections.length; // loop to top
+    sections[current].scrollIntoView({behavior:'smooth'});
+  }
+  if(e.key==='ArrowUp' || e.key==='PageUp'){
+    e.preventDefault();
+    current=(current-1+sections.length)%sections.length; // loop to bottom
+    sections[current].scrollIntoView({behavior:'smooth'});
+  }
+});
+
+// Give immediate keyboard focus on load
+window.addEventListener('load',()=>document.body.focus());
+</script>
+
+</body>
+</html>

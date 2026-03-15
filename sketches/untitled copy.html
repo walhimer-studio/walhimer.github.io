@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Text Cylinder (Texture Wrapped)</title>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
+<style>
+  html, body { margin:0; padding:0; background:#fff; overflow:hidden; }
+  canvas { display:block; }
+</style>
+</head>
+<body>
+<script>
+let phrase = "I WILL NOT BECOME THEIR NARRATIVE ";
+let tex;
+let scrollU = 0;
+
+const CYL_RADIUS = 360;
+const CYL_HEIGHT = 900;
+const SLICES = 180;
+
+function setup() {
+  createCanvas(window.innerWidth, window.innerHeight, WEBGL);
+  setAttributes('alpha', true);
+  pixelDensity(2);
+
+  // CRITICAL: ensure UVs are interpreted as 0..1 normalized coords
+  textureMode(NORMAL);
+
+  tex = createGraphics(2048, 1024);
+  tex.pixelDensity(1);
+  tex.textFont('monospace');
+  tex.textSize(56);
+  tex.textAlign(LEFT, CENTER);
+
+  // allow repeating UVs (we use >1)
+  textureWrap(REPEAT);
+}
+
+function draw() {
+  background(255);
+
+  drawTextTexture();
+
+  rotateX(-0.18);
+  rotateY(frameCount * 0.0035);
+
+  noStroke();
+  texture(tex);
+
+  const h2 = CYL_HEIGHT * 0.5;
+
+  beginShape(TRIANGLE_STRIP);
+  for (let i = 0; i <= SLICES; i++) {
+    const t = i / SLICES;
+    const a = t * TWO_PI;
+
+    const x = Math.cos(a) * CYL_RADIUS;
+    const z = Math.sin(a) * CYL_RADIUS;
+
+    // u repeats around, v repeats vertically
+    const u = (t * 3.0) + scrollU; // 3 wraps around circumference
+    const vTop = 0.0;
+    const vBot = 2.2;              // repeats vertically
+
+    vertex(x, -h2, z, u, vTop);
+    vertex(x,  h2, z, u, vBot);
+  }
+  endShape();
+
+  scrollU += 0.0008;
+}
+
+function drawTextTexture() {
+  tex.background(255);
+  tex.fill(0);
+  tex.noStroke();
+
+  const rowH = 72;
+  const rows = Math.floor(tex.height / rowH);
+
+  for (let r = 0; r < rows; r++) {
+    const y = r * rowH + rowH * 0.5;
+    const xOffset = (r % 2 === 0) ? 0 : 90;
+
+    let x = - (frameCount * 0.6 + xOffset) % 600;
+    while (x < tex.width + 600) {
+      tex.text(phrase, x, y);
+      x += tex.textWidth(phrase);
+    }
+  }
+
+  // faint ghosting pass
+  tex.fill(0, 40);
+  for (let r = 0; r < rows; r += 3) {
+    const y = r * rowH + rowH * 0.5;
+    let x = - (frameCount * 0.3) % 700;
+    while (x < tex.width + 700) {
+      tex.text(phrase, x, y);
+      x += tex.textWidth(phrase);
+    }
+  }
+}
+
+function windowResized() {
+  resizeCanvas(window.innerWidth, window.innerHeight);
+}
+</script>
+</body>
+</html>

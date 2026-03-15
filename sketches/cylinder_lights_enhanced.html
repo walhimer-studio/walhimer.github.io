@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Cylinders - Enhanced Effects</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            font-family: Arial, sans-serif;
+        }
+        #canvas-container {
+            display: flex;
+            gap: 20px;
+        }
+        #controls {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            max-height: 600px;
+            overflow-y: auto;
+            width: 340px;
+        }
+        .control-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #333;
+            border-radius: 8px;
+        }
+        .control-section h2 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .global-controls {
+            border: 2px solid #00ff88;
+        }
+        .global-controls h2 {
+            color: #00ff88;
+        }
+        .effects-controls {
+            border: 2px solid #3498db;
+        }
+        .effects-controls h2 {
+            color: #3498db;
+        }
+        .beat-controls {
+            border: 2px solid #ff6b6b;
+        }
+        .beat-controls h2 {
+            color: #ff6b6b;
+        }
+        .color-controls {
+            border: 2px solid #9b59b6;
+        }
+        .color-controls h2 {
+            color: #9b59b6;
+        }
+        .control-row {
+            margin-bottom: 12px;
+        }
+        .control-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .control-row input[type="range"] {
+            width: 100%;
+            padding: 0;
+        }
+        .control-row input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .value-display span:last-child {
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .button-group {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .button-group button {
+            flex: 1;
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background: #00ff88;
+            color: #1a1a1a;
+            font-weight: bold;
+            min-width: 70px;
+        }
+        .button-group button:hover {
+            background: #00dd77;
+        }
+        .bpm-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .bpm-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+        .play-pause-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .play-pause-btn.playing {
+            background: #ff6b6b;
+            color: white;
+        }
+        .play-pause-btn.stopped {
+            background: #4caf50;
+            color: white;
+        }
+        .beat-pattern-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .beat-pattern-btns button {
+            padding: 8px;
+            font-size: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background: #555;
+            color: white;
+        }
+        .beat-pattern-btns button:hover {
+            background: #666;
+        }
+        .color-presets {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        .color-preset {
+            width: 100%;
+            height: 35px;
+            border: 2px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .color-preset:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+        .custom-color-section {
+            margin-top: 10px;
+            padding: 10px;
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+        .custom-color-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        .custom-color-section input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .custom-color-section select {
+            width: 100%;
+            padding: 5px;
+            border-radius: 4px;
+            background: #2a2a2a;
+            color: white;
+            border: 1px solid #555;
+        }
+        .color-apply-btn {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            background: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .color-apply-btn:hover {
+            background: #8e44ad;
+        }
+        .cylinder-control {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #333;
+            border-radius: 6px;
+        }
+        .cylinder-control h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cylinder-color-indicator {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            display: inline-block;
+        }
+        .control-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .control-buttons button {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+            background: #444;
+            color: white;
+        }
+        .control-buttons button:hover {
+            background: #555;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div id="p5-canvas"></div>
+        <div id="controls"></div>
+    </div>
+
+    <script>
+        // State management
+        let cylinderLights = [];
+        let cylinderColors = [];
+        let sectionColors = []; // Individual colors per section
+        const NUM_CYLINDERS = 10;
+        const SECTIONS_PER_CYLINDER = 10;
+        
+        // Beat control variables
+        let isPlaying = false;
+        let bpm = 120;
+        let lastBeatTime = 0;
+        let beatInterval = 0;
+        let beatMode = 'rain-down-random';
+        
+        // Rain effect variables
+        let rainDrops = [];
+        let dropColorIndex = 0; // For alternating colors
+        
+        // Effect controls
+        let trailEnabled = true;
+        let trailDecayRate = 0.92; // How fast trails fade (0-1, higher = slower fade)
+        let lightIntensities = []; // For fade effects
+        let pulseEnabled = false;
+        let pulseSpeed = 0.05;
+        let pulsePhase = 0;
+        let glowIntensity = 1.0; // 0-2, multiplier for emissive material
+        let multiColorMode = false; // Each section different color vs cylinder color
+        
+        // Color control
+        let currentColor = {r: 0, g: 255, b: 136};
+        
+        // Color presets
+        const colorPresets = [
+            {r: 255, g: 255, b: 255, name: 'White'},
+            {r: 255, g: 0, b: 0, name: 'Red'},
+            {r: 0, g: 255, b: 0, name: 'Green'},
+            {r: 0, g: 0, b: 255, name: 'Blue'},
+            {r: 255, g: 255, b: 0, name: 'Yellow'},
+            {r: 255, g: 0, b: 255, name: 'Magenta'},
+            {r: 0, g: 255, b: 255, name: 'Cyan'},
+            {r: 255, g: 128, b: 0, name: 'Orange'},
+            {r: 128, g: 0, b: 255, name: 'Purple'},
+            {r: 0, g: 0, b: 0, name: 'Black'}
+        ];
+        
+        // Initialize lights with random pattern
+        function initializeRandomLights() {
+            cylinderLights = [];
+            lightIntensities = [];
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                cylinderLights[i] = [];
+                lightIntensities[i] = [];
+                for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                    cylinderLights[i][j] = Math.random() > 0.5;
+                    lightIntensities[i][j] = cylinderLights[i][j] ? 1.0 : 0.0;
+                }
+            }
+        }
+        
+        // Initialize colors
+        function initializeColors() {
+            cylinderColors = [];
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                let hue = (i / NUM_CYLINDERS) * 360;
+                let col = hslToRgb(hue, 1, 0.5);
+                cylinderColors[i] = col;
+            }
+        }
+        
+        // Initialize section colors (for multi-color mode)
+        function initializeSectionColors() {
+            sectionColors = [];
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                sectionColors[i] = [];
+                for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                    let hue = ((i * SECTIONS_PER_CYLINDER + j) / (NUM_CYLINDERS * SECTIONS_PER_CYLINDER)) * 360;
+                    sectionColors[i][j] = hslToRgb(hue, 1, 0.5);
+                }
+            }
+        }
+        
+        // Initialize rain drops
+        function initializeRainDrops() {
+            rainDrops = [];
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                rainDrops[i] = [];
+            }
+        }
+        
+        // HSL to RGB conversion
+        function hslToRgb(h, s, l) {
+            let c = (1 - Math.abs(2 * l - 1)) * s;
+            let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            let m = l - c / 2;
+            let r, g, b;
+            
+            if (h < 60) { r = c; g = x; b = 0; }
+            else if (h < 120) { r = x; g = c; b = 0; }
+            else if (h < 180) { r = 0; g = c; b = x; }
+            else if (h < 240) { r = 0; g = x; b = c; }
+            else if (h < 300) { r = x; g = 0; b = c; }
+            else { r = c; g = 0; b = x; }
+            
+            return {
+                r: Math.round((r + m) * 255),
+                g: Math.round((g + m) * 255),
+                b: Math.round((b + m) * 255)
+            };
+        }
+        
+        // Initialize
+        initializeRandomLights();
+        initializeColors();
+        initializeSectionColors();
+        initializeRainDrops();
+        updateBeatInterval();
+
+        function setup() {
+            let canvas = createCanvas(800, 600, WEBGL);
+            canvas.parent('p5-canvas');
+            
+            // Create control panel
+            createControls();
+        }
+
+        function draw() {
+            background(20);
+            
+            // Lighting
+            ambientLight(50);
+            directionalLight(255, 255, 255, 0, 1, -1);
+            
+            // Camera rotation
+            orbitControl();
+            
+            // Handle beats
+            if (isPlaying) {
+                let currentTime = millis();
+                if (currentTime - lastBeatTime >= beatInterval) {
+                    triggerBeat();
+                    lastBeatTime = currentTime;
+                }
+            }
+            
+            // Update pulse phase
+            if (pulseEnabled) {
+                pulsePhase += pulseSpeed;
+            }
+            
+            // Update rain drops and trail effects
+            updateRainDrops();
+            updateTrailEffects();
+            
+            // Draw all cylinders
+            let spacing = 80;
+            let startX = -(NUM_CYLINDERS - 1) * spacing / 2;
+            
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                push();
+                translate(startX + i * spacing, 0, 0);
+                drawCylinder(i);
+                pop();
+            }
+        }
+
+        function drawCylinder(cylinderIndex) {
+            let cylinderHeight = 300;
+            let cylinderRadius = 20;
+            let sectionHeight = cylinderHeight / SECTIONS_PER_CYLINDER;
+            
+            push();
+            rotateX(HALF_PI);
+            
+            // Draw each section
+            for (let i = 0; i < SECTIONS_PER_CYLINDER; i++) {
+                push();
+                translate(0, 0, -cylinderHeight/2 + i * sectionHeight + sectionHeight/2);
+                
+                // Check if this section has a custom color from a rain drop
+                let customCol = null;
+                for (let drop of rainDrops[cylinderIndex]) {
+                    if (drop.position === i && drop.color) {
+                        customCol = drop.color;
+                        break;
+                    }
+                }
+                
+                // Get color for this section
+                let col;
+                if (customCol) {
+                    col = customCol;
+                } else if (multiColorMode) {
+                    col = sectionColors[cylinderIndex][i];
+                } else {
+                    col = cylinderColors[cylinderIndex];
+                }
+                
+                // Get intensity (for trails and fading)
+                let intensity = lightIntensities[cylinderIndex][i];
+                
+                // Apply pulse effect if enabled
+                if (pulseEnabled && cylinderLights[cylinderIndex][i]) {
+                    let pulseValue = (sin(pulsePhase + cylinderIndex * 0.5 + i * 0.2) + 1) / 2;
+                    intensity = intensity * (0.5 + pulseValue * 0.5);
+                }
+                
+                // Set color based on intensity
+                if (intensity > 0.01) {
+                    let r = col.r * intensity;
+                    let g = col.g * intensity;
+                    let b = col.b * intensity;
+                    ambientMaterial(r, g, b);
+                    emissiveMaterial(r * 0.4 * glowIntensity, g * 0.4 * glowIntensity, b * 0.4 * glowIntensity);
+                } else {
+                    ambientMaterial(40, 40, 40);
+                }
+                
+                cylinder(cylinderRadius, sectionHeight);
+                
+                // Draw separator ring
+                if (i < SECTIONS_PER_CYLINDER - 1) {
+                    push();
+                    translate(0, 0, sectionHeight/2);
+                    ambientMaterial(10, 10, 10);
+                    torus(cylinderRadius, 1);
+                    pop();
+                }
+                
+                pop();
+            }
+            
+            pop();
+        }
+
+        function updateTrailEffects() {
+            if (trailEnabled) {
+                // Gradually fade out lights
+                for (let i = 0; i < NUM_CYLINDERS; i++) {
+                    for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                        if (!cylinderLights[i][j] && lightIntensities[i][j] > 0) {
+                            lightIntensities[i][j] *= trailDecayRate;
+                            if (lightIntensities[i][j] < 0.01) {
+                                lightIntensities[i][j] = 0;
+                            }
+                        } else if (cylinderLights[i][j]) {
+                            lightIntensities[i][j] = 1.0;
+                        }
+                    }
+                }
+            } else {
+                // Instant on/off
+                for (let i = 0; i < NUM_CYLINDERS; i++) {
+                    for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                        lightIntensities[i][j] = cylinderLights[i][j] ? 1.0 : 0.0;
+                    }
+                }
+            }
+        }
+
+        function updateBeatInterval() {
+            beatInterval = (60 / bpm) * 1000;
+        }
+
+        function updateRainDrops() {
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                for (let j = rainDrops[i].length - 1; j >= 0; j--) {
+                    let drop = rainDrops[i][j];
+                    
+                    if (drop.direction === 'down') {
+                        if (!trailEnabled && drop.position > 0) {
+                            cylinderLights[i][drop.position - 1] = false;
+                        }
+                        
+                        if (drop.position < SECTIONS_PER_CYLINDER) {
+                            cylinderLights[i][drop.position] = true;
+                        }
+                        
+                        drop.position++;
+                        
+                        if (drop.position > SECTIONS_PER_CYLINDER) {
+                            if (!trailEnabled) {
+                                cylinderLights[i][SECTIONS_PER_CYLINDER - 1] = false;
+                            }
+                            rainDrops[i].splice(j, 1);
+                        }
+                    } else if (drop.direction === 'up') {
+                        if (!trailEnabled && drop.position < SECTIONS_PER_CYLINDER - 1) {
+                            cylinderLights[i][drop.position + 1] = false;
+                        }
+                        
+                        if (drop.position >= 0) {
+                            cylinderLights[i][drop.position] = true;
+                        }
+                        
+                        drop.position--;
+                        
+                        if (drop.position < -1) {
+                            if (!trailEnabled) {
+                                cylinderLights[i][0] = false;
+                            }
+                            rainDrops[i].splice(j, 1);
+                        }
+                    }
+                    
+                    // Turn off lights when trail is disabled
+                    if (!trailEnabled) {
+                        if (drop.direction === 'down' && drop.position > 0 && drop.position <= SECTIONS_PER_CYLINDER) {
+                            cylinderLights[i][drop.position - 1] = false;
+                        } else if (drop.direction === 'up' && drop.position >= -1 && drop.position < SECTIONS_PER_CYLINDER - 1) {
+                            cylinderLights[i][drop.position + 1] = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        function createRainDrop(cylinderIndex, direction = 'down', customColor = null) {
+            if (direction === 'down') {
+                rainDrops[cylinderIndex].push({
+                    position: 0,
+                    direction: 'down',
+                    color: customColor // null means use default cylinder color
+                });
+            } else {
+                rainDrops[cylinderIndex].push({
+                    position: SECTIONS_PER_CYLINDER - 1,
+                    direction: 'up',
+                    color: customColor
+                });
+            }
+        }
+
+        function triggerBeat() {
+            switch(beatMode) {
+                case 'all':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                            cylinderLights[i][j] = !cylinderLights[i][j];
+                        }
+                    }
+                    break;
+                    
+                case 'wave':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        setTimeout(() => {
+                            for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                                cylinderLights[i][j] = !cylinderLights[i][j];
+                            }
+                        }, i * 50);
+                    }
+                    break;
+                    
+                case 'random':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                            if (Math.random() > 0.5) {
+                                cylinderLights[i][j] = !cylinderLights[i][j];
+                            }
+                        }
+                    }
+                    break;
+                    
+                case 'alternate':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        if (i % 2 === 0) {
+                            for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                                cylinderLights[i][j] = !cylinderLights[i][j];
+                            }
+                        }
+                    }
+                    break;
+                    
+                case 'rain-down-random':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        if (Math.random() > 0.5) {
+                            createRainDrop(i, 'down');
+                        }
+                    }
+                    break;
+                    
+                case 'rain-down-all':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        createRainDrop(i, 'down');
+                    }
+                    break;
+                    
+                case 'rain-down-sequential':
+                    let downIndex = Math.floor((millis() / beatInterval) % NUM_CYLINDERS);
+                    createRainDrop(downIndex, 'down');
+                    break;
+                    
+                case 'rain-up-random':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        if (Math.random() > 0.5) {
+                            createRainDrop(i, 'up');
+                        }
+                    }
+                    break;
+                    
+                case 'rain-up-all':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        createRainDrop(i, 'up');
+                    }
+                    break;
+                    
+                case 'rain-up-sequential':
+                    let upIndex = Math.floor((millis() / beatInterval) % NUM_CYLINDERS);
+                    createRainDrop(upIndex, 'up');
+                    break;
+                    
+                case 'rain-bidirectional':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        if (Math.random() > 0.5) {
+                            createRainDrop(i, Math.random() > 0.5 ? 'up' : 'down');
+                        }
+                    }
+                    break;
+                    
+                case 'rain-collide':
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        if (Math.random() > 0.5) {
+                            createRainDrop(i, 'down');
+                            createRainDrop(i, 'up');
+                        }
+                    }
+                    break;
+                    
+                case 'rain-white-green-wave':
+                    // Alternating white and green drops in random waves
+                    // Create random number of drops (1-5) on random cylinders
+                    let numDrops = Math.floor(Math.random() * 5) + 1;
+                    for (let d = 0; d < numDrops; d++) {
+                        let randomCylinder = Math.floor(Math.random() * NUM_CYLINDERS);
+                        // Alternate between white and green
+                        let dropColor = (dropColorIndex % 2 === 0) 
+                            ? {r: 255, g: 255, b: 255}  // White
+                            : {r: 0, g: 255, b: 0};      // Green
+                        createRainDrop(randomCylinder, 'down', dropColor);
+                        dropColorIndex++;
+                    }
+                    break;
+                    
+                case 'rain-white-green-all':
+                    // All cylinders drop, alternating white and green
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        let dropColor = (i % 2 === 0) 
+                            ? {r: 255, g: 255, b: 255}  // White
+                            : {r: 0, g: 255, b: 0};      // Green
+                        createRainDrop(i, 'down', dropColor);
+                    }
+                    break;
+            }
+        }
+
+        function createControls() {
+            let controlsDiv = document.getElementById('controls');
+            
+            // Effects Controls
+            let effectsDiv = document.createElement('div');
+            effectsDiv.className = 'control-section effects-controls';
+            
+            let effectsTitle = document.createElement('h2');
+            effectsTitle.textContent = '✨ Effects Controls';
+            effectsDiv.appendChild(effectsTitle);
+            
+            // Trail effect toggle
+            let trailCheck = document.createElement('label');
+            trailCheck.className = 'checkbox-label';
+            let trailInput = document.createElement('input');
+            trailInput.type = 'checkbox';
+            trailInput.checked = trailEnabled;
+            trailInput.onchange = (e) => { trailEnabled = e.target.checked; };
+            trailCheck.appendChild(trailInput);
+            trailCheck.appendChild(document.createTextNode('Trail Effects'));
+            effectsDiv.appendChild(trailCheck);
+            
+            // Trail decay rate
+            let trailRow = document.createElement('div');
+            trailRow.className = 'control-row';
+            let trailDisplay = document.createElement('div');
+            trailDisplay.className = 'value-display';
+            trailDisplay.innerHTML = '<span>Trail Length:</span><span id="trail-value">Long</span>';
+            trailRow.appendChild(trailDisplay);
+            let trailSlider = document.createElement('input');
+            trailSlider.type = 'range';
+            trailSlider.min = '0.7';
+            trailSlider.max = '0.98';
+            trailSlider.step = '0.01';
+            trailSlider.value = trailDecayRate;
+            trailSlider.oninput = (e) => {
+                trailDecayRate = parseFloat(e.target.value);
+                let val = trailDecayRate < 0.8 ? 'Short' : trailDecayRate < 0.9 ? 'Medium' : 'Long';
+                document.getElementById('trail-value').textContent = val;
+            };
+            trailRow.appendChild(trailSlider);
+            effectsDiv.appendChild(trailRow);
+            
+            // Pulse toggle
+            let pulseCheck = document.createElement('label');
+            pulseCheck.className = 'checkbox-label';
+            let pulseInput = document.createElement('input');
+            pulseInput.type = 'checkbox';
+            pulseInput.checked = pulseEnabled;
+            pulseInput.onchange = (e) => { pulseEnabled = e.target.checked; };
+            pulseCheck.appendChild(pulseInput);
+            pulseCheck.appendChild(document.createTextNode('Pulse/Breathing Effect'));
+            effectsDiv.appendChild(pulseCheck);
+            
+            // Pulse speed
+            let pulseRow = document.createElement('div');
+            pulseRow.className = 'control-row';
+            let pulseDisplay = document.createElement('div');
+            pulseDisplay.className = 'value-display';
+            pulseDisplay.innerHTML = '<span>Pulse Speed:</span><span id="pulse-value">Medium</span>';
+            pulseRow.appendChild(pulseDisplay);
+            let pulseSlider = document.createElement('input');
+            pulseSlider.type = 'range';
+            pulseSlider.min = '0.01';
+            pulseSlider.max = '0.2';
+            pulseSlider.step = '0.01';
+            pulseSlider.value = pulseSpeed;
+            pulseSlider.oninput = (e) => {
+                pulseSpeed = parseFloat(e.target.value);
+                let val = pulseSpeed < 0.05 ? 'Slow' : pulseSpeed < 0.1 ? 'Medium' : 'Fast';
+                document.getElementById('pulse-value').textContent = val;
+            };
+            pulseRow.appendChild(pulseSlider);
+            effectsDiv.appendChild(pulseRow);
+            
+            // Glow intensity
+            let glowRow = document.createElement('div');
+            glowRow.className = 'control-row';
+            let glowDisplay = document.createElement('div');
+            glowDisplay.className = 'value-display';
+            glowDisplay.innerHTML = '<span>Glow Intensity:</span><span id="glow-value">100%</span>';
+            glowRow.appendChild(glowDisplay);
+            let glowSlider = document.createElement('input');
+            glowSlider.type = 'range';
+            glowSlider.min = '0';
+            glowSlider.max = '2';
+            glowSlider.step = '0.1';
+            glowSlider.value = glowIntensity;
+            glowSlider.oninput = (e) => {
+                glowIntensity = parseFloat(e.target.value);
+                document.getElementById('glow-value').textContent = Math.round(glowIntensity * 100) + '%';
+            };
+            glowRow.appendChild(glowSlider);
+            effectsDiv.appendChild(glowRow);
+            
+            // Multi-color mode toggle
+            let multiColorCheck = document.createElement('label');
+            multiColorCheck.className = 'checkbox-label';
+            let multiColorInput = document.createElement('input');
+            multiColorInput.type = 'checkbox';
+            multiColorInput.checked = multiColorMode;
+            multiColorInput.onchange = (e) => { multiColorMode = e.target.checked; };
+            multiColorCheck.appendChild(multiColorInput);
+            multiColorCheck.appendChild(document.createTextNode('Multi-Color Mode (Rainbow per cylinder)'));
+            effectsDiv.appendChild(multiColorCheck);
+            
+            controlsDiv.appendChild(effectsDiv);
+            
+            // Color Controls
+            let colorDiv = document.createElement('div');
+            colorDiv.className = 'control-section color-controls';
+            
+            let colorTitle = document.createElement('h2');
+            colorTitle.textContent = '🎨 Color Controls';
+            colorDiv.appendChild(colorTitle);
+            
+            let presetsDiv = document.createElement('div');
+            presetsDiv.className = 'color-presets';
+            
+            colorPresets.forEach(preset => {
+                let presetBtn = document.createElement('div');
+                presetBtn.className = 'color-preset';
+                presetBtn.style.background = `rgb(${preset.r}, ${preset.g}, ${preset.b})`;
+                presetBtn.title = preset.name;
+                presetBtn.onclick = () => {
+                    currentColor = {r: preset.r, g: preset.g, b: preset.b};
+                    document.getElementById('custom-color-picker').value = 
+                        '#' + [preset.r, preset.g, preset.b].map(x => x.toString(16).padStart(2, '0')).join('');
+                };
+                presetsDiv.appendChild(presetBtn);
+            });
+            
+            colorDiv.appendChild(presetsDiv);
+            
+            let customDiv = document.createElement('div');
+            customDiv.className = 'custom-color-section';
+            
+            let customLabel = document.createElement('label');
+            customLabel.textContent = 'Custom Color:';
+            customDiv.appendChild(customLabel);
+            
+            let colorPicker = document.createElement('input');
+            colorPicker.type = 'color';
+            colorPicker.id = 'custom-color-picker';
+            colorPicker.value = '#00ff88';
+            colorPicker.oninput = (e) => {
+                let hex = e.target.value;
+                currentColor = {
+                    r: parseInt(hex.substr(1, 2), 16),
+                    g: parseInt(hex.substr(3, 2), 16),
+                    b: parseInt(hex.substr(5, 2), 16)
+                };
+            };
+            customDiv.appendChild(colorPicker);
+            
+            let cylinderLabel = document.createElement('label');
+            cylinderLabel.textContent = 'Apply to Cylinder:';
+            cylinderLabel.style.marginTop = '10px';
+            customDiv.appendChild(cylinderLabel);
+            
+            let cylinderSelect = document.createElement('select');
+            cylinderSelect.className = 'custom-color-section';
+            
+            let allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = 'All Cylinders';
+            cylinderSelect.appendChild(allOption);
+            
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                let option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Cylinder ${i + 1}`;
+                cylinderSelect.appendChild(option);
+            }
+            customDiv.appendChild(cylinderSelect);
+            
+            let applyBtn = document.createElement('button');
+            applyBtn.className = 'color-apply-btn';
+            applyBtn.textContent = 'Apply Color';
+            applyBtn.onclick = () => {
+                if (cylinderSelect.value === 'all') {
+                    for (let i = 0; i < NUM_CYLINDERS; i++) {
+                        cylinderColors[i] = {...currentColor};
+                    }
+                } else {
+                    cylinderColors[parseInt(cylinderSelect.value)] = {...currentColor};
+                }
+                updateColorIndicators();
+            };
+            customDiv.appendChild(applyBtn);
+            
+            colorDiv.appendChild(customDiv);
+            controlsDiv.appendChild(colorDiv);
+            
+            // Beat Controls
+            let beatDiv = document.createElement('div');
+            beatDiv.className = 'control-section beat-controls';
+            
+            let beatTitle = document.createElement('h2');
+            beatTitle.textContent = '🎵 Beat Controls';
+            beatDiv.appendChild(beatTitle);
+            
+            let bpmDisplay = document.createElement('div');
+            bpmDisplay.className = 'bpm-display';
+            let bpmLabel = document.createElement('span');
+            bpmLabel.textContent = 'BPM:';
+            let bpmValue = document.createElement('span');
+            bpmValue.className = 'bpm-value';
+            bpmValue.id = 'bpm-value';
+            bpmValue.textContent = bpm;
+            bpmDisplay.appendChild(bpmLabel);
+            bpmDisplay.appendChild(bpmValue);
+            beatDiv.appendChild(bpmDisplay);
+            
+            let bpmRow = document.createElement('div');
+            bpmRow.className = 'control-row';
+            let bpmSlider = document.createElement('input');
+            bpmSlider.type = 'range';
+            bpmSlider.min = '30';
+            bpmSlider.max = '480'; // Extended range!
+            bpmSlider.value = bpm;
+            bpmSlider.oninput = (e) => {
+                bpm = parseInt(e.target.value);
+                document.getElementById('bpm-value').textContent = bpm;
+                updateBeatInterval();
+            };
+            bpmRow.appendChild(bpmSlider);
+            beatDiv.appendChild(bpmRow);
+            
+            let playPauseBtn = document.createElement('button');
+            playPauseBtn.className = 'play-pause-btn stopped';
+            playPauseBtn.textContent = '▶ Start Beat';
+            playPauseBtn.id = 'play-pause-btn';
+            playPauseBtn.onclick = () => toggleBeat();
+            beatDiv.appendChild(playPauseBtn);
+            
+            let modeLabel = document.createElement('label');
+            modeLabel.textContent = 'Beat Pattern:';
+            modeLabel.style.display = 'block';
+            modeLabel.style.marginBottom = '5px';
+            modeLabel.style.fontSize = '12px';
+            modeLabel.style.color = '#aaa';
+            beatDiv.appendChild(modeLabel);
+            
+            let patternBtns = document.createElement('div');
+            patternBtns.className = 'beat-pattern-btns';
+            
+            let modes = [
+                {name: '⬇️ Rain Down Random', value: 'rain-down-random'},
+                {name: '⬇️ Rain Down All', value: 'rain-down-all'},
+                {name: '⬇️ Rain Down Seq', value: 'rain-down-sequential'},
+                {name: '⬆️ Rain Up Random', value: 'rain-up-random'},
+                {name: '⬆️ Rain Up All', value: 'rain-up-all'},
+                {name: '⬆️ Rain Up Seq', value: 'rain-up-sequential'},
+                {name: '↕️ Bidirectional', value: 'rain-bidirectional'},
+                {name: '💥 Collide', value: 'rain-collide'},
+                {name: '⚪🟢 White/Green Wave', value: 'rain-white-green-wave'},
+                {name: '⚪🟢 White/Green All', value: 'rain-white-green-all'},
+                {name: 'All Toggle', value: 'all'},
+                {name: 'Wave', value: 'wave'},
+                {name: 'Random', value: 'random'},
+                {name: 'Alternate', value: 'alternate'}
+            ];
+            
+            modes.forEach(mode => {
+                let btn = document.createElement('button');
+                btn.textContent = mode.name;
+                btn.onclick = () => {
+                    beatMode = mode.value;
+                    patternBtns.querySelectorAll('button').forEach(b => {
+                        b.style.background = '#555';
+                    });
+                    btn.style.background = '#ff6b6b';
+                };
+                if (mode.value === beatMode) {
+                    btn.style.background = '#ff6b6b';
+                }
+                patternBtns.appendChild(btn);
+            });
+            
+            beatDiv.appendChild(patternBtns);
+            controlsDiv.appendChild(beatDiv);
+            
+            // Global controls
+            let globalDiv = document.createElement('div');
+            globalDiv.className = 'control-section global-controls';
+            
+            let globalTitle = document.createElement('h2');
+            globalTitle.textContent = 'Global Controls';
+            globalDiv.appendChild(globalTitle);
+            
+            let btnGroup = document.createElement('div');
+            btnGroup.className = 'button-group';
+            
+            let randomizeBtn = document.createElement('button');
+            randomizeBtn.textContent = '🎲 Randomize';
+            randomizeBtn.onclick = () => randomizeAllLights();
+            
+            let allOnBtn = document.createElement('button');
+            allOnBtn.textContent = '💡 All ON';
+            allOnBtn.onclick = () => setAllCylindersLights(true);
+            
+            let allOffBtn = document.createElement('button');
+            allOffBtn.textContent = '⚫ All OFF';
+            allOffBtn.onclick = () => setAllCylindersLights(false);
+            
+            let rainbowBtn = document.createElement('button');
+            rainbowBtn.textContent = '🌈 Rainbow';
+            rainbowBtn.onclick = () => {
+                initializeColors();
+                initializeSectionColors();
+                updateColorIndicators();
+            };
+            
+            btnGroup.appendChild(randomizeBtn);
+            btnGroup.appendChild(allOnBtn);
+            btnGroup.appendChild(allOffBtn);
+            btnGroup.appendChild(rainbowBtn);
+            globalDiv.appendChild(btnGroup);
+            controlsDiv.appendChild(globalDiv);
+            
+            // Individual cylinder controls
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                let cylinderDiv = document.createElement('div');
+                cylinderDiv.className = 'cylinder-control';
+                
+                let title = document.createElement('h3');
+                let colorIndicator = document.createElement('span');
+                colorIndicator.className = 'cylinder-color-indicator';
+                colorIndicator.id = `color-indicator-${i}`;
+                let col = cylinderColors[i];
+                colorIndicator.style.background = `rgb(${col.r}, ${col.g}, ${col.b})`;
+                
+                title.appendChild(colorIndicator);
+                title.appendChild(document.createTextNode(`Cylinder ${i + 1}`));
+                cylinderDiv.appendChild(title);
+                
+                let controlBtns = document.createElement('div');
+                controlBtns.className = 'control-buttons';
+                
+                let allOnBtn = document.createElement('button');
+                allOnBtn.textContent = '💡 All ON';
+                allOnBtn.onclick = () => setAllLights(i, true);
+                
+                let allOffBtn = document.createElement('button');
+                allOffBtn.textContent = '⚫ All OFF';
+                allOffBtn.onclick = () => setAllLights(i, false);
+                
+                controlBtns.appendChild(allOnBtn);
+                controlBtns.appendChild(allOffBtn);
+                cylinderDiv.appendChild(controlBtns);
+                
+                controlsDiv.appendChild(cylinderDiv);
+            }
+        }
+
+        function updateColorIndicators() {
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                let indicator = document.getElementById(`color-indicator-${i}`);
+                let col = cylinderColors[i];
+                indicator.style.background = `rgb(${col.r}, ${col.g}, ${col.b})`;
+            }
+        }
+
+        function toggleBeat() {
+            isPlaying = !isPlaying;
+            let btn = document.getElementById('play-pause-btn');
+            
+            if (isPlaying) {
+                btn.className = 'play-pause-btn playing';
+                btn.textContent = '⏸ Stop Beat';
+                lastBeatTime = millis();
+            } else {
+                btn.className = 'play-pause-btn stopped';
+                btn.textContent = '▶ Start Beat';
+            }
+        }
+
+        function setAllLights(cylinderIndex, state) {
+            for (let i = 0; i < SECTIONS_PER_CYLINDER; i++) {
+                cylinderLights[cylinderIndex][i] = state;
+            }
+        }
+        
+        function randomizeAllLights() {
+            initializeRandomLights();
+        }
+        
+        function setAllCylindersLights(state) {
+            for (let i = 0; i < NUM_CYLINDERS; i++) {
+                for (let j = 0; j < SECTIONS_PER_CYLINDER; j++) {
+                    cylinderLights[i][j] = state;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

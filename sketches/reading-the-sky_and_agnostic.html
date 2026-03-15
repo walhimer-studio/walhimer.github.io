@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading the Sky / Agnostic – Synchronized</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #111;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 100vh;
+    }
+
+    .panel {
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 40px;
+      box-sizing: border-box;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+
+    section {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .left { background: #ffffff; border-right: 1px solid #eee; }
+    .right { background: #fcfcfc; }
+
+    h1 { font-size: 2.4rem; margin-bottom: 0.5em; }
+    h2 { font-size: 1.2rem; margin-top: 1.5em; margin-bottom: 0.75em; }
+    p  { margin: 0.5em 0; }
+    em { color: #666; }
+
+    .nav-buttons {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    button {
+      background: rgba(255,255,255,0.8);
+      border: 1px solid #ccc;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+
+    @media (max-width: 900px) {
+      .split { grid-template-columns: 1fr; }
+      .left, .right { border-right: none; border-bottom: 1px solid #eee; height: 50vh; }
+      .nav-buttons { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="split">
+    <!-- LEFT: Reading the Sky -->
+    <div class="panel left" id="leftPanel">
+      <section><h1>Reading the Sky</h1><p><em>October 2025</em></p></section>
+      <section><h2>Companionship in Thought</h2><p>companionship through curiosity.</p><p>conversation as navigation — tracing constellations together.</p></section>
+      <section><h2>The Gift of Noticing</h2><p>attention as care.</p><p>to notice is to participate in grace.</p></section>
+      <section><h2>Intimacy as Cooperation</h2><p>connection built in motion.</p><p>love as choreography — shared movement toward ease.</p></section>
+      <section><h2>Faith Without Religion</h2><p>awareness as sacred practice.</p><p>holiness in kindness, in curiosity, in patience.</p></section>
+      <section><h2>The Compass of Kindness</h2><p>virtue practiced by accident.</p><p>gentleness as moral direction.</p></section>
+      <section><h2>The Architecture of Listening</h2><p>listening as invisible design.</p><p>silence enough for another’s voice to ring true.</p></section>
+      <section><h2>The Practice of Returning</h2><p>work as prayer.</p><p>to return is to remember the world.</p></section>
+    </div>
+
+    <!-- RIGHT: Agnostic -->
+    <div class="panel right" id="rightPanel">
+      <section><h1>Agnostic</h1><p><em>October 2025</em></p></section>
+      <section><h2>I. Context</h2><p>fear of being left out.</p><p>masks lifted, moving toward one another, hoping not to be alone.</p></section>
+      <section><h2>II. The Choice</h2><p>map of preference.</p><p>forgetting the map exists.</p></section>
+      <section><h2>III. Mask</h2><p>conformity wears politeness.</p><p>the original pattern disappears.</p><p>to erase oneself is tragic.</p></section>
+      <section><h2>IV. Mirror</h2><p>moments of discomfort reveal the distance.</p><p>the body begins to protest.</p></section>
+      <section><h2>V. Heart</h2><p>to hold space for uncertainty.</p><p>neither cynicism nor belief, but patience.</p></section>
+      <section><h2>VI. Innocent</h2><p>purity of intention does not seek audience.</p><p>has not learned the language of irony.</p><p>authenticity is agnostic — stands quietly, without needing to be right.</p></section>
+      <section><h2>VII. Knife</h2><p>acceptance of ambiguity is its own form of grace.</p></section>
+      <section><h2>VIII. Return</h2><p>peace arrives when the performance ends.</p><p>the self, unobserved, moves naturally again.</p></section>
+    </div>
+  </div>
+
+  <!-- Navigation buttons -->
+  <div class="nav-buttons">
+    <button id="upBtn">↑</button>
+    <button id="downBtn">↓</button>
+  </div>
+
+  <script>
+    const leftPanel = document.getElementById('leftPanel');
+    const rightPanel = document.getElementById('rightPanel');
+    const sections = leftPanel.querySelectorAll('section');
+    let current = 0;
+
+    // Sync scroll between panels
+    leftPanel.addEventListener('scroll', () => {
+      rightPanel.scrollTop = leftPanel.scrollTop * (rightPanel.scrollHeight / leftPanel.scrollHeight);
+    });
+    rightPanel.addEventListener('scroll', () => {
+      leftPanel.scrollTop = rightPanel.scrollTop * (leftPanel.scrollHeight / rightPanel.scrollHeight);
+    });
+
+    function scrollToSection(index) {
+      const targetLeft = sections[index].offsetTop;
+      leftPanel.scrollTo({ top: targetLeft, behavior: 'smooth' });
+      rightPanel.scrollTo({ top: targetLeft, behavior: 'smooth' });
+    }
+
+    document.getElementById('upBtn').onclick = () => {
+      if (current > 0) { current--; scrollToSection(current); }
+    };
+    document.getElementById('downBtn').onclick = () => {
+      if (current < sections.length - 1) { current++; scrollToSection(current); }
+    };
+
+    // Arrow key navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { document.getElementById('downBtn').click(); }
+      if (e.key === 'ArrowUp') { document.getElementById('upBtn').click(); }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Drawings</title>
+
+<!--
+  fxhash boilerplate snippet.
+  In production, fxhash injects this automatically — this copy lets you
+  test locally. The hash is randomised each page-load so every refresh
+  gives you a new "mint".
+-->
+<script id="fxhash-snippet">
+//---- DO NOT EDIT THIS SECTION ----
+let alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"
+var fxhash = "oo" + Array(49).fill(0).map(_=>alphabet[(Math.random()*alphabet.length)|0]).join('')
+let b58dec = str=>[...str].reduce((p,c)=>p*alphabet.length+alphabet.indexOf(c)|0, 0)
+let fxhashTrunc = fxhash.slice(2)
+let regex = new RegExp(".{" + ((fxhashTrunc.length/4)|0) + "}", 'g')
+let hashes = fxhashTrunc.match(regex).map(h => b58dec(h))
+let sfc32 = (a, b, c, d) => {
+  return () => {
+    a |= 0; b |= 0; c |= 0; d |= 0
+    let t = (a + b | 0) + d | 0
+    d = d + 1 | 0
+    a = b ^ b >>> 9
+    b = c + (c << 3) | 0
+    c = c << 21 | c >>> 11
+    c = c + t | 0
+    return (t >>> 0) / 4294967296
+  }
+}
+var fxrand = sfc32(...hashes)
+fxrand(); fxrand(); fxrand(); fxrand()
+//---- DO NOT EDIT THIS SECTION ----
+
+// Minimal $fx shim for local testing.
+// On fxhash the platform replaces this with the real implementation.
+window.$fx = {
+  _features: {},
+  features: function(f) { this._features = f; console.log(JSON.stringify(f, null, 2)); },
+  isPreview: false,
+  preview: function() {}
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<script>
+// ─── fxrand helpers ────────────────────────────────────────────────────────
+// Use these everywhere instead of p5's random() so the output is always
+// deterministic for a given hash.
+
+function R(a, b) {
+  // R()      → [0, 1)
+  // R(n)     → [0, n)
+  // R(a, b)  → [a, b)
+  if (a === undefined) return fxrand();
+  if (b === undefined) return fxrand() * a;
+  return fxrand() * (b - a) + a;
+}
+function Ri(a, b) { return Math.floor(R(a, b)); }   // integer in [a, b)
+function Rc(arr)  { return arr[Ri(0, arr.length)]; } // random element
+
+// ─── Token parameters (all derived from the hash) ─────────────────────────
+// These are sampled once at load-time; every call to R/Ri/Rc advances the
+// same deterministic sequence, so the final artwork is fully reproducible.
+
+const COMPLEXITY     = Ri(3, 16);        // 3–15
+const LINE_WEIGHT    = parseFloat(R(0.5, 3).toFixed(1));
+const SHOW_GRID      = fxrand() < 0.90;
+const SHOW_ELEVATION = fxrand() < 0.90;
+const SHOW_CIRCLES   = fxrand() < 0.80;
+const SHOW_CUBES     = fxrand() < 0.80;
+const SHOW_ARROWS    = fxrand() < 0.80;
+const SHOW_ZIGZAGS   = fxrand() < 0.75;
+const SHOW_DOTS      = fxrand() < 0.85;
+const SHOW_TEXT      = fxrand() < 0.85;
+
+// ─── Palette ───────────────────────────────────────────────────────────────
+const PALETTES = [
+  { name: "Black",      bg: [  0,  0,  0], ink: [255,255,255], inkMid: [110,110,110], inkLight: [200,200,200] },
+  { name: "White",      bg: [248,248,245], ink: [ 20, 20, 20], inkMid: [ 80, 80, 75], inkLight: [160,160,155] },
+  { name: "Tan",        bg: [228,212,182], ink: [ 30, 20, 10], inkMid: [100, 85, 55], inkLight: [170,150,110] },
+  { name: "Light Blue", bg: [200,222,238], ink: [ 10, 35, 58], inkMid: [ 50, 90,125], inkLight: [120,158,185] },
+  { name: "Pink",       bg: [242,210,218], ink: [ 45, 10, 22], inkMid: [110, 65, 80], inkLight: [190,148,162] },
+];
+const PALETTE = Rc(PALETTES);
+const BG      = PALETTE.bg;
+const INK     = PALETTE.ink;
+const INK_MID = PALETTE.inkMid;
+const INK_LT  = PALETTE.inkLight;
+
+// ─── fxhash features (appear as on-chain token attributes) ─────────────────
+$fx.features({
+  "Complexity":   COMPLEXITY < 6  ? "Minimal"
+                : COMPLEXITY < 10 ? "Moderate" : "Dense",
+  "Line Weight":  LINE_WEIGHT < 1.2 ? "Fine"
+                : LINE_WEIGHT < 2.2 ? "Medium"  : "Bold",
+  "Grid":         SHOW_GRID,
+  "Elevation":    SHOW_ELEVATION,
+  "Cubes":        SHOW_CUBES,
+  "Circles":      SHOW_CIRCLES,
+  "Arrows":       SHOW_ARROWS,
+  "Text Labels":  SHOW_TEXT,
+  "Background":   PALETTE.name,
+});
+
+// ─── Sketch constants ──────────────────────────────────────────────────────
+const CNV_SIZE = 800; // logical canvas size (CSS scaling handles display)
+
+const techWords = [
+  "VOID", "SUSPENDED", "FLOW", "FIELD", "ZONE", "AXIS",
+  "VECTOR", "NODE", "CONNECTION", "CIRCUIT", "MODULE",
+  "STRUCTURE", "TENSION", "BALANCE", "SEQUENCE", "THRESHOLD",
+  "GRADIENT", "INTERFACE", "MEMBRANE", "PATHWAY", "GRID"
+];
+
+let elevationY = 0;
+
+// ─── p5 lifecycle ──────────────────────────────────────────────────────────
+function setup() {
+  let canvas = createCanvas(CNV_SIZE, CNV_SIZE);
+  canvas.parent(document.body);
+  pixelDensity(2);
+  fitCanvas();
+  noLoop();
+  generateNew();
+}
+
+function windowResized() {
+  fitCanvas();
+}
+
+function fitCanvas() {
+  // Scale the canvas element to fill the smallest viewport dimension while
+  // keeping the 1:1 aspect ratio — no p5 resize needed.
+  let s = Math.min(windowWidth, windowHeight);
+  let el = document.querySelector('canvas');
+  el.style.width  = s + 'px';
+  el.style.height = s + 'px';
+}
+
+// ─── Main draw ─────────────────────────────────────────────────────────────
+function generateNew() {
+  background(...BG);
+  stroke(...INK);
+  strokeWeight(LINE_WEIGHT);
+  noFill();
+
+  if (SHOW_GRID)      drawGrid();
+
+  elevationY = CNV_SIZE * 0.7;
+  if (SHOW_ELEVATION) drawElevationLine();
+
+  // Core structural elements
+  for (let i = 0; i < COMPLEXITY; i++) {
+    let type = Rc(['circle', 'oval', 'rect', 'line', 'curve', 'perspective']);
+    switch (type) {
+      case 'circle':      if (SHOW_CIRCLES) drawCircleCluster();    break;
+      case 'oval':        if (SHOW_CIRCLES) drawOvalShape();        break;
+      case 'rect':        drawRectPattern();                         break;
+      case 'line':        drawLinearPattern();                       break;
+      case 'curve':       drawCurvePattern();                        break;
+      case 'perspective': drawPerspectiveLines();                    break;
+    }
+  }
+
+  if (SHOW_CUBES) {
+    let n = Ri(2, 5);
+    for (let i = 0; i < n; i++) drawIsometricCube();
+  }
+  if (SHOW_ARROWS) {
+    let n = Ri(3, 8);
+    for (let i = 0; i < n; i++) drawArrow();
+  }
+  if (SHOW_ZIGZAGS) {
+    let n = Ri(2, 5);
+    for (let i = 0; i < n; i++) drawZigzag();
+  }
+  if (SHOW_DOTS) {
+    let n = Ri(10, 30);
+    for (let i = 0; i < n; i++) drawDotPattern();
+  }
+  if (SHOW_TEXT) {
+    let n = Ri(2, 5);
+    for (let i = 0; i < n; i++) drawTextLabel();
+  }
+
+  // Tell fxhash the piece is fully rendered — triggers the preview capture.
+  $fx.preview();
+}
+
+// ─── Drawing functions ──────────────────────────────────────────────────────
+
+function drawGrid() {
+  push();
+  stroke(INK[0], INK[1], INK[2], 40);
+  strokeWeight(0.5);
+  let spacing = CNV_SIZE / R(8, 12);
+  for (let x = 0; x < CNV_SIZE; x += spacing) line(x, 0, x, CNV_SIZE);
+  for (let y = 0; y < CNV_SIZE; y += spacing) line(0, y, CNV_SIZE, y);
+  pop();
+}
+
+function drawElevationLine() {
+  push();
+  strokeWeight(LINE_WEIGHT * 1.5);
+  stroke(...INK);
+  // Main horizontal line
+  line(0, elevationY, CNV_SIZE, elevationY);
+  // Tick marks
+  let tickSpacing = CNV_SIZE / 8;
+  for (let x = tickSpacing; x < CNV_SIZE; x += tickSpacing) {
+    line(x, elevationY - 5, x, elevationY + 5);
+  }
+  // Ground hatching below the line
+  stroke(INK[0], INK[1], INK[2], 100);
+  strokeWeight(0.5);
+  let hatchSpacing = 15;
+  for (let x = 0; x < CNV_SIZE; x += hatchSpacing) {
+    line(x, elevationY + 2, x - 8, elevationY + 12);
+  }
+  pop();
+}
+
+function drawCircleCluster() {
+  let x          = R(CNV_SIZE * 0.2, CNV_SIZE * 0.8);
+  let count      = Ri(2, 6);
+  let onElevation = SHOW_ELEVATION && fxrand() < 0.3;
+  push();
+  strokeWeight(LINE_WEIGHT);
+  for (let i = 0; i < count; i++) {
+    let r       = R(20, 80);
+    let offsetX = R(-30, 30);
+    let y       = onElevation
+                ? elevationY - r / 2 + R(-10, 0)
+                : R(CNV_SIZE * 0.2, CNV_SIZE * 0.8);
+    let offsetY = onElevation ? 0 : R(-30, 30);
+    circle(x + offsetX, y + offsetY, r);
+    if (fxrand() < 0.3) {
+      fill(...INK_LT); noStroke();
+      circle(x + offsetX, y + offsetY, r * 0.6);
+      noFill(); stroke(...INK);
+    }
+  }
+  pop();
+}
+
+function drawOvalShape() {
+  push();
+  translate(R(CNV_SIZE * 0.2, CNV_SIZE * 0.8), R(CNV_SIZE * 0.2, CNV_SIZE * 0.8));
+  rotate(R(TWO_PI));
+  ellipse(0, 0, R(40, 120), R(20, 60));
+  pop();
+}
+
+function drawRectPattern() {
+  let x = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let w = R(50, 150);
+  let h = R(50, 150);
+  let y = (SHOW_ELEVATION && fxrand() < 0.5)
+        ? elevationY - h
+        : R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  push();
+  rect(x, y, w, h);
+  if (fxrand() < 0.5) line(x, y + h / 2, x + w, y + h / 2);
+  if (fxrand() < 0.5) line(x + w / 2, y, x + w / 2, y + h);
+  pop();
+}
+
+function drawLinearPattern() {
+  let x1 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let y1 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let x2 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let y2 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  push();
+  line(x1, y1, x2, y2);
+  if (fxrand() < 0.6) {
+    let angle     = atan2(y2 - y1, x2 - x1);
+    let perpAngle = angle + PI / 2;
+    let spacing   = 10;
+    for (let i = 1; i <= 2; i++) {
+      let ox = cos(perpAngle) * spacing * i;
+      let oy = sin(perpAngle) * spacing * i;
+      stroke(INK[0], INK[1], INK[2], 150);
+      line(x1 + ox, y1 + oy, x2 + ox, y2 + oy);
+    }
+  }
+  pop();
+}
+
+function drawCurvePattern() {
+  let x1 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let y1 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let x2 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let y2 = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let cx = (x1 + x2) / 2 + R(-100, 100);
+  let cy = (y1 + y2) / 2 + R(-100, 100);
+  push();
+  noFill();
+  beginShape();
+  vertex(x1, y1);
+  quadraticVertex(cx, cy, x2, y2);
+  endShape();
+  pop();
+}
+
+function drawPerspectiveLines() {
+  let vanishX = R(CNV_SIZE * 0.3, CNV_SIZE * 0.7);
+  let vanishY = R(CNV_SIZE * 0.3, CNV_SIZE * 0.7);
+  push();
+  stroke(INK[0], INK[1], INK[2], 120);
+  let n = Ri(3, 6);
+  for (let i = 0; i < n; i++) {
+    line(R(CNV_SIZE), R(CNV_SIZE), vanishX, vanishY);
+  }
+  pop();
+}
+
+function drawIsometricCube() {
+  let x    = R(CNV_SIZE * 0.2, CNV_SIZE * 0.8);
+  let size = R(30, 80);
+  let y    = elevationY - size; // sits on the elevation line
+  let a1   = radians(30);       // right-face angle
+  let a2   = radians(150);      // left-face angle
+
+  push();
+  strokeWeight(LINE_WEIGHT);
+
+  let tC  = { x, y };
+  let tR  = { x: x + cos(a1) * size, y: y + sin(a1) * size };
+  let tL  = { x: x + cos(a2) * size, y: y + sin(a2) * size };
+  let bC  = { x, y: y + size };
+  let bR  = { x: tR.x, y: tR.y + size };
+  let bL  = { x: tL.x, y: tL.y + size };
+  let tFx = x + cos(a1) * size + cos(a2) * size;
+  let tFy = y + sin(a1) * size + sin(a2) * size;
+
+  // Top face
+  line(tC.x, tC.y, tR.x, tR.y);
+  line(tC.x, tC.y, tL.x, tL.y);
+  line(tL.x, tL.y, tFx, tFy);
+  line(tR.x, tR.y, tFx, tFy);
+  // Vertical edges
+  line(tC.x, tC.y, bC.x, bC.y);
+  line(tR.x, tR.y, bR.x, bR.y);
+  line(tL.x, tL.y, bL.x, bL.y);
+  // Visible bottom edges
+  line(bC.x, bC.y, bR.x, bR.y);
+  line(bC.x, bC.y, bL.x, bL.y);
+
+  // Optionally fill the right face
+  if (fxrand() < 0.4) {
+    fill(...INK_MID); noStroke();
+    beginShape();
+    vertex(tR.x, tR.y);
+    vertex(bR.x, bR.y);
+    vertex(bC.x, bC.y);
+    vertex(tC.x, tC.y);
+    endShape(CLOSE);
+    noFill(); stroke(...INK); strokeWeight(LINE_WEIGHT);
+  }
+  pop();
+}
+
+function drawArrow() {
+  let x1         = R(CNV_SIZE * 0.2, CNV_SIZE * 0.8);
+  let y1         = R(CNV_SIZE * 0.2, CNV_SIZE * 0.8);
+  let len        = R(40, 100);
+  let angle      = R(TWO_PI);
+  let x2         = x1 + cos(angle) * len;
+  let y2         = y1 + sin(angle) * len;
+  let arrowSize  = 12;
+  let arrowAngle = PI / 6;
+
+  push();
+  stroke(...INK); strokeWeight(LINE_WEIGHT);
+  line(x1, y1, x2, y2);
+  line(x2, y2,
+       x2 - arrowSize * cos(angle - arrowAngle),
+       y2 - arrowSize * sin(angle - arrowAngle));
+  line(x2, y2,
+       x2 - arrowSize * cos(angle + arrowAngle),
+       y2 - arrowSize * sin(angle + arrowAngle));
+  pop();
+}
+
+function drawZigzag() {
+  let x          = R(CNV_SIZE * 0.2, CNV_SIZE * 0.8);
+  let y          = R(CNV_SIZE * 0.2, CNV_SIZE * 0.8);
+  let isVertical = fxrand() < 0.5;
+  let count      = Ri(5, 12);
+  let amplitude  = R(8, 15);
+  let spacing    = R(5, 12);
+
+  push(); noFill(); beginShape();
+  for (let i = 0; i < count; i++) {
+    let alt = i % 2 === 0 ? amplitude : -amplitude;
+    if (isVertical) vertex(x + alt, y + i * spacing);
+    else            vertex(x + i * spacing, y + alt);
+  }
+  endShape(); pop();
+}
+
+function drawDotPattern() {
+  let x          = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let y          = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let count      = Ri(3, 8);
+  let isVertical = fxrand() < 0.5;
+  let spacing    = 8;
+
+  push(); fill(...INK_LT); noStroke();
+  for (let i = 0; i < count; i++) {
+    if (isVertical) circle(x, y + i * spacing, 4);
+    else            circle(x + i * spacing, y, 4);
+  }
+  pop();
+}
+
+function drawTextLabel() {
+  let x    = R(CNV_SIZE * 0.1, CNV_SIZE * 0.8);
+  let y    = R(CNV_SIZE * 0.1, CNV_SIZE * 0.9);
+  let word = Rc(techWords);
+
+  push();
+  fill(...INK); noStroke();
+  textFont('Courier New');
+  textSize(R(10, 14));
+  text(word, x, y);
+  if (fxrand() < 0.3) {
+    stroke(...INK); strokeWeight(0.5);
+    let w = textWidth(word);
+    line(x, y + 2, x + w, y + 2);
+  }
+  pop();
+}
+</script>
+</body>
+</html>

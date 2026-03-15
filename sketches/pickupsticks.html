@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Gradient Shapes — p5.js</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- p5.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+  <script>
+  let colors = [];
+  let shapes = [];
+  let fadeSpeed = 0.01;
+
+  function setup() {
+    createCanvas(windowWidth, windowHeight, WEBGL);
+    frameRate(60);
+    noStroke();
+
+    colors = [
+      [color(255, 0, 0, 80), color(255, 204, 0, 80)],   // Red → Yellow
+      [color(0, 255, 255, 80), color(0, 0, 255, 80)],   // Cyan → Blue
+      [color(255, 0, 255, 80), color(255, 255, 0, 80)]  // Magenta → Yellow
+    ];
+
+    for (let i = 0; i < 20; i++) {
+      shapes.push({
+        x: random(-300, 200),
+        y: random(-300, 300),
+        w: random(500, 2000),
+        h: random(40, 1000),
+        d: random(100, 500),
+        colorSet: random(colors),
+        fadeOffset: random(TWO_PI)
+      });
+    }
+  }
+
+  function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
+
+  function draw() {
+    background(255);
+    rotateY(millis() * 0.0001); // slow, smooth rotation
+
+    for (let s of shapes) {
+      let alpha = map(sin(frameCount * fadeSpeed + s.fadeOffset), -1, 1, 20, 120);
+      let c1 = color(red(s.colorSet[0]), green(s.colorSet[0]), blue(s.colorSet[0]), alpha);
+      let c2 = color(red(s.colorSet[1]), green(s.colorSet[1]), blue(s.colorSet[1]), alpha);
+
+      push();
+      translate(s.x, s.y, 0);
+      drawSoftGradientBox(s.w, s.h, s.d, c1, c2);
+      pop();
+    }
+  }
+
+  function drawSoftGradientBox(w, h, d, c1, c2) {
+    // Front face
+    beginShape();
+    fill(c1); vertex(-w/2, -h/2, d/2);
+    fill(c2); vertex( w/2, -h/2, d/2);
+    vertex( w/2,  h/2, d/2);
+    vertex(-w/2,  h/2, d/2);
+    endShape(CLOSE);
+
+    // Back face
+    beginShape();
+    fill(c2); vertex(-w/2, -h/2, -d/2);
+    fill(c1); vertex( w/2, -h/2, -d/2);
+    vertex( w/2,  h/2, -d/2);
+    vertex(-w/2,  h/2, -d/2);
+    endShape(CLOSE);
+
+    // Left side
+    beginShape();
+    fill(c1); vertex(-w/2, -h/2, d/2);
+    vertex(-w/2,  h/2, d/2);
+    fill(c2); vertex(-w/2,  h/2, -d/2);
+    vertex(-w/2, -h/2, -d/2);
+    endShape(CLOSE);
+
+    // Right side
+    beginShape();
+    fill(c2); vertex(w/2, -h/2, d/2);
+    vertex(w/2,  h/2, d/2);
+    fill(c1); vertex(w/2,  h/2, -d/2);
+    vertex(w/2, -h/2, -d/2);
+    endShape(CLOSE);
+  }
+  </script>
+</body>
+</html>
