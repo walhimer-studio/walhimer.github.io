@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: #fff; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<script>
+/** 1. STUDIO SEEDING ENGINE **/
+const urlParams = new URLSearchParams(window.location.search);
+const seedValue = urlParams.get('seed') ? parseInt(urlParams.get('seed')) : Math.floor(Math.random() * 1000000);
+
+function sfc32(a, b, c, d) {
+  return function() {
+    a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0; 
+    var t = (a + b | 0) + d | 0;
+    d = d + 1 | 0; a = b ^ b >>> 9; b = c + (c << 3) | 0;
+    c = (c << 21 | c >>> 11); c = c + t | 0;
+    return (t >>> 0) / 4294967296;
+  }
+}
+const studioRandom = sfc32(seedValue, 0xadbdef, 0x123456, 0x789abc);
+
+/** 2. ARTISTIC HELPERS **/
+function rand(min, max) { return min + studioRandom() * (max - min); }
+
+function weightedChoice(choices, weights) {
+  let total = weights.reduce((a, b) => a + b, 0);
+  let r = studioRandom() * total;
+  let sum = 0;
+  for (let i = 0; i < choices.length; i++) {
+    sum += weights[i];
+    if (r <= sum) return choices[i];
+  }
+  return choices[choices.length - 1];
+}
+
+function hslToRgba(h, s, l, a) {
+  h = ((h % 360) + 360) % 360;
+  let c = (1 - Math.abs(2 * l - 1)) * s;
+  let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  let m = l - c / 2;
+  let r1, g1, b1;
+  if (h < 60) { r1 = c; g1 = x; b1 = 0; }
+  else if (h < 120) { r1 = x; g1 = c; b1 = 0; }
+  else if (h < 180) { r1 = 0; g1 = c; b1 = x; }
+  else if (h < 240) { r1 = 0; g1 = x; b1 = c; }
+  else if (h < 300) { r1 = x; g1 = 0; b1 = c; }
+  else { r1 = c; g1 = 0; b1 = x; }
+  return [(r1 + m) * 255, (g1 + m) * 255, (b1 + m) * 255, a * 255];
+}
+
+const colorPairsHSL = [
+  [[0, 1.0, 0.5, 0.3], [45, 1.0, 0.5, 0.3]],
+  [[180, 1.0, 0.5, 0.3], [240, 1.0, 0.5, 0.3]],
+  [[300, 1.0, 0.5, 0.3], [60, 1.0, 0.5, 0.3]]
+];
+
+/** 3. THE ARTWORK **/
+let shapes = [];
+const W = 1000;
+const H = 1000;
+
+function setup() {
+  createCanvas(W, H, WEBGL);
+  pixelDensity(2);
+  noStroke();
+  ortho(-W / 2, W / 2, -H / 2, H / 2, -1000, 1000);
+
+  let shapeCount = weightedChoice([4, 6, 8, 10], [2, 5, 3, 1]);
+
+  for (let i = 0; i < shapeCount; i++) {
+    let pairIdx = Math.floor(studioRandom() * colorPairsHSL.length);
+    let pair = colorPairsHSL[pairIdx];
+    let orientation = weightedChoice(["horizontal", "vertical"], [3, 1]);
+    
+    let baseW = rand(0.3 * W, 0.8 * W);
+    let baseH = rand(0.2 * H, 0.6 * H);
+    
+    if (studioRandom() < 0.1) {
+      baseW = rand(0.5 * W, 0.9 * W);
+      baseH = rand(0.4 * H, 0.8 * H);
+    }
+
+    let w = orientation === "horizontal" ? baseW : baseH;
+    let h = orientation === "horizontal" ? baseH : baseW;
+
+    shapes.push({
+      w, h,
+      c1: { h: pair[0][0], s: pair[0][1], l: pair[0][2] },
+      c2: { h: pair[1][0], s: pair[1][1], l: pair[1][2] },
+      baseFillOpacity: rand(0.35, 0.55),
+      offset: rand(0, Math.PI * 2)
+    });
+  }
+
+  let label = createDiv(`SEED: ${seedValue} | PRESS 'S' TO VAULT`);
+  label.style('position', 'fixed');
+  label.style('bottom', '20px');
+  label.style('width', '100%');
+  label.style('text-align', 'center');
+  label.style('font-family', 'monospace');
+  label.style('color', 'rgba(0,0,0,0.4)');
+}
+
+function draw() {
+  background(255);
+  let tSec = millis() * 0.001;
+
+  shapes.forEach(s => {
+    let fillOpacity = s.baseFillOpacity + 0.30 * Math.sin(tSec * 0.3 + s.offset);
+    let alpha = constrain(0.3 * max(0, fillOpacity), 0, 1);
+
+    let c1 = hslToRgba(s.c1.h, s.c1.s, s.c1.l, alpha);
+    let c2 = hslToRgba(s.c2.h, s.c2.s, s.c2.l, alpha);
+
+    push();
+    beginShape();
+    fill(c1[0], c1[1], c1[2], c1[3]); vertex(-s.w / 2, -s.h / 2, 0);
+    fill(c2[0], c2[1], c2[2], c2[3]); vertex(s.w / 2, -s.h / 2, 0);
+    fill(c2[0], c2[1], c2[2], c2[3]); vertex(s.w / 2, s.h / 2, 0);
+    fill(c1[0], c1[1], c1[2], c1[3]); vertex(-s.w / 2, s.h / 2, 0);
+    endShape(CLOSE);
+    pop();
+  });
+}
+
+/** 4. THE VAULT HANDSHAKE **/
+function keyPressed() {
+  if (key === 's' || key === 'S') {
+    const archiveData = {
+      number: "1002", 
+      series: "Breathing Panels",
+      seed: seedValue.toString(),
+      params: { shapeCount: shapes.length }
+    };
+
+    fetch('save.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(archiveData)
+    })
+    .then(res => res.json())
+    .then(data => alert(data.status))
+    .catch(err => alert("Save failed. Check if MAMP is running."));
+  }
+}
+</script>
+</body>
+</html>
