@@ -1,1 +1,640 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Installations — Mark Walhimer</title><style>body{background:#0d0d0d;color:#bbb;font-family:monospace;min-height:100vh}nav{border-bottom:1px solid #2a2a2a;padding:0 40px;display:flex;align-items:stretch}.nav-name{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:#c8ff00;padding:22px 32px 22px 0;border-right:1px solid #2a2a2a;margin-right:8px}.nav-link{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#555;padding:22px 20px;text-decoration:none;display:flex;align-items:center}.nav-link:hover{color:#f0f0f0}.nav-link.active{color:#f0f0f0;border-bottom:1px solid #c8ff00;margin-bottom:-1px}.nav-link.soon{color:#2a2a2a;pointer-events:none}.page-header{padding:48px 40px 40px;border-bottom:1px solid #2a2a2a}.page-header h2{font-size:24px;font-weight:500;color:#f0f0f0}footer{padding:20px 40px;border-top:1px solid #2a2a2a;font-size:10px;color:#2a2a2a}</style></head><body><nav><span class="nav-name">Mark Walhimer</span><a class="nav-link" href="../index.html">Projects</a><a class="nav-link active" href="index.html">Installations</a><a class="nav-link soon" href="#">Bio / CV</a><a class="nav-link soon" href="#">Exhibitions</a><a class="nav-link soon" href="#">Contact</a></nav><div class="page-header"><h2>Installations</h2></div><footer>Mark Walhimer — Installations</footer></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installations — Mark Walhimer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:    #0a0a0a;
+      --offwhite: #f0ede6;
+      --dim:      #666660;
+      --rule:     #1e1e1e;
+      --accent:   #c8a882;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--black);
+      color: var(--offwhite);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 48px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .nav-logo {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--offwhite);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--offwhite); }
+
+    /* HEADER */
+    header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 48px 64px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .kicker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 300;
+      line-height: 1.0;
+      letter-spacing: -0.025em;
+      margin-bottom: 36px;
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+    .header-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .header-body { grid-template-columns: 1fr; } }
+    .lede {
+      font-size: clamp(17px, 2vw, 21px);
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(240,237,230,0.85);
+    }
+    .lede strong { font-weight: 400; color: var(--offwhite); }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .meta-row:first-child { border-top: 1px solid var(--rule); }
+    .meta-key {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .meta-val {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.06em;
+      color: var(--offwhite);
+      text-align: right;
+    }
+
+    /* GRID */
+    .grid-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 72px 48px;
+    }
+    .grid-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 40px;
+    }
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+    }
+    @media (max-width: 900px) { .works-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .works-grid { grid-template-columns: 1fr; } }
+
+    .work-card {
+      background: var(--black);
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.25s;
+    }
+    .work-card:hover { background: #111; }
+
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #0d0d0d;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--rule);
+      transition: filter 0.3s;
+    }
+    .work-card:hover .card-thumb { filter: brightness(1.2); }
+
+    .preview-svg { width: 100%; height: 100%; display: block; }
+
+    .card-number {
+      position: absolute;
+      top: 14px;
+      left: 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.14em;
+      color: rgba(102,102,96,0.8);
+      z-index: 2;
+    }
+    .card-arrow {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      width: 26px; height: 26px;
+      border: 1px solid var(--rule);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .work-card:hover .card-arrow { border-color: var(--accent); transform: translate(2px,-2px); }
+    .card-arrow svg { width: 10px; height: 10px; }
+
+    .card-body {
+      padding: 22px 22px 26px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .card-category {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .card-title {
+      font-size: 21px;
+      font-weight: 300;
+      line-height: 1.2;
+      color: var(--offwhite);
+    }
+    .card-title em { font-style: italic; }
+    .card-desc {
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(240,237,230,0.45);
+      margin-top: 3px;
+      flex: 1;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      border: 1px solid var(--rule);
+      padding: 3px 7px;
+    }
+
+    /* ARTIST */
+    .artist-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 48px;
+      border-top: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 64px;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .artist-section { grid-template-columns: 1fr; gap: 32px; } }
+    .artist-left .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 18px;
+    }
+    .artist-left .name { font-size: 28px; font-weight: 300; line-height: 1.2; margin-bottom: 5px; }
+    .artist-left .role {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--dim);
+      letter-spacing: 0.1em;
+      margin-bottom: 22px;
+    }
+    .social-links { display: flex; flex-direction: column; gap: 8px; }
+    .social-links a {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .social-links a:hover { color: var(--offwhite); }
+    .artist-bio { font-size: 15px; font-weight: 300; line-height: 1.9; color: rgba(240,237,230,0.6); }
+    .artist-bio p { margin-bottom: 16px; }
+    .artist-bio p:last-child { margin-bottom: 0; }
+    .artist-bio strong { font-weight: 400; color: var(--offwhite); }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 22px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer span { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">Mark Walhimer</a>
+  <div class="nav-links">
+    <a href="/installations/" class="active">Installations</a>
+    <a href="/consulting/">Consulting</a>
+    <a href="/about/">About</a>
+  </div>
+</nav>
+
+<header>
+  <p class="kicker">Prix Ars Electronica 2026 &nbsp;·&nbsp; Generative Art+ &nbsp;·&nbsp; Seven Works</p>
+  <h1>Instal<em>lations</em></h1>
+  <div class="header-body">
+    <p class="lede">Seven generative works exploring <strong>collective memory, ecological systems, and architectural notation</strong> — each produced live in the browser, each unique at the moment of its generation.</p>
+    <div class="header-meta">
+      <div class="meta-row"><span class="meta-key">Submitted</span><span class="meta-val">Prix Ars Electronica 2026</span></div>
+      <div class="meta-row"><span class="meta-key">Category</span><span class="meta-val">Generative Art+</span></div>
+      <div class="meta-row"><span class="meta-key">Works</span><span class="meta-val">Seven</span></div>
+      <div class="meta-row"><span class="meta-key">Medium</span><span class="meta-val">Browser-based generative code</span></div>
+      <div class="meta-row"><span class="meta-key">Year</span><span class="meta-val">2026</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="grid-wrapper">
+  <p class="grid-label">Works</p>
+  <div class="works-grid">
+
+    <!-- 01 Living Commons -->
+    <a class="work-card" href="living-commons.html">
+      <div class="card-thumb" style="background:#050810;">
+        <span class="card-number">01</span>
+        <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g1a" cx="30%" cy="45%" r="50%"><stop offset="0%" stop-color="rgba(60,80,160,0.35)"/><stop offset="100%" stop-color="transparent"/></radialGradient><radialGradient id="g1b" cx="70%" cy="60%" r="45%"><stop offset="0%" stop-color="rgba(60,160,110,0.25)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
+          <rect width="320" height="240" fill="url(#g1a)"/>
+          <rect width="320" height="240" fill="url(#g1b)"/>
+          <circle cx="90" cy="110" r="58" fill="none" stroke="rgba(100,140,210,0.22)" stroke-width="1"/>
+          <circle cx="90" cy="110" r="34" fill="none" stroke="rgba(100,140,210,0.15)" stroke-width="0.7"/>
+          <circle cx="162" cy="132" r="46" fill="none" stroke="rgba(70,180,130,0.18)" stroke-width="1"/>
+          <circle cx="234" cy="104" r="40" fill="none" stroke="rgba(90,130,200,0.15)" stroke-width="0.8"/>
+          <circle cx="156" cy="78" r="23" fill="none" stroke="rgba(70,180,130,0.14)" stroke-width="0.6"/>
+          <line x1="90" y1="110" x2="162" y2="132" stroke="rgba(100,160,180,0.18)" stroke-width="0.5"/>
+          <line x1="162" y1="132" x2="234" y2="104" stroke="rgba(100,160,180,0.18)" stroke-width="0.5"/>
+          <line x1="90" y1="110" x2="156" y2="78" stroke="rgba(100,160,180,0.12)" stroke-width="0.5"/>
+          <circle cx="90" cy="110" r="3" fill="rgba(120,160,220,0.4)"/>
+          <circle cx="162" cy="132" r="3" fill="rgba(80,190,140,0.4)"/>
+          <circle cx="234" cy="104" r="3" fill="rgba(120,160,220,0.35)"/>
+          <circle cx="156" cy="78" r="2" fill="rgba(80,190,140,0.35)"/>
+        </svg>
+        <div class="card-arrow"><svg viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="#c8a882" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Fluid Dynamics &nbsp;·&nbsp; p5.js</div>
+        <div class="card-title">Living <em>Commons</em></div>
+        <p class="card-desc">Cooperative forms emerge from fluid simulation — organisms that seek equilibrium through shared motion. No two states repeat.</p>
+        <div class="card-tags"><span class="tag">Generative</span><span class="tag">Cooperative</span><span class="tag">Real-time</span></div>
+      </div>
+    </a>
+
+    <!-- 02 Surrender Machines -->
+    <a class="work-card" href="surrender-machines.html">
+      <div class="card-thumb" style="background:#080808;">
+        <span class="card-number">02</span>
+        <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="0" x2="320" y2="0" stroke="transparent"/>
+          <!-- diagonal hatching -->
+          <line x1="0" y1="40" x2="40" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
+          <line x1="0" y1="80" x2="80" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
+          <line x1="0" y1="120" x2="120" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
+          <line x1="0" y1="160" x2="160" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
+          <line x1="0" y1="200" x2="200" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
+          <line x1="0" y1="240" x2="240" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
+          <line x1="40" y1="240" x2="280" y2="0" stroke="rgba(200,168,130,0.04)" stroke-width="0.7"/>
+          <line x1="80" y1="240" x2="320" y2="0" stroke="rgba(200,168,130,0.04)" stroke-width="0.7"/>
+          <line x1="120" y1="240" x2="320" y2="40" stroke="rgba(200,168,130,0.04)" stroke-width="0.7"/>
+          <!-- machine form 1 -->
+          <g transform="translate(50,55)">
+            <path d="M50,0 L95,25 L95,75 L50,100 L5,75 L5,25 Z" fill="rgba(200,168,130,0.04)" stroke="rgba(200,168,130,0.22)" stroke-width="0.8"/>
+            <line x1="50" y1="0" x2="50" y2="50" stroke="rgba(200,168,130,0.12)" stroke-width="0.5"/>
+            <line x1="5" y1="50" x2="95" y2="50" stroke="rgba(200,168,130,0.1)" stroke-width="0.4"/>
+            <circle cx="50" cy="50" r="8" fill="none" stroke="rgba(200,168,130,0.2)" stroke-width="0.6"/>
+          </g>
+          <!-- machine form 2 -->
+          <g transform="translate(175,100)">
+            <path d="M32,0 L62,16 L62,48 L32,64 L2,48 L2,16 Z" fill="rgba(200,168,130,0.03)" stroke="rgba(200,168,130,0.16)" stroke-width="0.7"/>
+            <circle cx="32" cy="32" r="5" fill="none" stroke="rgba(200,168,130,0.16)" stroke-width="0.5"/>
+          </g>
+          <line x1="145" y1="105" x2="175" y2="116" stroke="rgba(200,168,130,0.1)" stroke-width="0.4" stroke-dasharray="3,3"/>
+          <circle cx="80" cy="185" r="3" fill="rgba(200,168,130,0.3)"/>
+          <circle cx="165" cy="178" r="2" fill="rgba(200,168,130,0.2)"/>
+          <circle cx="252" cy="165" r="3" fill="rgba(200,168,130,0.25)"/>
+        </svg>
+        <div class="card-arrow"><svg viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="#c8a882" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">3D Machine Forms &nbsp;·&nbsp; p5.js + Web Audio</div>
+        <div class="card-title">Surrender <em>Machines</em></div>
+        <p class="card-desc">Industrial forms rendered in three dimensions — mechanical structures that process, transform, and ultimately dissolve their own purpose.</p>
+        <div class="card-tags"><span class="tag">3D</span><span class="tag">Sound</span><span class="tag">Industrial</span></div>
+      </div>
+    </a>
+
+    <!-- 03 Bloom / Four Walls -->
+    <a class="work-card" href="bloom-four-walls.html">
+      <div class="card-thumb" style="background:#030d08;">
+        <span class="card-number">03</span>
+        <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="g3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(120,210,170,0.25)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
+          <rect width="320" height="240" fill="url(#g3)"/>
+          <rect x="48" y="36" width="224" height="168" fill="none" stroke="rgba(120,200,160,0.1)" stroke-width="0.6"/>
+          <!-- particle field -->
+          <circle cx="110" cy="82" r="1.8" fill="rgba(150,230,190,0.55)"/>
+          <circle cx="180" cy="70" r="1.2" fill="rgba(150,230,190,0.45)"/>
+          <circle cx="204" cy="125" r="2.2" fill="rgba(150,230,190,0.6)"/>
+          <circle cx="138" cy="152" r="1.6" fill="rgba(150,230,190,0.4)"/>
+          <circle cx="104" cy="142" r="1.2" fill="rgba(150,230,190,0.35)"/>
+          <circle cx="218" cy="96" r="1.2" fill="rgba(150,230,190,0.3)"/>
+          <circle cx="160" cy="60" r="2.6" fill="rgba(150,230,190,0.5)"/>
+          <circle cx="128" cy="110" r="1.2" fill="rgba(150,230,190,0.45)"/>
+          <circle cx="192" cy="158" r="1.6" fill="rgba(150,230,190,0.35)"/>
+          <circle cx="240" cy="130" r="1" fill="rgba(150,230,190,0.3)"/>
+          <circle cx="72" cy="100" r="1.4" fill="rgba(150,230,190,0.3)"/>
+          <circle cx="155" cy="170" r="1" fill="rgba(150,230,190,0.28)"/>
+          <circle cx="88" cy="58" r="1.6" fill="rgba(150,230,190,0.35)"/>
+          <circle cx="260" cy="80" r="1" fill="rgba(150,230,190,0.25)"/>
+          <!-- connecting lines suggesting 3D -->
+          <line x1="160" y1="120" x2="110" y2="82" stroke="rgba(120,200,160,0.08)" stroke-width="0.5"/>
+          <line x1="160" y1="120" x2="204" y2="125" stroke="rgba(120,200,160,0.08)" stroke-width="0.5"/>
+          <line x1="160" y1="120" x2="160" y2="60" stroke="rgba(120,200,160,0.06)" stroke-width="0.5"/>
+        </svg>
+        <div class="card-arrow"><svg viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="#c8a882" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Immersive 3D &nbsp;·&nbsp; Three.js + Salamander Piano</div>
+        <div class="card-title">Bloom / <em>Four Walls</em></div>
+        <p class="card-desc">A three-dimensional bloom fills the room. Each particle carries a piano note — the space breathes, accumulates, and releases.</p>
+        <div class="card-tags"><span class="tag">WebGL</span><span class="tag">Spatial Audio</span><span class="tag">Immersive</span></div>
+      </div>
+    </a>
+
+    <!-- 04 Bloom / Release -->
+    <a class="work-card" href="bloom-release.html">
+      <div class="card-thumb" style="background:#050a04;">
+        <span class="card-number">04</span>
+        <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="g4a" cx="28%" cy="68%" r="40%"><stop offset="0%" stop-color="rgba(170,220,120,0.2)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <radialGradient id="g4b" cx="68%" cy="32%" r="38%"><stop offset="0%" stop-color="rgba(120,170,220,0.14)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+          </defs>
+          <rect width="320" height="240" fill="url(#g4a)"/>
+          <rect width="320" height="240" fill="url(#g4b)"/>
+          <!-- bloom forms -->
+          <circle cx="95" cy="162" r="42" fill="none" stroke="rgba(180,230,130,0.12)" stroke-width="0.7"/>
+          <circle cx="95" cy="162" r="26" fill="none" stroke="rgba(180,230,130,0.1)" stroke-width="0.5"/>
+          <circle cx="192" cy="150" r="36" fill="none" stroke="rgba(120,170,220,0.1)" stroke-width="0.7"/>
+          <circle cx="156" cy="96" r="29" fill="none" stroke="rgba(180,230,130,0.1)" stroke-width="0.5"/>
+          <!-- petals -->
+          <ellipse cx="95" cy="128" rx="8" ry="15" fill="rgba(200,250,150,0.1)" transform="rotate(-20,95,128)"/>
+          <ellipse cx="112" cy="145" rx="7" ry="12" fill="rgba(200,250,150,0.08)" transform="rotate(32,112,145)"/>
+          <ellipse cx="75" cy="148" rx="8" ry="13" fill="rgba(200,250,150,0.08)" transform="rotate(-45,75,148)"/>
+          <ellipse cx="192" cy="122" rx="9" ry="14" fill="rgba(140,200,250,0.08)" transform="rotate(12,192,122)"/>
+          <!-- dots -->
+          <circle cx="78" cy="172" r="1.5" fill="rgba(210,255,150,0.45)"/>
+          <circle cx="108" cy="180" r="1.2" fill="rgba(210,255,150,0.35)"/>
+          <circle cx="170" cy="152" r="1.5" fill="rgba(140,200,255,0.4)"/>
+          <circle cx="218" cy="162" r="1.2" fill="rgba(210,255,150,0.3)"/>
+          <circle cx="145" cy="80" r="1" fill="rgba(210,255,150,0.35)"/>
+        </svg>
+        <div class="card-arrow"><svg viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="#c8a882" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">2D Garden &nbsp;·&nbsp; Tone.js + Salamander Piano</div>
+        <div class="card-title">Bloom / <em>Release</em></div>
+        <p class="card-desc">A garden that grows in real time — flowers unfurl to piano tones, seeds drift, the landscape accumulates and is never the same twice.</p>
+        <div class="card-tags"><span class="tag">Canvas 2D</span><span class="tag">Piano</span><span class="tag">Generative</span></div>
+      </div>
+    </a>
+
+    <!-- 05 Traveling Landscape -->
+    <a class="work-card" href="traveling-landscape.html">
+      <div class="card-thumb" style="background:#060610;">
+        <span class="card-number">05</span>
+        <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+          <!-- sky gradient -->
+          <defs><linearGradient id="g5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#070718"/><stop offset="55%" stop-color="#0a0a1e"/><stop offset="55.5%" stop-color="#060606"/><stop offset="100%" stop-color="#080808"/></linearGradient></defs>
+          <rect width="320" height="240" fill="url(#g5)"/>
+          <!-- horizon -->
+          <line x1="0" y1="132" x2="320" y2="132" stroke="rgba(200,168,130,0.18)" stroke-width="0.8"/>
+          <!-- perspective lines to vanishing point -->
+          <line x1="160" y1="132" x2="0" y2="240" stroke="rgba(100,120,220,0.07)" stroke-width="0.5"/>
+          <line x1="160" y1="132" x2="64" y2="240" stroke="rgba(100,120,220,0.07)" stroke-width="0.5"/>
+          <line x1="160" y1="132" x2="128" y2="240" stroke="rgba(100,120,220,0.06)" stroke-width="0.5"/>
+          <line x1="160" y1="132" x2="192" y2="240" stroke="rgba(100,120,220,0.06)" stroke-width="0.5"/>
+          <line x1="160" y1="132" x2="256" y2="240" stroke="rgba(100,120,220,0.07)" stroke-width="0.5"/>
+          <line x1="160" y1="132" x2="320" y2="240" stroke="rgba(100,120,220,0.07)" stroke-width="0.5"/>
+          <!-- terrain -->
+          <path d="M0,132 Q40,118 80,124 Q120,108 160,114 Q200,98 240,118 Q280,125 320,112" fill="none" stroke="rgba(150,170,230,0.28)" stroke-width="1"/>
+          <!-- mountains -->
+          <path d="M55,132 L88,86 L121,132" fill="rgba(80,90,140,0.08)" stroke="rgba(120,140,220,0.16)" stroke-width="0.6"/>
+          <path d="M175,132 L218,72 L261,132" fill="rgba(80,90,140,0.06)" stroke="rgba(120,140,220,0.13)" stroke-width="0.6"/>
+          <path d="M130,132 L152,104 L174,132" fill="rgba(80,90,140,0.06)" stroke="rgba(120,140,220,0.1)" stroke-width="0.5"/>
+          <!-- stars -->
+          <circle cx="48" cy="48" r="1" fill="rgba(210,220,255,0.3)"/>
+          <circle cx="148" cy="36" r="0.8" fill="rgba(210,220,255,0.25)"/>
+          <circle cx="252" cy="52" r="1" fill="rgba(210,220,255,0.3)"/>
+          <circle cx="204" cy="28" r="0.6" fill="rgba(210,220,255,0.2)"/>
+          <circle cx="96" cy="20" r="0.8" fill="rgba(210,220,255,0.2)"/>
+          <circle cx="290" cy="80" r="0.6" fill="rgba(210,220,255,0.18)"/>
+        </svg>
+        <div class="card-arrow"><svg viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="#c8a882" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">3D Landscape &nbsp;·&nbsp; p5.js WEBGL</div>
+        <div class="card-title">Traveling <em>Landscape</em></div>
+        <p class="card-desc">A procedural terrain scrolls endlessly — mountains, valleys, sky. An infinite journey through a landscape that has never been mapped.</p>
+        <div class="card-tags"><span class="tag">WEBGL</span><span class="tag">Procedural</span><span class="tag">Infinite</span></div>
+      </div>
+    </a>
+
+    <!-- 06 Shared Ground -->
+    <a class="work-card" href="shared-ground.html">
+      <div class="card-thumb" style="background:#080806;">
+        <span class="card-number">06</span>
+        <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+          <!-- faint grid -->
+          <line x1="0" y1="29" x2="320" y2="29" stroke="rgba(200,168,130,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="58" x2="320" y2="58" stroke="rgba(200,168,130,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="87" x2="320" y2="87" stroke="rgba(200,168,130,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="116" x2="320" y2="116" stroke="rgba(200,168,130,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="145" x2="320" y2="145" stroke="rgba(200,168,130,0.04)" stroke-width="0.5"/>
+          <!-- photo cards with slight rotation -->
+          <rect x="28" y="44" width="72" height="55" fill="rgba(200,168,130,0.05)" stroke="rgba(200,168,130,0.2)" stroke-width="0.6" transform="rotate(-2,64,71)"/>
+          <rect x="52" y="80" width="68" height="52" fill="rgba(200,168,130,0.04)" stroke="rgba(200,168,130,0.15)" stroke-width="0.5" transform="rotate(1.5,86,106)"/>
+          <rect x="118" y="52" width="72" height="55" fill="rgba(200,168,130,0.05)" stroke="rgba(200,168,130,0.18)" stroke-width="0.6" transform="rotate(1,154,79)"/>
+          <rect x="182" y="82" width="68" height="52" fill="rgba(200,168,130,0.04)" stroke="rgba(200,168,130,0.15)" stroke-width="0.5" transform="rotate(-1.5,216,108)"/>
+          <rect x="214" y="42" width="62" height="47" fill="rgba(200,168,130,0.04)" stroke="rgba(200,168,130,0.16)" stroke-width="0.5" transform="rotate(2.5,245,65)"/>
+          <rect x="88" y="128" width="66" height="50" fill="rgba(200,168,130,0.04)" stroke="rgba(200,168,130,0.14)" stroke-width="0.5" transform="rotate(-1,121,153)"/>
+          <rect x="168" y="140" width="60" height="45" fill="rgba(200,168,130,0.03)" stroke="rgba(200,168,130,0.12)" stroke-width="0.5" transform="rotate(2,198,162)"/>
+          <!-- ground line -->
+          <line x1="0" y1="200" x2="320" y2="200" stroke="rgba(200,168,130,0.22)" stroke-width="0.8"/>
+          <!-- connection lines -->
+          <line x1="64" y1="99" x2="88" y2="128" stroke="rgba(200,168,130,0.08)" stroke-width="0.4"/>
+          <line x1="154" y1="107" x2="140" y2="128" stroke="rgba(200,168,130,0.08)" stroke-width="0.4"/>
+        </svg>
+        <div class="card-arrow"><svg viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="#c8a882" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Historical Archive &nbsp;·&nbsp; Canvas 2D + Tone.js</div>
+        <div class="card-title">Shared <em>Ground</em></div>
+        <p class="card-desc">Twenty-seven archival photographs drawn into a physics world — images that fall, collide, accumulate. Collective memory as material force.</p>
+        <div class="card-tags"><span class="tag">Archive</span><span class="tag">Physics</span><span class="tag">Sound</span></div>
+      </div>
+    </a>
+
+    <!-- 07 Technical Drawing -->
+    <a class="work-card" href="technical-drawing.html">
+      <div class="card-thumb" style="background:#0a0a0a;">
+        <span class="card-number">07</span>
+        <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
+          <!-- grid -->
+          <line x1="0" y1="26" x2="320" y2="26" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="52" x2="320" y2="52" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="78" x2="320" y2="78" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="104" x2="320" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="130" x2="320" y2="130" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="156" x2="320" y2="156" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="0" y1="182" x2="320" y2="182" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="26" y1="0" x2="26" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="78" y1="0" x2="78" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="130" y1="0" x2="130" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="182" y1="0" x2="182" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="234" y1="0" x2="234" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <line x1="286" y1="0" x2="286" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+          <!-- elevation line -->
+          <line x1="0" y1="168" x2="320" y2="168" stroke="rgba(255,255,255,0.22)" stroke-width="0.9"/>
+          <!-- hatch marks -->
+          <line x1="0" y1="168" x2="12" y2="178" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <line x1="24" y1="168" x2="36" y2="178" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <line x1="48" y1="168" x2="60" y2="178" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <line x1="72" y1="168" x2="84" y2="178" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <!-- isometric cube 1 -->
+          <g transform="translate(56,78)">
+            <path d="M38,0 L72,18 L72,58 L38,76 L4,58 L4,18 Z" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.8"/>
+            <line x1="38" y1="0" x2="38" y2="38" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+            <line x1="4" y1="38" x2="72" y2="38" stroke="rgba(255,255,255,0.08)" stroke-width="0.4"/>
+            <polygon points="38,0 72,18 72,38 38,38" fill="rgba(255,255,255,0.04)"/>
+          </g>
+          <!-- cube 2 -->
+          <g transform="translate(174,102)">
+            <path d="M26,0 L50,12 L50,40 L26,52 L2,40 L2,12 Z" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="0.7"/>
+          </g>
+          <!-- arrow -->
+          <line x1="48" y1="52" x2="92" y2="76" stroke="rgba(255,255,255,0.14)" stroke-width="0.6"/>
+          <line x1="92" y1="76" x2="84" y2="66" stroke="rgba(255,255,255,0.14)" stroke-width="0.6"/>
+          <line x1="92" y1="76" x2="82" y2="78" stroke="rgba(255,255,255,0.14)" stroke-width="0.6"/>
+          <!-- circles -->
+          <circle cx="252" cy="120" r="20" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="0.7"/>
+          <circle cx="252" cy="120" r="9" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
+          <!-- text labels -->
+          <text x="152" y="66" fill="rgba(255,255,255,0.18)" font-family="monospace" font-size="7.5" letter-spacing="1.2">VOID</text>
+          <text x="24" y="186" fill="rgba(255,255,255,0.16)" font-family="monospace" font-size="7" letter-spacing="1">ELEVATION +0.00</text>
+          <text x="200" y="148" fill="rgba(255,255,255,0.12)" font-family="monospace" font-size="7" letter-spacing="1">AXIS</text>
+        </svg>
+        <div class="card-arrow"><svg viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H4M10 2V8" stroke="#c8a882" stroke-width="1.2"/></svg></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Generative Drawing &nbsp;·&nbsp; p5.js</div>
+        <div class="card-title">Technical <em>Drawing</em></div>
+        <p class="card-desc">Infinite architectural documents — each a unique composition of grid, elevation, cube, and notation that no hand drew and no building will follow.</p>
+        <div class="card-tags"><span class="tag">Architecture</span><span class="tag">Generative</span><span class="tag">Download</span></div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- ARTIST -->
+<div class="artist-section">
+  <div class="artist-left">
+    <div class="label">Artist</div>
+    <div class="name">Mark Walhimer</div>
+    <div class="role">Museum planner &nbsp;·&nbsp; Generative artist</div>
+    <div class="social-links">
+      <a href="https://www.instagram.com/markwalhimer/" target="_blank">↗ Instagram</a>
+      <a href="https://x.com/WalhimerArt" target="_blank">↗ X / Twitter</a>
+      <a href="https://museumplanning.com" target="_blank">↗ Museum Planning LLC</a>
+    </div>
+  </div>
+  <div class="artist-bio">
+    <p>Mark Walhimer (1964) is a generative artist and museum designer with twenty years of experience creating interactive public spaces. His practice moves between the computational and the spatial — finding in generative code the same structural logic that underlies the design of institutions.</p>
+    <p>Managing partner of <strong>Museum Planning LLC</strong>. Executive Director, Museum of Arts &amp; Sciences (Macon, Georgia). Fulbright Specialist. Author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury). Former design consultant, Smithsonian Institution. Faculty, Georgia Institute of Technology and Tec de Monterrey.</p>
+    <p>Began in the studio of Judy Pfaff, 1985. Exhibited at MIRADAS TANGENTES, Madrid, 2026. These seven works represent his submission to Prix Ars Electronica 2026, category Generative Art+.</p>
+  </div>
+</div>
+
+<footer>
+  <span>Mark Walhimer &nbsp;·&nbsp; 2026</span>
+  <span>Prix Ars Electronica &nbsp;·&nbsp; Generative Art+</span>
+</footer>
+
+</body>
+</html>
