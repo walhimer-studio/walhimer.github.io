@@ -10,7 +10,7 @@
 body{background:var(--bg);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:13px;min-height:100vh}
 a{color:inherit;text-decoration:none}
 nav{border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:stretch}
-.nav-name{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding:22px 32px 22px 0;border-right:1px solid var(--border);margin-right:8px;white-space:nowrap;text-decoration:none;transition:color .15s}.nav-name:hover{color:var(--bright)}
+.nav-name{font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding:22px 32px 22px 0;border-right:1px solid var(--border);margin-right:8px;white-space:nowrap;text-decoration:none;transition:color .15s;cursor:pointer}.nav-name:hover{color:var(--bright)}
 .nav-links{display:flex;align-items:stretch}
 .nav-link{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);padding:22px 20px;transition:color .15s;white-space:nowrap;display:flex;align-items:center}
 .nav-link:hover{color:var(--bright)}
@@ -28,7 +28,7 @@ footer{padding:20px 40px;border-top:1px solid var(--border);font-size:10px;color
 </head>
 <body>
 <nav>
-  <a class="nav-name" href="../index.html">Mark Walhimer</a>
+  <a class="nav-name" href="../index.html" title="Home">Mark Walhimer</a>
   <div class="nav-links">
     <a class="nav-link" href="../index.html">Installations</a>
     <a class="nav-link" href="../projects/index.html">Projects</a>
