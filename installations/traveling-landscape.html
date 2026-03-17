@@ -868,7 +868,8 @@ function initWorld() {
 
 function setup() {
   pixelDensity(Math.min(window.devicePixelRatio, 2));
-  createCanvas(windowWidth, Math.round(windowWidth * 0.5625), WEBGL); // 16:9
+  const c = createCanvas(windowWidth, Math.round(windowWidth * 0.5625), WEBGL); // 16:9
+  c.parent('landscape-stage');
   frameRate(60);
   colorMode(HSB, 360, 100, 100, 255);
   setAttributes('alpha', true);
