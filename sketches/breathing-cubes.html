@@ -8,7 +8,7 @@
   </style>
 </head>
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script>
 
   function hsbToRgb(h, s, b) {
@@ -36,8 +36,10 @@
     return new THREE.CanvasTexture(canvas);
   }
 
+  var w = Math.max(window.innerWidth || document.documentElement.clientWidth || 800, 400);
+  var h = Math.max(window.innerHeight || document.documentElement.clientHeight || 600, 300);
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 200);
+  const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 200);
   camera.position.set(0, 0, 12);
   camera.lookAt(0, 0, 7);
 
@@ -46,7 +48,7 @@
     powerPreference: 'default',
     failIfMajorPerformanceCaveat: false
   });
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(w, h);
   renderer.setClearColor(0xffffff, 1);
   renderer.setPixelRatio(devicePixelRatio);
   document.body.appendChild(renderer.domElement);
@@ -66,11 +68,11 @@
 
   for (let i = 0; i < NUM_CUBES; i++) {
     const zPos = -i * SPACING;
-    const w = 1.0 + Math.random() * 2.5;
-    const h = 1.0 + Math.random() * 3.5;
-    const d = 1.0 + Math.random() * 2.5;
+    const cw = 1.0 + Math.random() * 2.5;
+    const ch = 1.0 + Math.random() * 3.5;
+    const cd = 1.0 + Math.random() * 2.5;
 
-    const geo = new THREE.BoxGeometry(w, h, d);
+    const geo = new THREE.BoxGeometry(cw, ch, cd);
     const outerMats = Array.from({ length: 6 }, () =>
       new THREE.MeshBasicMaterial({
         map: makeGradientTexture(),
@@ -84,7 +86,7 @@
     outerMesh.position.z = zPos;
     scene.add(outerMesh);
 
-    const innerGeo = new THREE.BoxGeometry(w * 0.5, h * 0.5, d * 0.5);
+    const innerGeo = new THREE.BoxGeometry(cw * 0.5, ch * 0.5, cd * 0.5);
     const innerMats = Array.from({ length: 6 }, () =>
       new THREE.MeshBasicMaterial({
         map: makeGradientTexture(),
@@ -144,9 +146,11 @@
   animate();
 
   window.addEventListener('resize', () => {
-    camera.aspect = innerWidth / innerHeight;
+    w = Math.max(window.innerWidth || document.documentElement.clientWidth || 800, 400);
+    h = Math.max(window.innerHeight || document.documentElement.clientHeight || 600, 300);
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setSize(w, h);
   });
 
 </script>
