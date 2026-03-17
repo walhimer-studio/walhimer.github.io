@@ -427,6 +427,7 @@ async function begin(){
 
 overlay.addEventListener('click',begin,{once:true});
 document.addEventListener('keydown',()=>{if(!running)begin();},{once:true});
+if(/[?&]embed=1/.test(location.search)){overlay.style.display='none';running=true;last=null;}
 ['mousedown','touchstart'].forEach(ev=>
   renderer.domElement.addEventListener(ev,()=>{
     autoRotate=false;
