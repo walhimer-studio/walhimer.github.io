@@ -179,7 +179,12 @@
     .work-card:hover .card-thumb { filter: brightness(1.2); }
 
     .preview-svg { width: 100%; height: 100%; display: block; }
-    .card-thumb iframe { width: 800px; height: 600px; border: none; transform: scale(0.4); transform-origin: top left; pointer-events: none; }
+    .card-thumb iframe {
+      position: absolute; top: 0; left: 0;
+      width: 800px; height: 600px; border: none;
+      transform: scale(0.4); transform-origin: top left;
+      pointer-events: none;
+    }
 
     .card-number {
       position: absolute;
@@ -360,25 +365,18 @@
       <div class="card-thumb" style="background:#080808;">
         <span class="card-number">02</span>
         <svg class="preview-svg" viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg">
-          <line x1="0" y1="0" x2="320" y2="0" stroke="transparent"/>
-          <!-- diagonal hatching -->
           <line x1="0" y1="40" x2="40" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
           <line x1="0" y1="80" x2="80" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
           <line x1="0" y1="120" x2="120" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
           <line x1="0" y1="160" x2="160" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
           <line x1="0" y1="200" x2="200" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
           <line x1="0" y1="240" x2="240" y2="0" stroke="rgba(200,168,130,0.05)" stroke-width="0.7"/>
-          <line x1="40" y1="240" x2="280" y2="0" stroke="rgba(200,168,130,0.04)" stroke-width="0.7"/>
-          <line x1="80" y1="240" x2="320" y2="0" stroke="rgba(200,168,130,0.04)" stroke-width="0.7"/>
-          <line x1="120" y1="240" x2="320" y2="40" stroke="rgba(200,168,130,0.04)" stroke-width="0.7"/>
-          <!-- machine form 1 -->
           <g transform="translate(50,55)">
             <path d="M50,0 L95,25 L95,75 L50,100 L5,75 L5,25 Z" fill="rgba(200,168,130,0.04)" stroke="rgba(200,168,130,0.22)" stroke-width="0.8"/>
             <line x1="50" y1="0" x2="50" y2="50" stroke="rgba(200,168,130,0.12)" stroke-width="0.5"/>
             <line x1="5" y1="50" x2="95" y2="50" stroke="rgba(200,168,130,0.1)" stroke-width="0.4"/>
             <circle cx="50" cy="50" r="8" fill="none" stroke="rgba(200,168,130,0.2)" stroke-width="0.6"/>
           </g>
-          <!-- machine form 2 -->
           <g transform="translate(175,100)">
             <path d="M32,0 L62,16 L62,48 L32,64 L2,48 L2,16 Z" fill="rgba(200,168,130,0.03)" stroke="rgba(200,168,130,0.16)" stroke-width="0.7"/>
             <circle cx="32" cy="32" r="5" fill="none" stroke="rgba(200,168,130,0.16)" stroke-width="0.5"/>
