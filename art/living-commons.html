@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Living Commons — Mark Walhimer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --gray: #888;
+      --light: #e8e8e8;
+      --bg: #f9f9f7;
+      --accent: rgba(0,0,0,0.06);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--black);
+      font-family: "Georgia", "Times New Roman", serif;
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      background: rgba(249,249,247,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--light);
+    }
+
+    nav .logo {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gray);
+      text-decoration: none;
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover { color: var(--black); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 140px 40px 80px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .genre-line {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 72px);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 36px;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .opening {
+      font-size: 17px;
+      line-height: 1.75;
+      color: #2a2a2a;
+      max-width: 640px;
+      margin-bottom: 20px;
+    }
+
+    .opening strong { font-weight: 600; }
+
+    .opening-secondary {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 14px;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 580px;
+      margin-bottom: 48px;
+    }
+
+    /* ── LIVE LINK BLOCK ── */
+    .live-block {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 80px;
+      flex-wrap: wrap;
+    }
+
+    .live-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: var(--black);
+      color: #fff;
+      text-decoration: none;
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .live-btn:hover { background: #333; transform: translateY(-1px); }
+
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    .live-note {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── DIVIDER ── */
+    hr {
+      border: none;
+      border-top: 1px solid var(--light);
+      margin: 0 40px;
+    }
+
+    /* ── PREVIEW FRAME ── */
+    .preview-section {
+      padding: 70px 40px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 28px;
+    }
+
+    .frame-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #fff;
+      border: 1px solid var(--light);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: none;
+    }
+
+    .frame-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(249,249,247,0.0);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.25s;
+    }
+
+    .frame-overlay:hover {
+      background: rgba(249,249,247,0.5);
+    }
+
+    .frame-overlay:hover .overlay-btn {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .overlay-btn {
+      background: var(--black);
+      color: #fff;
+      padding: 14px 28px;
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .frame-note {
+      margin-top: 14px;
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1px;
+      background: var(--light);
+      border: 1px solid var(--light);
+      margin-top: 40px;
+    }
+
+    .stat {
+      background: var(--bg);
+      padding: 28px 24px;
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+
+    /* ── PROCESS ── */
+    .process-section {
+      padding: 70px 40px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--light);
+      border: 1px solid var(--light);
+      margin-top: 28px;
+    }
+
+    .process-item {
+      background: var(--bg);
+      padding: 32px 28px;
+    }
+
+    .process-num {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--gray);
+      margin-bottom: 14px;
+    }
+
+    .process-title {
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 10px;
+    }
+
+    .process-body {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* ── CONCEPT ── */
+    .concept-section {
+      padding: 70px 40px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .concept-body {
+      font-size: 17px;
+      line-height: 1.8;
+      color: #1a1a1a;
+      max-width: 640px;
+      margin-top: 28px;
+    }
+
+    .concept-body p + p { margin-top: 20px; }
+
+    .pull-quote {
+      border-left: 2px solid var(--black);
+      padding: 20px 0 20px 28px;
+      margin: 40px 0;
+      font-size: 19px;
+      font-style: italic;
+      font-weight: 300;
+      color: #1a1a1a;
+      line-height: 1.6;
+      max-width: 580px;
+    }
+
+    /* ── OBJECTIVES ── */
+    .obj-section {
+      padding: 70px 40px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .obj-list {
+      list-style: none;
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--light);
+      border: 1px solid var(--light);
+    }
+
+    .obj-list li {
+      background: var(--bg);
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 20px;
+      padding: 28px;
+      align-items: start;
+    }
+
+    .obj-num {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gray);
+      padding-top: 3px;
+    }
+
+    .obj-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #1a1a1a;
+    }
+
+    /* ── TECH ── */
+    .tech-section {
+      padding: 70px 40px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .tech-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 600px) {
+      .tech-cols { grid-template-columns: 1fr; }
+    }
+
+    .tech-group h3 {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 16px;
+    }
+
+    .tech-group ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tech-group li {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 13px;
+      color: #333;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .tech-group li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--gray);
+    }
+
+    /* ── ARTIST ── */
+    .artist-section {
+      padding: 70px 40px 100px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .artist-block {
+      border-top: 1px solid var(--light);
+      padding-top: 40px;
+    }
+
+    .artist-name {
+      font-size: 22px;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+
+    .artist-title {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 0.06em;
+      margin-bottom: 20px;
+    }
+
+    .artist-bio {
+      font-size: 15px;
+      line-height: 1.75;
+      color: #333;
+      max-width: 580px;
+      margin-bottom: 28px;
+    }
+
+    .artist-bio em { font-style: italic; }
+
+    .social-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .social-links a {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      text-decoration: none;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--light);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .social-links a:hover {
+      color: var(--black);
+      border-color: var(--black);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--light);
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer span {
+      font-family: -apple-system, "Helvetica Neue", sans-serif;
+      font-size: 11px;
+      color: var(--gray);
+      letter-spacing: 0.08em;
+    }
+
+    /* ── SOUND TOGGLE ── */
+    #sound-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 200;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--light);
+      background: rgba(249,249,247,0.92);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s, opacity 0.2s;
+      opacity: 0.5;
+    }
+    #sound-btn:hover { opacity: 1; border-color: #aaa; }
+    #sound-btn.on { opacity: 1; border-color: var(--black); }
+    #sound-btn svg { width: 16px; height: 16px; }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="https://www.mark-walhimer.com">Mark Walhimer</a>
+    <ul class="nav-links">
+      <li><a href="https://walhimer.github.io/art/living-commons.html" target="_blank">Live Work</a></li>
+      <li><a href="https://walhimer.github.io/Surrender-Machines/" target="_blank">Surrender Machines</a></li>
+      <li><a href="https://museumplanning.com">Museum Planning</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="genre-line reveal">Generative Art &nbsp;/&nbsp; Interactive Installation &nbsp;/&nbsp; 2026</p>
+    <h1 class="reveal">Living <em>Commons</em></h1>
+    <p class="opening reveal">
+      A series of generative works that asks a fundamental question: <strong>what does it mean to share space in the digital age?</strong> Each piece runs live in a browser — no video, no recording, no fixed state. The work is computational and alive.
+    </p>
+    <p class="opening-secondary reveal">
+      Two viewers watching simultaneously never see the same moment twice.<br>
+      The commons is not a metaphor. It is the operating condition of the work itself.
+    </p>
+
+    <div class="live-block reveal">
+      <a class="live-btn" href="https://walhimer.github.io/art/living-commons.html" target="_blank">
+        <span class="live-dot"></span>
+        Enter the Commons
+      </a>
+      <span class="live-note">Live in browser &nbsp;·&nbsp; No download required</span>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- PREVIEW -->
+  <section class="preview-section">
+    <p class="section-label reveal">Live Work</p>
+    <div class="frame-wrap reveal">
+      <iframe src="https://walhimer.github.io/art/living-commons.html" title="Living Commons" loading="lazy" scrolling="no"></iframe>
+      <a class="frame-overlay" href="https://walhimer.github.io/art/living-commons.html" target="_blank">
+        <span class="overlay-btn">Open Full Work →</span>
+      </a>
+    </div>
+    <p class="frame-note">↳ Hover to open &nbsp;·&nbsp; Best experienced with another person</p>
+
+    <div class="stats-row reveal">
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Unique States</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2+</div>
+        <div class="stat-label">Viewers to Complete</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Fixed Outcomes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">20</div>
+        <div class="stat-label">Years of Public Space Design</div>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- PROCESS -->
+  <section class="process-section">
+    <p class="section-label reveal">Process</p>
+    <div class="process-grid reveal">
+      <div class="process-item">
+        <div class="process-num">01</div>
+        <div class="process-title">Presence</div>
+        <p class="process-body">The work begins when someone arrives. A single viewer sees possibility. The commons waits.</p>
+      </div>
+      <div class="process-item">
+        <div class="process-num">02</div>
+        <div class="process-title">Dialogue</div>
+        <p class="process-body">Two people create something neither could make alone. Light connects. Forms emerge from shared input.</p>
+      </div>
+      <div class="process-item">
+        <div class="process-num">03</div>
+        <div class="process-title">Community</div>
+        <p class="process-body">Four or more participants produce cooperative shapes. The system responds to density, not direction.</p>
+      </div>
+      <div class="process-item">
+        <div class="process-num">04</div>
+        <div class="process-title">Accumulation</div>
+        <p class="process-body">In installation form, the work learns over time — holding the traces of every encounter that came before.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- CONCEPT -->
+  <section class="concept-section">
+    <p class="section-label reveal">Concept</p>
+    <div class="concept-body reveal">
+      <p>
+        This work grows from twenty years designing public spaces — museums, science centers, children's museums — with the Smithsonian Institution, the Children's Museum of Indianapolis, and institutions across three continents.
+      </p>
+      <p>
+        That work taught one thing above all: the most important thing a shared space can do is make people feel that their presence matters, that the space responds to them, that they are not visitors but participants.
+      </p>
+
+      <div class="pull-quote">
+        "This is not work about community. It is work that only exists as community."
+      </div>
+
+      <p>
+        The visual logic of each piece — translucent layers, emergent structure, light behavior that cannot be predicted — is built on the same principles as the institutions I have spent my career designing: that a space held in common, shaped by those who inhabit it, produces something no single author could create alone.
+      </p>
+      <p>
+        As artificial intelligence accelerates the fragmentation of human attention and social connection, Living Commons proposes an alternative. A space that requires two people to begin. That produces something belonging to neither and both.
+      </p>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- OBJECTIVES -->
+  <section class="obj-section">
+    <p class="section-label reveal">Objectives</p>
+    <ul class="obj-list reveal">
+      <li>
+        <span class="obj-num">01</span>
+        <span class="obj-text">Create a live, browser-based generative work that responds to co-presence — two viewers, two inputs, one emergent result that belongs to neither and both.</span>
+      </li>
+      <li>
+        <span class="obj-num">02</span>
+        <span class="obj-text">Establish a permanent or semi-permanent public installation where the work can learn from its users over time, accumulating the traces of thousands of encounters.</span>
+      </li>
+      <li>
+        <span class="obj-num">03</span>
+        <span class="obj-text">Run accessible workshops using Raspberry Pi and inexpensive touchscreen hardware — so visitors do not merely experience interactive art, they learn to build it. Under $100 of hardware. No specialized infrastructure required.</span>
+      </li>
+    </ul>
+  </section>
+
+  <hr>
+
+  <!-- TECH -->
+  <section class="tech-section">
+    <p class="section-label reveal">Technical</p>
+    <div class="tech-cols reveal">
+      <div class="tech-group">
+        <h3>Software</h3>
+        <ul>
+          <li>P5.js — creative coding library</li>
+          <li>WebGL / GLSL shaders — real-time rendering</li>
+          <li>Web Audio API — sound synthesis</li>
+          <li>Supabase — installation data layer</li>
+          <li>Electron — kiosk deployment</li>
+          <li>Single-file architecture, no dependencies</li>
+        </ul>
+      </div>
+      <div class="tech-group">
+        <h3>Hardware</h3>
+        <ul>
+          <li>Standard web browser (primary)</li>
+          <li>Raspberry Pi 4 or 5 with touchscreen</li>
+          <li>~$80–$100 total workshop cost</li>
+          <li>Mac Mini for permanent installation</li>
+          <li>No specialized infrastructure needed</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ARTIST -->
+  <section class="artist-section">
+    <div class="artist-block reveal">
+      <div class="artist-name">Mark Walhimer</div>
+      <div class="artist-title">Museum planner &nbsp;·&nbsp; Industrial designer &nbsp;·&nbsp; Generative artist</div>
+      <p class="artist-bio">
+        Mark Walhimer (1964) is a generative artist and museum designer with twenty years of experience creating interactive public spaces. Managing partner of Museum Planning LLC. Executive Director, Museum of Arts &amp; Sciences (Macon, Georgia). Fulbright Specialist. Author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury). Former design consultant, Smithsonian Institution. Former project director, Children's Museum of Indianapolis. Faculty, Georgia Institute of Technology and Tec de Monterrey. Began in the studio of Judy Pfaff, 1985. Exhibited at MIRADAS TANGENTES, Madrid, 2026.
+      </p>
+      <div class="social-links">
+        <a href="https://www.instagram.com/markwalhimer/" target="_blank">Instagram</a>
+        <a href="https://x.com/WalhimerArt" target="_blank">X</a>
+        <a href="https://www.mark-walhimer.com" target="_blank">markwalhimer.com</a>
+        <a href="https://museumplanning.com" target="_blank">Museum Planning</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Living Commons &nbsp;·&nbsp; Mark Walhimer &nbsp;·&nbsp; 2026</span>
+    <span>Prix Ars Electronica Submission &nbsp;·&nbsp; Interactive Art+</span>
+  </footer>
+
+  <!-- SOUND TOGGLE -->
+  <button id="sound-btn" title="Toggle ambient sound" aria-label="Toggle sound">
+    <!-- muted icon shown by default -->
+    <svg id="icon-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <line x1="23" y1="9" x2="17" y2="15"/>
+      <line x1="17" y1="9" x2="23" y2="15"/>
+    </svg>
+    <svg id="icon-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+    </svg>
+  </button>
+
+  <script>
+    // ── SCROLL REVEAL ──────────────────────────────────────────────
+    const els = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => {
+            e.target.classList.add('visible');
+            if (soundOn) playRevealTone();
+          }, i * 60);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    els.forEach(el => obs.observe(el));
+
+    // ── WEB AUDIO AMBIENT SOUND ────────────────────────────────────
+    let ctx = null;
+    let soundOn = false;
+    let masterGain = null;
+    let drones = [];
+    let revealPool = [];
+
+    // Harmonic series loosely tuned to D — open, resonant, non-specific
+    const FREQS = [73.4, 110.0, 146.8, 195.9, 220.0, 293.7, 369.9];
+
+    function initAudio() {
+      if (ctx) return;
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0, ctx.currentTime);
+      masterGain.connect(ctx.destination);
+      buildDrones();
+    }
+
+    function buildDrones() {
+      // Three layered sine drones, each very slow LFO on amplitude
+      const droneFreqs = [73.4, 110.0, 146.8];
+      droneFreqs.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const lfo  = ctx.createOscillator();
+        const lfoG = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.04 + i * 0.017; // very slow: 0.04, 0.057, 0.074 Hz
+        lfoG.gain.value = 0.018;
+
+        lfo.connect(lfoG);
+        lfoG.connect(gain.gain);
+        gain.gain.setValueAtTime(0.022 - i * 0.005, ctx.currentTime);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start();
+        lfo.start();
+        drones.push({ osc, gain });
+      });
+
+      // Slow high shimmer — barely audible presence
+      const shimmer = ctx.createOscillator();
+      const shimGain = ctx.createGain();
+      shimmer.type = 'sine';
+      shimmer.frequency.value = 587.3; // D5
+      shimGain.gain.setValueAtTime(0.004, ctx.currentTime);
+      shimmer.connect(shimGain);
+      shimGain.connect(masterGain);
+      shimmer.start();
+    }
+
+    function playRevealTone() {
+      if (!ctx || !soundOn) return;
+      // Pick a harmonic, play a brief soft ping
+      const freq = FREQS[Math.floor(Math.random() * FREQS.length)];
+      const osc  = ctx.createOscillator();
+      const env  = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq * (Math.random() > 0.5 ? 2 : 1);
+      env.gain.setValueAtTime(0, ctx.currentTime);
+      env.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 0.08);
+      env.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.8);
+      osc.connect(env);
+      env.connect(masterGain);
+      osc.start();
+      osc.stop(ctx.currentTime + 2);
+    }
+
+    function fadeIn() {
+      masterGain.gain.cancelScheduledValues(ctx.currentTime);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, ctx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(1, ctx.currentTime + 2.5);
+    }
+
+    function fadeOut() {
+      masterGain.gain.cancelScheduledValues(ctx.currentTime);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, ctx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.5);
+    }
+
+    // ── TOGGLE BUTTON ──────────────────────────────────────────────
+    const btn       = document.getElementById('sound-btn');
+    const iconMute  = document.getElementById('icon-mute');
+    const iconSound = document.getElementById('icon-sound');
+
+    btn.addEventListener('click', () => {
+      initAudio();
+      if (ctx.state === 'suspended') ctx.resume();
+      soundOn = !soundOn;
+      if (soundOn) {
+        fadeIn();
+        btn.classList.add('on');
+        iconMute.style.display  = 'none';
+        iconSound.style.display = '';
+      } else {
+        fadeOut();
+        btn.classList.remove('on');
+        iconMute.style.display  = '';
+        iconSound.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>
