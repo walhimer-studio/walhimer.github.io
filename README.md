@@ -11,7 +11,7 @@ Two tiers, one manifest.
 | Location | Purpose |
 |----------|---------|
 | `installations/` | Promoted work — 6 pieces on the homepage |
-| `sketches/` | Full archive — 207 files organized by series |
+| `sketches/` | Full archive — 177 files organized by series |
 | `artworks.json` | Source of truth — all pieces, paths, series |
 
 The nav is: **Installations · Sketches · Bio/CV · Contact**
