@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8-Pillar Spatial Orchestrator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0c;
+    --panel: #111116;
+    --panel2: #16161d;
+    --border: #2a2a36;
+    --a-col: #e8c97a;
+    --b-col: #7ad4e8;
+    --v-col: #b47ae8;
+    --green: #7ae8a0;
+    --red: #e87a7a;
+    --text: #c8c8d8;
+    --dim: #55556a;
+    --white: #f0f0f8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Space Mono', monospace;
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+    user-select: none;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .board {
+    display: grid;
+    grid-template-rows: auto auto auto auto;
+    gap: 10px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ─── SECTION LABELS ─── */
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 6px;
+  }
+
+  /* ─── DECK PANEL ─── */
+  .deck-row {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .deck {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+  }
+
+  .deck-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .deck-id {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .deck-tag {
+    font-size: 8px;
+    letter-spacing: 1px;
+    opacity: 0.5;
+    line-height: 1.4;
+  }
+
+  .knobs-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  /* ─── KNOB ─── */
+  .knob-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: ns-resize;
+  }
+
+  .knob-canvas {
+    width: 44px;
+    height: 44px;
+    display: block;
+  }
+
+  .knob-label {
+    font-size: 7px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-align: center;
+  }
+
+  .knob-val {
+    font-size: 8px;
+    color: var(--text);
+    min-width: 24px;
+    text-align: center;
+  }
+
+  /* ─── VERTICAL CROSSFADER ─── */
+  .vcf {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 0;
+  }
+
+  .vcf-label {
+    font-size: 7px;
+    letter-spacing: 1px;
+    color: var(--dim);
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .vcf-track {
+    width: 8px;
+    flex: 1;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    position: relative;
+    cursor: ns-resize;
+    min-height: 80px;
+  }
+
+  .vcf-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--v-col);
+    border-radius: 3px;
+    transition: background 0.1s;
+    opacity: 0.4;
+  }
+
+  .vcf-thumb {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 6px;
+    background: var(--white);
+    border-radius: 3px;
+    box-shadow: 0 0 6px rgba(255,255,255,0.3);
+  }
+
+  .vcf-val {
+    font-size: 8px;
+    color: var(--text);
+  }
+
+  /* ─── HORIZONTAL CROSSFADER ─── */
+  .hcf-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 18px;
+  }
+
+  .hcf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .hcf-track {
+    width: 100%;
+    height: 8px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    position: relative;
+    cursor: ew-resize;
+  }
+
+  .hcf-fill {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    border-radius: 3px;
+    opacity: 0.5;
+    transition: background 0.1s;
+  }
+
+  .hcf-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 18px;
+    background: var(--white);
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(255,255,255,0.3);
+  }
+
+  /* ─── VISUALS ROW ─── */
+  .vis-row {
+    display: grid;
+    grid-template-columns: 1fr 40px;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  /* ─── SCENE BANK ─── */
+  .scene-bank {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+  }
+
+  .scenes-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .scene-btn {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 10px 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scene-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .scene-btn:hover { border-color: var(--v-col); }
+  .scene-btn:hover::before { background: var(--v-col); opacity: 0.05; }
+
+  .scene-btn.active {
+    border-color: var(--v-col);
+    box-shadow: 0 0 12px rgba(180,122,232,0.3);
+  }
+
+  .scene-btn.active::before { background: var(--v-col); opacity: 0.12; }
+
+  .scene-letter {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--v-col);
+    margin-bottom: 4px;
+  }
+
+  .scene-name {
+    font-size: 7px;
+    letter-spacing: 0.5px;
+    color: var(--dim);
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  .scene-tag {
+    font-size: 6px;
+    color: var(--v-col);
+    opacity: 0.6;
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+
+  /* ─── WALL SWEEP ─── */
+  .walls-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+  }
+
+  .wall-dots {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  .wall-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+
+  .wall-dot.lit {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    border-color: var(--green);
+  }
+
+  /* ─── RETURN TO A ─── */
+  .return-btn {
+    background: transparent;
+    border: 1px solid var(--a-col);
+    border-radius: 50%;
+    color: var(--a-col);
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1px;
+    padding: 10px;
+    cursor: pointer;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    line-height: 1.3;
+    margin: 8px auto 0;
+  }
+
+  .return-btn:hover {
+    background: var(--a-col);
+    color: var(--bg);
+    box-shadow: 0 0 16px rgba(232,201,122,0.4);
+  }
+
+  /* ─── DNA LIFECYCLE ─── */
+  .dna-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .dna-life-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .dna-life-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--a-col), var(--red));
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
+
+  .dna-status {
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    min-width: 60px;
+    color: var(--green);
+  }
+
+  .dna-status.dying { color: var(--red); }
+  .dna-status.dead { color: var(--dim); }
+
+  .dna-trigger {
+    background: transparent;
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .dna-trigger:hover {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  /* ─── BOTTOM ROW ─── */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .info-tag {
+    font-size: 7px;
+    letter-spacing: 1px;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  .cf-label-pair {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cf-label-left, .cf-label-right {
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .cf-label-left { color: var(--a-col); }
+  .cf-label-right { color: var(--b-col); }
+  .cf-label-right-v { color: var(--red); }
+
+  .cf-val-center {
+    font-size: 9px;
+    color: var(--text);
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<h1>8-Pillar Spatial Orchestrator · Mixing Board</h1>
+
+<div class="board">
+
+  <!-- ═══ SOUND DECK A + CROSSFADER + SOUND DECK B ═══ -->
+  <div class="deck-row">
+
+    <div class="deck" id="deck-a">
+      <div class="deck-header">
+        <span class="deck-id" style="color:var(--a-col)">A</span>
+        <span class="deck-tag">Crackles<br>+ Piano Notes</span>
+      </div>
+      <div class="section-label">Soundscape</div>
+      <div class="knobs-row" id="knobs-a"></div>
+    </div>
+
+    <!-- A↔B Sound crossfader (vertical) -->
+    <div class="vcf">
+      <span class="vcf-label" style="color:var(--b-col)">B</span>
+      <div class="vcf-track" id="vcf-sound">
+        <div class="vcf-fill" id="vcf-sound-fill" style="height:50%;background:linear-gradient(to top,var(--a-col),var(--b-col))"></div>
+        <div class="vcf-thumb" id="vcf-sound-thumb" style="bottom:50%;transform:translate(-50%,50%)"></div>
+      </div>
+      <span class="vcf-label" style="color:var(--a-col)">A</span>
+      <span class="vcf-val" id="vcf-sound-val">50</span>
+    </div>
+
+    <div class="deck" id="deck-b">
+      <div class="deck-header">
+        <span class="deck-id" style="color:var(--b-col)">B</span>
+        <span class="deck-tag">Stationary →<br>Move · CCW</span>
+      </div>
+      <div class="section-label">Soundscape</div>
+      <div class="knobs-row" id="knobs-b"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SOUND A↔B HORIZONTAL CROSSFADER ═══ -->
+  <div class="hcf-wrap">
+    <div class="hcf-header">
+      <span class="cf-label-left">A ─ Crackles + Piano</span>
+      <span class="cf-val-center" id="hcf-sound-val">A ↔ B · 50</span>
+      <span class="cf-label-right">B ─ Drift · CCW</span>
+    </div>
+    <div class="hcf-track" id="hcf-sound">
+      <div class="hcf-fill" id="hcf-sound-fill" style="width:50%;background:linear-gradient(90deg,var(--a-col),var(--b-col))"></div>
+      <div class="hcf-thumb" id="hcf-sound-thumb" style="left:50%"></div>
+    </div>
+  </div>
+
+  <!-- ═══ VISUALSCAPE KNOBS + C↔D FADER ═══ -->
+  <div class="vis-row">
+    <div class="deck">
+      <div class="deck-header">
+        <span class="deck-id" style="color:var(--v-col)">V</span>
+        <span class="deck-tag">Visualscape · Kaplan Framework</span>
+      </div>
+      <div class="knobs-row" id="knobs-v"></div>
+    </div>
+
+    <div class="vcf">
+      <span class="vcf-label" style="color:var(--red)">D</span>
+      <div class="vcf-track" id="vcf-vis">
+        <div class="vcf-fill" id="vcf-vis-fill" style="height:50%;background:linear-gradient(to top,var(--v-col),var(--red))"></div>
+        <div class="vcf-thumb" id="vcf-vis-thumb" style="bottom:50%;transform:translate(-50%,50%)"></div>
+      </div>
+      <span class="vcf-label" style="color:var(--v-col)">C</span>
+      <span class="vcf-val" id="vcf-vis-val">50</span>
+    </div>
+  </div>
+
+  <!-- C↔D horizontal crossfader -->
+  <div class="hcf-wrap">
+    <div class="hcf-header">
+      <span class="cf-label-left" style="color:var(--v-col)">C ─ Bloom / DNA</span>
+      <span class="cf-val-center" id="hcf-vis-val">C ↔ D · 50</span>
+      <span class="cf-label-right cf-label-right-v">D ─ Technical</span>
+    </div>
+    <div class="hcf-track" id="hcf-vis">
+      <div class="hcf-fill" id="hcf-vis-fill" style="width:50%;background:linear-gradient(90deg,var(--v-col),var(--red))"></div>
+      <div class="hcf-thumb" id="hcf-vis-thumb" style="left:50%"></div>
+    </div>
+  </div>
+
+  <!-- ═══ SCENE BANK ═══ -->
+  <div class="scene-bank">
+    <div class="section-label">Visual Patches / Scenes</div>
+    <div class="scenes-grid">
+      <div class="scene-btn active" data-scene="A">
+        <div class="scene-letter">A</div>
+        <div class="scene-name">Moon<br>u/DNA</div>
+        <div class="scene-tag">Stationary Wall</div>
+      </div>
+      <div class="scene-btn" data-scene="B">
+        <div class="scene-letter">B</div>
+        <div class="scene-name">Disks</div>
+        <div class="scene-tag">Stationary→<br>CCW</div>
+      </div>
+      <div class="scene-btn" data-scene="C">
+        <div class="scene-letter">C</div>
+        <div class="scene-name">Bloom</div>
+        <div class="scene-tag">Fade to Bloom</div>
+      </div>
+      <div class="scene-btn" data-scene="D">
+        <div class="scene-letter">D</div>
+        <div class="scene-name">Technical</div>
+        <div class="scene-tag">Fade→Black<br>Fade D</div>
+      </div>
+      <div class="scene-btn" data-scene="E">
+        <div class="scene-letter">E</div>
+        <div class="scene-name">Umbrellas</div>
+        <div class="scene-tag">Counter</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:12px">
+      <button class="return-btn" id="return-a">Return<br>to A</button>
+    </div>
+  </div>
+
+  <!-- ═══ DNA LIFECYCLE ═══ -->
+  <div class="dna-panel">
+    <div>
+      <div class="section-label">Emergent DNA Lifecycle</div>
+      <div style="font-size:8px;color:var(--dim);margin-top:3px;line-height:1.6">
+        Born → Grows → Lives → Dissolves<br>Each run is unique. Non-repeatable.
+      </div>
+    </div>
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span class="info-tag">Organism Life</span>
+        <span class="dna-status" id="dna-status">ALIVE</span>
+      </div>
+      <div class="dna-life-bar">
+        <div class="dna-life-fill" id="dna-life-fill" style="width:100%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">
+        <span style="font-size:7px;color:var(--dim)">Birth</span>
+        <span style="font-size:8px;color:var(--text)" id="dna-life-val">100%</span>
+        <span style="font-size:7px;color:var(--dim)">Dissolution</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="dna-trigger" id="dna-spawn">Spawn</button>
+      <button class="dna-trigger" id="dna-kill" style="border-color:var(--red);color:var(--red)">Kill</button>
+    </div>
+  </div>
+
+  <!-- ═══ WALL SWEEP ═══ -->
+  <div class="bottom-row">
+    <div class="walls-panel">
+      <div class="section-label">Wall Sweep · Clockwise</div>
+      <div class="wall-dots">
+        <div class="wall-dot lit" data-w="0"></div>
+        <div class="wall-dot" data-w="1"></div>
+        <div class="wall-dot" data-w="2"></div>
+        <div class="wall-dot" data-w="3"></div>
+        <span style="font-size:8px;color:var(--dim);margin-left:4px" id="wall-label">Wall 1</span>
+      </div>
+      <div class="hcf-track" id="hcf-master" style="margin-top:4px">
+        <div class="hcf-fill" id="hcf-master-fill" style="width:0%;background:var(--green)"></div>
+        <div class="hcf-thumb" id="hcf-master-thumb" style="left:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:5px">
+        <span style="font-size:7px;color:var(--dim)">W1</span>
+        <span style="font-size:7px;color:var(--dim)">W2</span>
+        <span style="font-size:7px;color:var(--dim)">W3</span>
+        <span style="font-size:7px;color:var(--dim)">W4</span>
+      </div>
+    </div>
+
+    <div class="walls-panel">
+      <div class="section-label">All Travels Across 4 Walls · Clockwise</div>
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+        <span style="font-size:7px;color:var(--dim)">Counter</span>
+        <div class="hcf-track" id="hcf-dir" style="flex:1">
+          <div class="hcf-fill" id="hcf-dir-fill" style="width:50%;background:var(--b-col)"></div>
+          <div class="hcf-thumb" id="hcf-dir-thumb" style="left:50%"></div>
+        </div>
+        <span style="font-size:7px;color:var(--dim)">Clockwise</span>
+      </div>
+      <div style="margin-top:8px;font-size:8px;color:var(--dim)">
+        Direction: <span id="dir-val" style="color:var(--b-col)">Neutral</span>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <div style="flex:1">
+          <div style="font-size:7px;color:var(--dim);margin-bottom:3px">All Counter</div>
+          <div class="hcf-track" id="hcf-allctr">
+            <div class="hcf-fill" id="hcf-allctr-fill" style="width:30%;background:var(--a-col)"></div>
+            <div class="hcf-thumb" id="hcf-allctr-thumb" style="left:30%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /board -->
+
+<script>
+// ─── STATE ───────────────────────────────────────────────
+const SOUND_PARAMS = ['Density','Drift','Spread','Tension'];
+const VIS_PARAMS   = ['Complexity','Coherence','Legibility','Mystery'];
+
+const COLORS_A = ['#e8c97a','#e8b47a','#e8d07a','#e8a87a'];
+const COLORS_B = ['#7ad4e8','#7ac4e8','#7ae4e8','#7ab4e8'];
+const COLORS_V = ['#b47ae8','#c47ae8','#a47ae8','#d47ae8'];
+
+const state = {
+  a: [64,64,64,64],
+  b: [64,64,64,64],
+  v: [64,64,64,64],
+  cfSound: 50, cfVis: 50,
+  hfSound: 50, hfVis: 50,
+  master: 0, dir: 50, allctr: 30,
+  dnaLife: 100, dnaAlive: true, dnaTimer: null
+};
+
+// ─── KNOB ────────────────────────────────────────────────
+function makeKnobs(container, params, vals, colors) {
+  params.forEach((name, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'knob-wrap';
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'knob-canvas';
+    canvas.width = 88; canvas.height = 88;
+
+    const label = document.createElement('div');
+    label.className = 'knob-label';
+    label.textContent = name;
+
+    const val = document.createElement('div');
+    val.className = 'knob-val';
+    val.textContent = vals[i];
+
+    wrap.appendChild(canvas);
+    wrap.appendChild(label);
+    wrap.appendChild(val);
+    container.appendChild(wrap);
+
+    drawKnob(canvas, vals[i], colors[i]);
+
+    let dragging = false, startY = 0, startVal = 0;
+    wrap.addEventListener('mousedown', e => {
+      dragging = true; startY = e.clientY; startVal = vals[i];
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', () => { dragging=false; document.removeEventListener('mousemove',onMove); });
+    });
+    function onMove(e) {
+      if (!dragging) return;
+      vals[i] = Math.max(0, Math.min(127, startVal + (startY - e.clientY)));
+      val.textContent = vals[i];
+      drawKnob(canvas, vals[i], colors[i]);
+    }
+
+    wrap.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY; startVal = vals[i];
+    });
+    wrap.addEventListener('touchmove', e => {
+      e.preventDefault();
+      vals[i] = Math.max(0, Math.min(127, startVal + (startY - e.touches[0].clientY)));
+      val.textContent = vals[i];
+      drawKnob(canvas, vals[i], colors[i]);
+    }, {passive:false});
+  });
+}
+
+function drawKnob(canvas, value, color) {
+  const ctx = canvas.getContext('2d');
+  const cx = 44, cy = 44, r = 32;
+  ctx.clearRect(0,0,88,88);
+
+  // Track
+  ctx.beginPath();
+  ctx.arc(cx,cy,r, 0.75*Math.PI, 2.25*Math.PI);
+  ctx.strokeStyle = '#2a2a36';
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Fill
+  const angle = 0.75*Math.PI + (value/127) * 1.5*Math.PI;
+  ctx.beginPath();
+  ctx.arc(cx,cy,r, 0.75*Math.PI, angle);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Body
+  const grad = ctx.createRadialGradient(cx-8,cy-8,2,cx,cy,r);
+  grad.addColorStop(0,'#2a2a36');
+  grad.addColorStop(1,'#111116');
+  ctx.beginPath();
+  ctx.arc(cx,cy,r-8,0,Math.PI*2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Indicator dot
+  const dotAngle = 0.75*Math.PI + (value/127)*1.5*Math.PI;
+  const dx = cx + (r-4)*Math.cos(dotAngle);
+  const dy = cy + (r-4)*Math.sin(dotAngle);
+  ctx.beginPath();
+  ctx.arc(dx,dy,3,0,Math.PI*2);
+  ctx.fillStyle = color;
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = color;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+// ─── FADERS ──────────────────────────────────────────────
+function makeHFader(trackId, fillId, thumbId, valId, stateKey, fmt) {
+  const track = document.getElementById(trackId);
+  const fill  = document.getElementById(fillId);
+  const thumb = document.getElementById(thumbId);
+  const valEl = document.getElementById(valId);
+
+  function update(pct) {
+    state[stateKey] = pct;
+    fill.style.width = pct + '%';
+    thumb.style.left = pct + '%';
+    if (valEl) valEl.textContent = fmt ? fmt(pct) : Math.round(pct);
+  }
+
+  track.addEventListener('mousedown', e => {
+    const move = ev => {
+      const rect = track.getBoundingClientRect();
+      update(Math.max(0, Math.min(100, ((ev.clientX - rect.left) / rect.width) * 100)));
+    };
+    move(e);
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', () => document.removeEventListener('mousemove', move), {once:true});
+  });
+
+  track.addEventListener('touchstart', e => {
+    const move = ev => {
+      ev.preventDefault();
+      const rect = track.getBoundingClientRect();
+      update(Math.max(0, Math.min(100, ((ev.touches[0].clientX - rect.left) / rect.width) * 100)));
+    };
+    move(e);
+    track.addEventListener('touchmove', move, {passive:false});
+    track.addEventListener('touchend', () => track.removeEventListener('touchmove', move), {once:true});
+  });
+}
+
+function makeVFader(trackId, fillId, thumbId, valId, stateKey) {
+  const track = document.getElementById(trackId);
+  const fill  = document.getElementById(fillId);
+  const thumb = document.getElementById(thumbId);
+  const valEl = document.getElementById(valId);
+
+  function update(pct) {
+    state[stateKey] = pct;
+    fill.style.height = (100 - pct) + '%';
+    thumb.style.bottom = (100 - pct) + '%';
+    if (valEl) valEl.textContent = Math.round(pct);
+  }
+
+  track.addEventListener('mousedown', e => {
+    const move = ev => {
+      const rect = track.getBoundingClientRect();
+      update(Math.max(0, Math.min(100, 100 - ((ev.clientY - rect.top) / rect.height) * 100)));
+    };
+    move(e);
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', () => document.removeEventListener('mousemove', move), {once:true});
+  });
+}
+
+// ─── SCENES ──────────────────────────────────────────────
+document.querySelectorAll('.scene-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+document.getElementById('return-a').addEventListener('click', () => {
+  document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-scene="A"]').classList.add('active');
+});
+
+// ─── WALL SWEEP ──────────────────────────────────────────
+makeHFader('hcf-master','hcf-master-fill','hcf-master-thumb', null, 'master', pct => {
+  const wall = Math.min(3, Math.floor(pct / 25));
+  document.querySelectorAll('.wall-dot').forEach((d,i) => d.classList.toggle('lit', i<=wall));
+  document.getElementById('wall-label').textContent = 'Wall ' + (wall+1);
+  return '';
+});
+
+// ─── DIRECTION ───────────────────────────────────────────
+makeHFader('hcf-dir','hcf-dir-fill','hcf-dir-thumb', null, 'dir', pct => {
+  const label = pct < 40 ? 'Counter CCW' : pct > 60 ? 'Clockwise CW' : 'Neutral';
+  document.getElementById('dir-val').textContent = label;
+  return '';
+});
+
+makeHFader('hcf-allctr','hcf-allctr-fill','hcf-allctr-thumb', null, 'allctr');
+
+// ─── SOUND CROSSFADERS ───────────────────────────────────
+makeHFader('hcf-sound','hcf-sound-fill','hcf-sound-thumb','hcf-sound-val', 'hfSound',
+  pct => `A ↔ B · ${Math.round(pct)}`);
+makeVFader('vcf-sound','vcf-sound-fill','vcf-sound-thumb','vcf-sound-val','cfSound');
+
+// ─── VIS CROSSFADERS ─────────────────────────────────────
+makeHFader('hcf-vis','hcf-vis-fill','hcf-vis-thumb','hcf-vis-val','hfVis',
+  pct => `C ↔ D · ${Math.round(pct)}`);
+makeVFader('vcf-vis','vcf-vis-fill','vcf-vis-thumb','vcf-vis-val','cfVis');
+
+// ─── KNOBS ───────────────────────────────────────────────
+makeKnobs(document.getElementById('knobs-a'), SOUND_PARAMS, state.a, COLORS_A);
+makeKnobs(document.getElementById('knobs-b'), SOUND_PARAMS, state.b, COLORS_B);
+makeKnobs(document.getElementById('knobs-v'), VIS_PARAMS,   state.v, COLORS_V);
+
+// ─── DNA LIFECYCLE ───────────────────────────────────────
+function startDNA(life = 100) {
+  state.dnaLife = life;
+  state.dnaAlive = true;
+  clearInterval(state.dnaTimer);
+  state.dnaTimer = setInterval(() => {
+    state.dnaLife -= 0.15;
+    if (state.dnaLife <= 0) {
+      state.dnaLife = 0;
+      state.dnaAlive = false;
+      clearInterval(state.dnaTimer);
+      document.getElementById('dna-status').textContent = 'DISSOLVED';
+      document.getElementById('dna-status').className = 'dna-status dead';
+    } else if (state.dnaLife < 25) {
+      document.getElementById('dna-status').textContent = 'DYING';
+      document.getElementById('dna-status').className = 'dna-status dying';
+    } else {
+      document.getElementById('dna-status').textContent = 'ALIVE';
+      document.getElementById('dna-status').className = 'dna-status';
+    }
+    document.getElementById('dna-life-fill').style.width = state.dnaLife + '%';
+    document.getElementById('dna-life-val').textContent = Math.round(state.dnaLife) + '%';
+  }, 100);
+}
+
+document.getElementById('dna-spawn').addEventListener('click', () => startDNA(100));
+document.getElementById('dna-kill').addEventListener('click', () => {
+  clearInterval(state.dnaTimer);
+  state.dnaLife = 0;
+  state.dnaAlive = false;
+  document.getElementById('dna-life-fill').style.width = '0%';
+  document.getElementById('dna-life-val').textContent = '0%';
+  document.getElementById('dna-status').textContent = 'DISSOLVED';
+  document.getElementById('dna-status').className = 'dna-status dead';
+});
+
+// Auto-start DNA on load
+startDNA(100);
+</script>
+</body>
+</html>

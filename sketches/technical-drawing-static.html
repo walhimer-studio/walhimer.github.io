@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Drawings of Feelings — Static</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #050505;
+    --panel: #0c0c0c;
+    --border: #1e1e1e;
+    --text: #c8c8c8;
+    --dim: #555;
+    --accent: #ffffff;
+    --feel-color: #ffffff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 20px 20px;
+    gap: 0;
+    overflow-y: auto;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .logo-sub {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+    margin-bottom: 24px;
+  }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── FEELING PRESETS ── */
+  .feeling-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 24px;
+  }
+
+  .feeling-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 10px 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feeling-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--feel-color);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .feeling-btn:hover {
+    border-color: #444;
+    color: #aaa;
+  }
+
+  .feeling-btn.active {
+    border-color: var(--feel-color);
+    color: var(--feel-color);
+  }
+
+  .feeling-btn.active::before {
+    opacity: 1;
+  }
+
+  .feeling-btn .feel-name {
+    display: block;
+    font-size: 11px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+  }
+
+  .feeling-btn .feel-note {
+    display: block;
+    font-size: 8px;
+    opacity: 0.5;
+  }
+
+  /* ── PARAMETERS DISPLAY ── */
+  .param-display {
+    margin-bottom: 24px;
+  }
+
+  .param-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #111;
+    font-size: 9px;
+  }
+
+  .param-name {
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+
+  .param-val {
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  /* ── ANNOTATION TOGGLES ── */
+  .toggle-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .toggle-row input[type="checkbox"] {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #333;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .toggle-row input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .toggle-row label {
+    font-size: 10px;
+    color: #666;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: color 0.1s;
+  }
+
+  .toggle-row:hover label { color: #aaa; }
+  .toggle-row input:checked + label { color: var(--text); }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+    padding-top: 16px;
+  }
+
+  .btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 10px 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+
+  .btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-primary {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── CANVAS ── */
+  #canvas-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #canvas-wrap::before {
+    content: attr(data-feel);
+    position: absolute;
+    bottom: 24px;
+    right: 28px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #1a1a1a;
+    pointer-events: none;
+  }
+
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="logo">Technical<br>Drawings</div>
+  <div class="logo-sub">of Feelings — Static Series</div>
+
+  <div class="section-label">Select Feeling</div>
+
+  <div class="feeling-grid">
+    <button class="feeling-btn active" data-feel="anxiety" onclick="setFeeling('anxiety', this)">
+      <span class="feel-name">Anxiety</span>
+      <span class="feel-note">unstable / high freq</span>
+    </button>
+    <button class="feeling-btn" data-feel="grief" onclick="setFeeling('grief', this)">
+      <span class="feel-name">Grief</span>
+      <span class="feel-note">load / suspension</span>
+    </button>
+    <button class="feeling-btn" data-feel="euphoria" onclick="setFeeling('euphoria', this)">
+      <span class="feel-name">Euphoria</span>
+      <span class="feel-note">radial / overflow</span>
+    </button>
+    <button class="feeling-btn" data-feel="numbness" onclick="setFeeling('numbness', this)">
+      <span class="feel-name">Numbness</span>
+      <span class="feel-note">flat / minimal</span>
+    </button>
+    <button class="feeling-btn" data-feel="longing" onclick="setFeeling('longing', this)">
+      <span class="feel-name">Longing</span>
+      <span class="feel-note">vector / gap</span>
+    </button>
+    <button class="feeling-btn" data-feel="rage" onclick="setFeeling('rage', this)">
+      <span class="feel-name">Rage</span>
+      <span class="feel-note">fracture / force</span>
+    </button>
+  </div>
+
+  <div class="section-label">Parameters</div>
+  <div class="param-display">
+    <div class="param-row"><span class="param-name">COMPLEXITY</span><span class="param-val" id="pComplexity">—</span></div>
+    <div class="param-row"><span class="param-name">LINE WT</span><span class="param-val" id="pLineWeight">—</span></div>
+    <div class="param-row"><span class="param-name">VANISH PTS</span><span class="param-val" id="pVanish">—</span></div>
+    <div class="param-row"><span class="param-name">ZIGZAG FREQ</span><span class="param-val" id="pZigzag">—</span></div>
+    <div class="param-row"><span class="param-name">ANNOTATION</span><span class="param-val" id="pAnnotation">—</span></div>
+    <div class="param-row"><span class="param-name">SEED</span><span class="param-val" id="pSeed">—</span></div>
+  </div>
+
+  <div class="section-label">Elements</div>
+  <div class="toggle-group">
+    <div class="toggle-row">
+      <input type="checkbox" id="tDimLines" checked onchange="generateNew()">
+      <label for="tDimLines">Dimension Lines</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tCallouts" checked onchange="generateNew()">
+      <label for="tCallouts">Callout Bubbles</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tSections" checked onchange="generateNew()">
+      <label for="tSections">Section Cuts</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tGrid" checked onchange="generateNew()">
+      <label for="tGrid">Reference Grid</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tElevation" checked onchange="generateNew()">
+      <label for="tElevation">Elevation Line</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tRevCloud" checked onchange="generateNew()">
+      <label for="tRevCloud">Revision Cloud</label>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="generateNew()">⟳ GENERATE</button>
+    <button class="btn" onclick="saveCanvas('technical-drawing-' + currentFeeling, 'png')">↓ PNG</button>
+  </div>
+</div>
+
+<div id="canvas-wrap" data-feel="NOT TO SCALE">
+</div>
+
+<script>
+// ── FEELING PRESETS ──────────────────────────────────────────────
+const FEELINGS = {
+  anxiety: {
+    complexity: 14,
+    lineWeight: 0.8,
+    vanishPoints: 4,
+    zigzagFreq: 8,
+    annotationDensity: 'HIGH',
+    circleCount: [3, 7],
+    perspLines: [8, 16],
+    arrowCount: [6, 12],
+    zigzagCount: [5, 10],
+    dotCount: [20, 40],
+    cubeCount: [2, 4],
+    spread: 0.9,
+    words: ['UNRESOLVED LOAD', 'FIELD VERIFY', 'SEE DETAIL 7', 'UNSTABLE', 'THRESHOLD EXCEEDED', 'NOT TO SCALE', 'REV B', 'CHECK', '???', 'TOLERANCE ±∞']
+  },
+  grief: {
+    complexity: 4,
+    lineWeight: 1.8,
+    vanishPoints: 1,
+    zigzagFreq: 2,
+    annotationDensity: 'LOW',
+    circleCount: [1, 3],
+    perspLines: [2, 4],
+    arrowCount: [1, 3],
+    zigzagCount: [0, 2],
+    dotCount: [3, 8],
+    cubeCount: [0, 1],
+    spread: 0.4,
+    words: ['SUSPENDED', 'LOAD BEARING', 'SECTION A–A', 'WEIGHT: ∅', 'DO NOT SCALE', 'VOID', 'BELOW DATUM']
+  },
+  euphoria: {
+    complexity: 16,
+    lineWeight: 1.0,
+    vanishPoints: 6,
+    zigzagFreq: 3,
+    annotationDensity: 'HIGH',
+    circleCount: [5, 10],
+    perspLines: [10, 20],
+    arrowCount: [8, 14],
+    zigzagCount: [3, 6],
+    dotCount: [30, 60],
+    cubeCount: [3, 6],
+    spread: 1.0,
+    words: ['OVERFLOW', 'RADIAL FIELD', 'ALL DIRECTIONS', 'EXPAND', 'NO BOUNDARY', 'UNCONSTRAINED', 'REV ∞', 'EXCESS']
+  },
+  numbness: {
+    complexity: 3,
+    lineWeight: 0.5,
+    vanishPoints: 1,
+    zigzagFreq: 0,
+    annotationDensity: 'NONE',
+    circleCount: [0, 2],
+    perspLines: [1, 3],
+    arrowCount: [0, 1],
+    zigzagCount: [0, 0],
+    dotCount: [0, 4],
+    cubeCount: [0, 1],
+    spread: 0.3,
+    words: ['FLAT', 'NO DATUM', 'FIELD VERIFY', '—', 'NOT TO SCALE']
+  },
+  longing: {
+    complexity: 8,
+    lineWeight: 1.2,
+    vanishPoints: 2,
+    zigzagFreq: 1,
+    annotationDensity: 'MEDIUM',
+    circleCount: [2, 4],
+    perspLines: [4, 8],
+    arrowCount: [4, 8],
+    zigzagCount: [1, 3],
+    dotCount: [8, 20],
+    cubeCount: [1, 3],
+    spread: 0.7,
+    words: ['VECTOR: UNDEFINED', 'DISTANCE: ∅', 'SEE REMOTE DETAIL', 'GAP (TYP)', 'APPROACH AXIS', 'PROJECTION', 'BEYOND SCOPE']
+  },
+  rage: {
+    complexity: 18,
+    lineWeight: 2.5,
+    vanishPoints: 5,
+    zigzagFreq: 10,
+    annotationDensity: 'HIGH',
+    circleCount: [2, 5],
+    perspLines: [12, 22],
+    arrowCount: [10, 18],
+    zigzagCount: [6, 12],
+    dotCount: [15, 35],
+    cubeCount: [2, 5],
+    spread: 1.0,
+    words: ['FRACTURE', 'FORCE: UNSPECIFIED', 'IMPACT ZONE', 'DO NOT APPROACH', 'EXCEEDS CAPACITY', 'CRITICAL', 'FAILURE MODE', 'BREAK']
+  }
+};
+
+let currentFeeling = 'anxiety';
+let currentSeed = 0;
+let elevationY = 0;
+let cnvSize = 0;
+
+function setFeeling(name, btn) {
+  currentFeeling = name;
+  document.querySelectorAll('.feeling-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  generateNew();
+}
+
+function updateParams(preset, seed) {
+  document.getElementById('pComplexity').textContent = preset.complexity;
+  document.getElementById('pLineWeight').textContent = preset.lineWeight.toFixed(1);
+  document.getElementById('pVanish').textContent = preset.vanishPoints;
+  document.getElementById('pZigzag').textContent = preset.zigzagFreq;
+  document.getElementById('pAnnotation').textContent = preset.annotationDensity;
+  document.getElementById('pSeed').textContent = seed.toString(16).toUpperCase().padStart(4, '0');
+}
+
+// ── DRAWING FUNCTIONS ────────────────────────────────────────────
+
+function drawGrid() {
+  push();
+  stroke(255, 22);
+  strokeWeight(0.4);
+  let spacing = cnvSize / 10;
+  for (let x = 0; x <= cnvSize; x += spacing) line(x, 0, x, cnvSize);
+  for (let y = 0; y <= cnvSize; y += spacing) line(0, y, cnvSize, y);
+  pop();
+}
+
+function drawElevationLine() {
+  elevationY = cnvSize * random(0.6, 0.75);
+  push();
+  stroke(255);
+  strokeWeight(1.5);
+  // Main line
+  line(0, elevationY, cnvSize, elevationY);
+  // Hatch marks underneath (earth symbol)
+  strokeWeight(0.8);
+  let hatchSpacing = 18;
+  for (let x = hatchSpacing; x < cnvSize; x += hatchSpacing) {
+    line(x, elevationY, x - 8, elevationY + 10);
+  }
+  // Tick marks
+  stroke(255, 180);
+  strokeWeight(0.6);
+  for (let x = 0; x <= cnvSize; x += cnvSize/8) {
+    line(x, elevationY - 6, x, elevationY + 6);
+    // Extension dot-dash
+    stroke(255, 80);
+    line(x, elevationY + 6, x, elevationY + 20);
+    stroke(255, 180);
+  }
+  pop();
+}
+
+function drawCircleCluster(preset) {
+  let count = int(random(preset.circleCount[0], preset.circleCount[1]));
+  let x = random(cnvSize * 0.1, cnvSize * 0.9);
+  let onElev = document.getElementById('tElevation').checked && random() < 0.25;
+  push();
+  strokeWeight(preset.lineWeight);
+  for (let i = 0; i < count; i++) {
+    let r = random(18, 90);
+    let ox = random(-35, 35);
+    let oy = random(-35, 35);
+    let cy = onElev ? elevationY - r * 0.5 : random(cnvSize * 0.15, cnvSize * 0.85);
+    circle(x + ox, cy + oy, r);
+    if (random() < 0.3) {
+      fill(170, 170, 170, 180);
+      noStroke();
+      circle(x + ox, cy + oy, r * 0.55);
+      noFill();
+      stroke(255);
+    }
+    // Center mark
+    if (random() < 0.4) {
+      stroke(255, 120);
+      strokeWeight(0.5);
+      let cr = r / 2;
+      line(x + ox - cr * 0.15, cy + oy, x + ox + cr * 0.15, cy + oy);
+      line(x + ox, cy + oy - cr * 0.15, x + ox, cy + oy + cr * 0.15);
+      strokeWeight(preset.lineWeight);
+      stroke(255);
+    }
+  }
+  pop();
+}
+
+function drawPerspectiveLines(preset) {
+  let vanishX = random(cnvSize * 0.25, cnvSize * 0.75);
+  let vanishY = random(cnvSize * 0.25, cnvSize * 0.75);
+  push();
+  for (let i = 0; i < random(preset.perspLines[0], preset.perspLines[1]); i++) {
+    let sx = random(cnvSize);
+    let sy = random(cnvSize);
+    let alpha = random(40, 140);
+    stroke(255, alpha);
+    strokeWeight(preset.lineWeight * random(0.3, 0.9));
+    line(sx, sy, vanishX, vanishY);
+  }
+  pop();
+}
+
+function drawIsoCube(preset) {
+  let x = random(cnvSize * 0.2, cnvSize * 0.8);
+  let size = random(28, 70);
+  let y = document.getElementById('tElevation').checked
+    ? elevationY - size
+    : random(cnvSize * 0.15, cnvSize * 0.75);
+
+  let a1 = radians(30), a2 = radians(150);
+  let tC = {x, y};
+  let tR = {x: x + cos(a1)*size, y: y + sin(a1)*size};
+  let tL = {x: x + cos(a2)*size, y: y + sin(a2)*size};
+  let bC = {x, y: y + size};
+  let bR = {x: tR.x, y: tR.y + size};
+  let bL = {x: tL.x, y: tL.y + size};
+  let tOpp = {x: x + cos(a1)*size + cos(a2)*size, y: y + sin(a1)*size + sin(a2)*size};
+
+  push();
+  strokeWeight(preset.lineWeight);
+  // Top face
+  line(tC.x, tC.y, tR.x, tR.y);
+  line(tC.x, tC.y, tL.x, tL.y);
+  line(tL.x, tL.y, tOpp.x, tOpp.y);
+  line(tR.x, tR.y, tOpp.x, tOpp.y);
+  // Verticals
+  line(tC.x, tC.y, bC.x, bC.y);
+  line(tR.x, tR.y, bR.x, bR.y);
+  line(tL.x, tL.y, bL.x, bL.y);
+  // Bottom visible
+  line(bC.x, bC.y, bR.x, bR.y);
+  line(bC.x, bC.y, bL.x, bL.y);
+  // Face fill
+  if (random() < 0.45) {
+    fill(90, 90, 90);
+    noStroke();
+    beginShape();
+    vertex(tR.x, tR.y); vertex(bR.x, bR.y);
+    vertex(bC.x, bC.y); vertex(tC.x, tC.y);
+    endShape(CLOSE);
+    noFill(); stroke(255);
+    strokeWeight(preset.lineWeight);
+  }
+  pop();
+}
+
+function drawArrow(preset) {
+  let x1 = random(cnvSize * 0.15, cnvSize * 0.85);
+  let y1 = random(cnvSize * 0.15, cnvSize * 0.85);
+  let len = random(35, 110);
+  let angle = random(TWO_PI);
+  let x2 = x1 + cos(angle) * len;
+  let y2 = y1 + sin(angle) * len;
+  let as = 11, aa = PI / 6;
+  push();
+  stroke(255);
+  strokeWeight(preset.lineWeight);
+  line(x1, y1, x2, y2);
+  line(x2, y2, x2 - as*cos(angle-aa), y2 - as*sin(angle-aa));
+  line(x2, y2, x2 - as*cos(angle+aa), y2 - as*sin(angle+aa));
+  pop();
+}
+
+function drawZigzag(preset) {
+  if (preset.zigzagFreq === 0) return;
+  let x = random(cnvSize * 0.2, cnvSize * 0.8);
+  let y = random(cnvSize * 0.2, cnvSize * 0.8);
+  let isV = random() < 0.5;
+  let count = int(random(4, preset.zigzagFreq + 6));
+  let amp = random(7, 16);
+  let sp = random(5, 14);
+  push();
+  noFill();
+  strokeWeight(preset.lineWeight);
+  beginShape();
+  for (let i = 0; i < count; i++) {
+    vertex(
+      isV ? x + (i%2===0?amp:-amp) : x + i*sp,
+      isV ? y + i*sp : y + (i%2===0?amp:-amp)
+    );
+  }
+  endShape();
+  pop();
+}
+
+function drawDots(preset) {
+  let x = random(cnvSize * 0.1, cnvSize * 0.9);
+  let y = random(cnvSize * 0.1, cnvSize * 0.9);
+  let count = int(random(3, 9));
+  let isV = random() < 0.5;
+  push();
+  fill(200);
+  noStroke();
+  for (let i = 0; i < count; i++) {
+    circle(isV ? x : x + i*9, isV ? y + i*9 : y, 3.5);
+  }
+  pop();
+}
+
+function drawCurve(preset) {
+  let x1 = random(cnvSize*0.1, cnvSize*0.9);
+  let y1 = random(cnvSize*0.1, cnvSize*0.9);
+  let x2 = random(cnvSize*0.1, cnvSize*0.9);
+  let y2 = random(cnvSize*0.1, cnvSize*0.9);
+  let cx = (x1+x2)/2 + random(-120, 120);
+  let cy = (y1+y2)/2 + random(-120, 120);
+  push();
+  noFill();
+  strokeWeight(preset.lineWeight);
+  beginShape();
+  vertex(x1, y1);
+  quadraticVertex(cx, cy, x2, y2);
+  endShape();
+  pop();
+}
+
+// ── ANNOTATION SYSTEM ────────────────────────────────────────────
+
+function drawDimensionLine(preset) {
+  if (!document.getElementById('tDimLines').checked) return;
+  // Random dimension line with ticks and a measurement (nonsense value)
+  let x1 = random(cnvSize * 0.1, cnvSize * 0.6);
+  let y = random(cnvSize * 0.1, cnvSize * 0.9);
+  let len = random(60, 200);
+  let x2 = x1 + len;
+  let tickH = 10;
+  let val = (random(0.001, 999.9)).toFixed(random() < 0.5 ? 0 : 2);
+  let unit = random(['mm', 'mm', '″', 'm', 'Ø', '(TYP)', '±?']);
+
+  push();
+  stroke(255, 160);
+  strokeWeight(0.6);
+  // Main dimension line
+  line(x1, y, x2, y);
+  // Ticks
+  line(x1, y - tickH/2, x1, y + tickH/2);
+  line(x2, y - tickH/2, x2, y + tickH/2);
+  // Arrows pointing inward
+  let as = 8, aa = PI/7;
+  // Left arrow →
+  line(x1, y, x1 + as*cos(-aa), y + as*sin(-aa));
+  line(x1, y, x1 + as*cos(aa), y + as*sin(aa));
+  // Right arrow ←
+  line(x2, y, x2 - as*cos(-aa), y + as*sin(-aa));
+  line(x2, y, x2 - as*cos(aa), y + as*sin(aa));
+  // Extension lines up
+  stroke(255, 80);
+  strokeWeight(0.4);
+  line(x1, y - tickH, x1, y - tickH - random(15, 50));
+  line(x2, y - tickH, x2, y - tickH - random(15, 50));
+
+  // Label
+  fill(255, 160);
+  noStroke();
+  textFont('Share Tech Mono');
+  textSize(9);
+  textAlign(CENTER, BOTTOM);
+  text(val + ' ' + unit, (x1 + x2) / 2, y - 5);
+  textAlign(LEFT, BASELINE);
+  pop();
+}
+
+function drawCallout(preset) {
+  if (!document.getElementById('tCallouts').checked) return;
+  let x = random(cnvSize * 0.15, cnvSize * 0.85);
+  let y = random(cnvSize * 0.1, cnvSize * 0.85);
+  let word = random(preset.words);
+
+  // Leader line
+  let lx = x + random(-60, 60);
+  let ly = y + random(-40, 40);
+  push();
+  stroke(255, 180);
+  strokeWeight(0.7);
+  line(x, y, lx, ly);
+  // Dot at tip
+  fill(255, 180);
+  noStroke();
+  circle(x, y, 4);
+
+  // Bubble / underline style
+  noFill();
+  stroke(255, 140);
+  strokeWeight(0.6);
+  textFont('Share Tech Mono');
+  textSize(9.5);
+  let tw = textWidth(word) + 10;
+
+  if (random() < 0.5) {
+    // Box callout
+    rect(lx - 5, ly - 14, tw, 18);
+  } else {
+    // Underline callout
+    line(lx, ly + 3, lx + tw - 10, ly + 3);
+  }
+
+  fill(255);
+  noStroke();
+  text(word, lx, ly);
+  pop();
+}
+
+function drawSectionCut(preset) {
+  if (!document.getElementById('tSections').checked) return;
+  // A section line: A — A with cut markers
+  let y = random(cnvSize * 0.2, cnvSize * 0.8);
+  let x1 = random(cnvSize * 0.05, cnvSize * 0.2);
+  let x2 = random(cnvSize * 0.75, cnvSize * 0.95);
+  let letter = random(['A', 'B', 'C', 'D', 'X', 'Y']);
+
+  push();
+  stroke(255, 150);
+  strokeWeight(0.7);
+  // Dashed line
+  drawingContext.setLineDash([8, 5]);
+  line(x1 + 20, y, x2 - 20, y);
+  drawingContext.setLineDash([]);
+
+  // End markers (circles with triangles)
+  strokeWeight(1);
+  circle(x1 + 10, y, 18);
+  circle(x2 - 10, y, 18);
+
+  // Arrows
+  let as = 8;
+  // Left: points right
+  line(x1 + 19, y, x1 + 19 - as, y - as/2);
+  line(x1 + 19, y, x1 + 19 - as, y + as/2);
+  // Right: points left
+  line(x2 - 19, y, x2 - 19 + as, y - as/2);
+  line(x2 - 19, y, x2 - 19 + as, y + as/2);
+
+  fill(255);
+  noStroke();
+  textFont('Share Tech Mono');
+  textSize(9);
+  textAlign(CENTER, CENTER);
+  text(letter, x1 + 10, y);
+  text(letter, x2 - 10, y);
+  textAlign(LEFT, BASELINE);
+  pop();
+}
+
+function drawRevisionCloud(preset) {
+  if (!document.getElementById('tRevCloud').checked) return;
+  // Bumpy revision cloud around a random area
+  let cx = random(cnvSize * 0.2, cnvSize * 0.8);
+  let cy = random(cnvSize * 0.2, cnvSize * 0.7);
+  let rw = random(60, 140);
+  let rh = random(40, 100);
+  let bumps = int((rw * 2 + rh * 2) / 14);
+  push();
+  stroke(255, 100);
+  strokeWeight(0.7);
+  noFill();
+  beginShape();
+  let perimeter = 2 * (rw + rh);
+  let step = perimeter / bumps;
+
+  // Walk around the perimeter with little arcs
+  for (let i = 0; i < bumps; i++) {
+    let t = i / bumps;
+    let bx, by;
+    if (t < 0.25) { bx = cx - rw + t*4*rw; by = cy - rh; }
+    else if (t < 0.5) { bx = cx + rw; by = cy - rh + (t-0.25)*4*rh; }
+    else if (t < 0.75) { bx = cx + rw - (t-0.5)*4*rw; by = cy + rh; }
+    else { bx = cx - rw; by = cy + rh - (t-0.75)*4*rh; }
+    // Bump outward
+    let nx = bx - cx, ny = by - cy;
+    let len = sqrt(nx*nx+ny*ny) || 1;
+    let bump = 7;
+    curveVertex(bx + nx/len*bump*sin(i*1.7), by + ny/len*bump*sin(i*1.7));
+  }
+  endShape(CLOSE);
+
+  // REV label
+  fill(255, 100);
+  noStroke();
+  textFont('Share Tech Mono');
+  textSize(8);
+  textAlign(CENTER, CENTER);
+  text('REV ' + random(['A','B','C','—','?']), cx, cy);
+  textAlign(LEFT, BASELINE);
+  pop();
+}
+
+// ── MAIN GENERATOR ───────────────────────────────────────────────
+
+function generateNew() {
+  if (!window._p5ready) return;
+  let preset = FEELINGS[currentFeeling];
+  currentSeed = int(random(99999));
+  randomSeed(currentSeed);
+
+  background(0);
+  stroke(255);
+  noFill();
+  textFont('Share Tech Mono');
+
+  if (document.getElementById('tGrid').checked) drawGrid();
+  if (document.getElementById('tElevation').checked) drawElevationLine();
+
+  // Perspective burst(s)
+  for (let i = 0; i < preset.vanishPoints; i++) drawPerspectiveLines(preset);
+
+  // Core geometry passes
+  for (let i = 0; i < preset.complexity; i++) {
+    let r = random();
+    if      (r < 0.2) drawCircleCluster(preset);
+    else if (r < 0.35) drawIsoCube(preset);
+    else if (r < 0.55) drawCurve(preset);
+    else if (r < 0.7)  drawZigzag(preset);
+    else               drawArrow(preset);
+  }
+
+  // Decorative
+  let dotN = int(random(preset.dotCount[0], preset.dotCount[1]));
+  for (let i = 0; i < dotN; i++) drawDots(preset);
+
+  // Annotation layer (on top)
+  let annotCount = {HIGH:6, MEDIUM:3, LOW:1, NONE:0}[preset.annotationDensity];
+  for (let i = 0; i < annotCount + 2; i++) drawDimensionLine(preset);
+  for (let i = 0; i < annotCount + 1; i++) drawCallout(preset);
+  for (let i = 0; i < int(annotCount/2) + 1; i++) drawSectionCut(preset);
+  for (let i = 0; i < 2; i++) drawRevisionCloud(preset);
+
+  updateParams(preset, currentSeed);
+}
+
+// ── P5 SETUP ─────────────────────────────────────────────────────
+
+new p5(function(p) {
+  window._p5ready = false;
+
+  p.setup = function() {
+    let wrap = document.getElementById('canvas-wrap');
+    let sz = min(wrap.offsetWidth, wrap.offsetHeight) - 40;
+    cnvSize = sz;
+    let c = p.createCanvas(sz, sz);
+    c.parent('canvas-wrap');
+    p.pixelDensity(2);
+    p.noLoop();
+
+    // Alias p5 globals
+    window.random   = p.random.bind(p);
+    window.randomSeed = p.randomSeed.bind(p);
+    window.background = p.background.bind(p);
+    window.stroke    = p.stroke.bind(p);
+    window.strokeWeight = p.strokeWeight.bind(p);
+    window.noStroke  = p.noStroke.bind(p);
+    window.fill      = p.fill.bind(p);
+    window.noFill    = p.noFill.bind(p);
+    window.line      = p.line.bind(p);
+    window.circle    = p.circle.bind(p);
+    window.rect      = p.rect.bind(p);
+    window.push      = p.push.bind(p);
+    window.pop       = p.pop.bind(p);
+    window.translate = p.translate.bind(p);
+    window.rotate    = p.rotate.bind(p);
+    window.beginShape = p.beginShape.bind(p);
+    window.endShape   = p.endShape.bind(p);
+    window.vertex     = p.vertex.bind(p);
+    window.curveVertex = p.curveVertex.bind(p);
+    window.quadraticVertex = p.quadraticVertex.bind(p);
+    window.text      = p.text.bind(p);
+    window.textFont  = p.textFont.bind(p);
+    window.textSize  = p.textSize.bind(p);
+    window.textWidth = p.textWidth.bind(p);
+    window.textAlign = p.textAlign.bind(p);
+    window.drawingContext = p.drawingContext;
+    window.sin  = p.sin.bind(p);
+    window.cos  = p.cos.bind(p);
+    window.atan2 = p.atan2.bind(p);
+    window.sqrt = p.sqrt.bind(p);
+    window.min  = p.min.bind(p);
+    window.int  = Math.floor;
+    window.radians = p.radians.bind(p);
+    window.degrees = p.degrees.bind(p);
+    window.TWO_PI = p.TWO_PI;
+    window.PI     = p.PI;
+    window.CLOSE  = p.CLOSE;
+    window.CENTER = p.CENTER;
+    window.LEFT   = p.LEFT;
+    window.BASELINE = p.BASELINE;
+    window.BOTTOM = p.BOTTOM;
+
+    window.saveCanvas = (name, ext) => p.saveCanvas(name, ext);
+
+    window._p5ready = true;
+    generateNew();
+  };
+
+  p.draw = function() {};
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>∞</title>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { overflow:hidden; background:#000; }
+#overlay {
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background:#000; z-index:999; cursor:pointer; transition:opacity 4s ease;
+}
+#overlay.fade { opacity:0; pointer-events:none; }
+#overlay span {
+  font-family:'Courier Prime',monospace; font-size:11px;
+  letter-spacing:4px; color:#444; text-transform:uppercase;
+}
+</style>
+</head>
+<body>
+<div id="overlay"><span>touch to begin</span></div>
+<script>
+
+// ── PALETTES ──────────────────────────────────────────────────────
+// Each cycle uses a different palette. Cycles through them in order.
+const PALETTES = [
+  { bg:[10,10,12],    ink:[230,230,225] },  // near-black / cool white
+  { bg:[14,10,4],     ink:[235,220,190] },  // warm dark / sepia
+  { bg:[6,10,22],     ink:[200,215,240] },  // deep navy / cool white
+  { bg:[12,12,8],     ink:[240,235,200] },  // dark olive / warm cream
+  { bg:[18,8,12],     ink:[225,215,225] },  // dark plum / pale lavender
+  { bg:[4,14,12],     ink:[200,235,225] },  // dark teal / mint
+];
+
+let paletteIndex = 0;
+let currentBg  = [...PALETTES[0].bg];
+let currentInk = [...PALETTES[0].ink];
+let targetBg   = [...PALETTES[0].bg];
+let targetInk  = [...PALETTES[0].ink];
+let colorT = 1; // 1 = fully arrived at target
+const COLOR_SHIFT_DUR = 4000; // ms to transition between palettes
+let colorShiftStart = 0;
+
+function lp(a,b,t){return a+(b-a)*t;}
+function sm(t){return t*t*(3-2*t);}
+
+function startColorShift(){
+  paletteIndex = (paletteIndex+1) % PALETTES.length;
+  targetBg  = [...PALETTES[paletteIndex].bg];
+  targetInk = [...PALETTES[paletteIndex].ink];
+  colorT = 0;
+  colorShiftStart = millis();
+}
+
+function updateColor(){
+  if(colorT>=1) return;
+  colorT = Math.min(1,(millis()-colorShiftStart)/COLOR_SHIFT_DUR);
+  const f = sm(colorT);
+  currentBg  = [lp(currentBg[0],targetBg[0],f),   lp(currentBg[1],targetBg[1],f),   lp(currentBg[2],targetBg[2],f)];
+  currentInk = [lp(currentInk[0],targetInk[0],f), lp(currentInk[1],targetInk[1],f), lp(currentInk[2],targetInk[2],f)];
+}
+
+// ── AUDIO ─────────────────────────────────────────────────────────
+let audioCtx,masterGain,reverb;
+const PENTA=[130.81,146.83,164.81,196,220,261.63,293.66,329.63,392,440,523.25,587.33,659.25,784,880];
+function initAudio(){
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  masterGain=audioCtx.createGain();masterGain.gain.value=0;masterGain.connect(audioCtx.destination);
+  reverb=audioCtx.createConvolver();
+  const sr=audioCtx.sampleRate,len=sr*5,buf=audioCtx.createBuffer(2,len,sr);
+  for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.5);}
+  reverb.buffer=buf;
+  const rg=audioCtx.createGain();rg.gain.value=0.5;reverb.connect(rg);rg.connect(masterGain);
+  scheduleArc();
+}
+function scheduleArc(){
+  if(!audioCtx)return;
+  const arcSec=180+Math.random()*120;
+  const root=Math.floor(Math.random()*5);
+  const scale=[0,1,2,3,4].map(i=>PENTA[(root+i*2)%PENTA.length]);
+  const now=audioCtx.currentTime;let t=1;
+  while(t<arcSec-2){
+    const norm=t/arcSec,bell=Math.sin(norm*Math.PI);
+    t+=Math.max(0.5,lp(14,1.5,bell)+(Math.random()-0.5)*2);
+    if(t>=arcSec)break;
+    const freq=scale[Math.floor(Math.random()*scale.length)];
+    const vel=bell*(0.2+Math.random()*0.6);
+    const k=Math.random();
+    if(k<0.28)playSine(now+t,freq,vel);
+    else if(k<0.52)playPluck(now+t,freq,vel);
+    else if(k<0.70)playShimmer(now+t,freq,vel);
+    else if(k<0.86)playFM(now+t,freq,vel);
+    else playWhistle(now+t,freq,vel);
+  }
+  setTimeout(scheduleArc,arcSec*1000);
+}
+function playSine(t,f,v){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=f;o.detune.value=(Math.random()-0.5)*12;const d=1.8+Math.random()*4;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*0.25,t+0.1);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(reverb);g.connect(masterGain);o.start(t);o.stop(t+d+0.2);}
+function playPluck(t,f,v){const sr=audioCtx.sampleRate,buf=audioCtx.createBuffer(1,Math.floor(sr*0.04),sr),dd=buf.getChannelData(0);for(let i=0;i<dd.length;i++)dd[i]=Math.random()*2-1;const src=audioCtx.createBufferSource();src.buffer=buf;const filt=audioCtx.createBiquadFilter();filt.type='lowpass';filt.frequency.setValueAtTime(f*8,t);filt.frequency.exponentialRampToValueAtTime(f*1.2,t+1.5);const g=audioCtx.createGain();g.gain.setValueAtTime(v*0.5,t);g.gain.exponentialRampToValueAtTime(0.0001,t+2);src.connect(filt);filt.connect(g);g.connect(reverb);g.connect(masterGain);src.start(t);src.stop(t+2.2);}
+function playShimmer(t,f,v){[0,8,-6].forEach(det=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=f;o.detune.value=det;const d=4+Math.random()*6;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*0.1,t+0.8);g.gain.setValueAtTime(v*0.1,t+d-1);g.gain.linearRampToValueAtTime(0,t+d);o.connect(g);g.connect(reverb);o.start(t);o.stop(t+d+0.2);});}
+function playFM(t,f,v){const car=audioCtx.createOscillator(),mod=audioCtx.createOscillator(),mg=audioCtx.createGain(),og=audioCtx.createGain();const ratio=[1,2,3,4,7][Math.floor(Math.random()*5)];car.frequency.value=f;mod.frequency.value=f*ratio;mg.gain.value=f*(1+Math.random()*3);const d=2+Math.random()*4;og.gain.setValueAtTime(0,t);og.gain.linearRampToValueAtTime(v*0.2,t+0.04);og.gain.exponentialRampToValueAtTime(0.0001,t+d);mod.connect(mg);mg.connect(car.frequency);car.connect(og);og.connect(reverb);og.connect(masterGain);car.start(t);car.stop(t+d+0.1);mod.start(t);mod.stop(t+d+0.1);}
+function playWhistle(t,f,v){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(f*0.82,t);o.frequency.linearRampToValueAtTime(f,t+0.5);const d=1+Math.random()*2.5;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*0.18,t+0.2);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(reverb);g.connect(masterGain);o.start(t);o.stop(t+d+0.2);}
+
+// ── PATH BUILDERS ─────────────────────────────────────────────────
+function rr(a,b){return a+Math.random()*(b-a);}
+function ri(a,b){return Math.floor(rr(a,b+1));}
+function rb(p=0.5){return Math.random()<p;}
+
+function circPts(cx,cy,r,s=72){const p=[];for(let i=0;i<=s;i++)p.push({x:cx+Math.cos(i/s*Math.PI*2)*r,y:cy+Math.sin(i/s*Math.PI*2)*r});return p;}
+function ellPts(cx,cy,rw,rh,ang,s=72){const p=[];for(let i=0;i<=s;i++){const a=i/s*Math.PI*2,ex=Math.cos(a)*rw/2,ey=Math.sin(a)*rh/2;p.push({x:cx+ex*Math.cos(ang)-ey*Math.sin(ang),y:cy+ex*Math.sin(ang)+ey*Math.cos(ang)});}return p;}
+function rectPts(x,y,w,h,hl,vl){const p=[{x,y},{x:x+w,y},{x:x+w,y:y+h},{x,y:y+h},{x,y}];if(hl){p.push({x,y:y+h/2},{x:x+w,y:y+h/2});}if(vl){p.push({x:x+w/2,y:y+h/2},{x:x+w/2,y});}return p;}
+function linePts(x1,y1,x2,y2,par){const p=[{x:x1,y:y1},{x:x2,y:y2}];if(par){const ang=Math.atan2(y2-y1,x2-x1),pe=ang+Math.PI/2;[10,-10].forEach(d=>{const ox=Math.cos(pe)*d,oy=Math.sin(pe)*d;p.push({x:x2+ox,y:y2+oy},{x:x1+ox,y:y1+oy});});}return p;}
+function curvePts(x1,y1,cx,cy,x2,y2,s=60){const p=[];for(let i=0;i<=s;i++){const t=i/s;p.push({x:(1-t)*(1-t)*x1+2*(1-t)*t*cx+t*t*x2,y:(1-t)*(1-t)*y1+2*(1-t)*t*cy+t*t*y2});}return p;}
+function cubePts(x,y,sz){const a1=Math.PI/6,a2=Math.PI*5/6,tc={x,y},tr={x:x+Math.cos(a1)*sz,y:y+Math.sin(a1)*sz},tl={x:x+Math.cos(a2)*sz,y:y+Math.sin(a2)*sz},bc={x,y:y+sz},br={x:tr.x,y:tr.y+sz},bl={x:tl.x,y:tl.y+sz},tf={x:tr.x+Math.cos(a2)*sz,y:tr.y+Math.sin(a2)*sz};return[tc,tr,tf,tl,tc,bc,bl,br,bc,br,tr,br,bl,tl];}
+function perspPts(vx,vy,sxs,sys){const p=[];for(let i=0;i<sxs.length;i++){p.push({x:vx,y:vy},{x:sxs[i],y:sys[i]},{x:vx,y:vy});}return p;}
+function zigPts(x,y,vert,n,amp,sp){const p=[];for(let i=0;i<n;i++){if(vert)p.push({x:x+(i%2===0?amp:-amp),y:y+i*sp});else p.push({x:x+i*sp,y:y+(i%2===0?amp:-amp)});}return p;}
+function dotsPts(x,y,vert,n,sp,r){const p=[];for(let i=0;i<n;i++){const cx=vert?x:x+i*sp,cy=vert?y+i*sp:y,s=16;for(let j=0;j<=s;j++)p.push({x:cx+Math.cos(j/s*Math.PI*2)*r,y:cy+Math.sin(j/s*Math.PI*2)*r});p.push({x:cx,y:cy});}return p;}
+function elevPts(W,y,hatch){const p=[{x:0,y},{x:W,y}];for(let i=1;i<10;i++)p.push({x:W*i/10,y:y-5},{x:W*i/10,y:y+5},{x:W*i/10,y});if(hatch)for(let x=0;x<W;x+=18)p.push({x,y:y+2},{x:x-8,y:y+12},{x,y:y+2});return p;}
+function arrowPts(x,y,len,angle){const x2=x+Math.cos(angle)*len,y2=y+Math.sin(angle)*len,as=12,aa=Math.PI/6;return[{x,y},{x:x2,y:y2},{x:x2-as*Math.cos(angle-aa),y:y2-as*Math.sin(angle-aa)},{x:x2,y:y2},{x:x2-as*Math.cos(angle+aa),y:y2-as*Math.sin(angle+aa)},{x:x2,y:y2}];}
+
+// ── ELEMENT ───────────────────────────────────────────────────────
+const WORDS=['VOID','SUSPENDED','FLOW','FIELD','ZONE','AXIS','VECTOR','NODE','CONNECTION','CIRCUIT','MODULE','STRUCTURE','TENSION','BALANCE','SEQUENCE','THRESHOLD','GRADIENT','INTERFACE','MEMBRANE','PATHWAY','GRID','SECTION','DATUM','REFERENCE','TANGENT','ORIGIN','BOUND','LAYER','PHASE','LOCUS'];
+const TYPES=['circle','oval','rect','line','curve','perspective','cube','arrow','zigzag','dots','text','elevation'];
+const WEIGHTS=[4,3,4,6,5,4,4,4,4,3,8,3];
+function pick(){let r=Math.random()*WEIGHTS.reduce((a,b)=>a+b,0);for(let i=0;i<TYPES.length;i++){r-=WEIGHTS[i];if(r<=0)return TYPES[i];}return TYPES[0];}
+
+class Elem{
+  constructor(type,W,H){
+    this.type=type;this.W=W;this.H=H;
+    this.drawStart=millis();
+    this.drawDur=(8+Math.random()*18)*1000;
+    this.fadeDur=(3+Math.random()*4)*1000;  // quick, clean erase
+    this.peak=0.7+Math.random()*0.3;
+    this.lw=rr(0.8,2.0);
+    this.perspAlpha=rr(0.2,0.55);
+    this.fading=false;
+    this.fadeStart=0;
+    this.pts=null;
+    this.textData=null;
+    this.bake();
+  }
+  bake(){
+    const W=this.W,H=this.H;
+    switch(this.type){
+      case 'circle':{const x=rr(W*.1,W*.9),y=rr(H*.1,H*.9),n=ri(1,4);let a=[];for(let i=0;i<n;i++)a=[...a,...circPts(x+rr(-25,25),y+rr(-25,25),rr(15,90))];this.pts=a;}break;
+      case 'oval':this.pts=ellPts(rr(W*.15,W*.85),rr(H*.15,H*.85),rr(35,160),rr(14,70),rr(0,Math.PI*2));break;
+      case 'rect':this.pts=rectPts(rr(W*.05,W*.75),rr(H*.05,H*.75),rr(40,220),rr(40,180),rb(.5),rb(.5));break;
+      case 'line':this.pts=linePts(rr(W*.02,W*.98),rr(H*.02,H*.98),rr(W*.02,W*.98),rr(H*.02,H*.98),rb(.5));break;
+      case 'curve':this.pts=curvePts(rr(W*.05,W*.95),rr(H*.05,H*.95),rr(W*.1,W*.9),rr(H*.1,H*.9),rr(W*.05,W*.95),rr(H*.05,H*.95));break;
+      case 'perspective':{const n=ri(3,9);this.pts=perspPts(rr(W*.25,W*.75),rr(H*.3,H*.7),Array.from({length:n},()=>rr(0,W)),Array.from({length:n},()=>rr(0,H)));}break;
+      case 'cube':{const sz=rr(25,120),ey=rr(H*.45,H*.82);this.pts=cubePts(rr(W*.15,W*.85),ey-sz,sz);}break;
+      case 'arrow':this.pts=arrowPts(rr(W*.15,W*.85),rr(H*.15,H*.85),rr(35,150),rr(0,Math.PI*2));break;
+      case 'zigzag':this.pts=zigPts(rr(W*.1,W*.9),rr(H*.1,H*.9),rb(),ri(4,15),rr(5,22),rr(5,16));break;
+      case 'dots':this.pts=dotsPts(rr(W*.1,W*.9),rr(H*.1,H*.9),rb(),ri(3,10),rr(6,16),rr(2,5));break;
+      case 'text':this.textData={x:rr(W*.05,W*.78),y:rr(H*.1,H*.92),word:WORDS[ri(0,WORDS.length-1)],sz:rr(10,20)};break;
+      case 'elevation':this.pts=elevPts(W,rr(H*.5,H*.82),rb(.65));break;
+    }
+  }
+  isDrawing(){return !this.fading&&millis()-this.drawStart<this.drawDur;}
+  startFade(){if(!this.fading){this.fading=true;this.fadeStart=millis();}}
+  isDead(){return this.fading&&millis()-this.fadeStart>this.fadeDur+100;}
+  opacity(){
+    if(!this.fading)return this.peak;
+    return Math.max(0,this.peak*(1-sm(Math.min(1,(millis()-this.fadeStart)/this.fadeDur))));
+  }
+  drawProgress(){
+    if(this.fading)return 1;
+    return Math.min(1,(millis()-this.drawStart)/this.drawDur);
+  }
+  draw(ink){
+    const op=this.opacity();if(op<=0.002)return;
+    const pr=this.drawProgress();
+    const[r,g,b]=ink;
+    push();
+    if(this.type==='text'){
+      const td=this.textData;
+      fill(r,g,b,255*op);noStroke();textFont('Courier Prime');textSize(td.sz);
+      text(td.word.slice(0,Math.max(1,Math.ceil(td.word.length*pr))),td.x,td.y);
+    } else if(this.pts&&this.pts.length>1){
+      const pts=this.pts,total=pts.length-1,end=pr*total,fi=Math.floor(end),ff=end-fi;
+      const al=this.type==='perspective'?op*this.perspAlpha:op;
+      stroke(r,g,b,255*al);strokeWeight(this.lw);noFill();
+      beginShape();
+      for(let i=0;i<=fi&&i<pts.length;i++)vertex(pts[i].x,pts[i].y);
+      if(fi<pts.length-1){const pa=pts[fi],pb=pts[fi+1];vertex(lp(pa.x,pb.x,ff),lp(pa.y,pb.y,ff));}
+      endShape();
+      if(this.isDrawing()){
+        const pa=pts[Math.min(fi,pts.length-1)],pb=pts[Math.min(fi+1,pts.length-1)];
+        fill(r,g,b,255*op);noStroke();
+        circle(lp(pa.x,pb.x,ff),lp(pa.y,pb.y,ff),this.lw*3.5);
+      }
+    }
+    pop();
+  }
+}
+
+// ── STATE MACHINE ─────────────────────────────────────────────────
+// BUILDING  → draw one at a time until MAX reached
+// FULL      → pause briefly, admire the composition
+// CLEARING  → erase oldest-first one at a time
+// RESTARTING→ screen goes blank, color shifts, then BUILDING again
+
+const MAX = 20;
+const FULL_PAUSE = 4000;        // ms to pause when all 20 are drawn
+const BETWEEN_ERASE = 800;      // ms gap between each erasure
+const BETWEEN_DRAW  = 1200;     // ms gap between each new drawing
+
+let phase = 'BUILDING'; // BUILDING | FULL | CLEARING | RESTARTING
+let W, H, elems = [], startMs;
+let actionPending = false;       // waiting for setTimeout
+
+function spawnNext(){
+  actionPending = false;
+  const e = new Elem(pick(), W, H);
+  elems.push(e);
+}
+
+function eraseNext(){
+  actionPending = false;
+  // Find oldest non-fading element
+  const alive = elems.filter(e=>!e.fading);
+  if(alive.length === 0){
+    // All gone — restart
+    phase = 'RESTARTING';
+    return;
+  }
+  let oldest = alive[0];
+  for(const e of alive) if(e.drawStart < oldest.drawStart) oldest = e;
+  oldest.startFade();
+}
+
+function setup(){
+  W=windowWidth;H=windowHeight;
+  createCanvas(W,H).parent(document.body);
+  pixelDensity(1);
+  startMs=millis();
+  textFont('Courier Prime');
+  // Kick off first element
+  spawnNext();
+}
+
+function draw(){
+  updateColor();
+  const[br,bg,bb]=currentBg;
+  background(br,bg,bb);
+
+  // Clean up fully faded elements
+  elems = elems.filter(e=>!e.isDead());
+
+  // ── STATE LOGIC ──
+  if(phase === 'BUILDING'){
+    const current = elems[elems.length-1];
+    // When the current element finishes drawing
+    if(current && !current.isDrawing() && !actionPending){
+      if(elems.length >= MAX){
+        // Full! Move to FULL phase
+        phase = 'FULL';
+        actionPending = true;
+        setTimeout(()=>{
+          actionPending = false;
+          phase = 'CLEARING';
+        }, FULL_PAUSE);
+      } else {
+        // Spawn next
+        actionPending = true;
+        setTimeout(()=>{ actionPending=false; spawnNext(); }, BETWEEN_DRAW);
+      }
+    }
+  }
+
+  else if(phase === 'CLEARING'){
+    // Trigger erase of next element when previous one has fully faded
+    const fading = elems.filter(e=>e.fading);
+    const alive  = elems.filter(e=>!e.fading);
+    const somethingFading = fading.length > 0;
+
+    if(!somethingFading && !actionPending){
+      if(alive.length === 0){
+        // All clear — shift color and restart
+        phase = 'RESTARTING';
+      } else {
+        actionPending = true;
+        setTimeout(()=>{ actionPending=false; eraseNext(); }, BETWEEN_ERASE);
+      }
+    }
+  }
+
+  else if(phase === 'RESTARTING'){
+    if(elems.length === 0){
+      startColorShift();
+      phase = 'BUILDING';
+      actionPending = true;
+      setTimeout(()=>{ actionPending=false; spawnNext(); }, COLOR_SHIFT_DUR + 500);
+    }
+  }
+
+  // Draw all elements
+  for(const e of elems) e.draw(currentInk);
+
+  // Audio volume breath
+  if(audioCtx&&masterGain){
+    const elapsed=millis()-startMs;
+    const vol=0.16+0.1*Math.sin(elapsed/240000*Math.PI*2);
+    masterGain.gain.setTargetAtTime(vol,audioCtx.currentTime,2);
+  }
+}
+
+function windowResized(){W=windowWidth;H=windowHeight;resizeCanvas(W,H);}
+
+document.getElementById('overlay').addEventListener('click',()=>{
+  const ov=document.getElementById('overlay');
+  ov.classList.add('fade');
+  setTimeout(()=>ov.remove(),5000);
+  initAudio();
+});
+</script>
+</body>
+</html>

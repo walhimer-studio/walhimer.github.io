@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Drawings of Feelings — Animated</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: #080808;
+    border-right: 1px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    padding: 26px 18px 18px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  .logo-sub {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #3a3a3a;
+    text-transform: uppercase;
+    margin-top: 4px;
+    margin-bottom: 22px;
+  }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #3a3a3a;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #161616;
+  }
+
+  /* ── FEELING BUTTONS ── */
+  .feeling-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 22px;
+  }
+
+  .feeling-btn {
+    background: transparent;
+    border: 1px solid #1c1c1c;
+    color: #444;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 9px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.12s;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .feeling-btn .feel-tag {
+    font-size: 8px;
+    opacity: 0.4;
+  }
+
+  .feeling-btn:hover {
+    border-color: #333;
+    color: #888;
+  }
+
+  .feeling-btn.active {
+    border-color: #fff;
+    color: #fff;
+  }
+
+  /* ── SPEED ── */
+  .speed-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .speed-row {
+    display: flex;
+    gap: 4px;
+  }
+
+  .speed-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #1c1c1c;
+    color: #444;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 7px 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.1s;
+  }
+
+  .speed-btn.active {
+    border-color: #666;
+    color: #ccc;
+  }
+
+  .speed-btn:hover { border-color: #333; color: #888; }
+
+  /* ── STATUS DISPLAY ── */
+  .status-panel {
+    margin-bottom: 22px;
+    background: #050505;
+    border: 1px solid #161616;
+    padding: 12px;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-size: 9px;
+  }
+
+  .status-key { color: #333; }
+  .status-val { color: #666; }
+  .status-val.active { color: #aaa; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    margin-bottom: 22px;
+  }
+
+  .progress-label {
+    font-size: 9px;
+    color: #333;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar {
+    height: 2px;
+    background: #111;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #fff;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* ── PLAYBACK CONTROLS ── */
+  .playback-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .ctrl-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #222;
+    color: #555;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 10px 4px;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+
+  .ctrl-btn:hover { border-color: #444; color: #aaa; }
+  .ctrl-btn.danger { border-color: #1a1a1a; }
+
+  .btn-full {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #222;
+    color: #555;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.12s;
+    margin-bottom: 6px;
+  }
+
+  .btn-full:hover { border-color: #444; color: #aaa; }
+
+  /* ── CANVAS WRAP ── */
+  #canvas-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Cursor indicator */
+  #draw-cursor {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  #draw-cursor::before,
+  #draw-cursor::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+  }
+
+  #draw-cursor::before {
+    width: 1px; height: 8px;
+    left: 3.5px; top: 0;
+  }
+
+  #draw-cursor::after {
+    width: 8px; height: 1px;
+    left: 0; top: 3.5px;
+  }
+
+  #draw-cursor.visible { opacity: 0.6; }
+
+  /* Feeling watermark */
+  #feel-watermark {
+    position: absolute;
+    bottom: 20px;
+    right: 22px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.06);
+    pointer-events: none;
+    text-transform: uppercase;
+    transition: color 0.8s;
+  }
+
+  canvas { display: block; }
+
+  /* Blinking cursor at drawing tip */
+  @keyframes blink {
+    0%,100% { opacity: 0.8; }
+    50%      { opacity: 0.2; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="logo">Technical<br>Drawings</div>
+  <div class="logo-sub">of Feelings — Animated</div>
+
+  <div class="section-label">Feeling</div>
+  <div class="feeling-list">
+    <button class="feeling-btn active" data-feel="anxiety" onclick="selectFeeling('anxiety',this)">
+      Anxiety <span class="feel-tag">high freq</span>
+    </button>
+    <button class="feeling-btn" data-feel="grief" onclick="selectFeeling('grief',this)">
+      Grief <span class="feel-tag">slow fall</span>
+    </button>
+    <button class="feeling-btn" data-feel="euphoria" onclick="selectFeeling('euphoria',this)">
+      Euphoria <span class="feel-tag">overflow</span>
+    </button>
+    <button class="feeling-btn" data-feel="numbness" onclick="selectFeeling('numbness',this)">
+      Numbness <span class="feel-tag">flat</span>
+    </button>
+    <button class="feeling-btn" data-feel="longing" onclick="selectFeeling('longing',this)">
+      Longing <span class="feel-tag">vector / gap</span>
+    </button>
+    <button class="feeling-btn" data-feel="rage" onclick="selectFeeling('rage',this)">
+      Rage <span class="feel-tag">fracture</span>
+    </button>
+  </div>
+
+  <div class="section-label">Draw Speed</div>
+  <div class="speed-group">
+    <div class="speed-row">
+      <button class="speed-btn" onclick="setSpeed(0.3,this)">slow</button>
+      <button class="speed-btn active" onclick="setSpeed(1,this)">normal</button>
+      <button class="speed-btn" onclick="setSpeed(3,this)">fast</button>
+      <button class="speed-btn" onclick="setSpeed(99,this)">instant</button>
+    </div>
+  </div>
+
+  <div class="section-label">Status</div>
+  <div class="status-panel">
+    <div class="status-row"><span class="status-key">STATE</span><span class="status-val active" id="sState">IDLE</span></div>
+    <div class="status-row"><span class="status-key">ELEMENTS</span><span class="status-val" id="sElements">—</span></div>
+    <div class="status-row"><span class="status-key">STROKES</span><span class="status-val" id="sStrokes">—</span></div>
+    <div class="status-row"><span class="status-key">ELAPSED</span><span class="status-val" id="sElapsed">—</span></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>PROGRESS</span>
+      <span id="sPercent">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="playback-row">
+    <button class="ctrl-btn" onclick="playPause()" id="playBtn">▶</button>
+    <button class="ctrl-btn" onclick="skipToEnd()">⏭</button>
+  </div>
+
+  <button class="btn-full" onclick="startNew()">⟳ NEW DRAWING</button>
+  <button class="btn-full" onclick="doSave()">↓ SAVE PNG</button>
+</div>
+
+<div id="canvas-wrap">
+  <div id="draw-cursor"></div>
+  <div id="feel-watermark">—</div>
+</div>
+
+<script>
+// ── FEELING CONFIG ────────────────────────────────────────────────
+const FEELINGS = {
+  anxiety: {
+    complexity: 22,
+    lineWeight: 0.9,
+    stepsPerFrame: 4,
+    pauseBetween: 1,
+    vanishPoints: 4,
+    zigzagFreq: 9,
+    circleCount: [3,8],
+    perspLines: [8,16],
+    arrowCount: [8,14],
+    zigzagCount: [6,11],
+    dotBursts: [18,35],
+    cubeCount: [2,4],
+    annotWords: ['UNRESOLVED LOAD','FIELD VERIFY','SEE DETAIL 7','UNSTABLE','THRESHOLD EXCEEDED','NOT TO SCALE','REV B','CHECK','???','TOLERANCE ±∞','UNCLEAR']
+  },
+  grief: {
+    complexity: 5,
+    lineWeight: 2.0,
+    stepsPerFrame: 1,
+    pauseBetween: 25,
+    vanishPoints: 1,
+    zigzagFreq: 1,
+    circleCount: [1,3],
+    perspLines: [2,5],
+    arrowCount: [1,3],
+    zigzagCount: [0,1],
+    dotBursts: [2,6],
+    cubeCount: [0,1],
+    annotWords: ['SUSPENDED','LOAD BEARING','SECTION A–A','WEIGHT: ∅','DO NOT SCALE','VOID','BELOW DATUM']
+  },
+  euphoria: {
+    complexity: 26,
+    lineWeight: 1.0,
+    stepsPerFrame: 6,
+    pauseBetween: 0,
+    vanishPoints: 7,
+    zigzagFreq: 4,
+    circleCount: [5,10],
+    perspLines: [12,22],
+    arrowCount: [10,18],
+    zigzagCount: [4,8],
+    dotBursts: [30,60],
+    cubeCount: [3,6],
+    annotWords: ['OVERFLOW','RADIAL FIELD','ALL DIRECTIONS','EXPAND','NO BOUNDARY','UNCONSTRAINED','REV ∞','EXCESS','BEYOND SCOPE','UNBOUNDED']
+  },
+  numbness: {
+    complexity: 3,
+    lineWeight: 0.5,
+    stepsPerFrame: 1,
+    pauseBetween: 40,
+    vanishPoints: 1,
+    zigzagFreq: 0,
+    circleCount: [0,2],
+    perspLines: [1,3],
+    arrowCount: [0,1],
+    zigzagCount: [0,0],
+    dotBursts: [0,3],
+    cubeCount: [0,1],
+    annotWords: ['FLAT','NO DATUM','—','NOT TO SCALE']
+  },
+  longing: {
+    complexity: 10,
+    lineWeight: 1.3,
+    stepsPerFrame: 2,
+    pauseBetween: 12,
+    vanishPoints: 2,
+    zigzagFreq: 1,
+    circleCount: [2,4],
+    perspLines: [4,9],
+    arrowCount: [5,10],
+    zigzagCount: [1,3],
+    dotBursts: [8,18],
+    cubeCount: [1,3],
+    annotWords: ['VECTOR: UNDEFINED','DISTANCE: ∅','SEE REMOTE DETAIL','GAP (TYP)','APPROACH AXIS','PROJECTION','BEYOND SCOPE','ABSENT']
+  },
+  rage: {
+    complexity: 28,
+    lineWeight: 2.8,
+    stepsPerFrame: 7,
+    pauseBetween: 0,
+    vanishPoints: 6,
+    zigzagFreq: 12,
+    circleCount: [2,6],
+    perspLines: [14,24],
+    arrowCount: [12,20],
+    zigzagCount: [7,14],
+    dotBursts: [20,40],
+    cubeCount: [2,5],
+    annotWords: ['FRACTURE','FORCE: UNSPECIFIED','IMPACT ZONE','DO NOT APPROACH','EXCEEDS CAPACITY','CRITICAL','FAILURE MODE','BREAK','RUPTURE']
+  }
+};
+
+// ── STATE ─────────────────────────────────────────────────────────
+let currentFeeling = 'anxiety';
+let speedMult = 1;
+let isPlaying = false;
+let isComplete = false;
+let cmdQueue = [];       // Array of drawing commands
+let cmdIndex = 0;        // Current position in queue
+let animProgress = [];   // t: 0→1 for each active animated command
+let startTime = 0;
+let p5inst = null;
+let cnvSize = 0;
+let elevationY = 0;
+let totalStrokes = 0;
+
+// ── COMMAND SYSTEM ────────────────────────────────────────────────
+// Each command: { type, params, duration (frames), t: 0→1 }
+// Types: LINE_DRAW, CIRCLE_DRAW, TEXT_APPEAR, DOTS_APPEAR, PAUSE
+
+function qLine(x1,y1,x2,y2,sw,alpha=255) {
+  cmdQueue.push({ type:'LINE', x1,y1,x2,y2, sw, alpha, t:0 });
+}
+
+function qCircle(cx,cy,r,sw,filled=false) {
+  cmdQueue.push({ type:'CIRCLE', cx,cy,r, sw, filled, t:0 });
+}
+
+function qText(x,y,str,sz,alpha=255) {
+  cmdQueue.push({ type:'TEXT', x,y,str,sz,alpha, t:0 });
+}
+
+function qDot(x,y,r) {
+  cmdQueue.push({ type:'DOT', x,y,r, t:0 });
+}
+
+function qPause(frames) {
+  cmdQueue.push({ type:'PAUSE', frames, t:0 });
+}
+
+// ── DRAWING ELEMENT BUILDERS ─────────────────────────────────────
+
+function buildGrid(p) {
+  let sp = cnvSize / 10;
+  for (let x = 0; x <= cnvSize; x += sp) qLine(x,0,x,cnvSize, 0.4, 22);
+  for (let y = 0; y <= cnvSize; y += sp) qLine(0,y,cnvSize,y, 0.4, 22);
+}
+
+function buildElevationLine(p) {
+  elevationY = cnvSize * p.random(0.62, 0.74);
+  qLine(0, elevationY, cnvSize, elevationY, 1.5, 255);
+  let sp = 18;
+  for (let x = sp; x < cnvSize; x += sp) qLine(x, elevationY, x-8, elevationY+10, 0.8, 255);
+  for (let x = 0; x <= cnvSize; x += cnvSize/8) {
+    qLine(x, elevationY-6, x, elevationY+6, 0.6, 180);
+  }
+}
+
+function buildPerspectiveLines(p, preset) {
+  let vx = p.random(cnvSize*0.25, cnvSize*0.75);
+  let vy = p.random(cnvSize*0.25, cnvSize*0.75);
+  let count = int(p.random(preset.perspLines[0], preset.perspLines[1]));
+  for (let i = 0; i < count; i++) {
+    let sx = p.random(cnvSize), sy = p.random(cnvSize);
+    let alpha = p.random(40,140);
+    qLine(sx, sy, vx, vy, preset.lineWeight * p.random(0.3,0.9), alpha);
+  }
+}
+
+function buildCircleCluster(p, preset) {
+  let count = int(p.random(1, 4));
+  let bx = p.random(cnvSize*0.1, cnvSize*0.9);
+  let onElev = p.random() < 0.25;
+  for (let i = 0; i < count; i++) {
+    let r = p.random(18, 90);
+    let ox = p.random(-35,35), oy = p.random(-35,35);
+    let cy = onElev ? elevationY - r*0.5 : p.random(cnvSize*0.15, cnvSize*0.85);
+    qCircle(bx+ox, cy+oy, r, preset.lineWeight);
+    if (p.random() < 0.35) qCircle(bx+ox, cy+oy, r*0.28, preset.lineWeight, true);
+    if (p.random() < 0.4) {
+      // Center cross
+      let cl = r*0.12;
+      qLine(bx+ox-cl, cy+oy, bx+ox+cl, cy+oy, 0.5, 120);
+      qLine(bx+ox, cy+oy-cl, bx+ox, cy+oy+cl, 0.5, 120);
+    }
+  }
+}
+
+function buildIsoCube(p, preset) {
+  let x = p.random(cnvSize*0.2, cnvSize*0.8);
+  let size = p.random(28, 70);
+  let y = elevationY - size;
+  let a1 = p.radians(30), a2 = p.radians(150);
+  let tC = {x,y}, tR = {x:x+p.cos(a1)*size, y:y+p.sin(a1)*size};
+  let tL = {x:x+p.cos(a2)*size, y:y+p.sin(a2)*size};
+  let bC = {x,y:y+size}, bR = {x:tR.x,y:tR.y+size}, bL = {x:tL.x,y:tL.y+size};
+  let tOpp = {x:x+p.cos(a1)*size+p.cos(a2)*size, y:y+p.sin(a1)*size+p.sin(a2)*size};
+  let sw = preset.lineWeight;
+  qLine(tC.x,tC.y, tR.x,tR.y, sw);
+  qLine(tC.x,tC.y, tL.x,tL.y, sw);
+  qLine(tL.x,tL.y, tOpp.x,tOpp.y, sw);
+  qLine(tR.x,tR.y, tOpp.x,tOpp.y, sw);
+  qLine(tC.x,tC.y, bC.x,bC.y, sw);
+  qLine(tR.x,tR.y, bR.x,bR.y, sw);
+  qLine(tL.x,tL.y, bL.x,bL.y, sw);
+  qLine(bC.x,bC.y, bR.x,bR.y, sw);
+  qLine(bC.x,bC.y, bL.x,bL.y, sw);
+}
+
+function buildArrow(p, preset) {
+  let x1 = p.random(cnvSize*0.15, cnvSize*0.85);
+  let y1 = p.random(cnvSize*0.15, cnvSize*0.85);
+  let len = p.random(35,110), angle = p.random(p.TWO_PI);
+  let x2 = x1+p.cos(angle)*len, y2 = y1+p.sin(angle)*len;
+  let as=11, aa=p.PI/6, sw=preset.lineWeight;
+  qLine(x1,y1,x2,y2, sw);
+  qLine(x2,y2, x2-as*p.cos(angle-aa), y2-as*p.sin(angle-aa), sw);
+  qLine(x2,y2, x2-as*p.cos(angle+aa), y2-as*p.sin(angle+aa), sw);
+}
+
+function buildZigzag(p, preset) {
+  if (preset.zigzagFreq === 0) return;
+  let x = p.random(cnvSize*0.2, cnvSize*0.8);
+  let y = p.random(cnvSize*0.2, cnvSize*0.8);
+  let isV = p.random()<0.5;
+  let count = int(p.random(4, preset.zigzagFreq+6));
+  let amp = p.random(7,16), sp = p.random(5,14);
+  let pts = [];
+  for (let i = 0; i < count; i++) {
+    pts.push([
+      isV ? x+(i%2===0?amp:-amp) : x+i*sp,
+      isV ? y+i*sp : y+(i%2===0?amp:-amp)
+    ]);
+  }
+  for (let i = 0; i < pts.length-1; i++) {
+    qLine(pts[i][0],pts[i][1], pts[i+1][0],pts[i+1][1], preset.lineWeight);
+  }
+}
+
+function buildCurve(p, preset) {
+  let x1=p.random(cnvSize*0.1, cnvSize*0.9), y1=p.random(cnvSize*0.1, cnvSize*0.9);
+  let x2=p.random(cnvSize*0.1, cnvSize*0.9), y2=p.random(cnvSize*0.1, cnvSize*0.9);
+  let cx=(x1+x2)/2+p.random(-120,120), cy=(y1+y2)/2+p.random(-120,120);
+  // Approximate curve with segments
+  let segs = 20;
+  let prev = [x1,y1];
+  for (let i = 1; i <= segs; i++) {
+    let t = i/segs;
+    let nx = (1-t)*(1-t)*x1 + 2*(1-t)*t*cx + t*t*x2;
+    let ny = (1-t)*(1-t)*y1 + 2*(1-t)*t*cy + t*t*y2;
+    qLine(prev[0],prev[1], nx,ny, preset.lineWeight);
+    prev = [nx,ny];
+  }
+}
+
+function buildDots(p) {
+  let x = p.random(cnvSize*0.1, cnvSize*0.9);
+  let y = p.random(cnvSize*0.1, cnvSize*0.9);
+  let count = int(p.random(3,9));
+  let isV = p.random()<0.5;
+  for (let i = 0; i < count; i++) {
+    qDot(isV?x:x+i*9, isV?y+i*9:y, 3.5);
+  }
+}
+
+function buildDimensionLine(p, preset) {
+  let x1 = p.random(cnvSize*0.1, cnvSize*0.65);
+  let y = p.random(cnvSize*0.1, cnvSize*0.9);
+  let len = p.random(55, 190), x2 = x1+len;
+  let val = p.random(0.001, 999.9).toFixed(p.random()<0.5?0:2);
+  let unit = p.random(['mm','mm','″','m','Ø','(TYP)','±?']);
+  let tickH = 10;
+  qLine(x1,y, x2,y, 0.6, 160);
+  qLine(x1,y-tickH/2, x1,y+tickH/2, 0.6, 160);
+  qLine(x2,y-tickH/2, x2,y+tickH/2, 0.6, 160);
+  qLine(x1,y-tickH, x1,y-tickH-p.random(15,50), 0.4, 80);
+  qLine(x2,y-tickH, x2,y-tickH-p.random(15,50), 0.4, 80);
+  qText((x1+x2)/2, y-6, val+' '+unit, 9, 160);
+}
+
+function buildCallout(p, preset) {
+  let x = p.random(cnvSize*0.15, cnvSize*0.85);
+  let y = p.random(cnvSize*0.1, cnvSize*0.85);
+  let word = preset.annotWords[int(p.random(preset.annotWords.length))];
+  let lx = x+p.random(-60,60), ly = y+p.random(-40,40);
+  qLine(x,y, lx,ly, 0.7, 180);
+  qDot(x,y, 4);
+  qText(lx, ly, word, 9.5, 200);
+  qPause(preset.pauseBetween);
+}
+
+function buildSectionCut(p) {
+  let y = p.random(cnvSize*0.2, cnvSize*0.8);
+  let x1 = p.random(cnvSize*0.05, cnvSize*0.2);
+  let x2 = p.random(cnvSize*0.75, cnvSize*0.95);
+  let letter = p.random(['A','B','C','D','X','Y']);
+  // Dashed — approximate with segments
+  let dashLen=8, gapLen=5;
+  let totalLen = x2-x1-40;
+  let cx = x1+20;
+  while (cx < x2-20) {
+    let ex = Math.min(cx+dashLen, x2-20);
+    qLine(cx,y, ex,y, 0.7, 150);
+    cx += dashLen+gapLen;
+  }
+  qCircle(x1+10, y, 9, 1);
+  qCircle(x2-10, y, 9, 1);
+  qText(x1+6, y+3, letter, 9, 255);
+  qText(x2-14, y+3, letter, 9, 255);
+}
+
+// ── QUEUE BUILDER ────────────────────────────────────────────────
+
+function buildQueue(p) {
+  let preset = FEELINGS[currentFeeling];
+  cmdQueue = [];
+  cmdIndex = 0;
+  p.randomSeed(int(p.random(99999)));
+
+  // Grid
+  buildGrid(p);
+  qPause(5);
+
+  // Elevation
+  buildElevationLine(p);
+  qPause(preset.pauseBetween * 2);
+
+  // Perspective bursts
+  for (let v = 0; v < preset.vanishPoints; v++) {
+    buildPerspectiveLines(p, preset);
+    qPause(preset.pauseBetween);
+  }
+
+  // Core geometry
+  for (let i = 0; i < preset.complexity; i++) {
+    let r = p.random();
+    if      (r < 0.18) buildCircleCluster(p, preset);
+    else if (r < 0.3)  buildIsoCube(p, preset);
+    else if (r < 0.5)  buildCurve(p, preset);
+    else if (r < 0.65) buildZigzag(p, preset);
+    else               buildArrow(p, preset);
+    qPause(preset.pauseBetween);
+  }
+
+  // Dots
+  let dn = int(p.random(preset.dotBursts[0], preset.dotBursts[1]));
+  for (let i = 0; i < dn; i++) buildDots(p);
+  qPause(preset.pauseBetween);
+
+  // Annotations (drawn last, like a draftsperson annotating)
+  let annCount = {anxiety:5,grief:1,euphoria:6,numbness:1,longing:3,rage:5}[currentFeeling];
+  for (let i = 0; i < annCount; i++) buildDimensionLine(p, preset);
+  for (let i = 0; i < annCount; i++) buildCallout(p, preset);
+  for (let i = 0; i < Math.ceil(annCount/2); i++) buildSectionCut(p);
+
+  totalStrokes = cmdQueue.length;
+  updateStatus();
+}
+
+// ── P5 INSTANCE ──────────────────────────────────────────────────
+
+// Speed step sizes (higher = more t advancement per frame per command)
+const STEP_SIZES = {
+  line: 0.06,
+  circle: 0.04,
+  text: 0.12,
+  dot: 0.2,
+  pause: 0.08
+};
+
+new p5(function(p) {
+  let pg; // Graphics buffer for completed strokes
+  let activeCmds = []; // Commands currently being animated
+  let cursorX = 0, cursorY = 0;
+
+  p.setup = function() {
+    p5inst = p;
+    let wrap = document.getElementById('canvas-wrap');
+    let sz = Math.min(wrap.offsetWidth, wrap.offsetHeight) - 30;
+    cnvSize = sz;
+    let c = p.createCanvas(sz, sz);
+    c.parent('canvas-wrap');
+    p.pixelDensity(2);
+    pg = p.createGraphics(sz, sz);
+    pg.pixelDensity(2);
+    pg.background(0);
+
+    startNew(false);
+  };
+
+  p.draw = function() {
+    if (!isPlaying || isComplete) {
+      // Still show canvas
+      p.image(pg, 0, 0);
+      return;
+    }
+
+    let preset = FEELINGS[currentFeeling];
+    let stepsPerFrame = Math.ceil(preset.stepsPerFrame * speedMult);
+
+    for (let step = 0; step < stepsPerFrame; step++) {
+      // Advance all active commands
+      for (let i = activeCmds.length - 1; i >= 0; i--) {
+        let cmd = activeCmds[i];
+        let stepSize = getStepSize(cmd.type) * speedMult;
+        cmd.t = Math.min(1, cmd.t + stepSize);
+
+        if (cmd.t >= 1) {
+          // Fully draw it
+          renderCmdFinal(pg, cmd);
+          activeCmds.splice(i, 1);
+        }
+      }
+
+      // Load next command if no actives (sequential drawing feel)
+      if (activeCmds.length === 0 && cmdIndex < cmdQueue.length) {
+        let next = cmdQueue[cmdIndex];
+        next.t = 0;
+        activeCmds.push(next);
+        cmdIndex++;
+      }
+
+      if (cmdIndex >= cmdQueue.length && activeCmds.length === 0) {
+        isComplete = true;
+        setPlayState(false);
+        document.getElementById('sState').textContent = 'COMPLETE';
+        document.getElementById('draw-cursor').classList.remove('visible');
+        break;
+      }
+    }
+
+    // Render
+    p.image(pg, 0, 0);
+
+    // Draw active (in-progress) commands over buffer
+    for (let cmd of activeCmds) {
+      renderCmdPartial(p, cmd);
+      updateCursorPos(cmd);
+    }
+
+    // Update status
+    updateStatus();
+    updateCursorElement(cursorX, cursorY);
+  };
+
+  function getStepSize(type) {
+    switch(type) {
+      case 'LINE':   return STEP_SIZES.line;
+      case 'CIRCLE': return STEP_SIZES.circle;
+      case 'TEXT':   return STEP_SIZES.text;
+      case 'DOT':    return STEP_SIZES.dot;
+      case 'PAUSE':  return STEP_SIZES.pause;
+      default:       return 0.1;
+    }
+  }
+
+  function renderCmdPartial(ctx, cmd) {
+    let t = cmd.t;
+    if (t <= 0) return;
+    ctx.push();
+    switch(cmd.type) {
+      case 'LINE': {
+        let lx = p.lerp(cmd.x1, cmd.x2, t);
+        let ly = p.lerp(cmd.y1, cmd.y2, t);
+        ctx.stroke(255, cmd.alpha);
+        ctx.strokeWeight(cmd.sw);
+        ctx.noFill();
+        ctx.line(cmd.x1, cmd.y1, lx, ly);
+        cursorX = lx; cursorY = ly;
+        break;
+      }
+      case 'CIRCLE': {
+        let angle = p.lerp(0, p.TWO_PI, t);
+        ctx.stroke(255);
+        ctx.strokeWeight(cmd.sw);
+        ctx.noFill();
+        ctx.arc(cmd.cx, cmd.cy, cmd.r, cmd.r, -p.PI/2, -p.PI/2 + angle);
+        cursorX = cmd.cx + Math.cos(-p.PI/2 + angle) * cmd.r/2;
+        cursorY = cmd.cy + Math.sin(-p.PI/2 + angle) * cmd.r/2;
+        break;
+      }
+      case 'TEXT': {
+        let alpha = p.lerp(0, cmd.alpha, t);
+        ctx.fill(255, alpha);
+        ctx.noStroke();
+        ctx.textFont('Share Tech Mono');
+        ctx.textSize(cmd.sz);
+        ctx.text(cmd.str, cmd.x, cmd.y);
+        cursorX = cmd.x; cursorY = cmd.y;
+        break;
+      }
+      case 'DOT': {
+        let r = p.lerp(0, cmd.r, t);
+        ctx.fill(200);
+        ctx.noStroke();
+        ctx.circle(cmd.x, cmd.y, r);
+        cursorX = cmd.x; cursorY = cmd.y;
+        break;
+      }
+      // PAUSE: no visual
+    }
+    ctx.pop();
+  }
+
+  function renderCmdFinal(ctx, cmd) {
+    ctx.push();
+    switch(cmd.type) {
+      case 'LINE':
+        ctx.stroke(255, cmd.alpha);
+        ctx.strokeWeight(cmd.sw);
+        ctx.noFill();
+        ctx.line(cmd.x1, cmd.y1, cmd.x2, cmd.y2);
+        break;
+      case 'CIRCLE':
+        ctx.stroke(255);
+        ctx.strokeWeight(cmd.sw);
+        if (cmd.filled) { ctx.fill(170); } else { ctx.noFill(); }
+        ctx.circle(cmd.cx, cmd.cy, cmd.r);
+        break;
+      case 'TEXT':
+        ctx.fill(255, cmd.alpha);
+        ctx.noStroke();
+        ctx.textFont('Share Tech Mono');
+        ctx.textSize(cmd.sz);
+        ctx.text(cmd.str, cmd.x, cmd.y);
+        break;
+      case 'DOT':
+        ctx.fill(200);
+        ctx.noStroke();
+        ctx.circle(cmd.x, cmd.y, cmd.r);
+        break;
+      // PAUSE: nothing
+    }
+    ctx.pop();
+  }
+
+  function updateCursorPos(cmd) {
+    if (cmd.type === 'LINE') {
+      cursorX = p.lerp(cmd.x1, cmd.x2, cmd.t);
+      cursorY = p.lerp(cmd.y1, cmd.y2, cmd.t);
+    }
+  }
+
+  // Expose start function
+  window._p5startNew = function(autoPlay = true) {
+    pg.background(0);
+    isComplete = false;
+    activeCmds = [];
+    buildQueue(p);
+    if (autoPlay) {
+      setPlayState(true);
+    }
+  };
+
+  window._p5skipToEnd = function() {
+    // Process all remaining commands instantly
+    while (cmdIndex < cmdQueue.length || activeCmds.length > 0) {
+      for (let cmd of activeCmds) { renderCmdFinal(pg, cmd); }
+      activeCmds = [];
+      if (cmdIndex < cmdQueue.length) {
+        let cmd = cmdQueue[cmdIndex];
+        cmd.t = 1;
+        renderCmdFinal(pg, cmd);
+        cmdIndex++;
+      }
+    }
+    isComplete = true;
+    setPlayState(false);
+    p.image(pg, 0, 0);
+    document.getElementById('sState').textContent = 'COMPLETE';
+    updateStatus();
+  };
+
+  window._p5save = function() {
+    p.saveCanvas('technical-drawing-' + currentFeeling, 'png');
+  };
+});
+
+// ── UI CONTROLS ──────────────────────────────────────────────────
+
+function startNew(autoPlay = true) {
+  isPlaying = false;
+  document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('sState').textContent = 'BUILDING';
+  document.getElementById('draw-cursor').classList.add('visible');
+  document.getElementById('feel-watermark').textContent = currentFeeling.toUpperCase();
+  if (window._p5startNew) window._p5startNew(autoPlay);
+}
+
+function playPause() {
+  if (isComplete) { startNew(); return; }
+  setPlayState(!isPlaying);
+}
+
+function setPlayState(val) {
+  isPlaying = val;
+  document.getElementById('playBtn').textContent = isPlaying ? '⏸' : '▶';
+  document.getElementById('sState').textContent = isPlaying ? 'DRAWING' : (isComplete ? 'COMPLETE' : 'PAUSED');
+  if (isPlaying && !startTime) startTime = Date.now();
+  if (isPlaying) {
+    document.getElementById('draw-cursor').classList.add('visible');
+  } else {
+    document.getElementById('draw-cursor').classList.remove('visible');
+  }
+}
+
+function skipToEnd() {
+  if (window._p5skipToEnd) window._p5skipToEnd();
+}
+
+function doSave() {
+  if (window._p5save) window._p5save();
+}
+
+function selectFeeling(name, btn) {
+  currentFeeling = name;
+  document.querySelectorAll('.feeling-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  startTime = 0;
+  startNew();
+}
+
+function setSpeed(mult, btn) {
+  speedMult = mult;
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function updateStatus() {
+  let pct = totalStrokes > 0 ? Math.round(cmdIndex / totalStrokes * 100) : 0;
+  document.getElementById('sElements').textContent = totalStrokes;
+  document.getElementById('sStrokes').textContent = cmdIndex + ' / ' + totalStrokes;
+  document.getElementById('sPercent').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+  if (startTime && isPlaying) {
+    let sec = ((Date.now() - startTime) / 1000).toFixed(1);
+    document.getElementById('sElapsed').textContent = sec + 's';
+  }
+}
+
+function updateCursorElement(x, y) {
+  let wrap = document.getElementById('canvas-wrap');
+  let canv = wrap.querySelector('canvas');
+  if (!canv) return;
+  let rect = canv.getBoundingClientRect();
+  let scale = rect.width / cnvSize;
+  let cur = document.getElementById('draw-cursor');
+  cur.style.left = (rect.left - wrap.getBoundingClientRect().left + x * scale - 4) + 'px';
+  cur.style.top  = (rect.top  - wrap.getBoundingClientRect().top  + y * scale - 4) + 'px';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.board { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+.section-label { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.deck-row { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; }
+.deck-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.deck-tag { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.deck-sub { font-size: 11px; color: var(--color-text-secondary); }
+.knobs-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.knob-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.knob-canvas { cursor: pointer; touch-action: none; display: block; }
+.knob-label { font-size: 11px; color: var(--color-text-secondary); text-align: center; }
+.knob-val { font-size: 12px; font-weight: 500; color: var(--color-text-primary); min-width: 28px; text-align: center; }
+.crossfader-wrap { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.cf-label { font-size: 11px; color: var(--color-text-secondary); min-width: 14px; text-align: center; }
+.cf-label.right { min-width: 14px; }
+.cf-track { flex: 1; position: relative; height: 6px; background: var(--color-border-tertiary); border-radius: 3px; cursor: pointer; }
+.cf-fill { position: absolute; left: 0; top: 0; height: 100%; background: #7F77DD; border-radius: 3px; pointer-events: none; }
+.cf-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 18px; height: 18px; background: var(--color-background-primary); border: 1.5px solid #7F77DD; border-radius: 50%; cursor: grab; transition: box-shadow 0.1s; }
+.cf-thumb:active { cursor: grabbing; box-shadow: 0 0 0 3px rgba(127,119,221,0.2); }
+.scene-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.scene-btn { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 8px 6px; cursor: pointer; text-align: center; background: var(--color-background-primary); transition: all 0.15s; }
+.scene-btn:hover { border-color: var(--color-border-secondary); }
+.scene-btn.active { border: 1.5px solid #7F77DD; background: #EEEDFE; }
+.scene-glyph { display: block; font-size: 18px; margin-bottom: 3px; line-height: 1; }
+.scene-name { font-size: 10px; font-weight: 500; color: var(--color-text-secondary); }
+.scene-btn.active .scene-name { color: #534AB7; }
+.master-row { display: flex; align-items: center; gap: 10px; }
+.master-label { font-size: 11px; color: var(--color-text-secondary); white-space: nowrap; }
+.wall-indicators { display: flex; gap: 6px; }
+.wall-dot { width: 28px; height: 28px; border-radius: 50%; border: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--color-text-secondary); background: var(--color-background-primary); transition: all 0.3s; }
+.wall-dot.lit { background: #7F77DD; color: #EEEDFE; border-color: #534AB7; }
+</style>
+
+<div class="board">
+  <div>
+    <div class="section-label">Soundscape</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div class="deck-row" id="deck-a">
+        <div class="deck-header">
+          <span class="deck-tag">Deck A</span>
+          <span class="deck-sub">Crackles + Piano</span>
+        </div>
+        <div class="knobs-row" id="knobs-a"></div>
+      </div>
+      <div class="crossfader-wrap">
+        <span class="cf-label">A</span>
+        <div class="cf-track" id="cf-sound">
+          <div class="cf-fill" id="cf-sound-fill" style="width:50%"></div>
+          <div class="cf-thumb" id="cf-sound-thumb" style="left:50%"></div>
+        </div>
+        <span class="cf-label right">B</span>
+        <span style="font-size:11px;color:var(--color-text-secondary);min-width:32px;text-align:right;" id="cf-sound-val">50</span>
+      </div>
+      <div class="deck-row" id="deck-b">
+        <div class="deck-header">
+          <span class="deck-tag">Deck B</span>
+          <span class="deck-sub">Stationary → Move, Counter CW</span>
+        </div>
+        <div class="knobs-row" id="knobs-b"></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Visualscape</div>
+    <div class="deck-row">
+      <div class="knobs-row" id="knobs-v"></div>
+      <div class="crossfader-wrap" style="margin-top:12px;">
+        <span class="cf-label">C</span>
+        <div class="cf-track" id="cf-vis">
+          <div class="cf-fill" id="cf-vis-fill" style="width:20%"></div>
+          <div class="cf-thumb" id="cf-vis-thumb" style="left:20%"></div>
+        </div>
+        <span class="cf-label right">D</span>
+        <span style="font-size:11px;color:var(--color-text-secondary);min-width:32px;text-align:right;" id="cf-vis-val">20</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Scenes / Patches</div>
+    <div class="scene-strip" id="scene-strip">
+      <div class="scene-btn active" data-scene="A">
+        <span class="scene-glyph">◎</span>
+        <span class="scene-name">Moon / DNA</span>
+      </div>
+      <div class="scene-btn" data-scene="B">
+        <span class="scene-glyph">⊙</span>
+        <span class="scene-name">Disks</span>
+      </div>
+      <div class="scene-btn" data-scene="C">
+        <span class="scene-glyph">❀</span>
+        <span class="scene-name">Bloom</span>
+      </div>
+      <div class="scene-btn" data-scene="D">
+        <span class="scene-glyph">⊞</span>
+        <span class="scene-name">Technical</span>
+      </div>
+      <div class="scene-btn" data-scene="E">
+        <span class="scene-glyph">⌒</span>
+        <span class="scene-name">Umbrellas</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Spatial Routing — All Walls Clockwise</div>
+    <div class="deck-row" style="display:flex;flex-direction:column;gap:10px;">
+      <div class="master-row">
+        <span class="master-label">Active wall</span>
+        <div class="wall-indicators" id="wall-indicators">
+          <div class="wall-dot lit" data-w="1">1</div>
+          <div class="wall-dot" data-w="2">2</div>
+          <div class="wall-dot" data-w="3">3</div>
+          <div class="wall-dot" data-w="4">4</div>
+        </div>
+        <div style="margin-left:auto;font-size:11px;color:var(--color-text-secondary);" id="wall-mode">↻ Clockwise sweep</div>
+      </div>
+      <div class="master-row">
+        <span class="master-label" style="min-width:56px;">Sweep</span>
+        <div class="cf-track" id="cf-master" style="flex:1;">
+          <div class="cf-fill" id="cf-master-fill" style="width:0%;"></div>
+          <div class="cf-thumb" id="cf-master-thumb" style="left:0%;"></div>
+        </div>
+        <span style="font-size:11px;color:var(--color-text-secondary);min-width:32px;text-align:right;" id="cf-master-val">W1</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SOUND_PARAMS = ['Density','Drift','Spread','Tension'];
+const VIS_PARAMS = ['Complexity','Coherence','Legibility','Mystery'];
+const COLORS_A = ['#7F77DD','#1D9E75','#378ADD','#D85A30'];
+const COLORS_B = ['#534AB7','#0F6E56','#185FA5','#993C1D'];
+const COLORS_V = ['#D4537E','#BA7517','#639922','#7F77DD'];
+
+const state = {
+  a: [64,40,55,30],
+  b: [30,70,45,60],
+  v: [50,65,75,35],
+  cfSound: 50,
+  cfVis: 20,
+  cfMaster: 0
+};
+
+function makeKnob(container, params, vals, colors, prefix) {
+  params.forEach((p,i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'knob-wrap';
+    const canvas = document.createElement('canvas');
+    canvas.className = 'knob-canvas';
+    canvas.width = 56; canvas.height = 56;
+    canvas.dataset.idx = i; canvas.dataset.group = prefix;
+    const lbl = document.createElement('div');
+    lbl.className = 'knob-label'; lbl.textContent = p;
+    const val = document.createElement('div');
+    val.className = 'knob-val'; val.id = `${prefix}-val-${i}`;
+    val.textContent = vals[i];
+    wrap.appendChild(canvas); wrap.appendChild(lbl); wrap.appendChild(val);
+    container.appendChild(wrap);
+    drawKnob(canvas, vals[i], colors[i]);
+    addKnobEvents(canvas, prefix, i, vals, colors[i]);
+  });
+}
+
+function drawKnob(canvas, v, color) {
+  const ctx = canvas.getContext('2d');
+  const cx = 28, cy = 28, r = 20;
+  ctx.clearRect(0,0,56,56);
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.strokeStyle = 'rgba(128,128,128,0.15)';
+  ctx.lineWidth = 4; ctx.stroke();
+  const startA = Math.PI * 0.75;
+  const endA = startA + (v/127) * Math.PI * 1.5;
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,startA,endA);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke();
+  const needleA = startA + (v/127)*Math.PI*1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.lineTo(cx + Math.cos(needleA)*14, cy + Math.sin(needleA)*14);
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx,cy,4,0,Math.PI*2);
+  ctx.fillStyle = color; ctx.fill();
+}
+
+function addKnobEvents(canvas, prefix, idx, vals, color) {
+  let dragging = false, startY = 0, startV = 0;
+  function update(e) {
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const delta = startY - clientY;
+    vals[idx] = Math.max(0, Math.min(127, Math.round(startV + delta)));
+    drawKnob(canvas, vals[idx], color);
+    document.getElementById(`${prefix}-val-${idx}`).textContent = vals[idx];
+  }
+  canvas.addEventListener('mousedown', e => { dragging=true; startY=e.clientY; startV=vals[idx]; e.preventDefault(); });
+  canvas.addEventListener('touchstart', e => { dragging=true; startY=e.touches[0].clientY; startV=vals[idx]; e.preventDefault(); }, {passive:false});
+  window.addEventListener('mousemove', e => { if(dragging) update(e); });
+  window.addEventListener('touchmove', e => { if(dragging) update(e); }, {passive:false});
+  window.addEventListener('mouseup', () => dragging=false);
+  window.addEventListener('touchend', () => dragging=false);
+}
+
+function makeCrossfader(trackId, fillId, thumbId, valId, stateKey, fmt) {
+  const track = document.getElementById(trackId);
+  const fill = document.getElementById(fillId);
+  const thumb = document.getElementById(thumbId);
+  const valEl = document.getElementById(valId);
+  let dragging = false;
+  function setVal(x) {
+    const rect = track.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+    state[stateKey] = Math.round(pct * 100);
+    fill.style.width = (pct*100)+'%';
+    thumb.style.left = (pct*100)+'%';
+    valEl.textContent = fmt ? fmt(state[stateKey]) : state[stateKey];
+    if(stateKey === 'cfMaster') updateWalls(state[stateKey]);
+  }
+  track.addEventListener('mousedown', e => { dragging=true; setVal(e.clientX); });
+  track.addEventListener('touchstart', e => { dragging=true; setVal(e.touches[0].clientX); }, {passive:false});
+  window.addEventListener('mousemove', e => { if(dragging) setVal(e.clientX); });
+  window.addEventListener('touchmove', e => { if(dragging) setVal(e.touches[0].clientX); }, {passive:false});
+  window.addEventListener('mouseup', () => dragging=false);
+  window.addEventListener('touchend', () => dragging=false);
+}
+
+function updateWalls(v) {
+  const wall = Math.floor(v/25) % 4;
+  document.querySelectorAll('.wall-dot').forEach((d,i) => d.classList.toggle('lit', i<=wall));
+  document.getElementById('cf-master-val').textContent = 'W'+(wall+1);
+}
+
+document.querySelectorAll('.scene-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+makeKnob(document.getElementById('knobs-a'), SOUND_PARAMS, state.a, COLORS_A, 'a');
+makeKnob(document.getElementById('knobs-b'), SOUND_PARAMS, state.b, COLORS_B, 'b');
+makeKnob(document.getElementById('knobs-v'), VIS_PARAMS, state.v, COLORS_V, 'v');
+makeCrossfader('cf-sound','cf-sound-fill','cf-sound-thumb','cf-sound-val','cfSound');
+makeCrossfader('cf-vis','cf-vis-fill','cf-vis-thumb','cf-vis-val','cfVis');
+makeCrossfader('cf-master','cf-master-fill','cf-master-thumb','cf-master-val','cfMaster', v => 'W'+(Math.floor(v/25)%4+1));
+</script>

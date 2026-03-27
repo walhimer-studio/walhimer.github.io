@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Convergence Era — Mark Walhimer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink:    #12100E;
+  --paper:  #F8F5EF;
+  --deep:   #1A1610;
+  --red:    #8C2018;
+  --gold:   #B8912A;
+  --rule:   #D4C5A9;
+  --mid:    #5C5548;
+  --light:  #EDE8DE;
+  --serif:  'Playfair Display', Georgia, serif;
+  --mono:   'DM Mono', monospace;
+  --sans:   'Inter', system-ui, sans-serif;
+}
+
+/* ── PAGE SETUP — LANDSCAPE ── */
+@page {
+  size: 11in 8.5in;
+  margin: 0;
+}
+
+body {
+  font-family: var(--sans);
+  background: #555;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── RESPONSIVE SCALE WRAPPER ── */
+.scale-container {
+  width: 100vw;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+}
+
+.page {
+  width: 11in;
+  height: 8.5in;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  background: var(--paper);
+  /* scale to viewport width */
+  transform-origin: top center;
+}
+
+.page:last-child { page-break-after: avoid; }
+
+@media print {
+  .scale-container { display: block; }
+  .page { transform: none !important; margin: 0; }
+}
+
+/* ══════════════════════════════
+   PAGE 1 — COVER
+══════════════════════════════ */
+.cover {
+  background: var(--deep);
+  position: relative;
+  height: 8.5in;
+  width: 11in;
+  overflow: hidden;
+}
+
+.cover-left {
+  position: absolute;
+  top: 0; left: 0;
+  width: 5.5in;
+  height: 8.5in;
+  padding: 0.55in 0.5in 0.5in;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid rgba(184,145,42,0.25);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* diagonal rule on cover left */
+.cover-left::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0.4;
+}
+
+.cover-eyebrow {
+  font-family: var(--mono);
+  font-size: 7pt;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.18in;
+}
+
+.cover-title {
+  font-family: var(--serif);
+  font-size: 44pt;
+  font-weight: 900;
+  color: #F0EBE0;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.cover-title em {
+  display: block;
+  font-style: italic;
+  color: var(--gold);
+  font-size: 34pt;
+  margin-top: 4pt;
+}
+
+.cover-subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13pt;
+  color: rgba(240,235,224,0.55);
+  margin-top: 0.15in;
+  line-height: 1.5;
+  max-width: 4in;
+}
+
+.cover-author-block {
+  font-family: var(--mono);
+  font-size: 7.5pt;
+  letter-spacing: 0.06em;
+  color: rgba(240,235,224,0.4);
+  line-height: 2.1;
+}
+
+.cover-author-block strong {
+  color: rgba(240,235,224,0.85);
+  font-weight: 500;
+  display: block;
+  font-size: 9pt;
+  letter-spacing: 0.03em;
+  margin-bottom: 3pt;
+}
+
+/* cover right — abstract graphic */
+.cover-right {
+  position: absolute;
+  top: 0; right: 0;
+  width: 5.5in;
+  height: 8.5in;
+  padding: 0.35in 0.45in 0.35in;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0;
+  overflow: hidden;
+}
+
+.cover-toc-label {
+  font-family: var(--mono);
+  font-size: 5.5pt;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(240,235,224,0.3);
+  margin-bottom: 8pt;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 5pt;
+}
+
+.toc-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6pt;
+  padding: 4pt 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.toc-num {
+  font-family: var(--mono);
+  font-size: 6pt;
+  color: var(--gold);
+  opacity: 0.7;
+  min-width: 14pt;
+}
+
+.toc-title {
+  font-family: var(--mono);
+  font-size: 7.5pt;
+  color: rgba(240,235,224,0.55);
+  flex: 1;
+  letter-spacing: 0.02em;
+}
+
+.toc-dots {
+  display: none;
+}
+
+.toc-pg {
+  font-family: var(--mono);
+  font-size: 6pt;
+  color: rgba(240,235,224,0.22);
+}
+
+.cover-watermark {
+  position: absolute;
+  top: 0.2in;
+  right: 0.45in;
+  font-family: var(--serif);
+  font-size: 120pt;
+  font-weight: 900;
+  color: rgba(255,255,255,0.025);
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════
+   INTERIOR PAGES
+══════════════════════════════ */
+.inner-page {
+  width: 11in;
+  height: 8.5in;
+  display: flex;
+  flex-direction: column;
+}
+
+/* running header */
+.running-head {
+  background: var(--deep);
+  padding: 9pt 0.55in;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rh-left {
+  font-family: var(--mono);
+  font-size: 6pt;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(240,235,224,0.35);
+}
+
+.rh-center {
+  font-family: var(--mono);
+  font-size: 6pt;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.6;
+}
+
+.rh-right {
+  font-family: var(--mono);
+  font-size: 6pt;
+  letter-spacing: 0.12em;
+  color: rgba(240,235,224,0.22);
+}
+
+/* main content area */
+.content-area {
+  padding: 0.32in 0.55in 0.28in;
+  overflow: hidden;
+  flex: 1;
+}
+
+/* running footer */
+.running-foot {
+  background: var(--light);
+  border-top: 1px solid var(--rule);
+  padding: 6pt 0.55in;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rf-text {
+  font-family: var(--mono);
+  font-size: 5.5pt;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+.rf-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  margin: 0 0.2in;
+  opacity: 0.5;
+}
+
+/* ── SECTION STYLES ── */
+.section-label {
+  font-family: var(--mono);
+  font-size: 6pt;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 5pt;
+  display: flex;
+  align-items: center;
+  gap: 8pt;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.2;
+}
+
+.section-num {
+  display: inline-block;
+  background: var(--gold);
+  color: white;
+  font-size: 6pt;
+  padding: 1pt 4pt;
+  letter-spacing: 0.1em;
+}
+
+h2 {
+  font-family: var(--serif);
+  font-size: 22pt;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 8pt;
+}
+
+h2 em { font-style: italic; color: var(--red); }
+
+h3 {
+  font-family: var(--serif);
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 5pt;
+}
+
+p.body {
+  font-size: 8.5pt;
+  line-height: 1.72;
+  color: #2E2820;
+  margin-bottom: 7pt;
+}
+
+p.body:last-child { margin-bottom: 0; }
+
+p.body strong { color: var(--ink); font-weight: 600; }
+
+/* ── LAYOUT HELPERS ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.28in;
+}
+
+.three-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.24in;
+}
+
+.col-divider {
+  border-right: 1px solid var(--rule);
+  padding-right: 0.28in;
+}
+
+/* ── PULL QUOTE ── */
+.pull-quote {
+  border-left: 3px solid var(--gold);
+  padding: 8pt 14pt;
+  margin: 10pt 0;
+  background: rgba(184,145,42,0.06);
+}
+
+.pull-quote p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 10.5pt;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.pull-quote cite {
+  display: block;
+  font-family: var(--mono);
+  font-size: 6pt;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 4pt;
+  font-style: normal;
+}
+
+/* ── CALLOUT BOX ── */
+.callout {
+  background: var(--deep);
+  padding: 11pt 14pt;
+  margin: 8pt 0;
+}
+
+.callout p {
+  font-size: 8pt;
+  line-height: 1.65;
+  color: rgba(240,235,224,0.75);
+}
+
+.callout p strong { color: var(--gold); font-weight: 500; }
+
+.callout-label {
+  font-family: var(--mono);
+  font-size: 5.5pt;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 5pt;
+  opacity: 0.8;
+}
+
+/* ── NUMBERED LIST ── */
+.num-list {
+  list-style: none;
+  margin: 6pt 0;
+}
+
+.num-list li {
+  display: flex;
+  gap: 10pt;
+  margin-bottom: 5pt;
+  font-size: 8pt;
+  line-height: 1.6;
+  color: #2E2820;
+  align-items: flex-start;
+}
+
+.num-list li::before {
+  content: attr(data-n);
+  font-family: var(--mono);
+  font-size: 6.5pt;
+  color: var(--gold);
+  min-width: 16pt;
+  padding-top: 1pt;
+}
+
+/* ── STAT STRIP ── */
+.stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  margin: 10pt 0;
+}
+
+.stat-cell {
+  background: var(--light);
+  border-top: 2px solid var(--red);
+  padding: 7pt 9pt;
+}
+
+.stat-num {
+  font-family: var(--serif);
+  font-size: 18pt;
+  font-weight: 700;
+  color: var(--red);
+  line-height: 1;
+  margin-bottom: 2pt;
+}
+
+.stat-label {
+  font-size: 5.5pt;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 600;
+  margin-bottom: 1pt;
+}
+
+.stat-note {
+  font-size: 6pt;
+  color: var(--mid);
+  line-height: 1.45;
+  font-style: italic;
+}
+
+/* ── CONCEPT GRID ── */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin: 8pt 0;
+}
+
+.concept-cell {
+  background: var(--light);
+  padding: 8pt 10pt;
+  border-top: 1px solid var(--rule);
+}
+
+.concept-cell h4 {
+  font-family: var(--mono);
+  font-size: 6.5pt;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 3pt;
+}
+
+.concept-cell p {
+  font-size: 7pt;
+  line-height: 1.55;
+  color: var(--mid);
+}
+
+/* ── RULE ELEMENTS ── */
+.rule-thick {
+  height: 3px;
+  background: var(--red);
+  margin-bottom: 0.1in;
+}
+
+.rule-gold-line {
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.3;
+  margin: 8pt 0;
+}
+
+/* ── CLOSING PAGE ── */
+.closing-bg {
+  background: var(--deep);
+}
+
+.closing-bg .content-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.closing-statement {
+  font-family: var(--serif);
+  font-size: 16pt;
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(240,235,224,0.82);
+  max-width: 8in;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 0.3in;
+}
+
+.closing-statement em {
+  color: var(--gold);
+  font-style: normal;
+}
+
+.closing-author {
+  margin-top: 0.25in;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 7pt;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(240,235,224,0.3);
+}
+
+/* page number badge */
+.pg-badge {
+  position: absolute;
+  bottom: 0.18in;
+  right: 0.4in;
+  font-family: var(--mono);
+  font-size: 7.5pt;
+  color: var(--gold);
+  opacity: 0.5;
+}
+
+/* large decorative numeral */
+.deco-num {
+  position: absolute;
+  top: 0.2in;
+  right: 0.35in;
+  font-family: var(--serif);
+  font-size: 88pt;
+  font-weight: 900;
+  color: rgba(140,32,24,0.055);
+  line-height: 1;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<div class="scale-container" id="scaleContainer">
+
+<!-- ══════════════════════════════
+     PAGE 1 — COVER
+══════════════════════════════ -->
+<div class="page cover">
+  <div class="cover-watermark">CE</div>
+
+  <div class="cover-left">
+    <div>
+      <div class="cover-eyebrow">Museum Planning LLC · White Paper · March 2026</div>
+      <div class="cover-title">
+        Convergence<em>Era</em>
+      </div>
+      <div class="cover-subtitle">Industrial Design, Artificial Intelligence,<br>and the Transformation of Cultural Systems</div>
+    </div>
+
+    <div class="cover-author-block">
+      <strong>Mark Walhimer</strong>
+      Museum Planning LLC<br>
+      New York · Mexico City<br>
+      museumplanning.com · culture-planning.com
+    </div>
+
+    <div style="margin-top:0.18in; padding-top:0.14in; border-top:1px solid rgba(184,145,42,0.2);">
+      <div style="font-family:'DM Mono',monospace; font-size:5.5pt; letter-spacing:0.18em; text-transform:uppercase; color:rgba(184,145,42,0.55); margin-bottom:6pt;">Related Works</div>
+      <div style="font-family:'DM Mono',monospace; font-size:7pt; color:rgba(240,235,224,0.38); line-height:1.9;">
+        <span style="color:rgba(240,235,224,0.65);">Designing Museum Experiences</span> · AAM Press<br>
+        <span style="color:rgba(240,235,224,0.65);">Museums 101</span> · Second Edition · Forthcoming<br>
+        <span style="color:rgba(240,235,224,0.65);">Culture Everywhere</span> · Platform · 2026
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-right">
+    <div class="cover-toc-label">Contents</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 0.15in;">
+      <div class="toc-item"><span class="toc-num">01</span><span class="toc-title">The Collapse of Roles</span><span class="toc-pg">2</span></div>
+      <div class="toc-item"><span class="toc-num">06</span><span class="toc-title">Material Intelligence</span><span class="toc-pg">5</span></div>
+      <div class="toc-item"><span class="toc-num">02</span><span class="toc-title">The Rise of Agentic Systems</span><span class="toc-pg">2</span></div>
+      <div class="toc-item"><span class="toc-num">07</span><span class="toc-title">Industrial Design + Systems</span><span class="toc-pg">5</span></div>
+      <div class="toc-item"><span class="toc-num">03</span><span class="toc-title">Museums Everywhere</span><span class="toc-pg">3</span></div>
+      <div class="toc-item"><span class="toc-num">08</span><span class="toc-title">Cultural Convergence</span><span class="toc-pg">6</span></div>
+      <div class="toc-item"><span class="toc-num">04</span><span class="toc-title">Embodied AI</span><span class="toc-pg">4</span></div>
+      <div class="toc-item"><span class="toc-num">09</span><span class="toc-title">Educational Transformation</span><span class="toc-pg">6</span></div>
+      <div class="toc-item"><span class="toc-num">05</span><span class="toc-title">Spatial Computing</span><span class="toc-pg">4</span></div>
+      <div class="toc-item"><span class="toc-num">10</span><span class="toc-title">The New Core Competency</span><span class="toc-pg">7</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 2 — SECTIONS 1 & 2
+══════════════════════════════ -->
+<div class="page inner-page" style="position:relative;">
+  <div class="deco-num">1</div>
+  <div class="running-head">
+    <span class="rh-left">Convergence Era · Mark Walhimer · 2026</span>
+    <span class="rh-center">The Collapse of Roles &amp; The Rise of Agentic Systems</span>
+    <span class="rh-right">museumplanning.com</span>
+  </div>
+
+  <div class="content-area">
+    <div class="rule-thick"></div>
+    <div class="two-col">
+
+      <div class="col-divider">
+        <div class="section-label"><span class="section-num">01</span> The Collapse of Roles</div>
+        <h2>One Person.<br><em>One Department.</em></h2>
+        <p class="body">Industrial design, museum practice, digital product creation, and artificial intelligence are entering a period of accelerated convergence that will fundamentally reshape how culture, technology, and built environments operate. The traditional model of industrial design — centered on sculpted forms, studio craftsmanship, and linear production pipelines — will be replaced by a global, data-driven, algorithmically accelerated system.</p>
+        <p class="body">Manufacturing centers in Asia will continue to absorb much of the conventional design-to-production workflow, while the locus of creative labor shifts from form-making to system orchestration.</p>
+
+        <div class="rule-gold-line"></div>
+
+        <p class="body">Large creative and technical teams will continue to collapse into small, high-performance micro-agencies. Enabled by rapidly advancing AI tools, one or two individuals will routinely perform the work that previously required departments of designers, developers, editors, and strategists.</p>
+        <p class="body">This collapse of roles will extend across marketing, entertainment, software development, product design, and cultural organizations. Entry-level positions have already disappeared in many sectors, and full-stack development roles are now being replaced by agent-assisted coding systems that exponentially expand individual capabilities.</p>
+
+        <div class="callout" style="margin-bottom:8pt;">
+          <div class="callout-label">On This Work</div>
+          <p>Convergence Era forms the theoretical foundation for <strong>Museums 101, Second Edition</strong> (forthcoming) and the <strong>Culture Everywhere</strong> platform. It extends the framework established in <strong>Designing Museum Experiences</strong> (AAM Press) into the age of agentic AI, spatial computing, and distributed intelligence — applying that foundation to a world that has changed faster than any single edition could anticipate.</p>
+        </div>
+
+        <div class="pull-quote">
+          <p>"One or two individuals will routinely perform the work that previously required departments of designers, developers, editors, and strategists."</p>
+          <cite>Convergence Era · Section 1</cite>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label"><span class="section-num">02</span> The Rise of Agentic Systems</div>
+        <h2>Beyond Language.<br><em>Toward Reasoning.</em></h2>
+        <p class="body">At the center of this transformation is a new paradigm of computation: agentic, node-based, neuro-symbolic systems. Current large language models represent only the first phase of AI evolution. They are associative engines, not reasoning systems.</p>
+        <p class="body">The next generation will integrate neural networks with symbolic logic, causal inference, planning modules, internal models, memory, and multi-agent coordination. These systems — known as Neuro-Symbolic AI — will be capable of genuine reasoning, adaptive behavior, and real-world action.</p>
+
+        <div class="callout">
+          <div class="callout-label">Key Distinction</div>
+          <p>They will operate not as single models but as <strong>orchestrated networks of specialized agents</strong> functioning through node-based interfaces similar to TouchDesigner or Unreal Engine Blueprints. Eventually, quantum nodes will augment these systems, enabling hyper-efficient optimization and decision-making.</p>
+        </div>
+
+        <div class="concept-grid">
+          <div class="concept-cell">
+            <h4>LLM Phase</h4>
+            <p>Associative engines. Pattern recognition. No causal model of the world.</p>
+          </div>
+          <div class="concept-cell">
+            <h4>Neuro-Symbolic</h4>
+            <p>Neural + symbolic logic. Genuine reasoning. Planning and memory.</p>
+          </div>
+          <div class="concept-cell">
+            <h4>Agentic Networks</h4>
+            <p>Orchestrated agent swarms. Multi-modal. Real-world physical action.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="running-foot">
+    <span class="rf-text">Museum Planning LLC</span>
+    <div class="rf-rule"></div>
+    <span class="rf-text">© 2026 · Confidential</span>
+  </div>
+  <div class="pg-badge">02</div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 3 — SECTION 3: MUSEUMS EVERYWHERE
+══════════════════════════════ -->
+<div class="page inner-page" style="position:relative;">
+  <div class="deco-num">3</div>
+  <div class="running-head">
+    <span class="rh-left">Convergence Era · Mark Walhimer · 2026</span>
+    <span class="rh-center">Museums Everywhere</span>
+    <span class="rh-right">museumplanning.com</span>
+  </div>
+
+  <div class="content-area">
+    <div class="rule-thick"></div>
+
+    <div class="section-label"><span class="section-num">03</span> Museums Everywhere</div>
+    <h2 style="font-size:28pt; margin-bottom:0.12in;">Not a Building.<br><em>A Distributed Interpretive System.</em></h2>
+
+    <div class="two-col">
+      <div class="col-divider">
+        <p class="body">This shift will not be confined to digital products; it will transform physical environments. Museums, cultural institutions, and public spaces will evolve into intelligent, sensor-rich, adaptive platforms capable of personalized interpretation and responsive interaction.</p>
+        <p class="body">A museum will no longer be defined solely as a building, but as a distributed interpretive system — an interconnected network of metadata, AI-driven content, environmental sensors, and spatial computation. This concept, known as <strong>Museums Everywhere</strong>, will redefine how people encounter history, science, culture, and ethics.</p>
+        <p class="body">Interpretation will follow the visitor, adapting in real time through multimodal inputs and contextual understanding. This transformation requires a form of AI that is not confined to language or screen-based interfaces but can perceive, interpret, and respond within physical space.</p>
+
+        <div class="rule-gold-line"></div>
+
+        <div class="stat-strip">
+          <div class="stat-cell">
+            <div class="stat-num">30K</div>
+            <div class="stat-label">US Cities</div>
+            <div class="stat-note">With civic buildings and no museum model</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">200</div>
+            <div class="stat-label">Destination</div>
+            <div class="stat-note">Flagship institutions in America</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">18mo</div>
+            <div class="stat-label">Delivery</div>
+            <div class="stat-note">Concept to grand opening</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-num">$327</div>
+            <div class="stat-label">Per Sq Ft</div>
+            <div class="stat-note">Proven exhibition cost, 2019</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="pull-quote" style="margin-bottom:0.12in;">
+          <p>"A museum will no longer be defined solely as a building, but as a distributed interpretive system — an interconnected network of metadata, AI-driven content, environmental sensors, and spatial computation."</p>
+          <cite>Convergence Era · Section 3</cite>
+        </div>
+
+        <div class="callout">
+          <div class="callout-label">The Physical Experience — Proven 2019</div>
+          <p>Exterior <strong>projection mapping</strong> on the building facade. A hero <strong>video wall</strong>. <strong>Holographic figures</strong>. Projection-mapped interactive scale models. Touch tables with object recognition. A local art gallery. Historic artifact displays. A <strong>kids maker area</strong> with a 3D printer. Community conference space. Every component proven, replicable, and now dramatically cheaper than 2019 due to AI.</p>
+        </div>
+
+        <div style="margin-top:0.1in;">
+          <div class="section-label" style="margin-bottom:6pt;">The Intelligence Layer</div>
+          <p class="body">AI that has absorbed the place — 200 years of public archives, historic photographs, demographic data, local knowledge, contested stories reviewed by community stakeholders — speaks the city back to itself. Visitors ask anything. Schools use it daily. Remote visitors access it from home. The AI updates as the city changes. This is the layer that didn't exist in 2019. It makes the whole system dramatically more powerful and dramatically less expensive to maintain.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="running-foot">
+    <span class="rf-text">Museum Planning LLC</span>
+    <div class="rf-rule"></div>
+    <span class="rf-text">© 2026 · Confidential</span>
+  </div>
+  <div class="pg-badge">03</div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 4 — SECTIONS 4 & 5
+══════════════════════════════ -->
+<div class="page inner-page" style="position:relative;">
+  <div class="deco-num">4</div>
+  <div class="running-head">
+    <span class="rh-left">Convergence Era · Mark Walhimer · 2026</span>
+    <span class="rh-center">Embodied AI &amp; Spatial Computing</span>
+    <span class="rh-right">museumplanning.com</span>
+  </div>
+
+  <div class="content-area">
+    <div class="rule-thick"></div>
+    <div class="two-col">
+
+      <div class="col-divider">
+        <div class="section-label"><span class="section-num">04</span> Embodied AI</div>
+        <h2>Intelligence<br><em>in Physical Space.</em></h2>
+        <p class="body">Embodied AI will become a foundational layer of the built environment, transforming how people interact with museums, products, and architecture. This shift is grounded in embodied cognition — the principle that intelligent behavior emerges not from abstract computation alone, but from the dynamic interaction between perception, movement, and physical context.</p>
+        <p class="body">Unlike disembodied AI systems that operate purely through language or flat screens, embodied AI integrates perception, movement, spatial reasoning, and real-time sensor data. It allows AI to understand the physical world through vision, depth, sound, proximity, gesture, environmental conditions, and multimodal signals.</p>
+
+        <div class="callout">
+          <div class="callout-label">What This Enables</div>
+          <p>Museums and cultural institutions will shift from static interpretive spaces to <strong>responsive, perceptual environments</strong> capable of modifying content, lighting, narrative, interfaces, and pathways based on embodied interaction. Embodied interaction becomes the interface: gestures, movement, proximity, gaze, biometrics, and environmental cues replace buttons and touchscreens.</p>
+        </div>
+
+        <p class="body" style="margin-top:7pt;">For experiential environments — museums, retail, performing arts, public spaces, campuses — embodied AI is the mechanism that enables seamless integration between digital intelligence and lived experience. It is the connective tissue that unifies sensor networks, AI agents, spatial computation, and narrative content into cohesive, adaptive systems.</p>
+      </div>
+
+      <div>
+        <div class="section-label"><span class="section-num">05</span> Spatial Computing</div>
+        <h2>Every Space<br><em>a Computation.</em></h2>
+        <p class="body">Spatial computing will function as the operational layer that enables intelligent environments to perceive, interpret, and respond across physical space. It integrates real-time sensing, spatial mapping, environmental modeling, and AI-driven interpretation into a unified computational fabric that understands depth, location, movement, and context.</p>
+
+        <div class="pull-quote">
+          <p>"This transforms every space into an interactive field of computation, where interpretation, narrative, and function emerge dynamically from the relationship between people, objects, environments, and intelligent systems."</p>
+          <cite>Convergence Era · Section 5</cite>
+        </div>
+
+        <p class="body">As museums, cultural institutions, products, and architectural systems evolve into adaptive ecosystems, spatial computing becomes the mechanism through which digital intelligence anchors itself to the physical world — coordinating embodied AI, multimodal inputs, visitor behavior, and environmental data.</p>
+
+        <div class="concept-grid">
+          <div class="concept-cell">
+            <h4>Sensor Layer</h4>
+            <p>PIR, BLE, RGB/IR cameras, IMU, LIDAR, environmental sensors.</p>
+          </div>
+          <div class="concept-cell">
+            <h4>Edge Computing</h4>
+            <p>Real-time processing at the point of interaction. No cloud latency.</p>
+          </div>
+          <div class="concept-cell">
+            <h4>Digital Twin</h4>
+            <p>Live spatial model of the environment. Adaptive and self-updating.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="running-foot">
+    <span class="rf-text">Museum Planning LLC</span>
+    <div class="rf-rule"></div>
+    <span class="rf-text">© 2026 · Confidential</span>
+  </div>
+  <div class="pg-badge">04</div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 5 — SECTIONS 6 & 7
+══════════════════════════════ -->
+<div class="page inner-page" style="position:relative;">
+  <div class="deco-num">5</div>
+  <div class="running-head">
+    <span class="rh-left">Convergence Era · Mark Walhimer · 2026</span>
+    <span class="rh-center">Material Intelligence &amp; Industrial Design + Systems Thinking</span>
+    <span class="rh-right">museumplanning.com</span>
+  </div>
+
+  <div class="content-area">
+    <div class="rule-thick"></div>
+    <div class="two-col">
+
+      <div class="col-divider">
+        <div class="section-label"><span class="section-num">06</span> Material Intelligence</div>
+        <h2>Objects That<br><em>Think.</em></h2>
+        <p class="body">Computational materials — sometimes called material intelligence — will become a critical dimension of the emerging design and technological landscape, enabling physical objects and architectural systems to sense, process, and respond to environmental conditions without relying solely on external devices.</p>
+        <p class="body">Advances in embedded sensing, adaptive textiles, responsive polymers, micro-actuation, and material-level computation will allow products, surfaces, and structures to behave as intelligent participants within a larger system. Rather than static components, materials will carry distributed awareness: detecting stress loads, temperature shifts, humidity, air quality, vibration, occupancy, or interaction patterns, and adjusting their properties in real time.</p>
+
+        <div class="rule-gold-line"></div>
+
+        <p class="body">As agentic AI and spatial computing reshape cultural and built environments, computational materials will serve as the connective tissue between digital cognition and physical form — enabling museums, products, and architectural systems to become <strong>intrinsically interactive, adaptive, and perceptually alive</strong>.</p>
+
+        <div class="callout">
+          <div class="callout-label">Architectural Consequence</div>
+          <p>Architectural systems will behave like living organisms — <strong>modulating acoustics, illumination, circulation, climate, and interpretive layers</strong> in response to human presence. This fundamentally expands the domain of design from shaping forms to shaping behaviors, relationships, and intelligent systems in physical space.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label"><span class="section-num">07</span> Industrial Design + Systems Thinking</div>
+        <h2>Design at the<br><em>Scale of Rooms.</em></h2>
+        <p class="body">Exhibition design and museum master planning will increasingly be recognized as core domains within industrial design. Although these practices overlap with architecture, communication design, and interaction design, the underlying logic of the work — shaping objects and information in space, directing visitor movement, coordinating ergonomics, narrative, fabrication systems, materials, engineering constraints, and now sensors and AI — positions them squarely within industrial design's evolving mandate.</p>
+
+        <div class="pull-quote">
+          <p>"They represent product design at the scale of rooms and buildings, where people move through and interact with the designed system rather than holding it in their hands."</p>
+          <cite>Convergence Era · Section 7</cite>
+        </div>
+
+        <p class="body">Systems thinking will solidify as a foundational competency within industrial design rather than a peripheral concern of IT or business schools. While technical fields discuss systems in terms of information architectures or enterprise processes, <strong>design-based systems thinking focuses on how objects, spaces, services, interfaces, and human behaviors integrate into cohesive, adaptive wholes.</strong></p>
+        <p class="body">This embodied, experiential systems logic will become essential as museums, exhibitions, cultural infrastructures, and built environments shift toward agentic, AI-driven operation.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="running-foot">
+    <span class="rf-text">Museum Planning LLC</span>
+    <div class="rf-rule"></div>
+    <span class="rf-text">© 2026 · Confidential</span>
+  </div>
+  <div class="pg-badge">05</div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 6 — SECTIONS 8 & 9
+══════════════════════════════ -->
+<div class="page inner-page" style="position:relative;">
+  <div class="deco-num">6</div>
+  <div class="running-head">
+    <span class="rh-left">Convergence Era · Mark Walhimer · 2026</span>
+    <span class="rh-center">Cultural Convergence &amp; Educational Transformation</span>
+    <span class="rh-right">museumplanning.com</span>
+  </div>
+
+  <div class="content-area">
+    <div class="rule-thick"></div>
+    <div class="two-col">
+
+      <div class="col-divider">
+        <div class="section-label"><span class="section-num">08</span> Cultural Convergence</div>
+        <h2>All Creative Fields<br><em>Become Systems Design.</em></h2>
+        <p class="body">As AI becomes agentic, products become nodes in larger networks, and environments become responsive, all cultural and creative fields will move into the domain of systems design. GLAM institutions, theater, archives, galleries, libraries, arts administration, fashion, game design, marketing, communications, and writing will be defined less by disciplinary boundaries and more by their shared dependence on narrative, interaction, media, identity, and behavioral dynamics.</p>
+
+        <ul class="num-list">
+          <li data-n="→">A fashion designer will design across supply chains, digital identity layers, recommendation engines, and responsive retail systems.</li>
+          <li data-n="→">Game designers will operate within node-based, agent-driven logic structures.</li>
+          <li data-n="→">Writers will create in collaboration with multimodal AI platforms.</li>
+          <li data-n="→">Marketing teams will function as micro-agencies powered by swarms of AI agents rather than staffed departments.</li>
+        </ul>
+
+        <div class="rule-gold-line"></div>
+
+        <p class="body">This cross-disciplinary shift will destabilize traditional academic structures, which are organized around siloed departments — industrial design, theater, film, creative writing, information systems — each with its own methods, faculty, and curriculum. The emerging reality cuts across all of them, rendering the existing structure obsolete.</p>
+        <p class="body">The intellectual and practical center of this convergence will emerge at the intersection of industrial design, systems thinking, artificial intelligence, and cultural practice.</p>
+      </div>
+
+      <div>
+        <div class="section-label"><span class="section-num">09</span> Educational Transformation</div>
+        <h2>Teaching the<br><em>Unbuilt Future.</em></h2>
+        <p class="body">Education will be reshaped by these changes. Academic programs built around legacy industrial design, linear workflows, and static knowledge will become obsolete. The next generation of designers, technologists, and cultural practitioners will require fluency in systems thinking, AI orchestration, sensor integration, metadata design, experience architecture, and intelligent product development.</p>
+
+        <div class="callout">
+          <div class="callout-label">New Core Curriculum</div>
+          <p>
+            <strong>Systems Thinking</strong> · Agentic AI Orchestration<br>
+            <strong>Sensor Integration</strong> · Metadata Design<br>
+            <strong>Experience Architecture</strong> · Spatial Computing<br>
+            <strong>Intelligent Product Development</strong> · Edge Computing<br>
+            <strong>Multi-Agent Coordination</strong> · Material Intelligence
+          </p>
+        </div>
+
+        <p class="body" style="margin-top:8pt;">Teaching will occur through adaptive digital platforms capable of analyzing student progress, generating personalized content, and modeling the very agentic systems students are expected to design. The teacher and the curriculum both become intelligent, adaptive systems.</p>
+
+        <div class="pull-quote">
+          <p>"Exhibition design and museum planning will stand as central exemplars of this paradigm, and the wider cultural sector will move toward the same systemic, agentic, AI-enabled mode of operation."</p>
+          <cite>Convergence Era · Section 8</cite>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="running-foot">
+    <span class="rf-text">Museum Planning LLC</span>
+    <div class="rf-rule"></div>
+    <span class="rf-text">© 2026 · Confidential</span>
+  </div>
+  <div class="pg-badge">06</div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 7 — SECTION 10 + CLOSING
+══════════════════════════════ -->
+<div class="page inner-page" style="position:relative;">
+  <div class="deco-num">7</div>
+  <div class="running-head">
+    <span class="rh-left">Convergence Era · Mark Walhimer · 2026</span>
+    <span class="rh-center">The New Core Competency</span>
+    <span class="rh-right">museumplanning.com</span>
+  </div>
+
+  <div class="content-area">
+    <div class="rule-thick"></div>
+
+    <div class="section-label"><span class="section-num">10</span> The New Core Competency</div>
+    <h2 style="font-size:26pt; margin-bottom:0.1in;">From Designing Objects<br><em>to Designing Systems of Intelligence.</em></h2>
+
+    <div class="two-col">
+      <div class="col-divider">
+        <p class="body">Across all sectors, the dominant competency will not be form-giving, drafting, or even traditional coding, but the ability to orchestrate distributed intelligence systems — to design and direct networks of agents, nodes, sensors, and cognitive modules.</p>
+        <p class="body">This is the defining transformation of the coming decade: a shift from designing objects to <strong>designing systems of intelligence</strong>, from creating fixed artifacts to shaping adaptive, interconnected worlds.</p>
+
+        <div class="rule-gold-line"></div>
+
+        <p class="body">As AI systems advance, products themselves will become nodes in a larger ecosystem. Footwear, furnishings, home appliances, furniture, and architectural components will be personalized, sensor-enabled, and manufactured through dynamic parametric engines rather than fixed designs. Assembly will increasingly be performed by consumer-grade robots or automated systems. Buildings will integrate smart systems that respond to occupants, environmental conditions, and cultural overlays, turning architecture into a living interface.</p>
+
+        <div class="callout">
+          <div class="callout-label">The Superdesigner</div>
+          <p>One individual, fluent in systems thinking, AI orchestration, and cultural practice, operating at the scale previously requiring a firm. Not a specialist. Not a generalist. A <strong>systems orchestrator</strong> — the emerging role that defines the next decade of creative and cultural work.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-bottom:8pt;">The Transformation in Summary</div>
+        <ul class="num-list">
+          <li data-n="01">Large teams collapse into small, high-performance micro-agencies powered by AI agents.</li>
+          <li data-n="02">AI evolves from language models to reasoning networks of specialized agents.</li>
+          <li data-n="03">Museums become distributed interpretive systems, not buildings.</li>
+          <li data-n="04">Embodied AI makes intelligence physically present in built environments.</li>
+          <li data-n="05">Spatial computing turns every room into an interactive field of computation.</li>
+          <li data-n="06">Materials become computational — sensing, processing, responding.</li>
+          <li data-n="07">Exhibition design is product design at the scale of rooms and buildings.</li>
+          <li data-n="08">All creative fields converge into systems design.</li>
+          <li data-n="09">Education restructures around AI orchestration and adaptive systems.</li>
+          <li data-n="10">The dominant competency becomes designing intelligence, not objects.</li>
+        </ul>
+
+        <div class="rule-gold-line" style="margin-top:10pt;"></div>
+
+        <div style="margin-top:8pt;">
+          <div class="section-label" style="margin-bottom:5pt;">About the Author</div>
+          <p class="body">Mark Walhimer is the founder of Museum Planning LLC. He has designed and built museums across the United States and internationally, including the C.O. Polk Interactive Museum (McDonough, Georgia, 2019), the first museum of this model. He is based in New York and Mexico City.</p>
+          <p class="body" style="margin-top:5pt;"><strong>museumplanning.com</strong> · <strong>culture-planning.com</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="running-foot">
+    <span class="rf-text">Museum Planning LLC</span>
+    <div class="rf-rule"></div>
+    <span class="rf-text">© 2026 · Confidential · museumplanning.com</span>
+  </div>
+  <div class="pg-badge">07</div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 8 — CLOSING STATEMENT
+══════════════════════════════ -->
+<div class="page inner-page closing-bg" style="position:relative;">
+  <div class="running-head" style="background:rgba(255,255,255,0.04); border-bottom:1px solid rgba(255,255,255,0.08);">
+    <span class="rh-left" style="color:rgba(255,255,255,0.2);">Convergence Era · Mark Walhimer · 2026</span>
+    <span class="rh-center" style="color:rgba(184,145,42,0.5);">Conclusion</span>
+    <span class="rh-right" style="color:rgba(255,255,255,0.15);">museumplanning.com</span>
+  </div>
+
+  <div class="content-area" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <div style="text-align:center; margin-bottom:0.3in;">
+      <div style="font-family:'DM Mono',monospace; font-size:6.5pt; letter-spacing:0.25em; text-transform:uppercase; color:rgba(184,145,42,0.5); margin-bottom:0.12in;">Convergence Era · Museum Planning LLC · March 2026</div>
+      <div style="width:40pt; height:2px; background:var(--gold); opacity:0.4; margin:0 auto;"></div>
+    </div>
+
+    <div class="closing-statement">
+      The traditional model — form-giving, linear pipelines, siloed departments, static knowledge — is ending. What is beginning is a design practice defined not by what things look like, but by <em>how systems of intelligence behave</em>. Museums will be everywhere. Culture will be adaptive. The built environment will perceive and respond. And the designers, technologists, and cultural practitioners who shape this world will need a new kind of fluency: not in any single discipline, but in the orchestration of <em>distributed intelligence</em> — the ability to direct networks of agents, sensors, materials, and meaning toward a coherent human experience.
+    </div>
+
+    <div class="closing-author" style="margin-top:0.3in;">
+      Mark Walhimer · Museum Planning LLC · New York · Mexico City<br>
+      museumplanning.com · culture-planning.com · February 2026
+    </div>
+  </div>
+
+  <div class="running-foot" style="background:rgba(255,255,255,0.04); border-top:1px solid rgba(255,255,255,0.08);">
+    <span class="rf-text" style="color:rgba(255,255,255,0.2);">Museum Planning LLC</span>
+    <div class="rf-rule" style="background:rgba(255,255,255,0.08);"></div>
+    <span class="rf-text" style="color:rgba(255,255,255,0.15);">© 2026 · Confidential</span>
+  </div>
+  <div class="pg-badge">08</div>
+</div>
+
+</div><!-- /scale-container -->
+
+<script>
+function scalePages() {
+  var pages = document.querySelectorAll('.page');
+  var vw = window.innerWidth;
+  var pageW = 11 * 96; // 11in at 96dpi = 1056px
+  var scale = Math.min(1, vw / pageW);
+  var pageH = 8.5 * 96; // 8.5in at 96dpi = 816px
+  var scaledH = pageH * scale;
+  var margin = scaledH - pageH; // negative when scaled down
+  pages.forEach(function(p) {
+    p.style.transform = 'scale(' + scale + ')';
+    p.style.marginTop = '0';
+    p.style.marginBottom = margin + 'px';
+    p.style.display = 'block';
+  });
+}
+window.addEventListener('load', scalePages);
+window.addEventListener('resize', scalePages);
+scalePages();
+</script>
+
+</body>
+</html>

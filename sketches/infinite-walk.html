@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Infinite Walk — March</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; font-family: serif; }
+
+  /* Cinematic letterbox */
+  #bars { pointer-events: none; position: fixed; inset: 0; z-index: 20; }
+  #bars::before, #bars::after {
+    content: ''; position: absolute; left: 0; right: 0;
+    height: 11vh; background: #000;
+  }
+  #bars::before { top: 0; }
+  #bars::after  { bottom: 0; }
+
+  /* Film grain overlay */
+  #grain {
+    pointer-events: none; position: fixed; inset: 0; z-index: 19;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 256px;
+  }
+
+  /* Title overlay */
+  #title {
+    pointer-events: none; position: fixed;
+    bottom: 13vh; left: 50%; transform: translateX(-50%);
+    z-index: 21; text-align: center;
+    color: rgba(255,220,140,0.18);
+    font-size: clamp(9px, 1.1vw, 13px);
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    font-style: italic;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+<div id="bars"></div>
+<div id="grain"></div>
+<div id="title">March Afternoon &nbsp;·&nbsp; Endless Walk</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   INFINITE WALK  |  Three.js  |  March afternoon — long shadows
+   Perspective parallax: same world speed, depth creates movement.
+   People at z=-5, 2, 9 interleave with trees at z=-8, 0, 8.
+   ═══════════════════════════════════════════════════════════════ */
+
+const W = window.innerWidth, H = window.innerHeight;
+
+// ── RENDERER ─────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+// ── SCENE ────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xd07828, 52, 145);
+
+// ── CAMERA ───────────────────────────────────────────────────
+const camera = new THREE.PerspectiveCamera(48, W / H, 0.1, 300);
+camera.position.set(0, 3, 20);
+camera.lookAt(0, 1.8, 0);
+
+// ── SKY ──────────────────────────────────────────────────────
+{
+  const c = document.createElement('canvas');
+  c.width = 4; c.height = 1024;
+  const cx = c.getContext('2d');
+  const g = cx.createLinearGradient(0, 0, 0, 1024);
+  g.addColorStop(0.00, '#050010');
+  g.addColorStop(0.10, '#200518');
+  g.addColorStop(0.26, '#700c0c');
+  g.addColorStop(0.44, '#bb3610');
+  g.addColorStop(0.60, '#d85e10');
+  g.addColorStop(0.76, '#e89428');
+  g.addColorStop(0.87, '#f4b050');
+  g.addColorStop(1.00, '#fce4a0');
+  cx.fillStyle = g; cx.fillRect(0, 0, 4, 1024);
+
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(320, 88),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.CanvasTexture(c),
+      fog: false, depthWrite: false, depthTest: false
+    })
+  );
+  m.position.set(0, 24, -42);
+  m.renderOrder = -3;
+  scene.add(m);
+}
+
+// ── SUN DISC + GLOW ──────────────────────────────────────────
+{
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const cx = c.getContext('2d');
+  // Outer haze
+  const g1 = cx.createRadialGradient(256, 256, 12, 256, 256, 256);
+  g1.addColorStop(0,    'rgba(255,255,200,1)');
+  g1.addColorStop(0.08, 'rgba(255,210,90,0.98)');
+  g1.addColorStop(0.2,  'rgba(255,155,30,0.72)');
+  g1.addColorStop(0.45, 'rgba(255,90,10,0.32)');
+  g1.addColorStop(0.72, 'rgba(220,55,5,0.12)');
+  g1.addColorStop(1.0,  'rgba(180,30,0,0)');
+  cx.fillStyle = g1; cx.fillRect(0, 0, 512, 512);
+  // Horizontal lens streak
+  cx.globalCompositeOperation = 'lighter';
+  const g2 = cx.createLinearGradient(0, 248, 512, 264);
+  g2.addColorStop(0,   'rgba(255,220,100,0)');
+  g2.addColorStop(0.3, 'rgba(255,220,100,0.08)');
+  g2.addColorStop(0.5, 'rgba(255,240,160,0.18)');
+  g2.addColorStop(0.7, 'rgba(255,220,100,0.08)');
+  g2.addColorStop(1,   'rgba(255,220,100,0)');
+  cx.fillStyle = g2; cx.fillRect(0, 240, 512, 32);
+
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 20),
+    new THREE.MeshBasicMaterial({
+      map: new THREE.CanvasTexture(c), transparent: true,
+      blending: THREE.AdditiveBlending, fog: false,
+      depthWrite: false, depthTest: false
+    })
+  );
+  m.position.set(-44, 2.6, -40);
+  m.renderOrder = -2;
+  scene.add(m);
+}
+
+// ── GROUND ───────────────────────────────────────────────────
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(320, 70),
+  new THREE.MeshBasicMaterial({ color: 0x110601 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.renderOrder = 0;
+scene.add(ground);
+
+// Ground tone stripes (subtle texture suggestion)
+for (const [dist, col, wid] of [
+  [0,   0x1a0903, 0.22],
+  [2,   0x160702, 0.12],
+  [-1.5,0x200d05, 0.08],
+]) {
+  const s = new THREE.Mesh(
+    new THREE.PlaneGeometry(320, wid),
+    new THREE.MeshBasicMaterial({ color: col })
+  );
+  s.rotation.x = -Math.PI / 2;
+  s.position.set(0, 0.005, dist);
+  s.renderOrder = 0;
+  scene.add(s);
+}
+
+// ── FACTORIES ────────────────────────────────────────────────
+const RANGE = 64;
+
+function mkBill(cW, cH) {
+  const canvas = document.createElement('canvas');
+  canvas.width = cW; canvas.height = cH;
+  const tex  = new THREE.CanvasTexture(canvas);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.01, depthWrite: false })
+  );
+  mesh.renderOrder = 2;
+  return { canvas, ctx: canvas.getContext('2d'), tex, mesh };
+}
+
+function mkShadow(len, wid) {
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(len, wid),
+    new THREE.MeshBasicMaterial({ color: 0x060200, transparent: true, opacity: 0.25, depthWrite: false })
+  );
+  m.rotation.x = -Math.PI / 2;
+  m.renderOrder = 1;
+  return { mesh: m, len };
+}
+
+// ── TREE DRAWING  (5 silhouette variants) ────────────────────
+const TCW = 256, TCH = 320;
+
+function drawTree(ctx, v) {
+  ctx.clearRect(0, 0, TCW, TCH);
+  ctx.fillStyle = '#000'; ctx.strokeStyle = '#000'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  const cx = TCW * 0.5, by = TCH - 6;
+  const trH = TCH * 0.30, trW = Math.max(4, TCW * 0.054);
+  const crY = by - trH; // crown base Y
+
+  const circ = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); };
+
+  switch (v) {
+
+    case 0: { // ── round full crown
+      ctx.fillRect(cx - trW/2, crY, trW, trH);
+      circ(cx, crY - TCH*0.25, TCH*0.26);
+      // slightly lumpy
+      circ(cx - TCH*0.1,  crY - TCH*0.28, TCH*0.18);
+      circ(cx + TCH*0.12, crY - TCH*0.24, TCH*0.16);
+      break;
+    }
+
+    case 1: { // ── tall columnar (poplar)
+      ctx.fillRect(cx - trW/2, crY, trW, trH);
+      ctx.beginPath();
+      ctx.ellipse(cx, crY - TCH*0.235, TCW*0.13, TCH*0.265, 0, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+
+    case 2: { // ── wide spreading oak
+      ctx.fillRect(cx - trW/2, crY, trW, trH + 6);
+      const r = TCH * 0.188;
+      for (const [dx, dy, sc] of [
+        [ 0.0, -2.10, 1.10],
+        [-1.55,-1.02, 0.88], [1.55, -1.02, 0.88],
+        [-0.82,-0.48, 0.70], [0.82, -0.48, 0.70],
+        [-0.20,-0.20, 0.54], [0.25, -0.18, 0.50],
+      ]) circ(cx + dx*r, crY + dy*r * 0.55, r*sc);
+      break;
+    }
+
+    case 3: { // ── bare winter branching
+      ctx.lineWidth = trW;
+      ctx.beginPath(); ctx.moveTo(cx, by); ctx.lineTo(cx, crY); ctx.stroke();
+      (function br(x, y, a, l, d) {
+        if (!d || l < 2.2) return;
+        const nx = x + Math.sin(a) * l, ny = y - Math.cos(a) * l;
+        ctx.lineWidth = Math.max(0.4, d * 1.3);
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(nx, ny); ctx.stroke();
+        br(nx, ny, a - 0.44, l * 0.67, d - 1);
+        br(nx, ny, a + 0.44, l * 0.67, d - 1);
+        if (d > 3) br(nx, ny, a + 0.06, l * 0.76, d - 1);
+      })(cx, crY, 0, trH * 0.53, 6);
+      break;
+    }
+
+    default: { // ── asymmetric organic
+      ctx.fillRect(cx - trW/2, crY, trW, trH + 5);
+      const r = TCH * 0.188;
+      for (const [dx, dy, sc] of [
+        [-0.08,-2.05, 1.02],
+        [-1.52,-1.08, 0.82], [1.38,-1.30, 0.78],
+        [ 0.12,-0.62, 0.64],
+      ]) circ(cx + dx*r, crY + dy*r * 0.53, r*sc);
+    }
+  }
+}
+
+// ── PERSON DRAWING  (animated walking silhouette) ────────────
+const PCW = 100, PCH = 220;
+
+function drawPerson(ctx, phase, type) {
+  ctx.clearRect(0, 0, PCW, PCH);
+  ctx.fillStyle = '#000';
+
+  const sc  = PCH / 210;
+  const fy  = PCH - 4;
+  const cx  = PCW * 0.50;
+
+  // ── Animation ────────────────────────────────
+  const ls  = Math.sin(phase);             // leg cycle  −1…1
+  const as  = Math.sin(phase + Math.PI);   // arm cycle (opposite)
+  const bob = Math.abs(ls) * 2.2 * sc;
+
+  // ── Base proportions ────────────────────────
+  let HR   = 12  * sc;   // head radius
+  let shW  = 15  * sc;   // shoulder half-width
+  let hipW = 11  * sc;   // hip half-width
+  let NK   =  6  * sc;   // neck length
+  let TH   = 52  * sc;   // torso height
+  let ULH  = 46  * sc;   // upper-leg length
+  let LLH  = 41  * sc;   // lower-leg length
+  let UAH  = 36  * sc;   // upper-arm length
+  let LAH  = 26  * sc;   // lower-arm length
+  let THW  =  9.5* sc;   // thigh half-width
+  let CLW  =  5.5* sc;   // calf half-width
+  let ANW  =  3.5* sc;   // ankle half-width
+  let UAW  =  5.5* sc;   // upper-arm half-width
+  let LAW  =  3.5* sc;   // lower-arm half-width
+
+  // type tweaks
+  if (type === 3) { shW *= 0.88; hipW *= 1.18; HR *= 1.08; }           // woman: wider hips
+  if (type === 4) { const r=0.74; HR*=1.2; TH*=r*0.92; ULH*=r; LLH*=r; shW*=r; hipW*=r; NK*=r; UAH*=r; LAH*=r; THW*=r; CLW*=r; ANW*=r; UAW*=r; LAW*=r; }  // child
+
+  // ── Vertical anchors ────────────────────────
+  const headCY  = fy - LLH - ULH - TH - NK - HR - bob;
+  const neckBY  = headCY + HR;
+  const shY     = neckBY + NK;
+  const hipY    = shY + TH;
+
+  // ── Swing angles (radians) ──────────────────
+  const legA = ls * 0.44;
+  const fKnee = Math.max(0,  ls) * 0.24;   // front knee folds back at peak
+  const bKnee = Math.max(0, -ls) * 0.28;   // back knee folds when trailing
+  const armA  = as * 0.38;
+
+  // ── Joint helper ────────────────────────────
+  function pt(x, y, a, L) { return [x + Math.sin(a)*L, y + Math.cos(a)*L]; }
+
+  const [bKX, bKY] = pt(cx + 2.5*sc, hipY,  -legA,              ULH);
+  const [bFX, bFY] = pt(bKX, bKY,            -legA + bKnee,      LLH);
+  const [fKX, fKY] = pt(cx - 2.5*sc, hipY,   legA,              ULH);
+  const [fFX, fFY] = pt(fKX, fKY,             legA - fKnee,      LLH);
+  const [bEX, bEY] = pt(cx + shW*0.78, shY+4*sc,  armA*0.9,    UAH);
+  const [bHX, bHY] = pt(bEX, bEY,                  armA*0.55,   LAH);
+  const [fEX, fEY] = pt(cx - shW*0.78, shY+4*sc, -armA*0.9,    UAH);
+  const [fHX, fHY] = pt(fEX, fEY,                 -armA*0.55,   LAH);
+
+  // ── Capsule helper ──────────────────────────
+  function caps(x0,y0, x1,y1, r0,r1) {
+    const dx=x1-x0, dy=y1-y0, d=Math.sqrt(dx*dx+dy*dy)||.001;
+    const nx=-dy/d, ny=dx/d, a=Math.atan2(ny,nx);
+    ctx.beginPath();
+    ctx.moveTo(x0+nx*r0, y0+ny*r0);
+    ctx.lineTo(x1+nx*r1, y1+ny*r1);
+    ctx.arc(x1,y1,r1,a,a+Math.PI);
+    ctx.lineTo(x0-nx*r0, y0-ny*r0);
+    ctx.arc(x0,y0,r0,a+Math.PI,a);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // ── Shoe helper ─────────────────────────────
+  // canvas is flipped horizontally, so "forward" in canvas = positive X
+  function shoe(x, y, ang) {
+    const L=11*sc, H=4.5*sc;
+    ctx.save();
+    ctx.translate(x, y + H*0.3);
+    ctx.rotate(ang * 0.14);
+    ctx.beginPath();
+    ctx.moveTo(-3*sc, -H*0.3);
+    ctx.quadraticCurveTo(L*0.4, -H*0.6, L, 0);
+    ctx.lineTo(L,  H*0.6);
+    ctx.lineTo(-3*sc, H*0.5);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
+
+  // ── DRAW ORDER ──────────────────────────────
+  // 1 · back arm
+  caps(cx+shW*0.78, shY+4*sc, bEX, bEY, UAW, UAW*0.85);
+  caps(bEX, bEY,  bHX, bHY,  UAW*0.82, LAW);
+
+  // 2 · back leg
+  caps(cx+2.5*sc, hipY, bKX, bKY, THW, CLW*1.1);
+  caps(bKX, bKY,  bFX, bFY,  CLW, ANW);
+  shoe(bFX, bFY, -legA);
+
+  // 3 · head  (with hair mass)
+  if (type === 3) {
+    // woman: wider, slightly higher hair blob
+    ctx.beginPath(); ctx.ellipse(cx, headCY - HR*0.05, HR*1.2, HR*1.1, 0, 0, Math.PI*2); ctx.fill();
+  } else if (type === 4) {
+    ctx.beginPath(); ctx.arc(cx, headCY, HR, 0, Math.PI*2); ctx.fill();
+  } else {
+    // male: head + small hair bump on crown
+    ctx.beginPath(); ctx.arc(cx, headCY, HR, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx - HR*0.12, headCY - HR*0.72, HR*0.68, HR*0.52, -0.2, 0, Math.PI*2); ctx.fill();
+  }
+
+  // 4 · torso
+  if (type === 2) {
+    // long coat — extends over upper thighs
+    const coatBot = hipY + ULH * 0.50;
+    ctx.beginPath();
+    ctx.moveTo(cx - shW*1.02, shY);
+    ctx.lineTo(cx + shW*1.02, shY);
+    ctx.bezierCurveTo(cx + shW, hipY, cx + hipW*1.4, hipY + ULH*0.2, cx + hipW*1.1, coatBot);
+    ctx.lineTo(cx - hipW*1.1, coatBot);
+    ctx.bezierCurveTo(cx - hipW*1.4, hipY + ULH*0.2, cx - shW, hipY, cx - shW*1.02, shY);
+    ctx.closePath(); ctx.fill();
+  } else if (type === 3) {
+    // woman — slight A-line
+    ctx.beginPath();
+    ctx.moveTo(cx - shW*0.88, shY);
+    ctx.lineTo(cx + shW*0.88, shY);
+    ctx.lineTo(cx + hipW*1.12, hipY);
+    ctx.lineTo(cx - hipW*1.12, hipY);
+    ctx.closePath(); ctx.fill();
+  } else {
+    // standard torso — shoulder broader than hips
+    ctx.beginPath();
+    ctx.moveTo(cx - shW, shY);
+    ctx.lineTo(cx + shW, shY);
+    ctx.lineTo(cx + hipW, hipY);
+    ctx.lineTo(cx - hipW, hipY);
+    ctx.closePath(); ctx.fill();
+  }
+  // neck
+  caps(cx, neckBY, cx, shY, HR*0.34, HR*0.30);
+
+  // 5 · backpack (type 1)
+  if (type === 1) {
+    const bpX = cx + hipW*0.45;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(bpX, shY+1*sc, 14*sc, 32*sc, 4*sc)
+                  : ctx.fillRect(bpX, shY+1*sc, 14*sc, 32*sc);
+    ctx.fill();
+    // strap hint
+    caps(cx + shW*0.6, shY+4*sc, bpX+2*sc, shY+18*sc, 2*sc, 2*sc);
+  }
+
+  // 6 · front leg
+  caps(cx-2.5*sc, hipY, fKX, fKY, THW, CLW*1.1);
+  caps(fKX, fKY,  fFX, fFY,  CLW, ANW);
+  shoe(fFX, fFY, legA);
+
+  // 7 · front arm
+  caps(cx-shW*0.78, shY+4*sc, fEX, fEY, UAW, UAW*0.85);
+  caps(fEX, fEY,  fHX, fHY,  UAW*0.82, LAW);
+
+  // 8 · briefcase / shopping bag (type 5)
+  if (type === 5) {
+    const bgW = 14*sc, bgH = 12*sc;
+    const bgX = fHX - bgW*0.3, bgY = fHY + 1*sc;
+    ctx.beginPath();
+    ctx.roundRect ? ctx.roundRect(bgX, bgY, bgW, bgH, 2.5*sc)
+                  : ctx.fillRect(bgX, bgY, bgW, bgH);
+    ctx.fill();
+    // handle
+    caps(bgX + bgW*0.3, fHY-1*sc, bgX + bgW*0.7, fHY-1*sc, 1.5*sc, 1.5*sc);
+  }
+}
+
+// ── BUILD SCENE ──────────────────────────────────────────────
+
+// Trees: 3 depth layers — z=-8 (far), 0 (mid), 8 (near)
+// Interleaved with people at z=-5, 2, 9
+// → person at z=-5 is behind trees at z=0 and z=8  ✓
+// → person at z=2  is between trees at z=0 and z=8 ✓
+// → person at z=9  is in front of trees at z=8      ✓
+
+const treeDefs  = [{ z:-8, h:3.8, n:10 }, { z:0, h:5.5, n:10 }, { z:8, h:7.5, n:9 }];
+const peopleDefs= [{ z:-5, h:3.2, n:5  }, { z:2, h:4.4, n:5  }, { z:9, h:5.8, n:4 }];
+
+const allTrees  = [], allPeople = [];
+
+// ── plant trees ──
+for (const d of treeDefs) {
+  const asp = TCW / TCH;
+  for (let i = 0; i < d.n; i++) {
+    const bb = mkBill(TCW, TCH);
+    drawTree(bb.ctx, Math.floor(Math.random() * 5));
+    bb.tex.needsUpdate = true;
+    bb.mesh.scale.set(d.h * asp, d.h, 1);
+
+    // Even initial spread with slight randomness
+    const x = (i / d.n * 2 - 1) * RANGE + (Math.random() - 0.5) * 10;
+    bb.mesh.position.set(x, d.h / 2, d.z);
+    scene.add(bb.mesh);
+
+    const sLen = d.h * 9.0, sWid = d.h * 0.32;
+    const sh = mkShadow(sLen, sWid);
+    sh.mesh.position.set(x + sLen/2, 0.012, d.z);
+    scene.add(sh.mesh);
+
+    allTrees.push({ bb, sh, x, sLen, worldH: d.h, worldW: d.h * asp });
+  }
+}
+
+// ── place people ──
+for (const d of peopleDefs) {
+  const asp = PCW / PCH;
+  for (let i = 0; i < d.n; i++) {
+    const type = Math.random() < 0.12 ? 4 : Math.floor(Math.random() * 5 + (Math.random() < 0.22 ? 5 : 0)) % 6;
+    const bb   = mkBill(PCW, PCH);
+    // Negative X scale → figure faces left (walking direction)
+    bb.mesh.scale.set(-d.h * asp, d.h, 1);
+
+    const x = (i / d.n * 2 - 1) * RANGE + (Math.random() - 0.5) * 10;
+    bb.mesh.position.set(x, d.h/2 + 0.05, d.z);
+    scene.add(bb.mesh);
+
+    const sLen = d.h * 7.2, sWid = d.h * 0.22;
+    const sh = mkShadow(sLen, sWid);
+    sh.mesh.position.set(x + sLen/2, 0.018, d.z + 0.05);
+    scene.add(sh.mesh);
+
+    allPeople.push({
+      bb, sh, x, sLen, worldH: d.h, worldW: d.h * asp,
+      type, phase: Math.random() * Math.PI * 2,
+      speed: 0.78 + Math.random() * 0.52,
+    });
+  }
+}
+
+// ── ANIMATE ──────────────────────────────────────────────────
+const clock  = new THREE.Clock();
+const SPEED  = 2.8; // world units per second
+
+// Subtle chromatic aberration overlay
+const caCanvas = document.createElement('canvas');
+caCanvas.width = 8; caCanvas.height = 1;
+const caCx = caCanvas.getContext('2d');
+const caGrad = caCx.createLinearGradient(0, 0, 8, 0);
+caGrad.addColorStop(0,   'rgba(255,30,20,0.04)');
+caGrad.addColorStop(0.5, 'rgba(0,0,0,0)');
+caGrad.addColorStop(1,   'rgba(20,50,255,0.03)');
+caCx.fillStyle = caGrad; caCx.fillRect(0, 0, 8, 1);
+const caOverlay = new THREE.Mesh(
+  new THREE.PlaneGeometry(200, 40),
+  new THREE.MeshBasicMaterial({
+    map: new THREE.CanvasTexture(caCanvas), transparent: true,
+    depthWrite: false, depthTest: false, fog: false
+  })
+);
+caOverlay.position.set(0, 8, 15);
+caOverlay.renderOrder = 10;
+scene.add(caOverlay);
+
+(function loop() {
+  requestAnimationFrame(loop);
+  const dt      = Math.min(clock.getDelta(), 0.05);
+  const elapsed = clock.getElapsedTime();
+
+  // Very gentle viewer bob — as if we too are walking
+  camera.position.y = 3 + Math.sin(elapsed * 1.55) * 0.05;
+
+  // Move trees
+  for (const t of allTrees) {
+    t.x -= SPEED * dt;
+    if (t.x < -RANGE - t.worldW) t.x = RANGE + t.worldW + Math.random() * 14;
+    t.bb.mesh.position.x = t.x;
+    t.sh.mesh.position.x = t.x + t.sLen * 0.5;
+  }
+
+  // Move + animate people
+  for (const p of allPeople) {
+    p.x -= SPEED * p.speed * dt;
+    if (p.x < -RANGE - p.worldW) {
+      p.x     = RANGE + p.worldW + Math.random() * 10;
+      p.phase = Math.random() * Math.PI * 2;
+    }
+    p.bb.mesh.position.x = p.x;
+    p.sh.mesh.position.x = p.x + p.sLen * 0.5;
+
+    p.phase += dt * 4.5 * p.speed;
+    drawPerson(p.bb.ctx, p.phase, p.type);
+    p.bb.tex.needsUpdate = true;
+  }
+
+  renderer.render(scene, camera);
+})();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
