@@ -8,268 +8,83 @@
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black:    #0a0a0a;
-      --offwhite: #f0ede6;
-      --dim:      #666660;
-      --rule:     #1e1e1e;
-      --accent:   #c8a882;
-      --border:   #2a2a2a;
-      --bright:   #f0f0f0;
-      --surface:  #111;
+      --black:   #0a0a0a;
+      --off:     #f0ede6;
+      --dim:     #666660;
+      --rule:    #1e1e1e;
+      --accent:  #c8a882;
+      --border:  #2a2a2a;
+      --bright:  #f0f0f0;
+      --surface: #111;
     }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--black);
-      color: var(--offwhite);
-      font-family: 'IBM Plex Mono', 'SF Mono', 'Monaco', monospace;
-      font-weight: 300;
-      min-height: 100vh;
-    }
+    body { background: var(--black); color: var(--off); font-family: 'IBM Plex Mono', monospace; font-weight: 300; min-height: 100vh; }
 
-    /* NAV */
-    nav {
-      display: flex;
-      align-items: stretch;
-      padding: 0 40px;
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--accent);
-      text-decoration: none;
-      padding: 22px 32px 22px 0;
-      margin-right: 8px;
-      border-right: 1px solid var(--border);
-    }
-    .nav-links { display: flex; align-items: stretch; gap: 0; }
-    .nav-links a {
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--dim);
-      text-decoration: none;
-      padding: 22px 20px;
-      transition: color 0.15s;
-      display: flex;
-      align-items: center;
-    }
+    nav { display: flex; align-items: stretch; padding: 0 40px; border-bottom: 1px solid var(--border); }
+    .nav-logo { font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); text-decoration: none; padding: 22px 32px 22px 0; margin-right: 8px; border-right: 1px solid var(--border); }
+    .nav-links { display: flex; align-items: stretch; }
+    .nav-links a { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--dim); text-decoration: none; padding: 22px 20px; transition: color .15s; display: flex; align-items: center; }
     .nav-links a:hover { color: var(--bright); }
     .nav-links a.active { color: var(--accent); border-bottom: 1px solid var(--accent); margin-bottom: -1px; }
 
-    /* HEADER */
-    header {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 64px 48px 48px;
-      border-bottom: 1px solid var(--rule);
-    }
-    .kicker {
-      font-size: 10px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-bottom: 20px;
-    }
-    h1 {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(40px, 6vw, 72px);
-      font-weight: 300;
-      line-height: 1.0;
-      letter-spacing: -0.02em;
-      margin-bottom: 24px;
-    }
+    header { max-width: 1100px; margin: 0 auto; padding: 56px 48px 40px; border-bottom: 1px solid var(--rule); }
+    .kicker { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); margin-bottom: 18px; }
+    h1 { font-family: Georgia, serif; font-size: clamp(40px,6vw,72px); font-weight: 300; line-height: 1; letter-spacing: -.02em; margin-bottom: 20px; }
     h1 em { font-style: italic; color: var(--accent); }
-    .lede {
-      font-size: 14px;
-      font-weight: 300;
-      line-height: 1.8;
-      color: rgba(240,237,230,0.55);
-      max-width: 600px;
-    }
+    .lede { font-size: 13px; color: rgba(240,237,230,.5); line-height: 1.8; max-width: 560px; }
 
-    /* CONTROLS */
-    .controls {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px 48px;
-      border-bottom: 1px solid var(--rule);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .control-label {
-      font-size: 10px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-right: 4px;
-    }
-    .filter-btn {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--dim);
-      padding: 6px 14px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .filter-btn:hover { border-color: var(--dim); color: var(--offwhite); }
-    .filter-btn.active { border-color: var(--accent); color: var(--accent); }
-
-    .search-wrap {
-      margin-left: auto;
-      position: relative;
-    }
-    #search {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--offwhite);
-      padding: 6px 32px 6px 12px;
-      outline: none;
-      width: 220px;
-      transition: border-color 0.15s;
-    }
+    .controls { max-width: 1100px; margin: 0 auto; padding: 18px 48px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .ctrl-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-right: 4px; }
+    .ctrl-btn { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: transparent; border: 1px solid var(--border); color: var(--dim); padding: 5px 13px; cursor: pointer; transition: all .15s; }
+    .ctrl-btn:hover { border-color: var(--dim); color: var(--off); }
+    .ctrl-btn.active { border-color: var(--accent); color: var(--accent); }
+    #search { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: transparent; border: 1px solid var(--border); color: var(--off); padding: 5px 12px; outline: none; width: 200px; transition: border-color .15s; margin-left: auto; }
     #search::placeholder { color: var(--dim); }
     #search:focus { border-color: var(--accent); }
-    .search-clear {
-      position: absolute; right: 10px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--dim); cursor: pointer;
-      font-size: 12px; display: none;
-    }
-    #search:not(:placeholder-shown) + .search-clear { display: block; }
 
-    /* STATS */
-    .stats {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 14px 48px;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      color: var(--dim);
-      border-bottom: 1px solid var(--rule);
-      display: flex;
-      gap: 24px;
-    }
-    .stats span { color: var(--offwhite); }
+    .stats { max-width: 1100px; margin: 0 auto; padding: 12px 48px; font-size: 10px; letter-spacing: .1em; color: var(--dim); border-bottom: 1px solid var(--rule); }
+    .stats span { color: var(--off); }
 
-    /* TABLE */
-    .table-wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 48px 80px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    thead th {
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--dim);
-      text-align: left;
-      padding: 16px 12px 12px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-    }
-    thead th:hover { color: var(--offwhite); }
-    thead th.sorted { color: var(--accent); }
-    thead th::after { content: ''; margin-left: 4px; }
-    thead th.sorted-asc::after { content: '↑'; }
-    thead th.sorted-desc::after { content: '↓'; }
+    .series-list { max-width: 1100px; margin: 0 auto; padding: 0 48px 80px; }
 
-    tbody tr {
-      border-bottom: 1px solid var(--rule);
-      transition: background 0.1s;
-      cursor: pointer;
+    .series-block { border-bottom: 1px solid var(--rule); }
+    .series-header {
+      display: flex; align-items: center; gap: 16px;
+      padding: 20px 0; cursor: pointer;
+      user-select: none; transition: background .1s;
     }
-    tbody tr:hover { background: var(--surface); }
-    tbody tr.hidden { display: none; }
-    tbody tr.is-version { opacity: 0.45; }
-    tbody tr.is-version:hover { opacity: 1; }
+    .series-header:hover .series-name { color: var(--accent); }
+    .series-toggle { font-size: 11px; color: var(--dim); width: 16px; flex-shrink: 0; transition: transform .2s; }
+    .series-block.open .series-toggle { transform: rotate(90deg); }
+    .series-name { font-size: 15px; font-weight: 400; color: var(--off); flex: 1; }
+    .series-count { font-size: 10px; letter-spacing: .12em; color: var(--dim); }
+    .series-badge { font-size: 8px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid rgba(200,168,130,.4); color: var(--accent); padding: 2px 7px; }
 
-    td {
-      padding: 13px 12px;
-      font-size: 12px;
-      vertical-align: middle;
-    }
-    .td-title {
-      font-weight: 400;
-      color: var(--offwhite);
-      max-width: 320px;
-    }
-    .td-title a {
-      color: inherit;
-      text-decoration: none;
-    }
-    .td-title a:hover { color: var(--accent); }
-    .td-file {
-      color: var(--dim);
-      font-size: 11px;
-      max-width: 280px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .td-tag {
-      white-space: nowrap;
-    }
-    .badge {
-      display: inline-block;
-      font-size: 8px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border: 1px solid;
-    }
-    .badge-version { border-color: var(--rule); color: var(--dim); }
-    .badge-installation { border-color: rgba(200,168,130,0.4); color: var(--accent); }
-    .badge-series { border-color: rgba(240,237,230,0.15); color: rgba(240,237,230,0.5); }
+    .series-files { display: none; padding-bottom: 8px; }
+    .series-block.open .series-files { display: block; }
 
-    .td-open { text-align: right; }
-    .open-link {
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      color: var(--dim);
-      text-decoration: none;
-      padding: 5px 10px;
-      border: 1px solid var(--rule);
-      transition: all 0.15s;
-      white-space: nowrap;
+    .file-row {
+      display: grid; grid-template-columns: 1fr 280px 80px;
+      gap: 12px; align-items: center;
+      padding: 10px 0 10px 32px;
+      border-top: 1px solid var(--rule);
+      cursor: pointer; transition: background .1s;
     }
+    .file-row:hover { background: var(--surface); }
+    .file-row.is-version { opacity: .4; }
+    .file-row.is-version:hover { opacity: 1; }
+    .file-title { font-size: 12px; color: var(--off); }
+    .file-title a { color: inherit; text-decoration: none; }
+    .file-title a:hover { color: var(--accent); }
+    .file-name { font-size: 11px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-action { text-align: right; }
+    .open-link { font-size: 10px; color: var(--dim); text-decoration: none; padding: 4px 9px; border: 1px solid var(--rule); transition: all .15s; white-space: nowrap; }
     .open-link:hover { border-color: var(--accent); color: var(--accent); }
 
-    .none-msg {
-      text-align: center;
-      padding: 60px;
-      color: var(--dim);
-      font-size: 12px;
-      letter-spacing: 0.1em;
-    }
+    .file-row.hidden { display: none; }
+    .series-block.all-hidden { display: none; }
 
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--rule);
-      padding: 22px 48px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    footer span { font-size: 10px; color: var(--dim); letter-spacing: 0.08em; }
+    footer { border-top: 1px solid var(--rule); padding: 22px 48px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    footer span { font-size: 10px; color: var(--dim); letter-spacing: .08em; }
   </style>
 </head>
 <body>
@@ -288,42 +103,24 @@
 <header>
   <p class="kicker">Studio archive</p>
   <h1>Sket<em>ches</em></h1>
-  <p class="lede">Every experiment, prototype, and working file. Not curated — this is the studio floor. Filter by state or search by name.</p>
+  <p class="lede">All work organized by series. Click a series to expand. Click any file to open it.</p>
 </header>
 
 <div class="controls">
-  <span class="control-label">Show</span>
-  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
-  <button class="filter-btn" data-filter="works" onclick="setFilter('works',this)">Works only</button>
-  <button class="filter-btn" data-filter="versions" onclick="setFilter('versions',this)">Versions</button>
-  <div class="search-wrap">
-    <input id="search" type="text" placeholder="Search…" oninput="doSearch(this.value)">
-    <span class="search-clear" onclick="clearSearch()">✕</span>
-  </div>
+  <span class="ctrl-label">Show</span>
+  <button class="ctrl-btn active" onclick="setFilter('all',this)">All</button>
+  <button class="ctrl-btn" onclick="setFilter('works',this)">Works only</button>
+  <button class="ctrl-btn" onclick="setFilter('versions',this)">Versions</button>
+  <button class="ctrl-btn" onclick="expandAll()">Expand all</button>
+  <button class="ctrl-btn" onclick="collapseAll()">Collapse all</button>
+  <input id="search" type="text" placeholder="Search…" oninput="doSearch(this.value)">
 </div>
 
 <div class="stats">
-  <div>Total <span id="stat-total">—</span></div>
-  <div>Visible <span id="stat-visible">—</span></div>
-  <div>Versions hidden <span id="stat-versions">—</span></div>
+  <span id="stat-series">—</span> series &nbsp;·&nbsp; <span id="stat-files">—</span> files visible
 </div>
 
-<div class="table-wrap">
-  <table id="sketch-table">
-    <thead>
-      <tr>
-        <th onclick="sortBy('title')" id="th-title">Title</th>
-        <th onclick="sortBy('file')" id="th-file">Filename</th>
-        <th id="th-tag">State</th>
-        <th id="th-open"></th>
-      </tr>
-    </thead>
-    <tbody id="tbody">
-      <!-- populated by JS -->
-    </tbody>
-  </table>
-  <div class="none-msg" id="none-msg" style="display:none">No sketches match.</div>
-</div>
+<div class="series-list" id="series-list"></div>
 
 <footer>
   <span>Mark Walhimer &nbsp;·&nbsp; Sketches</span>
@@ -331,324 +128,398 @@
 </footer>
 
 <script>
-// ── SKETCH DATA ─────────────────────────────────────────────────────────
-// Auto-generated from sketches/ — update by running: python3 build_sketch_index.py
-// Or manually edit the array below.
-
-// Promoted pieces (appear on homepage or in installations/)
-const INSTALLATIONS = new Set([
-  'living-commons.html','bloom-four-walls.html','traveling-landscape.html',
-  'shared-ground.html','shared-ground__3_.html','technical-drawing.html',
-  'bloom-release.html','surrender-machines.html'
-]);
-const SERIES = new Set([
-  'orchestrator.html','moon-dish.html','radial-gradient.html',
-  'cube.html','breathing-cubes.html'
-]);
-
-const SKETCHES = [
-  {file:"01-traveling-landscape-working.html",title:"Traveling Landscape (working)",version:false},
-  {file:"02-traveling-landscape-live.html",title:"Traveling Landscape (live)",version:false},
-  {file:"3d_print.html",title:"Text to 3D",version:false},
-  {file:"699 (float (iridescent)).html",title:"Umbrella — Ultra-Translucent Film",version:false},
-  {file:"710_around.html",title:"710 (around)",version:false},
-  {file:"738 (float).html",title:"Umbrella — Translucent Gradient Swirls",version:false},
-  {file:"821 (around) \u2014 1536 \u00d7 864.html",title:"821 (around) 1536×864",version:false},
-  {file:"827 (centered) #10.html",title:"827 (centered) #10",version:false},
-  {file:"838_artwork.html",title:"838 artwork",version:false},
-  {file:"899(grounded) 1248 x 1456 copy.html",title:"p5.js WEBGL City",version:true},
-  {file:"899(grounded) 1248 x 1456.html",title:"p5.js WEBGL City 1248×1456",version:false},
-  {file:"904_forward_exhibition.html",title:"904 (forward) Exhibition",version:false},
-  {file:"915_manifold_test.html",title:"Emergent DNA — manifold test",version:true},
-  {file:"919 (landscape) w-emergentDNA.html",title:"919 (landscape) w/ emergentDNA",version:false},
-  {file:"919.html",title:"919 Emergent DNA",version:false},
-  {file:"919_landscape.html",title:"919 landscape",version:false},
-  {file:"919_seed_1_DEBUG.html",title:"Emergent DNA Seed 1 (DEBUG)",version:true},
-  {file:"919_surrender_fixed (1).html",title:"Emergent DNA surrender fixed",version:true},
-  {file:"919_surrender_fixed.html",title:"Emergent DNA surrender fixed",version:true},
-  {file:"920_emergentDNA.html",title:"Emergent Machines",version:false},
-  {file:"922_centered.html",title:"Soft Gradient Planes",version:false},
-  {file:"923_centered.html",title:"Soft Gradient Planes — Breathing Layers",version:false},
-  {file:"ShelvesAndCubes_TL.html",title:"Shelves & Cubes – Transient Labs",version:false},
-  {file:"Untitled.html",title:"3D Text Effect",version:false},
-  {file:"Untitled3.html",title:"Text Cylinder — Volumetric",version:false},
-  {file:"ai_studio_code (15).html",title:"3JS Shader Port",version:true},
-  {file:"ai_studio_code (16).html",title:"3JS Port — Forward",version:true},
-  {file:"ai_studio_code (17).html",title:"3JS Smooth Forward",version:true},
-  {file:"ai_studio_code (20).html",title:"3JS Forward — Final Reconstruction",version:true},
-  {file:"audioscape001.html",title:"Soundscape + p5.js",version:false},
-  {file:"binary-partitions-1765814423174.html",title:"Binary Partitions",version:false},
-  {file:"binary-partitions-1765817739662.html",title:"Binary Partitions (v2)",version:true},
-  {file:"bloom-four-walls.html",title:"Bloom / Release — Four Walls",version:false},
-  {file:"bloom-garden.html",title:"Emergent DNA – Bloom Garden PoC",version:false},
-  {file:"bloom-release (1).html",title:"Bloom / Release",version:true},
-  {file:"bloom-release.html",title:"Bloom / Release",version:false},
-  {file:"bloom.html",title:"Bloom — Radial Gradient",version:false},
-  {file:"box.html",title:"Box",version:false},
-  {file:"box_of_ocean.html",title:"Grid Cubes + Sliders",version:false},
-  {file:"boxes.html",title:"Three.js Boxes",version:false},
-  {file:"breathing-cubes.html",title:"Breathing Cubes",version:false},
-  {file:"bubbles.html",title:"Reading the Sky — bubbles",version:false},
-  {file:"cells.html",title:"Emergent Discs",version:false},
-  {file:"centered.html",title:"Centered — screen agnostic",version:false},
-  {file:"collective-architecture.html",title:"Collective Architecture",version:false},
-  {file:"concept-1-color-field.html",title:"Concept 1: Color Field — Corporate Lobby",version:false},
-  {file:"concept-2-kinetic-language.html",title:"Concept 2: Kinetic Language — Hospital",version:false},
-  {file:"concept-3-translucent-layers.html",title:"Concept 3: Translucent Layers — Hotel",version:false},
-  {file:"cube.html",title:"Cube",version:false},
-  {file:"cube2.html",title:"Cube 2",version:true},
-  {file:"cube4.html",title:"Cube 4",version:true},
-  {file:"cube6.html",title:"Cube 6",version:true},
-  {file:"cylinder_lights.html",title:"10 Cylinders with Lights",version:false},
-  {file:"cylinder_lights_enhanced.html",title:"10 Cylinders — Enhanced",version:false},
-  {file:"disks.html",title:"Emergent Discs",version:false},
-  {file:"emergent - Objkt copy.html",title:"emergent — Objkt",version:true},
-  {file:"emergent - Objkt.html",title:"emergent — Objkt",version:false},
-  {file:"emergent-studio-v2.html",title:"Emergent DNA Studio",version:false},
-  {file:"emergent_geometry.html",title:"Emergent Geometry",version:false},
-  {file:"emergentdna-000-clean.html",title:"EmergentDNA 000 (clean)",version:false},
-  {file:"emergentdna-000-v2 (1).html",title:"EmergentDNA 000 v2",version:true},
-  {file:"emergentdna-000-v2.html",title:"EmergentDNA 000 v2",version:false},
-  {file:"emergentdna-001.html",title:"EmergentDNA 001",version:false},
-  {file:"endgame.html",title:"Room Projectors",version:false},
-  {file:"example_artwork.html",title:"Example artwork",version:false},
-  {file:"exhibition_autosync.html",title:"Exhibition Template — Auto-Sync",version:false},
-  {file:"figure.html",title:"Figure",version:false},
-  {file:"figure_audio_mobile_simple.html",title:"Figure + Audio (mobile)",version:false},
-  {file:"five.html",title:"Multiple Umbrellas",version:false},
-  {file:"fivegame.html",title:"Umbrella Catch Game",version:false},
-  {file:"flower.html",title:"Generative Flower",version:false},
-  {file:"fluid-dynamics.html",title:"Fluid Dynamics — 3D Points",version:false},
-  {file:"fluid-lines.html",title:"Fluid Lines — Flowing Curves",version:false},
-  {file:"fluid_dynamics.html",title:"Fluid Dynamics (v2)",version:true},
-  {file:"forever terrain.html",title:"Forever Terrain",version:false},
-  {file:"funk_boy.html",title:"Funk Boy — Full 3D Motion",version:false},
-  {file:"furn.html",title:"Furniture",version:false},
-  {file:"furn2.html",title:"Product",version:false},
-  {file:"garden (1).html",title:"Garden",version:true},
-  {file:"garden (2).html",title:"Garden",version:true},
-  {file:"garden (3).html",title:"Garden",version:true},
-  {file:"garden.html",title:"Garden",version:false},
-  {file:"gloabal_age.html",title:"Emergent DNA — Discs → Rectangles",version:false},
-  {file:"gradient-boxes (1).html",title:"Gradient Box Column",version:true},
-  {file:"gradient-boxes (2).html",title:"Gradient Box Column",version:true},
-  {file:"gradient-boxes (3).html",title:"Gradient Box Column",version:true},
-  {file:"gradient-boxes.html",title:"Gradient Box Column",version:false},
-  {file:"gradient_boxes.html",title:"Gradient Boxes — Three.js",version:false},
-  {file:"index 2.html",title:"Cloud Sketch PoC",version:false},
-  {file:"index_slider_test.html",title:"886 (rotate) — Slider Test",version:true},
-  {file:"inside copy.html",title:"Vivid Gradient Boxes — Inside",version:true},
-  {file:"inside copy_ 2.html",title:"Vivid Gradient Boxes — Inside (Updated)",version:true},
-  {file:"inside.html",title:"Vivid Gradient Boxes — Inside View",version:false},
-  {file:"inside2.html",title:"Immersive Colored Boxes",version:false},
-  {file:"installation-builder-bloom.html",title:"Bloom — Installation Builder",version:false},
-  {file:"intersection-commons.html",title:"Intersection Commons — Draw & Connect",version:false},
-  {file:"lasertemp.html",title:"Lasers, Lights, and Illusion",version:false},
-  {file:"led_tube_installation.html",title:"LED Tube Curtain Installation",version:false},
-  {file:"lights.html",title:"Flash Box",version:false},
-  {file:"lights2.html",title:"Flash Box (v2)",version:true},
-  {file:"living-commons (1).html",title:"Living Commons",version:true},
-  {file:"living-commons (2).html",title:"Living Commons",version:true},
-  {file:"living-commons-artwork.html",title:"Living Commons artwork",version:false},
-  {file:"living-commons.html",title:"Living Commons",version:false},
-  {file:"lve001.html",title:"Three.js — City Corridor",version:false},
-  {file:"lve002.html",title:"Three.js — Artwork Rewrite",version:false},
-  {file:"lve003.html",title:"One Chamber",version:false},
-  {file:"lve004.html",title:"One Open Thin-Wall Chamber",version:false},
-  {file:"lve005.html",title:"One Open Thin-Wall Chamber (v2)",version:true},
-  {file:"lve006.html",title:"One Open Thin-Wall Chamber (v3)",version:true},
-  {file:"lve007.html",title:"Three.js Corridor",version:false},
-  {file:"lve008.html",title:"Gradient Nested Boxes",version:false},
-  {file:"lve009.html",title:"Three.js Corridor (v2)",version:true},
-  {file:"minimal_tube.html",title:"One Tube",version:false},
-  {file:"mint_poc.html",title:"Mint PoC — Swarm Interaction",version:false},
-  {file:"miradas-tangentes.html",title:"Miradas Tangentes",version:false},
-  {file:"moon-dish.html",title:"Moon Dish",version:false},
-  {file:"mural.html",title:"Mural",version:false},
-  {file:"murmuration-exhibit.html",title:"Murmuration — Interactive Exhibit",version:false},
-  {file:"one_revolution.html",title:"One Revolution Capture",version:false},
-  {file:"one_tube.html",title:"One Tube — Beat Sync",version:false},
-  {file:"orchestrator.html",title:"8-Pillar Spatial Orchestrator",version:false},
-  {file:"panels.html",title:"Panels",version:false},
-  {file:"pentatonic-piano (1).html",title:"Pentatonic Piano",version:true},
-  {file:"pentatonic-piano.html",title:"Pentatonic Piano — Event-Triggered",version:false},
-  {file:"pick_up_sticks.html",title:"Pick Up Sticks",version:false},
-  {file:"pickupsticks.html",title:"Pickup Sticks 3D",version:false},
-  {file:"pink_cube copy.html",title:"Inside One Pink Box",version:true},
-  {file:"premural.html",title:"Pre-mural",version:false},
-  {file:"radial-gradient.html",title:"Radial Gradient",version:false},
-  {file:"reading-the-sky copy 2.html",title:"Reading the Sky",version:true},
-  {file:"reading-the-sky copy.html",title:"Reading the Sky",version:true},
-  {file:"reading-the-sky.html",title:"Reading the Sky",version:false},
-  {file:"reading-the-sky_and_agnostic copy.html",title:"Reading the Sky / Agnostic",version:true},
-  {file:"reading-the-sky_and_agnostic.html",title:"Reading the Sky / Agnostic — Synchronized",version:false},
-  {file:"rotating-cubes.html",title:"Rotating Cubes",version:false},
-  {file:"shared-ground (1).html",title:"Shared Ground",version:true},
-  {file:"shared-ground (2).html",title:"Shared Ground",version:true},
-  {file:"shared-ground (3).html",title:"Shared Ground",version:true},
-  {file:"shared-ground.html",title:"Shared Ground",version:false},
-  {file:"shared-ground__3_.html",title:"Shared Ground (v3 clean)",version:false},
-  {file:"shelves.html",title:"Shelves — WebGL",version:false},
-  {file:"shelves_min (1).html",title:"Sliders Proof (2D)",version:true},
-  {file:"shelves_min.html",title:"Sliders Proof (2D)",version:false},
-  {file:"shelves_webgl.html",title:"Shelves — WebGL (with fallback)",version:false},
-  {file:"single_mint_poc.html",title:"Single Mint — Evolving Over Time",version:false},
-  {file:"sketch-p5.html",title:"sketch-p5",version:false},
-  {file:"sketch-three.html",title:"Emergent DNA — Three.js PoC",version:false},
-  {file:"smear.html",title:"Smear",version:false},
-  {file:"snowfall.html",title:"Snowfall",version:false},
-  {file:"squirter.html",title:"Belt / Wheel / Groove",version:false},
-  {file:"string-art copy 2.html",title:"String Art — WebGL",version:true},
-  {file:"string-art copy.html",title:"String Art — WebGL",version:true},
-  {file:"string-art-1.html",title:"String Art — WebGL",version:false},
-  {file:"string-art-animated copy.html",title:"String Art — Animated",version:true},
-  {file:"string-art-animated.html",title:"String Art — Animated Thread",version:false},
-  {file:"string-art-circle.html",title:"String Art — Circle",version:false},
-  {file:"string-art.html",title:"String Art",version:false},
-  {file:"surrender 7.html",title:"Emergent DNA Seed 1 (surrender 7)",version:false},
-  {file:"surrender-machine-madrid-v2.html",title:"Surrender Machine — Madrid v2",version:true},
-  {file:"surrender-machine-madrid.html",title:"Surrender Machine — Madrid",version:false},
-  {file:"surrender-machine.html",title:"Surrender Machine",version:false},
-  {file:"surrender-machines.html",title:"Surrender Machines",version:false},
-  {file:"technical-drawing-fxhash.html",title:"Technical Drawing — fxhash",version:false},
-  {file:"technical-drawing-generator-english.html",title:"Technical Drawing Generator (English)",version:false},
-  {file:"technical-drawing-generator.html",title:"Technical Drawing Generator",version:false},
-  {file:"technical-drawing-with-cubes.html",title:"Technical Drawing + Cubes",version:false},
-  {file:"technical-drawing-with-elevation.html",title:"Technical Drawing + Elevation",version:false},
-  {file:"technical-drawing.html",title:"Technical Drawing",version:false},
-  {file:"terrain.html",title:"Terrain",version:false},
-  {file:"test.html",title:"Text Cylinder (test)",version:true},
-  {file:"test2.html",title:"Text Cylinder (test2)",version:true},
-  {file:"test4.html",title:"Text Cylinder (test4)",version:true},
-  {file:"test_bridge.html",title:"Emergent DNA — Bridge Test",version:true},
-  {file:"testv7.html",title:"Text Cylinder (v7)",version:true},
-  {file:"testv8.html",title:"Text Cylinder (v8)",version:true},
-  {file:"testv9.html",title:"Text Cylinder (v9)",version:true},
-  {file:"text-cylinder.html",title:"Text Cylinder — Volumetric",version:false},
-  {file:"text11.html",title:"Text Cylinder (v11)",version:true},
-  {file:"the_commons.html",title:"The Commons",version:false},
-  {file:"together_we_build.html",title:"Together We Build",version:false},
-  {file:"traveling-landscape.html",title:"Traveling Landscape",version:false},
-  {file:"traveling_landscape.html",title:"Traveling Landscape (alt)",version:false},
-  {file:"traveling_landscape_page.html",title:"Traveling Landscape — page",version:false},
-  {file:"umbrellas.html",title:"Floating Umbrellas",version:false},
-  {file:"un-grounded.html",title:"un:grounded",version:false},
-  {file:"un-grounded_transient.html",title:"un:grounded — Transient Labs",version:false},
-  {file:"untitled copy.html",title:"Text Cylinder (Texture Wrapped)",version:true},
-  {file:"vibe001.html",title:"VIBE — Single Mint PoC",version:false},
-  {file:"vibe1.html",title:"VIBE v1",version:true},
-  {file:"vibe2.html",title:"VIBE v2",version:true},
-  {file:"weaving-commons.html",title:"The Weaving Commons",version:false},
+const SERIES = [
+  {
+    name: 'Bloom',
+    installation: true,
+    files: [
+      {name:'bloom-four-walls.html', title:'Bloom / Four Walls', version:false},
+      {name:'bloom-release.html', title:'Bloom / Release', version:false},
+      {name:'bloom-garden.html', title:'Bloom Garden', version:false},
+      {name:'bloom.html', title:'Bloom — radial gradient', version:false},
+      {name:'radial-gradient.html', title:'Radial Gradient', version:false},
+      {name:'installation-builder-bloom.html', title:'Installation Builder', version:false},
+    ]
+  },
+  {
+    name: 'Surrender Machines',
+    installation: true,
+    files: [
+      {name:'surrender-machines.html', title:'Surrender Machines', version:false},
+      {name:'surrender-machine.html', title:'Surrender Machine', version:false},
+      {name:'surrender-machine-madrid.html', title:'Surrender Machine — Madrid', version:false},
+      {name:'surrender-machine-madrid-v2.html', title:'Surrender Machine — Madrid v2', version:true},
+      {name:'surrender 7.html', title:'Surrender 7', version:false},
+    ]
+  },
+  {
+    name: 'Technical Drawing',
+    installation: true,
+    files: [
+      {name:'technical-drawing.html', title:'Technical Drawing', version:false},
+      {name:'technical-drawing-fxhash.html', title:'Technical Drawing — fxhash', version:false},
+      {name:'technical-drawing-generator.html', title:'Technical Drawing Generator', version:false},
+      {name:'technical-drawing-generator-english.html', title:'Technical Drawing Generator (English)', version:false},
+      {name:'technical-drawing-with-cubes.html', title:'Technical Drawing + Cubes', version:false},
+      {name:'technical-drawing-with-elevation.html', title:'Technical Drawing + Elevation', version:false},
+    ]
+  },
+  {
+    name: 'Emergent DNA',
+    installation: false,
+    files: [
+      {name:'emergentdna-000-clean.html', title:'EmergentDNA 000 (clean)', version:false},
+      {name:'emergentdna-000-v2.html', title:'EmergentDNA 000 v2', version:false},
+      {name:'emergentdna-001.html', title:'EmergentDNA 001', version:false},
+      {name:'emergent-studio-v2.html', title:'Emergent DNA Studio', version:false},
+      {name:'emergent_geometry.html', title:'Emergent Geometry', version:false},
+      {name:'emergent - Objkt.html', title:'Emergent — Objkt', version:false},
+      {name:'920_emergentDNA.html', title:'Emergent Machines (920)', version:false},
+      {name:'919 (landscape) w-emergentDNA.html', title:'919 Landscape w/ Emergent DNA', version:false},
+      {name:'919.html', title:'919', version:false},
+      {name:'919_landscape.html', title:'919 Landscape', version:true},
+      {name:'gloabal_age.html', title:'Emergent DNA — Discs → Rectangles', version:false},
+      {name:'test_bridge.html', title:'Emergent DNA — Bridge Test', version:true},
+      {name:'915_manifold_test.html', title:'Emergent DNA — Manifold Test', version:true},
+    ]
+  },
+  {
+    name: 'Living Commons',
+    installation: true,
+    files: [
+      {name:'living-commons.html', title:'Living Commons', version:false},
+      {name:'living-commons-artwork.html', title:'Living Commons artwork', version:false},
+      {name:'shared-ground.html', title:'Shared Ground', version:false},
+      {name:'shared-ground__3_.html', title:'Shared Ground (v3 clean)', version:false},
+      {name:'the_commons.html', title:'The Commons', version:false},
+      {name:'weaving-commons.html', title:'The Weaving Commons', version:false},
+      {name:'collective-architecture.html', title:'Collective Architecture', version:false},
+      {name:'intersection-commons.html', title:'Intersection Commons', version:false},
+      {name:'together_we_build.html', title:'Together We Build', version:false},
+    ]
+  },
+  {
+    name: 'Traveling Landscape',
+    installation: true,
+    files: [
+      {name:'traveling-landscape.html', title:'Traveling Landscape', version:false},
+      {name:'traveling_landscape.html', title:'Traveling Landscape (alt)', version:true},
+      {name:'01-traveling-landscape-working.html', title:'Traveling Landscape (working)', version:true},
+      {name:'02-traveling-landscape-live.html', title:'Traveling Landscape (live)', version:true},
+      {name:'traveling_landscape_page.html', title:'Traveling Landscape — page', version:true},
+    ]
+  },
+  {
+    name: 'Moon Dish',
+    installation: false,
+    files: [
+      {name:'moon-dish.html', title:'Moon Dish', version:false},
+      {name:'disks.html', title:'Emergent Discs', version:false},
+    ]
+  },
+  {
+    name: 'Spatial Orchestrator',
+    installation: false,
+    files: [
+      {name:'orchestrator.html', title:'8-Pillar Spatial Orchestrator', version:false},
+      {name:'bloom-four-walls.html', title:'Bloom / Four Walls (orchestrator)', version:false},
+    ]
+  },
+  {
+    name: 'Convergence Era',
+    installation: false,
+    files: [
+      {name:'convergence-era-v3.html', title:'Convergence Era v3', version:false},
+    ]
+  },
+  {
+    name: 'Walking Figure',
+    installation: false,
+    files: [
+      {name:'bvh_viewer_08_01.html', title:'BVH Viewer — 08_01', version:false},
+      {name:'bvh_viewer_07_01.html', title:'BVH Viewer — 07_01', version:false},
+      {name:'infinite-walk.html', title:'Infinite Walk', version:false},
+      {name:'figure.html', title:'Figure', version:false},
+      {name:'figure_audio_mobile_simple.html', title:'Figure + Audio (mobile)', version:false},
+      {name:'funk_boy.html', title:'Funk Boy', version:false},
+      {name:'one_revolution.html', title:'One Revolution', version:false},
+    ]
+  },
+  {
+    name: 'Three.js / LVE',
+    installation: false,
+    files: [
+      {name:'lve001.html', title:'Three.js — City Corridor', version:false},
+      {name:'lve002.html', title:'Three.js — Artwork Rewrite', version:false},
+      {name:'lve003.html', title:'One Chamber', version:false},
+      {name:'lve004.html', title:'One Open Chamber', version:false},
+      {name:'lve005.html', title:'One Open Chamber v2', version:true},
+      {name:'lve006.html', title:'One Open Chamber v3', version:true},
+      {name:'lve007.html', title:'Three.js Corridor', version:false},
+      {name:'lve008.html', title:'Gradient Nested Boxes', version:false},
+      {name:'lve009.html', title:'Three.js Corridor v2', version:true},
+      {name:'ai_studio_code (15).html', title:'3JS Shader Port', version:true},
+      {name:'ai_studio_code (16).html', title:'3JS Port — Forward', version:true},
+      {name:'ai_studio_code (17).html', title:'3JS Smooth Forward', version:true},
+      {name:'ai_studio_code (20).html', title:'3JS Forward — Final', version:true},
+      {name:'boxes.html', title:'Three.js Boxes', version:false},
+      {name:'gradient_boxes.html', title:'Gradient Boxes — Three.js', version:false},
+      {name:'inside.html', title:'Vivid Gradient Boxes — Inside', version:false},
+      {name:'inside2.html', title:'Immersive Colored Boxes', version:false},
+    ]
+  },
+  {
+    name: 'Numbered Pieces',
+    installation: false,
+    files: [
+      {name:'699 (float (iridescent)).html', title:'699 (float, iridescent)', version:false},
+      {name:'710_around.html', title:'710 (around)', version:false},
+      {name:'738 (float).html', title:'738 (float)', version:false},
+      {name:'821 (around) #U2014 1536 #U00d7 864.html', title:'821 (around) 1536×864', version:false},
+      {name:'827 (centered) #10.html', title:'827 (centered) #10', version:false},
+      {name:'838_artwork.html', title:'838 artwork', version:false},
+      {name:'899(grounded) 1248 x 1456.html', title:'899 (grounded) 1248×1456', version:false},
+      {name:'904_forward_exhibition.html', title:'904 (forward) Exhibition', version:false},
+      {name:'919_surrender_fixed.html', title:'919 Surrender Fixed', version:true},
+      {name:'922_centered.html', title:'922 (centered)', version:false},
+      {name:'923_centered.html', title:'923 (centered) Breathing Layers', version:false},
+    ]
+  },
+  {
+    name: 'String Art',
+    installation: false,
+    files: [
+      {name:'string-art.html', title:'String Art', version:false},
+      {name:'string-art-1.html', title:'String Art 1', version:false},
+      {name:'string-art-animated.html', title:'String Art — Animated Thread', version:false},
+      {name:'string-art-circle.html', title:'String Art — Circle', version:false},
+    ]
+  },
+  {
+    name: 'Word Art / Text',
+    installation: false,
+    files: [
+      {name:'text-cylinder.html', title:'Text Cylinder — Volumetric', version:false},
+      {name:'Untitled.html', title:'3D Text Effect', version:false},
+      {name:'Untitled3.html', title:'Text Cylinder Variant', version:false},
+      {name:'3d_print.html', title:'Text to 3D', version:false},
+      {name:'testv7.html', title:'Text Cylinder v7', version:true},
+      {name:'testv8.html', title:'Text Cylinder v8', version:true},
+      {name:'testv9.html', title:'Text Cylinder v9', version:true},
+      {name:'text11.html', title:'Text Cylinder v11', version:true},
+    ]
+  },
+  {
+    name: 'Cubes',
+    installation: false,
+    files: [
+      {name:'breathing-cubes.html', title:'Breathing Cubes', version:false},
+      {name:'cube.html', title:'Cube', version:false},
+      {name:'rotating-cubes.html', title:'Rotating Cubes', version:false},
+      {name:'cube2.html', title:'Cube 2', version:true},
+      {name:'cube4.html', title:'Cube 4', version:true},
+      {name:'cube6.html', title:'Cube 6', version:true},
+      {name:'ShelvesAndCubes_TL.html', title:'Shelves & Cubes — Transient Labs', version:false},
+    ]
+  },
+  {
+    name: 'Shelves',
+    installation: false,
+    files: [
+      {name:'shelves.html', title:'Shelves — WebGL', version:false},
+      {name:'shelves_min.html', title:'Sliders Proof (2D)', version:false},
+      {name:'shelves_webgl.html', title:'Shelves — WebGL (with fallback)', version:false},
+    ]
+  },
+  {
+    name: 'Reading the Sky',
+    installation: false,
+    files: [
+      {name:'reading-the-sky.html', title:'Reading the Sky', version:false},
+      {name:'reading-the-sky_and_agnostic.html', title:'Reading the Sky / Agnostic — Synchronized', version:false},
+      {name:'bubbles.html', title:'Reading the Sky — Bubbles', version:false},
+    ]
+  },
+  {
+    name: 'Audioscape',
+    installation: false,
+    files: [
+      {name:'audioscape001.html', title:'Soundscape + p5.js', version:false},
+      {name:'pentatonic-piano.html', title:'Pentatonic Piano', version:false},
+      {name:'one_tube.html', title:'One Tube — Beat Sync', version:false},
+    ]
+  },
+  {
+    name: 'Miradas Tangentes',
+    installation: false,
+    files: [
+      {name:'miradas-tangentes.html', title:'Miradas Tangentes', version:false},
+      {name:'exhibition_autosync.html', title:'Exhibition Auto-Sync', version:false},
+    ]
+  },
+  {
+    name: 'Gradients & Color',
+    installation: false,
+    files: [
+      {name:'gradient-boxes.html', title:'Gradient Box Column', version:false},
+      {name:'concept-1-color-field.html', title:'Concept 1: Color Field — Corporate Lobby', version:false},
+      {name:'concept-2-kinetic-language.html', title:'Concept 2: Kinetic Language — Hospital', version:false},
+      {name:'concept-3-translucent-layers.html', title:'Concept 3: Translucent Layers — Hotel', version:false},
+      {name:'smear.html', title:'Smear', version:false},
+      {name:'cells.html', title:'Emergent Discs', version:false},
+    ]
+  },
+  {
+    name: 'Mint / NFT',
+    installation: false,
+    files: [
+      {name:'mint_poc.html', title:'Mint PoC — Swarm Interaction', version:false},
+      {name:'single_mint_poc.html', title:'Single Mint — Evolving Over Time', version:false},
+      {name:'vibe001.html', title:'VIBE — Single Mint PoC', version:false},
+      {name:'vibe1.html', title:'VIBE v1', version:true},
+      {name:'vibe2.html', title:'VIBE v2', version:true},
+    ]
+  },
+  {
+    name: 'Binary Partitions',
+    installation: false,
+    files: [
+      {name:'binary-partitions-1765814423174.html', title:'Binary Partitions', version:false},
+      {name:'binary-partitions-1765817739662.html', title:'Binary Partitions v2', version:true},
+    ]
+  },
+  {
+    name: 'Miscellaneous',
+    installation: false,
+    files: [
+      {name:'flower.html', title:'Generative Flower', version:false},
+      {name:'snowfall.html', title:'Snowfall', version:false},
+      {name:'terrain.html', title:'Terrain', version:false},
+      {name:'fluid-dynamics.html', title:'Fluid Dynamics — 3D Points', version:false},
+      {name:'fluid-lines.html', title:'Fluid Lines', version:false},
+      {name:'mural.html', title:'Mural', version:false},
+      {name:'premural.html', title:'Pre-mural', version:false},
+      {name:'murmuration-exhibit.html', title:'Murmuration — Interactive Exhibit', version:false},
+      {name:'umbrellas.html', title:'Floating Umbrellas', version:false},
+      {name:'five.html', title:'Multiple Umbrellas', version:false},
+      {name:'fivegame.html', title:'Umbrella Catch Game', version:false},
+      {name:'squirter.html', title:'Belt / Wheel / Groove', version:false},
+      {name:'pick_up_sticks.html', title:'Pick Up Sticks', version:false},
+      {name:'pickupsticks.html', title:'Pickup Sticks 3D', version:false},
+      {name:'box.html', title:'Box', version:false},
+      {name:'box_of_ocean.html', title:'Grid Cubes + Sliders', version:false},
+      {name:'panels.html', title:'Panels', version:false},
+      {name:'un-grounded.html', title:'un:grounded', version:false},
+      {name:'un-grounded_transient.html', title:'un:grounded — Transient Labs', version:false},
+      {name:'endgame.html', title:'Room Projectors', version:false},
+      {name:'garden.html', title:'Garden', version:false},
+      {name:'minimal_tube.html', title:'One Tube', version:false},
+      {name:'cylinder_lights.html', title:'10 Cylinders with Lights', version:false},
+      {name:'cylinder_lights_enhanced.html', title:'10 Cylinders — Enhanced', version:false},
+      {name:'centered.html', title:'Centered — screen agnostic', version:false},
+      {name:'led_tube_installation.html', title:'LED Tube Curtain Installation', version:false},
+      {name:'sketch-p5.html', title:'sketch-p5', version:false},
+      {name:'furn.html', title:'Furniture', version:false},
+      {name:'furn2.html', title:'Product', version:false},
+      {name:'lights.html', title:'Flash Box', version:false},
+      {name:'forever terrain.html', title:'Forever Terrain', version:false},
+      {name:'lasertemp.html', title:'Lasers, Lights, and Illusion', version:false},
+    ]
+  },
 ];
 
-// ── RENDER ───────────────────────────────────────────────────────────────
 let currentFilter = 'all';
 let currentSearch = '';
-let sortCol = 'title';
-let sortDir = 1;
 
-function getTag(file) {
-  if (INSTALLATIONS.has(file)) return 'installation';
-  if (SERIES.has(file)) return 'series';
-  return '';
+function build() {
+  const container = document.getElementById('series-list');
+  container.innerHTML = '';
+
+  let totalFiles = 0;
+  let visibleFiles = 0;
+  let visibleSeries = 0;
+
+  SERIES.forEach((s, si) => {
+    const block = document.createElement('div');
+    block.className = 'series-block';
+    block.id = 'series-' + si;
+
+    const q = currentSearch.toLowerCase();
+
+    let filesHTML = '';
+    let fileCount = 0;
+    let visibleCount = 0;
+
+    s.files.forEach(f => {
+      totalFiles++;
+      let show = true;
+      if (currentFilter === 'works' && f.version) show = false;
+      if (currentFilter === 'versions' && !f.version) show = false;
+      if (q && !f.title.toLowerCase().includes(q) && !f.name.toLowerCase().includes(q)) show = false;
+
+      if (show) { visibleCount++; visibleFiles++; }
+
+      filesHTML += `<div class="file-row${f.version ? ' is-version' : ''}${!show ? ' hidden' : ''}" onclick="if(event.target.tagName!=='A') window.open('${f.name}','_blank')">
+        <div class="file-title"><a href="${f.name}" target="_blank">${f.title}</a></div>
+        <div class="file-name">${f.name}</div>
+        <div class="file-action"><a class="open-link" href="${f.name}" target="_blank">Open ↗</a></div>
+      </div>`;
+      fileCount++;
+    });
+
+    const allHidden = visibleCount === 0;
+    if (allHidden) block.classList.add('all-hidden');
+    else visibleSeries++;
+
+    block.innerHTML = `
+      <div class="series-header" onclick="toggle(${si})">
+        <span class="series-toggle">▶</span>
+        <span class="series-name">${s.name}</span>
+        ${s.installation ? '<span class="series-badge">installation</span>' : ''}
+        <span class="series-count">${visibleCount} of ${fileCount}</span>
+      </div>
+      <div class="series-files">${filesHTML}</div>
+    `;
+
+    container.appendChild(block);
+  });
+
+  document.getElementById('stat-series').textContent = visibleSeries;
+  document.getElementById('stat-files').textContent = visibleFiles;
+  document.getElementById('footer-count').textContent = `${SERIES.length} series · ${totalFiles} total files`;
+
+  // Auto-expand if searching
+  if (currentSearch) expandAll();
 }
 
-function buildRow(s) {
-  const tag = getTag(s.file);
-  const tr = document.createElement('tr');
-  if (s.version) tr.classList.add('is-version');
-
-  let badge = '';
-  if (s.version) badge = '<span class="badge badge-version">version</span>';
-  else if (tag === 'installation') badge = '<span class="badge badge-installation">installation</span>';
-  else if (tag === 'series') badge = '<span class="badge badge-series">series</span>';
-
-  tr.innerHTML = `
-    <td class="td-title"><a href="${s.file}" target="_blank">${s.title || s.file}</a></td>
-    <td class="td-file">${s.file}</td>
-    <td class="td-tag">${badge}</td>
-    <td class="td-open"><a class="open-link" href="${s.file}" target="_blank">Open ↗</a></td>
-  `;
-  tr.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'A') window.open(s.file, '_blank');
-  });
-  tr._data = s;
-  return tr;
+function toggle(si) {
+  const block = document.getElementById('series-' + si);
+  block.classList.toggle('open');
 }
 
-function render() {
-  const tbody = document.getElementById('tbody');
-  tbody.innerHTML = '';
+function expandAll() {
+  document.querySelectorAll('.series-block:not(.all-hidden)').forEach(b => b.classList.add('open'));
+}
 
-  const q = currentSearch.toLowerCase();
-
-  const sorted = [...SKETCHES].sort((a, b) => {
-    const av = (sortCol === 'title' ? a.title : a.file).toLowerCase();
-    const bv = (sortCol === 'title' ? b.title : b.file).toLowerCase();
-    return av.localeCompare(bv) * sortDir;
-  });
-
-  let visible = 0, versionCount = 0;
-  const rows = [];
-
-  for (const s of sorted) {
-    const tag = getTag(s.file);
-    let show = true;
-
-    if (currentFilter === 'works' && s.version) show = false;
-    if (currentFilter === 'versions' && !s.version) show = false;
-    if (q && !s.title.toLowerCase().includes(q) && !s.file.toLowerCase().includes(q)) show = false;
-
-    const tr = buildRow(s);
-    if (!show) tr.classList.add('hidden');
-    else { visible++; if (s.version) versionCount++; }
-    rows.push(tr);
-  }
-
-  rows.forEach(r => tbody.appendChild(r));
-
-  document.getElementById('stat-total').textContent = SKETCHES.length;
-  document.getElementById('stat-visible').textContent = visible;
-  document.getElementById('stat-versions').textContent = SKETCHES.filter(s => s.version).length - (currentFilter === 'versions' ? 0 : versionCount);
-  document.getElementById('footer-count').textContent = `${SKETCHES.length} sketches`;
-
-  const noneMsg = document.getElementById('none-msg');
-  noneMsg.style.display = visible === 0 ? 'block' : 'none';
-
-  // Update sort headers
-  ['title','file'].forEach(col => {
-    const th = document.getElementById('th-' + col);
-    th.classList.toggle('sorted', sortCol === col);
-    th.classList.toggle('sorted-asc', sortCol === col && sortDir === 1);
-    th.classList.toggle('sorted-desc', sortCol === col && sortDir === -1);
-  });
+function collapseAll() {
+  document.querySelectorAll('.series-block').forEach(b => b.classList.remove('open'));
 }
 
 function setFilter(f, btn) {
   currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ctrl-btn').forEach(b => {
+    if (['All','Works only','Versions'].some(t => b.textContent === t)) b.classList.remove('active');
+  });
   btn.classList.add('active');
-  render();
+  build();
 }
 
 function doSearch(v) {
   currentSearch = v;
-  render();
+  build();
 }
 
-function clearSearch() {
-  document.getElementById('search').value = '';
-  currentSearch = '';
-  render();
-}
-
-function sortBy(col) {
-  if (sortCol === col) sortDir *= -1;
-  else { sortCol = col; sortDir = 1; }
-  render();
-}
-
-render();
+build();
 </script>
 </body>
 </html>
