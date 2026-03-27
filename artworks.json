@@ -7,9 +7,12 @@
       "tier": "installation",
       "path": "installations/living-commons.html",
       "homepage": true,
-      "date": "2026-01-01",
+      "date": "2026-01-15",
       "requiresNetwork": false,
-      "tech": ["p5.js", "inlined"]
+      "tech": [
+        "p5.js",
+        "inlined"
+      ]
     },
     {
       "slug": "surrender-machines",
@@ -17,9 +20,13 @@
       "tier": "installation",
       "path": "installations/surrender-machines.html",
       "homepage": true,
-      "date": "2026-01-01",
+      "date": "2025-11-01",
       "requiresNetwork": false,
-      "tech": ["p5.js", "Web Audio", "inlined"]
+      "tech": [
+        "p5.js",
+        "Web Audio",
+        "inlined"
+      ]
     },
     {
       "slug": "bloom-four-walls",
@@ -27,9 +34,13 @@
       "tier": "installation",
       "path": "installations/bloom-four-walls.html",
       "homepage": true,
-      "date": "2026-01-01",
+      "date": "2026-02-01",
       "requiresNetwork": false,
-      "tech": ["Three.js", "WebGL", "inlined"]
+      "tech": [
+        "Three.js",
+        "WebGL",
+        "inlined"
+      ]
     },
     {
       "slug": "traveling-landscape",
@@ -39,7 +50,11 @@
       "homepage": true,
       "date": "2026-01-01",
       "requiresNetwork": false,
-      "tech": ["p5.js", "WEBGL", "inlined"]
+      "tech": [
+        "p5.js",
+        "WEBGL",
+        "inlined"
+      ]
     },
     {
       "slug": "shared-ground",
@@ -47,9 +62,13 @@
       "tier": "installation",
       "path": "installations/shared-ground.html",
       "homepage": true,
-      "date": "2026-01-01",
+      "date": "2026-03-01",
       "requiresNetwork": false,
-      "tech": ["Canvas 2D", "Web Audio", "inlined"]
+      "tech": [
+        "Canvas 2D",
+        "Web Audio",
+        "inlined"
+      ]
     },
     {
       "slug": "technical-drawing",
@@ -57,9 +76,12 @@
       "tier": "installation",
       "path": "installations/technical-drawing.html",
       "homepage": true,
-      "date": "2026-01-01",
+      "date": "2025-12-01",
       "requiresNetwork": false,
-      "tech": ["p5.js", "inlined"]
+      "tech": [
+        "p5.js",
+        "inlined"
+      ]
     },
     {
       "slug": "bloom-release",
@@ -67,9 +89,12 @@
       "tier": "installation",
       "path": "installations/bloom-release.html",
       "homepage": false,
-      "date": "2026-01-01",
+      "date": "2026-02-15",
       "requiresNetwork": false,
-      "tech": ["Web Audio", "inlined"]
+      "tech": [
+        "Web Audio",
+        "inlined"
+      ]
     },
     {
       "slug": "spatial-orchestrator",
@@ -80,8 +105,12 @@
       "piecePage": "piece/orchestrator-1/index.html",
       "date": "2026-03-26",
       "requiresNetwork": false,
-      "tech": ["Three.js", "WebGL", "inlined"],
-      "note": "PoC — promote to installations/ when complete"
+      "tech": [
+        "Three.js",
+        "WebGL",
+        "inlined"
+      ],
+      "note": "PoC \u2014 promote to installations/ when complete"
     },
     {
       "slug": "moon-dish",
@@ -92,8 +121,13 @@
       "piecePage": "piece/moon-dish-1/index.html",
       "date": "2026-03-26",
       "requiresNetwork": false,
-      "tech": ["Three.js", "r128", "WebGL", "inlined"],
-      "note": "From moon_dish_v5 — self-contained (Three inlined); source had cdnjs loader removed"
+      "tech": [
+        "Three.js",
+        "r128",
+        "WebGL",
+        "inlined"
+      ],
+      "note": "From moon_dish_v5 \u2014 self-contained (Three inlined); source had cdnjs loader removed"
     }
   ]
 }
