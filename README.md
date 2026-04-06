@@ -13,11 +13,13 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 | `installations/` | Promoted work — pieces linked from the homepage |
 | `sketches/` | Full archive — HTML sketches by series, plus optional folders like `tezos-early-works/` (chronicle + images) |
 | `sketches/index.html` | **Sketches UI** — series list, search, filters (**single source of truth** for sketch filenames) |
-| `artworks.json` | Manifest — installations + sketch series/file lists (**run sync script** for the `sketches` section; see below) |
+| `data/catalog.json` | **Single manifest (canonical)** — installations tier, sketch series order, `works[]` with Dublin Core + Linked Art, soundscapes summary, **`artifacts`** (repo paths for HTML / local JS / images). See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
+| `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
+| `docs/archive-chronicle.md` | How the sketch index and narrative archives relate to the manifest. |
 
 Site nav: **Installations · Sketches · Soundscapes · Bio / CV · Contact**
 
-**Archive chronicle (how this fits together):** see **[docs/archive-chronicle.md](docs/archive-chronicle.md)**.
+**Organization profile** (GitHub): **[walhimer-studio/.github](https://github.com/walhimer-studio/.github)** — points here for archive docs.
 
 ---
 
@@ -27,23 +29,21 @@ Site nav: **Installations · Sketches · Soundscapes · Bio / CV · Contact**
 
 1. Add self-contained HTML under `sketches/`.
 2. Register it in **`sketches/index.html`** → **`SERIES`** array (correct series and file row).
-3. Refresh the manifest:  
-   `python3 _scripts/sync_artworks_json.py`  
-   then commit **`artworks.json`** (and push). The script **only** rebuilds the **`sketches`** section; it does **not** change **`installations`**.
+3. Refresh the catalog: `python3 _scripts/refresh_catalog.py` (or `python3 _scripts/sync_artworks_json.py`), then commit **`data/catalog.json`** and push.
 4. Push the repo.
 
 ### Promote a sketch to installation
 
 1. Copy or place the file under `installations/` as needed.
 2. Add cards in `index.html` and `installations/index.html`.
-3. Edit **`artworks.json`** manually — **`installations`** array (slug, path, dates, etc.).
+3. Edit **`data/catalog.json`** — top-level **`installations`** array (slug, path, dates, tech, etc.), then run **`python3 _scripts/refresh_catalog.py`** so **`works`** and artifacts stay in sync.
 4. Push.
 
 ### Narrative archive (e.g. Tezos / Objkt phase)
 
 1. Add a folder under `sketches/` (e.g. `sketches/your-series/index.html` + `assets/`).
 2. Add one entry to **`SERIES`** in `sketches/index.html` so it appears in search and the archive list.
-3. Run **`sync_artworks_json.py`**, commit, push.
+3. Run **`refresh_catalog.py`** (or **`sync_artworks_json.py`**), commit **`data/catalog.json`**, push.
 
 ### Push
 
@@ -65,7 +65,17 @@ Published files should work offline — no required external CDNs or network for
 
 ## Walhimer Studio (organization)
 
-Studio protocols, tools, and related repos live under **[github.com/walhimer-studio](https://github.com/walhimer-studio)**. The **site** repo is this one; the org profile can link to **[docs/archive-chronicle.md](docs/archive-chronicle.md)** for the archive story.
+Studio protocols, tools, and related repos live under **[github.com/walhimer-studio](https://github.com/walhimer-studio)**. The org profile README summarizes the archive and links to **`docs/unified-catalog.md`** and **`docs/archive-chronicle.md`**.
+
+---
+
+## Checklist (maintainers)
+
+1. After changing **`SERIES`** in `sketches/index.html` or **`installations`** in `data/catalog.json`, run **`python3 _scripts/refresh_catalog.py`** and commit **`data/catalog.json`**.
+2. Push **`walhimer.github.io`** so GitHub Pages and the public site stay in sync.
+3. If you edit the org profile, push **`walhimer-studio/.github`** separately (another clone/repo).
+
+Optional later: add marketplace or contract IDs under **`dublin_core.relation`** (or extra fields) so platform links are preserved in *your* manifest, not only on third-party sites.
 
 ---
 
