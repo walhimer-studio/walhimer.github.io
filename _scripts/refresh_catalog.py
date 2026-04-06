@@ -3,11 +3,11 @@
 """
 Single manifest: data/catalog.json
 
-- Top-level `installations` is the homepage tier (edit here or via merged works).
-- `sketches_emit_order` tracks SERIES from sketches/index.html.
-- `works` is the full list (Dublin Core, Linked Art, site, artifacts).
+- Canonical persisted data: `works[]` (Dublin Core, Linked Art, site, artifacts).
+- Sketch series order and file lists come from `sketches/index.html` (const SERIES) on each run.
+- Installation-tier HTML is discovered from `works[]` plus any `installations/*.html` on disk.
 
-Run after changing sketches/index.html SERIES or installations:
+Run after changing sketches/index.html SERIES or adding installation HTML:
 
   python3 _scripts/refresh_catalog.py
 
@@ -31,8 +31,8 @@ from catalog_lib import (
     assign_catalog_numbers,
     attach_artifacts_to_works,
     build_works,
-    extract_installations_from_works,
     merge_catalog_works,
+    merge_installation_sources,
     parse_series_from_index,
     soundscapes_summary,
 )
@@ -53,8 +53,6 @@ def load_or_bootstrap_catalog(from_artworks: bool) -> dict:
             "updated": date.today().isoformat(),
             "profile": "Walhimer Studio unified catalog. Canonical rows are works[].",
             "canonical_base": CANONICAL,
-            "installations": installations,
-            "sketches_emit_order": sketch_series,
             "works": works,
         }
 
@@ -70,30 +68,22 @@ def load_or_bootstrap_catalog(from_artworks: bool) -> dict:
 def refresh_catalog(from_artworks: bool = False) -> None:
     catalog = load_or_bootstrap_catalog(from_artworks)
     catalog.pop("soundscapes", None)
+    catalog.pop("installations", None)
+    catalog.pop("sketches_emit_order", None)
 
-    if not from_artworks and INDEX.exists():
+    sketch_series: list = []
+    if INDEX.exists():
         sketch_series = parse_series_from_index(INDEX.read_text(encoding="utf-8"))
-    else:
-        sketch_series = catalog.get("sketches_emit_order") or []
-
-    catalog["sketches_emit_order"] = sketch_series
+    if not sketch_series and LEGACY_ARTWORKS.exists():
+        legacy = json.loads(LEGACY_ARTWORKS.read_text(encoding="utf-8"))
+        sketch_series = legacy.get("sketches") or []
 
     works_old = catalog.get("works") or []
 
-    inst = catalog.get("installations")
-    if not inst:
-        inst = extract_installations_from_works(works_old)
-        if not inst and LEGACY_ARTWORKS.exists():
-            legacy = json.loads(LEGACY_ARTWORKS.read_text(encoding="utf-8"))
-            inst = legacy.get("installations") or []
-
-    if not inst:
-        raise SystemExit(
-            "No installations found. Add top-level \"installations\" in catalog.json "
-            "or run once with --from-artworks."
-        )
-
-    catalog["installations"] = inst
+    inst = merge_installation_sources(works_old, ROOT)
+    if not inst and from_artworks and LEGACY_ARTWORKS.exists():
+        legacy = json.loads(LEGACY_ARTWORKS.read_text(encoding="utf-8"))
+        inst = legacy.get("installations") or []
 
     works_new = build_works(inst, sketch_series, catalog.get("canonical_base", CANONICAL))
     catalog["works"] = merge_catalog_works(works_old, works_new)
@@ -108,7 +98,9 @@ def refresh_catalog(from_artworks: bool = False) -> None:
     catalog["version"] = max(int(catalog.get("version") or 1), 2)
     catalog["profile"] = (
         "Walhimer Studio unified catalog. Canonical rows are works[]. "
-        "installations and sketches_emit_order are editing views; soundscape list is derived from works, not stored."
+        "Sketch series order comes from sketches/index.html on refresh; "
+        "installation HTML is merged from works[] and installations/*.html. "
+        "Soundscape list is derived from works, not stored separately."
     )
 
     # Stable key order for humans (works[] is large - keep it last).
@@ -117,8 +109,6 @@ def refresh_catalog(from_artworks: bool = False) -> None:
         "updated": catalog["updated"],
         "profile": catalog["profile"],
         "canonical_base": catalog.get("canonical_base", CANONICAL),
-        "installations": catalog["installations"],
-        "sketches_emit_order": catalog["sketches_emit_order"],
         "works": catalog["works"],
     }
 
@@ -129,7 +119,7 @@ def refresh_catalog(from_artworks: bool = False) -> None:
     )
     print(
         f"Wrote {CATALOG.relative_to(ROOT)}: "
-        f"{len(catalog['installations'])} installations, "
+        f"{len(inst)} installation paths, "
         f"{len(sketch_series)} sketch series, "
         f"{len(catalog['works'])} works "
         f"(derived soundscape rows: {len(ss['entries'])}, not stored in JSON)"

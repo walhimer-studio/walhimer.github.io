@@ -16,7 +16,7 @@ There are **three** related ideas:
 
 ### 2. `data/catalog.json` (single manifest)
 
-- **Role:** The **only** JSON manifest: canonical **`works[]`** (Dublin Core + Linked Art + **`artifacts`**). **`installations`** and sketch series order are **views** kept in sync by refresh; soundscape pieces are rows in **`works`** (not a duplicate list).
+- **Role:** The **only** JSON manifest: canonical **`works[]`** (Dublin Core + Linked Art + **`artifacts`**). Sketch series order comes from **`sketches/index.html`** on refresh; installation HTML is merged from **`works[]`** plus **`installations/*.html`** on disk. Soundscape pieces are rows in **`works`** (not a duplicate list).
 - **Sketches list:** Refreshed from `sketches/index.html` by the same script; do **not** hand-edit long file lists in JSONùedit **`SERIES`** in the index instead.
 - **Details:** See **[unified-catalog.md](./unified-catalog.md)**.
 
@@ -25,7 +25,7 @@ cd ~/Documents/GitHub/walhimer.github.io
 python3 _scripts/refresh_catalog.py
 ```
 
-That rebuilds **`works`** from **`installations`** + **`SERIES`**, merges your metadata edits, and refreshes **`artifacts`**. The legacy script name **`sync_artworks_json.py`** runs the same refresh.
+That rebuilds **`works`** from **`SERIES`** + installation paths (merged from **`works[]`** and **`installations/*.html`**), preserves your metadata edits, and refreshes **`artifacts`**. The legacy script name **`sync_artworks_json.py`** runs the same refresh.
 
 ### 3. Narrative archive pages (chronicle + images)
 
@@ -44,7 +44,7 @@ These are **not** nested Git repos; they are folders in the site repo, linked fr
 | Add a sketch file | Put self-contained HTML in `sketches/` (per site rules: works offline). |
 | Register it | Add it to the right block in **`SERIES`** inside `sketches/index.html`. |
 | Sync catalog | Run `python3 _scripts/refresh_catalog.py`, then commit `data/catalog.json`. |
-| Promote to installation | Copy to `installations/`, update homepage cards, edit **`installations`** in `data/catalog.json`, then run **`refresh_catalog.py`**. |
+| Promote to installation | Copy to `installations/`, update homepage cards, run **`refresh_catalog.py`**, then edit **`works[]`** in `data/catalog.json` if you need custom titles or dates. |
 | Push | `git add`, `git commit`, `git push` to `main`. |
 
 ---

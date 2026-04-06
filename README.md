@@ -13,7 +13,7 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 | `installations/` | Promoted work — pieces linked from the homepage |
 | `sketches/` | Full archive — HTML sketches by series, plus optional folders like `tezos-early-works/` (chronicle + images) |
 | `sketches/index.html` | **Catalog UI** — series list, search, filters (**single source of truth** for sketch filenames; URL path remains `/sketches/`) |
-| `data/catalog.json` | **Single manifest** — canonical **`works[]`**; **`installations`** and **`sketches_emit_order`** are editing views aligned on refresh; soundscape works are identified in **`works`** (no separate soundscapes section). See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
+| `data/catalog.json` | **Single manifest** — canonical **`works[]`** only. Refresh merges **`SERIES`** from `sketches/index.html` and **`installations/*.html`** (plus existing **`works[]`** metadata). Soundscape works are rows in **`works`** (no separate section). See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
 | `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
 | `docs/archive-chronicle.md` | How the sketch index and narrative archives relate to the manifest. |
 
@@ -36,7 +36,7 @@ Site nav: **Recent · Catalog · Bio / CV · Contact**
 
 1. Copy or place the file under `installations/` as needed.
 2. Add cards in `index.html` and `installations/index.html`.
-3. Edit **`data/catalog.json`** — top-level **`installations`** array (slug, path, dates, tech, etc.), then run **`python3 _scripts/refresh_catalog.py`** so **`works`** and artifacts stay in sync.
+3. Run **`python3 _scripts/refresh_catalog.py`** so **`works[]`** and artifacts stay in sync (new HTML is picked up automatically; refine titles, dates, and **`site.tech`** in **`works[]`** if needed).
 4. Push.
 
 ### Narrative archive (e.g. Tezos / Objkt phase)
@@ -71,7 +71,7 @@ Studio protocols, tools, and related repos live under **[github.com/walhimer-stu
 
 ## Checklist (maintainers)
 
-1. After changing **`SERIES`** in `sketches/index.html` or **`installations`** in `data/catalog.json`, run **`python3 _scripts/refresh_catalog.py`** and commit **`data/catalog.json`**.
+1. After changing **`SERIES`** in `sketches/index.html` or adding HTML under **`installations/`**, run **`python3 _scripts/refresh_catalog.py`** and commit **`data/catalog.json`**.
 2. Push **`walhimer.github.io`** so GitHub Pages and the public site stay in sync.
 3. If you edit the org profile, push **`walhimer-studio/.github`** separately (another clone/repo).
 

@@ -47,9 +47,7 @@ def parse_series_from_index(html: str) -> list[dict[str, list[str]]]:
     chunks = re.split(r"\n  \{\n    name: ", body)
     out: list[dict[str, list[str]]] = []
     for raw in chunks[1:]:
-        sm = re.match(
-            r"'([^']*)',\s*\n\s*installation:[^\n]*\n\s*files:\s*\[", raw, re.DOTALL
-        )
+        sm = re.match(r"'([^']*)',\s*\n\s*files:\s*\[", raw, re.DOTALL)
         if not sm:
             continue
         series_name = sm.group(1)
@@ -101,6 +99,52 @@ def extract_installations_from_works(works: list[dict]) -> list[dict]:
             seen.add(key)
             out.append(row)
     return out
+
+
+def installation_dict_from_path(path: str) -> dict:
+    """Minimal installation row for HTML under installations/ not yet in works[]."""
+    slug = slug_from_install_path(path)
+    stem = Path(path).stem.replace("-", " ").replace("_", " ").strip() or slug
+    title = stem[:1].upper() + stem[1:] if stem else slug
+    return {
+        "slug": slug,
+        "title": title,
+        "path": path,
+        "homepage": False,
+        "date": "",
+        "tech": [],
+    }
+
+
+def _skip_installation_html(rel_posix: str) -> bool:
+    """Listing page and iframe-only helpers are not catalog works."""
+    if rel_posix == "installations/index.html":
+        return True
+    base = Path(rel_posix).name
+    if base.endswith("-artwork.html"):
+        return True
+    return False
+
+
+def merge_installation_sources(works: list[dict], root: Path) -> list[dict]:
+    """
+    Rows with full metadata from works[]; plus any installations/*.html on disk
+    not yet represented in works (minimal defaults until the next merge).
+    """
+    by_path: dict[str, dict] = {}
+    for row in extract_installations_from_works(works):
+        if _skip_installation_html(row["path"]):
+            continue
+        by_path[row["path"]] = row
+    inst_dir = root / "installations"
+    if inst_dir.is_dir():
+        for p in sorted(inst_dir.glob("*.html")):
+            rel = p.relative_to(root).as_posix()
+            if _skip_installation_html(rel):
+                continue
+            if rel not in by_path:
+                by_path[rel] = installation_dict_from_path(rel)
+    return sorted(by_path.values(), key=lambda r: r["path"])
 
 
 def la_object(canonical_base: str, work_id: str, label: str) -> dict:

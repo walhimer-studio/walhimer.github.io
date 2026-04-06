@@ -1,11 +1,11 @@
 # Unified catalog (`data/catalog.json`)
 
-There is **one** persisted dataset: **`works[]`** ó each row is a work with **Dublin Core**, **Linked Art**, **`site`** (surfaces such as installation / sketch / soundscape), and **`artifacts`** for recovery.
+There is **one** persisted dataset: **`works[]`** ù each row is a work with **Dublin Core**, **Linked Art**, **`site`** (surfaces such as installation / sketch / soundscape), and **`artifacts`** for recovery.
 
-**Editing views** (same data, easier to maintain than scanning every row):
+**Refresh inputs** (not stored as top-level JSON arrays):
 
-- **`installations`** ó homepage tier; mirrors installation rows in **`works`**; refresh keeps them aligned.
-- **`sketches_emit_order`** ó series + file order matching **`SERIES`** in `sketches/index.html`; keeps the manifest aligned with the sketch index.
+- **Sketch series + file order** ù read from **`const SERIES`** in `sketches/index.html` on every run.
+- **Installation-tier HTML** ù merged from existing **`works[]`** rows that have **`site.installation`**, plus any new **`installations/*.html`** files on disk (excluding `installations/index.html` and auxiliary `*-artwork.html` embeds).
 
 **Soundscapes** are **not** a separate block in JSON. Filter **`works`** where **`soundscape`** appears in **`site.surfaces`** (or **`site.soundscape`** is set). The refresh script logs how many such rows exist; optional **`site.soundscape.public_url`** can point at **`/audio/`** when you mirror pieces there.
 
@@ -30,8 +30,8 @@ Refresh **merges** your existing Dublin Core / Linked Art edits into rebuilt row
 
 ### After changing installations
 
-1. Edit the top-level **`installations`** array in **`data/catalog.json`** (or add files under `installations/` and update cards in HTML as today).
-2. Run **`python3 _scripts/refresh_catalog.py`** so **`works`**, **`surfaces`**, and **`artifacts`** stay aligned.
+1. Add or change files under **`installations/`** (and update homepage cards in HTML as needed).
+2. Run **`python3 _scripts/refresh_catalog.py`** so **`works`**, **`surfaces`**, and **`artifacts`** stay aligned. Edit **`works[]`** in **`data/catalog.json`** for titles, dates, **`site.installation.homepage`**, **`site.tech`**, etc.
 
 ### One-time migration from an old `artworks.json`
 
