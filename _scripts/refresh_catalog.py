@@ -28,6 +28,7 @@ from pathlib import Path
 from catalog_lib import (
     ROOT,
     INDEX,
+    assign_catalog_numbers,
     attach_artifacts_to_works,
     build_works,
     extract_installations_from_works,
@@ -95,6 +96,7 @@ def refresh_catalog(from_artworks: bool = False) -> None:
 
     works_new = build_works(inst, sketch_series, catalog.get("canonical_base", CANONICAL))
     catalog["works"] = merge_catalog_works(works_old, works_new)
+    assign_catalog_numbers(catalog["works"])
 
     attach_artifacts_to_works(ROOT, catalog["works"])
     catalog["soundscapes"] = soundscapes_summary(
@@ -108,7 +110,7 @@ def refresh_catalog(from_artworks: bool = False) -> None:
         "soundscapes summary, per-work recovery artifacts (repo paths + external URLs)."
     )
 
-    # Stable key order for humans (works[] is large — keep it last).
+    # Stable key order for humans (works[] is large - keep it last).
     ordered = {
         "version": catalog["version"],
         "updated": catalog["updated"],

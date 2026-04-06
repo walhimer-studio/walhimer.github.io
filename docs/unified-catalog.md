@@ -2,10 +2,10 @@
 
 There is **one** machine-readable manifest for the studio archive. It holds:
 
-- **`installations`** ó homepage tier (edit this list when promoting work).
-- **`sketches_emit_order`** ó series + file order matching **`SERIES`** in `sketches/index.html`.
-- **`works`** ó one record per logical work: **Dublin Core**, minimal **Linked Art** JSON-LD, **`site`** (installation / sketch / soundscape surfaces), and **`artifacts`** for recovery.
-- **`soundscapes`** ó derived index of works in the **Audioscape** series (and installation rows that share those sketches). Optional **`site.soundscape.public_url`** can point at a separate `/audio/` deploy later.
+- **`installations`** ù homepage tier (edit this list when promoting work).
+- **`sketches_emit_order`** ù series + file order matching **`SERIES`** in `sketches/index.html`.
+- **`works`** ù one record per logical work: **Dublin Core**, minimal **Linked Art** JSON-LD, **`site`** (installation / sketch / soundscape surfaces), and **`artifacts`** for recovery.
+- **`soundscapes`** ù derived index of works in the **Audioscape** series (and installation rows that share those sketches). Optional **`site.soundscape.public_url`** can point at a separate `/audio/` deploy later.
 
 **`artworks.json` has been removed**; do not reintroduce a second manifest.
 
@@ -44,7 +44,7 @@ Then delete **`artworks.json`** and commit.
 ## Disaster recovery (stolen laptop)
 
 - **Source of truth for files:** this Git repository. If you **commit and push** sketches, installations, images, and `data/catalog.json`, you can **`git clone`** on a new machine and have everything.
-- **`artifacts.repo_paths`** lists repo-relative paths for each workís HTML and **local** linked assets. Folders like `sketches/tezos-early-works/` are listed as a **full subtree** (HTML + `assets/` images).
+- **`artifacts.repo_paths`** lists repo-relative paths for each workùs HTML and **local** linked assets. Folders like `sketches/tezos-early-works/` are listed as a **full subtree** (HTML + `assets/` images).
 - **`artifacts.external_urls`** records CDN or external links (e.g. p5.js on cdnjs) so you know what was not stored in-repo; consider vendoring critical libraries if you want zero external dependency for recovery.
 
 ## Dublin Core (`dublin_core`)
@@ -55,7 +55,8 @@ Then delete **`artworks.json`** and commit.
 | `creator` | Creator string |
 | `date` | Date or range |
 | `description` | Short description |
-| `identifier` | Stable id (URN in catalog) |
+| `identifier` | Stable **URN** (same as work `id`) ó does not encode series |
+| `catalog_number` | Accession-style code **`WS-000001`** Ö **`WS-NNNNNN`** ó series-independent; stable across refresh once assigned; new works get the next free number |
 | `type` | e.g. `InteractiveResource` |
 | `format` | e.g. `text/html` |
 | `language` | e.g. `en` |

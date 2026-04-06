@@ -393,18 +393,21 @@
     "entries": [
       {
         "work_id": "urn:walhimer:sketch:Audioscape:audioscape001",
+        "catalog_number": "WS-000121",
         "title": "audioscape001",
         "sketch_file": "audioscape001.html",
         "url": "https://mark-walhimer.com/sketches/audioscape001.html"
       },
       {
         "work_id": "urn:walhimer:sketch:Audioscape:pentatonic-piano",
+        "catalog_number": "WS-000122",
         "title": "pentatonic-piano",
         "sketch_file": "pentatonic-piano.html",
         "url": "https://mark-walhimer.com/sketches/pentatonic-piano.html"
       },
       {
         "work_id": "urn:walhimer:sketch:Audioscape:one_tube",
+        "catalog_number": "WS-000123",
         "title": "one tube",
         "sketch_file": "one_tube.html",
         "url": "https://mark-walhimer.com/sketches/one_tube.html"
@@ -423,7 +426,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000001"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -497,7 +501,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000002"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -572,7 +577,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000003"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -634,7 +640,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000004"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -702,7 +709,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000005"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -765,7 +773,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000006"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -831,7 +840,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000007"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -910,7 +920,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000008"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -975,7 +986,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000009"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1019,7 +1031,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000010"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1063,7 +1076,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000011"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1107,7 +1121,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000012"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1149,7 +1164,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000013"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1193,7 +1209,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000014"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1237,7 +1254,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000015"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1281,7 +1299,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000016"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1325,7 +1344,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000017"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1369,7 +1389,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000018"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1413,7 +1434,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000019"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1457,7 +1479,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000020"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1501,7 +1524,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000021"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1545,7 +1569,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000022"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1589,7 +1614,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000023"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1633,7 +1659,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000024"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1677,7 +1704,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000025"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1721,7 +1749,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000026"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1765,7 +1794,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000027"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1809,7 +1839,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000028"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1853,7 +1884,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000029"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1897,7 +1929,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000030"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1940,7 +1973,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000031"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -1984,7 +2018,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000032"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2028,7 +2063,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000033"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2072,7 +2108,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000034"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2116,7 +2153,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000035"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2160,7 +2198,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000036"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2204,7 +2243,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000037"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2248,7 +2288,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000038"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2301,7 +2342,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000039"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2347,7 +2389,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000040"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2391,7 +2434,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000041"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2433,7 +2477,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000042"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2477,7 +2522,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000043"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2519,7 +2565,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000044"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2563,7 +2610,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000045"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2607,7 +2655,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000046"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2651,7 +2700,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000047"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2695,7 +2745,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000048"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2744,7 +2795,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000049"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2786,7 +2838,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000050"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2830,7 +2883,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000051"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2872,7 +2926,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000052"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2916,7 +2971,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000053"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -2958,7 +3014,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000054"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3000,7 +3057,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000055"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3044,7 +3102,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000056"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3086,7 +3145,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000057"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3128,7 +3188,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000058"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3170,7 +3231,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000059"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3212,7 +3274,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000060"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3254,7 +3317,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000061"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3296,7 +3360,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000062"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3340,7 +3405,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000063"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3382,7 +3448,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000064"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3427,7 +3494,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000065"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3472,7 +3540,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000066"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3517,7 +3586,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000067"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3561,7 +3631,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000068"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3605,7 +3676,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000069"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3649,7 +3721,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000070"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3693,7 +3766,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000071"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3737,7 +3811,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000072"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3779,7 +3854,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000073"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3821,7 +3897,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000074"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3863,7 +3940,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000075"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3905,7 +3983,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000076"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3947,7 +4026,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000077"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -3989,7 +4069,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000078"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4031,7 +4112,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000079"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4075,7 +4157,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000080"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4119,7 +4202,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000081"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4161,7 +4245,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000082"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4203,7 +4288,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000083"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4245,7 +4331,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000084"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4289,7 +4376,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000085"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4333,7 +4421,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000086"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4375,7 +4464,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000087"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4419,7 +4509,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000088"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4463,7 +4554,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000089"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4507,7 +4599,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000090"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4551,7 +4644,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000091"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4595,7 +4689,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000092"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4637,7 +4732,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000093"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4683,7 +4779,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000094"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4725,7 +4822,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000095"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4769,7 +4867,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000096"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4813,7 +4912,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000097"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4857,7 +4957,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000098"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4901,7 +5002,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000099"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4945,7 +5047,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000100"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -4989,7 +5092,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000101"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5031,7 +5135,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000102"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5075,7 +5180,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000103"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5122,7 +5228,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000104"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5164,7 +5271,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000105"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5206,7 +5314,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000106"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5248,7 +5357,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000107"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5290,7 +5400,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000108"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5334,7 +5445,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000109"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5376,7 +5488,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000110"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5420,7 +5533,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000111"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5464,7 +5578,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000112"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5508,7 +5623,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000113"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5552,7 +5668,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000114"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5596,7 +5713,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000115"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5640,7 +5758,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000116"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5684,7 +5803,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000117"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5728,7 +5848,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000118"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5770,7 +5891,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000119"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5812,7 +5934,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000120"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5857,7 +5980,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000121"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5906,7 +6030,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000122"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -5955,7 +6080,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000123"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6005,7 +6131,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000124"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6049,7 +6176,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000125"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6093,7 +6221,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000126"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6137,7 +6266,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000127"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6179,7 +6309,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000128"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6221,7 +6352,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000129"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6263,7 +6395,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000130"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6305,7 +6438,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000131"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6349,7 +6483,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000132"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6392,7 +6527,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000133"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6435,7 +6571,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000134"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6480,7 +6617,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000135"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6525,7 +6663,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000136"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6570,7 +6709,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000137"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6612,7 +6752,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000138"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6654,7 +6795,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000139"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6698,7 +6840,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000140"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6743,7 +6886,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000141"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6785,7 +6929,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000142"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6829,7 +6974,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000143"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6873,7 +7019,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000144"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6915,7 +7062,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000145"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -6957,7 +7105,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000146"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7001,7 +7150,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000147"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7043,7 +7193,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000148"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7087,7 +7238,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000149"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7131,7 +7283,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000150"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7175,7 +7328,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000151"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7219,7 +7373,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000152"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7263,7 +7418,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000153"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7307,7 +7463,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000154"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7351,7 +7508,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000155"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7395,7 +7553,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000156"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7439,7 +7598,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000157"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7483,7 +7643,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000158"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7527,7 +7688,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000159"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7569,7 +7731,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000160"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7613,7 +7776,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000161"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7657,7 +7821,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000162"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7701,7 +7866,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000163"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7745,7 +7911,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000164"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7789,7 +7956,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000165"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7833,7 +8001,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000166"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7875,7 +8044,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000167"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7917,7 +8087,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000168"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -7962,7 +8133,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000169"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8004,7 +8176,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000170"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8046,7 +8219,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000171"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8088,7 +8262,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000172"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8132,7 +8307,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000173"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8176,7 +8352,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000174"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8221,7 +8398,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000175"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8265,7 +8443,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000176"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8309,7 +8488,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000177"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8351,7 +8531,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000178"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
@@ -8395,7 +8576,8 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": ""
+        "relation": "",
+        "catalog_number": "WS-000179"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",

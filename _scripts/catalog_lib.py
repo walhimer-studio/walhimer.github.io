@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "sketches" / "index.html"
 
-# src="..." href="..."  capture local refs (exclude obvious non-file schemes)
+# src="..." href="..." - capture local refs (exclude obvious non-file schemes)
 LOCAL_ATTR_RE = re.compile(
     r"""(?:src|href)\s*=\s*["']([^"'#?]+)["']""",
     re.I,
@@ -125,6 +125,7 @@ def dc_shell(
     date: str | None = None,
     desc: str = "",
 ) -> dict:
+    # identifier = stable URN (work id); catalog_number set by assign_catalog_numbers()
     return {
         "title": title,
         "creator": "Mark Walhimer",
@@ -136,6 +137,37 @@ def dc_shell(
         "language": "en",
         "relation": "",
     }
+
+
+def _parse_catalog_seq(catalog_number: str | None) -> int | None:
+    if not catalog_number or not str(catalog_number).strip().upper().startswith("WS-"):
+        return None
+    rest = str(catalog_number).strip()[3:].lstrip("-")
+    try:
+        return int(rest)
+    except ValueError:
+        return None
+
+
+def assign_catalog_numbers(works: list[dict]) -> None:
+    """
+    Series-independent accession numbers: WS-000001, WS-000002, ...
+    Preserves existing catalog_number on refresh; new works get max+1.
+    identifier (URN) stays separate in dublin_core.identifier.
+    """
+    max_seq = 0
+    for w in works:
+        dc = w.get("dublin_core") or {}
+        n = _parse_catalog_seq(dc.get("catalog_number"))
+        if n is not None:
+            max_seq = max(max_seq, n)
+    for w in works:
+        dc = w.setdefault("dublin_core", {})
+        existing = (dc.get("catalog_number") or "").strip()
+        if existing and _parse_catalog_seq(existing) is not None:
+            continue
+        max_seq += 1
+        dc["catalog_number"] = f"WS-{max_seq:06d}"
 
 
 def build_works(
@@ -374,6 +406,7 @@ def soundscapes_summary(works: list[dict], canonical_base: str) -> dict:
         entries.append(
             {
                 "work_id": w.get("id"),
+                "catalog_number": (w.get("dublin_core") or {}).get("catalog_number"),
                 "title": (w.get("dublin_core") or {}).get("title"),
                 "sketch_file": sk.get("file"),
                 "url": url,
