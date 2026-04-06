@@ -12,12 +12,12 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 |----------|---------|
 | `installations/` | Promoted work — pieces linked from the homepage |
 | `sketches/` | Full archive — HTML sketches by series, plus optional folders like `tezos-early-works/` (chronicle + images) |
-| `sketches/index.html` | **Catalogue UI** — series list, search, filters (**single source of truth** for sketch filenames; URL path remains `/sketches/`) |
+| `sketches/index.html` | **Catalog UI** — series list, search, filters (**single source of truth** for sketch filenames; URL path remains `/sketches/`) |
 | `data/catalog.json` | **Single manifest** — canonical **`works[]`**; **`installations`** and **`sketches_emit_order`** are editing views aligned on refresh; soundscape works are identified in **`works`** (no separate soundscapes section). See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
 | `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
 | `docs/archive-chronicle.md` | How the sketch index and narrative archives relate to the manifest. |
 
-Site nav: **Recent · Catalogue · Bio / CV · Contact**
+Site nav: **Recent · Catalog · Bio / CV · Contact**
 
 **Organization profile** (GitHub): **[walhimer-studio/.github](https://github.com/walhimer-studio/.github)** — points here for archive docs.
 

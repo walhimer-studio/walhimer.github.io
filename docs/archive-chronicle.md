@@ -8,7 +8,7 @@ This document describes how **generative work, the public site, and the manifest
 
 There are **three** related ideas:
 
-### 1. Catalogue index (live, searchable)
+### 1. Catalog index (live, searchable)
 
 - **URL:** [mark-walhimer.com/sketches/](https://mark-walhimer.com/sketches/) (or `/sketches/index.html`)
 - **Role:** The **working archive** of sketch files: every HTML entry is listed by **series**, with **search**, **expand/collapse**, and filters (All / Works only / Versions).
@@ -33,7 +33,7 @@ That rebuilds **`works`** from **`installations`** + **`SERIES`**, merges your m
 - **Example:** `sketches/tezos-early-works/index.html` with assets under `sketches/tezos-early-works/assets/`.
 - **Role:** Complements the index: the index lists **files**; narrative pages explain **progression** and show **stills**.
 
-These are **not** nested Git repos; they are folders in the site repo, linked from the Catalogue index like any other entry.
+These are **not** nested Git repos; they are folders in the site repo, linked from the Catalog index like any other entry.
 
 ---
 
