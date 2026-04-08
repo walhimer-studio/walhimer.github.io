@@ -18,7 +18,7 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 | `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
 | `docs/archive-chronicle.md` | How the sketch index and narrative archives relate to the manifest. |
 
-Site nav: **Recent · Catalog · Bio / CV · Contact**
+Site nav: **Selected Works · Catalog · Bio / CV · Contact**
 
 Catalog footer includes a low-visibility link to **Collection DB** (`/catalog-db.html`).
 
