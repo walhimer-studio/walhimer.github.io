@@ -1,10 +1,10 @@
-# Walhimer Studio ù archive chronicle
+# Walhimer Studio ÔøΩ archive chronicle
 
 This document describes how **generative work, the public site, and the manifest** fit together. It is meant for the **[Walhimer Studio](https://github.com/walhimer-studio)** organization and for anyone maintaining **[mark-walhimer.com](https://mark-walhimer.com)** (repo: [`walhimer-studio/walhimer.github.io`](https://github.com/walhimer-studio/walhimer.github.io)).
 
 ---
 
-## What ùarchiveù means here
+## What ÔøΩarchiveÔøΩ means here
 
 There are **three** related ideas:
 
@@ -17,7 +17,7 @@ There are **three** related ideas:
 ### 2. `data/catalog.json` (single manifest)
 
 - **Role:** The **only** JSON manifest: canonical **`works[]`** (Dublin Core + Linked Art + **`artifacts`**). Sketch series order comes from **`sketches/index.html`** on refresh; installation HTML is merged from **`works[]`** plus **`installations/*.html`** on disk. Soundscape pieces are rows in **`works`** (not a duplicate list).
-- **Sketches list:** Refreshed from `sketches/index.html` by the same script; do **not** hand-edit long file lists in JSONùedit **`SERIES`** in the index instead.
+- **Sketches list:** Refreshed from `sketches/index.html` by the same script; do **not** hand-edit long file lists in JSONÔøΩedit **`SERIES`** in the index instead.
 - **Details:** See **[unified-catalog.md](./unified-catalog.md)**.
 
 ```bash
@@ -59,9 +59,9 @@ What is backed up for the site is whatever is **committed and pushed** to **`wal
 
 To show an **Archive** section on **[github.com/walhimer-studio](https://github.com/walhimer-studio)**:
 
-1. Open the orgùs **`.github`** repository: [`walhimer-studio/.github`](https://github.com/walhimer-studio/.github).
+1. Open the orgÔøΩs **`.github`** repository: [`walhimer-studio/.github`](https://github.com/walhimer-studio/.github).
 2. Edit **`profile/README.md`** (see [GitHub docs: custom organization profile](https://docs.github.com/en/organizations/creating-a-custom-profile-page-for-your-organization)).
-3. Add a section (you can copy the **ùWhat archive means hereù** and **Workflow** summaries above, or link to this file in the website repo):
+3. Add a section (you can copy the **ÔøΩWhat archive means hereÔøΩ** and **Workflow** summaries above, or link to this file in the website repo):
 
    - Raw / permanent link to this doc on GitHub:  
      `https://github.com/walhimer-studio/walhimer.github.io/blob/main/docs/archive-chronicle.md`
@@ -70,4 +70,4 @@ That keeps the chronicle in the **website repo** as the canonical doc and lets t
 
 ---
 
-*Walhimer Studio ù generative art, protocols, and interactive tools.*
+*Walhimer Studio ÔøΩ generative art, protocols, and interactive tools.*
