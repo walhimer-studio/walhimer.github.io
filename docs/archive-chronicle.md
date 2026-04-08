@@ -1,10 +1,10 @@
-# Walhimer Studio � archive chronicle
+# Walhimer Studio - archive chronicle
 
 This document describes how **generative work, the public site, and the manifest** fit together. It is meant for the **[Walhimer Studio](https://github.com/walhimer-studio)** organization and for anyone maintaining **[mark-walhimer.com](https://mark-walhimer.com)** (repo: [`walhimer-studio/walhimer.github.io`](https://github.com/walhimer-studio/walhimer.github.io)).
 
 ---
 
-## What �archive� means here
+## What "archive" means here
 
 There are **three** related ideas:
 
@@ -13,11 +13,12 @@ There are **three** related ideas:
 - **URL:** [mark-walhimer.com/sketches/](https://mark-walhimer.com/sketches/) (or `/sketches/index.html`)
 - **Role:** The **working archive** of sketch files: every HTML entry is listed by **series**, with **search**, **expand/collapse**, and filters (All / Works only / Versions).
 - **Source of truth for that list:** the **`SERIES` JavaScript array** in `sketches/index.html`. When you add a sketch, you add it here so it appears and is findable.
+- **Collection DB access:** Catalog footer includes a low-visibility link to `/catalog-db.html` for internal-style browsing.
 
 ### 2. `data/catalog.json` (single manifest)
 
 - **Role:** The **only** JSON manifest: canonical **`works[]`** (Dublin Core + Linked Art + **`artifacts`**). Sketch series order comes from **`sketches/index.html`** on refresh; installation HTML is merged from **`works[]`** plus **`installations/*.html`** on disk. Soundscape pieces are rows in **`works`** (not a duplicate list).
-- **Sketches list:** Refreshed from `sketches/index.html` by the same script; do **not** hand-edit long file lists in JSON�edit **`SERIES`** in the index instead.
+- **Sketches list:** Refreshed from `sketches/index.html` by the same script; do **not** hand-edit long file lists in JSON - edit **`SERIES`** in the index instead.
 - **Details:** See **[unified-catalog.md](./unified-catalog.md)**.
 
 ```bash
@@ -59,9 +60,9 @@ What is backed up for the site is whatever is **committed and pushed** to **`wal
 
 To show an **Archive** section on **[github.com/walhimer-studio](https://github.com/walhimer-studio)**:
 
-1. Open the org�s **`.github`** repository: [`walhimer-studio/.github`](https://github.com/walhimer-studio/.github).
+1. Open the org's **`.github`** repository: [`walhimer-studio/.github`](https://github.com/walhimer-studio/.github).
 2. Edit **`profile/README.md`** (see [GitHub docs: custom organization profile](https://docs.github.com/en/organizations/creating-a-custom-profile-page-for-your-organization)).
-3. Add a section (you can copy the **�What archive means here�** and **Workflow** summaries above, or link to this file in the website repo):
+3. Add a section (you can copy the **"What archive means here"** and **Workflow** summaries above, or link to this file in the website repo):
 
    - Raw / permanent link to this doc on GitHub:  
      `https://github.com/walhimer-studio/walhimer.github.io/blob/main/docs/archive-chronicle.md`
@@ -70,4 +71,4 @@ That keeps the chronicle in the **website repo** as the canonical doc and lets t
 
 ---
 
-*Walhimer Studio � generative art, protocols, and interactive tools.*
+*Walhimer Studio - generative art, protocols, and interactive tools.*

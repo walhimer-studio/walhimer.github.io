@@ -13,11 +13,14 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 | `installations/` | Promoted work — pieces linked from the homepage |
 | `sketches/` | Full archive — HTML sketches by series, plus optional folders like `tezos-early-works/` (chronicle + images) |
 | `sketches/index.html` | **Catalog UI** — series list, search, filters (**single source of truth** for sketch filenames; URL path remains `/sketches/`) |
+| `catalog-db.html` | **Collection DB viewer** — lightweight browser tool for `data/catalog.json` (search/filter/sort + Installation/Sketch/Linked Art links). |
 | `data/catalog.json` | **Single manifest** — canonical **`works[]`** only. Refresh merges **`SERIES`** from `sketches/index.html` and **`installations/*.html`** (plus existing **`works[]`** metadata). Soundscape works are rows in **`works`** (no separate section). See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
 | `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
 | `docs/archive-chronicle.md` | How the sketch index and narrative archives relate to the manifest. |
 
 Site nav: **Recent · Catalog · Bio / CV · Contact**
+
+Catalog footer includes a low-visibility link to **Collection DB** (`/catalog-db.html`).
 
 **Organization profile** (GitHub): **[walhimer-studio/.github](https://github.com/walhimer-studio/.github)** — points here for archive docs.
 
@@ -55,6 +58,12 @@ git commit -m "Description of change"
 git push origin main
 ```
 
+### Collection DB workflow
+
+1. Keep `data/catalog.json` current via `python3 _scripts/refresh_catalog.py`.
+2. Open `catalog-db.html` to browse/search/filter the collection as a mini database.
+3. If links or labels need adjustment, update `catalog-db.html` only (no manifest schema change required).
+
 ---
 
 ## Self-contained rule
@@ -72,8 +81,9 @@ Studio protocols, tools, and related repos live under **[github.com/walhimer-stu
 ## Checklist (maintainers)
 
 1. After changing **`SERIES`** in `sketches/index.html` or adding HTML under **`installations/`**, run **`python3 _scripts/refresh_catalog.py`** and commit **`data/catalog.json`**.
-2. Push **`walhimer.github.io`** so GitHub Pages and the public site stay in sync.
-3. If you edit the org profile, push **`walhimer-studio/.github`** separately (another clone/repo).
+2. Verify sitemap/robots remain current for indexing (`robots.txt`, `sitemap.xml`, `page-sitemap.xml`).
+3. Push **`walhimer.github.io`** so GitHub Pages and the public site stay in sync.
+4. If you edit the org profile, push **`walhimer-studio/.github`** separately (another clone/repo).
 
 Optional later: add marketplace or contract IDs under **`dublin_core.relation`** (or extra fields) so platform links are preserved in *your* manifest, not only on third-party sites.
 

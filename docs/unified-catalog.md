@@ -1,11 +1,11 @@
 # Unified catalog (`data/catalog.json`)
 
-There is **one** persisted dataset: **`works[]`** � each row is a work with **Dublin Core**, **Linked Art**, **`site`** (surfaces such as installation / sketch / soundscape), and **`artifacts`** for recovery.
+There is **one** persisted dataset: **`works[]`** - each row is a work with **Dublin Core**, **Linked Art**, **`site`** (surfaces such as installation / sketch / soundscape), and **`artifacts`** for recovery.
 
 **Refresh inputs** (not stored as top-level JSON arrays):
 
-- **Sketch series + file order** � read from **`const SERIES`** in `sketches/index.html` on every run.
-- **Installation-tier HTML** � merged from existing **`works[]`** rows that have **`site.installation`**, plus any new **`installations/*.html`** files on disk (excluding `installations/index.html` and auxiliary `*-artwork.html` embeds).
+- **Sketch series + file order** - read from **`const SERIES`** in `sketches/index.html` on every run.
+- **Installation-tier HTML** - merged from existing **`works[]`** rows that have **`site.installation`**, plus any new **`installations/*.html`** files on disk (excluding `installations/index.html` and auxiliary `*-artwork.html` embeds).
 
 **Soundscapes** are **not** a separate block in JSON. Filter **`works`** where **`soundscape`** appears in **`site.surfaces`** (or **`site.soundscape`** is set). The refresh script logs how many such rows exist; optional **`site.soundscape.public_url`** can point at **`/audio/`** when you mirror pieces there.
 
@@ -28,6 +28,12 @@ There is **one** persisted dataset: **`works[]`** � each row is a work with **
 
 Refresh **merges** your existing Dublin Core / Linked Art edits into rebuilt rows (matched by work id or sketch file).
 
+### Collection DB viewer
+
+- **`catalog-db.html`** is a lightweight browser view over **`data/catalog.json`** for collection management.
+- It supports search/filter/sort and links out to installation, sketch, and linked-art URLs.
+- It is intentionally low-visibility on the public site (linked from the Catalog footer, not primary nav).
+
 ### After changing installations
 
 1. Add or change files under **`installations/`** (and update homepage cards in HTML as needed).
@@ -46,7 +52,7 @@ Then delete **`artworks.json`** and commit.
 ## Disaster recovery (stolen laptop)
 
 - **Source of truth for files:** this Git repository. If you **commit and push** sketches, installations, images, and `data/catalog.json`, you can **`git clone`** on a new machine and have everything.
-- **`artifacts.repo_paths`** lists repo-relative paths for each work�s HTML and **local** linked assets. Folders like `sketches/tezos-early-works/` are listed as a **full subtree** (HTML + `assets/` images).
+- **`artifacts.repo_paths`** lists repo-relative paths for each work's HTML and **local** linked assets. Folders like `sketches/tezos-early-works/` are listed as a **full subtree** (HTML + `assets/` images).
 - **`artifacts.external_urls`** records CDN or external links (e.g. p5.js on cdnjs) so you know what was not stored in-repo; consider vendoring critical libraries if you want zero external dependency for recovery.
 
 ## Dublin Core (`dublin_core`)
@@ -57,8 +63,8 @@ Then delete **`artworks.json`** and commit.
 | `creator` | Creator string |
 | `date` | Date or range |
 | `description` | Short description |
-| `identifier` | Stable **URN** (same as work `id`) � does not encode series |
-| `catalog_number` | Accession-style code **`WS-000001`** � **`WS-NNNNNN`** � series-independent; stable across refresh once assigned; new works get the next free number |
+| `identifier` | Stable **URN** (same as work `id`) - does not encode series |
+| `catalog_number` | Accession-style code **`WS-000001`** - **`WS-NNNNNN`** - series-independent; stable across refresh once assigned; new works get the next free number |
 | `type` | e.g. `InteractiveResource` |
 | `format` | e.g. `text/html` |
 | `language` | e.g. `en` |
