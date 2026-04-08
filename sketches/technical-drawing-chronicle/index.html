@@ -65,6 +65,9 @@
     h1 { font-family: Georgia, serif; font-size: clamp(32px, 5vw, 52px); font-weight: 300; line-height: 1.08; letter-spacing: -.02em; margin-bottom: 16px; }
     h1 em { font-style: italic; color: var(--accent); }
     .lede { font-size: 13px; color: rgba(240,237,230,.55); line-height: 1.85; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--rule); }
+    .live-embed { margin: 18px 0 28px; border: 1px solid var(--rule); background: #0b0b0b; padding: 8px; }
+    .live-embed iframe { width: 100%; height: min(72vh, 760px); border: 0; background: #000; display: block; }
+    .live-embed p { font-size: 10px; color: var(--dim); letter-spacing: .04em; margin-top: 8px; }
 
     section { margin-bottom: 48px; }
     .phase { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
@@ -101,6 +104,18 @@
 <article class="wrap">
   <p class="kicker">Catalog &middot; chronicle</p>
   <h1>Technical <em>Drawing</em></h1>
+  <div class="live-embed">
+    <iframe
+      src="../technical-drawing-with-elevation.html"
+      title="Technical Drawing live sketch"
+      loading="eager"
+      referrerpolicy="no-referrer"
+    ></iframe>
+    <p>
+      Live sketch: <a href="../technical-drawing-with-elevation.html">open full sketch</a> or
+      <a href="../../installations/technical-drawing-with-elevation.html">installation view</a>.
+    </p>
+  </div>
   <p class="lede">
     A running chronicle for the Technical Drawing series: how notation, grid, and elevation move from idea to live generative work in the browser.
     This page complements the sketch files in the Catalog &mdash; progression and notes, not a finished statement.
