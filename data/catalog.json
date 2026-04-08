@@ -676,6 +676,7 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/technical-drawing-chronicle/assets/technical-021-teia-878978.png",
           "sketches/technical-drawing-chronicle/index.html"
         ],
         "external_urls": []
@@ -1036,6 +1037,54 @@
         ],
         "external_urls": [
           "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-021",
+      "dublin_core": {
+        "title": "technical-drawing-021",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing:technical-drawing-021",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000182"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing-technical-drawing-021",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-021",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical Drawing",
+          "file": "technical-drawing-021.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/technical-drawing-021.html"
+        ],
+        "external_urls": [
+          "https://museumplanning.com",
+          "https://www.instagram.com/markwalhimer/",
+          "https://www.mark-walhimer.com",
+          "https://x.com/WalhimerArt"
         ]
       }
     },
