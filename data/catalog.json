@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-04-06",
+  "updated": "2026-04-07",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -376,6 +376,67 @@
       }
     },
     {
+      "id": "urn:walhimer:work:technical-drawing-with-elevation",
+      "dublin_core": {
+        "title": "technical-drawing-with-elevation",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing:technical-drawing-with-elevation",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000024"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing-technical-drawing-with-elevation",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-with-elevation",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "installation": {
+          "path": "installations/technical-drawing-with-elevation.html",
+          "homepage": false
+        },
+        "tech": [],
+        "sketch": {
+          "series": "Technical Drawing",
+          "file": "technical-drawing-with-elevation.html"
+        },
+        "surfaces": [
+          "installation",
+          "sketch"
+        ]
+      },
+      "artifacts": {
+        "sketch_entry": {
+          "repo_paths": [
+            "sketches/technical-drawing-with-elevation.html"
+          ],
+          "external_urls": [
+            "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
+          ]
+        },
+        "installation_entry": {
+          "repo_paths": [
+            "installations/technical-drawing-with-elevation.html"
+          ],
+          "external_urls": [
+            "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
+          ]
+        }
+      }
+    },
+    {
       "id": "urn:walhimer:work:technical-drawing",
       "dublin_core": {
         "title": "Technical Drawing",
@@ -573,6 +634,49 @@
           "sketches/tezos-early-works/assets/artifact.jpg",
           "sketches/tezos-early-works/assets/artifact.png",
           "sketches/tezos-early-works/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical Drawing — chronicle",
+          "file": "technical-drawing-chronicle/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/technical-drawing-chronicle/index.html"
         ],
         "external_urls": []
       }
@@ -1244,51 +1348,6 @@
       "artifacts": {
         "repo_paths": [
           "sketches/technical-drawing-with-cubes.html"
-        ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-with-elevation",
-      "dublin_core": {
-        "title": "technical-drawing-with-elevation",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing:technical-drawing-with-elevation",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000024"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing-technical-drawing-with-elevation",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-with-elevation",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Technical Drawing",
-          "file": "technical-drawing-with-elevation.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/technical-drawing-with-elevation.html"
         ],
         "external_urls": [
           "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
@@ -2870,24 +2929,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Walking Figure:bvh_viewer_08_01",
+      "id": "urn:walhimer:sketch:Walking Figure:bvh_viewer_07_01",
       "dublin_core": {
-        "title": "bvh viewer 08 01",
+        "title": "bvh viewer 07 01",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Walking Figure:bvh_viewer_08_01",
+        "identifier": "urn:walhimer:sketch:Walking Figure:bvh_viewer_07_01",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000060"
+        "catalog_number": "WS-000061"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Walking Figure-bvh_viewer_08_01",
+        "id": "https://mark-walhimer.com/#work/Walking Figure-bvh_viewer_07_01",
         "type": "HumanMadeObject",
-        "_label": "bvh viewer 08 01",
+        "_label": "bvh viewer 07 01",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -2902,12 +2961,12 @@
         ],
         "sketch": {
           "series": "Walking Figure",
-          "file": "bvh_viewer_08_01.html"
+          "file": "bvh_viewer_07_01.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/bvh_viewer_08_01.html"
+          "sketches/bvh_viewer_07_01.html"
         ],
         "external_urls": []
       }
@@ -4285,24 +4344,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Numbered Pieces:821-around-u2014-1536-u00d7-864",
+      "id": "urn:walhimer:sketch:Numbered Pieces:821-around-1536-864",
       "dublin_core": {
-        "title": "821 (around) #U2014 1536 #U00d7 864",
+        "title": "821 (around) — 1536 × 864",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Numbered Pieces:821-around-u2014-1536-u00d7-864",
+        "identifier": "urn:walhimer:sketch:Numbered Pieces:821-around-1536-864",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000092"
+        "catalog_number": "WS-000181"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Numbered Pieces-821-around-u2014-1536-u00d7-864",
+        "id": "https://mark-walhimer.com/#work/Numbered Pieces-821-around-1536-864",
         "type": "HumanMadeObject",
-        "_label": "821 (around) #U2014 1536 #U00d7 864",
+        "_label": "821 (around) — 1536 × 864",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -4317,14 +4376,16 @@
         ],
         "sketch": {
           "series": "Numbered Pieces",
-          "file": "821 (around) #U2014 1536 #U00d7 864.html"
+          "file": "821 (around) — 1536 × 864.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/821 (around) #U2014 1536 #U00d7 864.html"
+          "sketches/821 (around) — 1536 × 864.html"
         ],
-        "external_urls": []
+        "external_urls": [
+          "https://zora.co/coin/base:0x4c37f79bfe087f7b606c1691c796f4dd4bea2018"
+        ]
       }
     },
     {
