@@ -230,8 +230,8 @@
       for (const w of filtered) {
         const tr = document.createElement("tr");
         const title = workTitle(w);
-        const date = workDate(w) || "ù";
-        const series = workSeries(w) || "ù";
+        const date = workDate(w) || "-";
+        const series = workSeries(w) || "-";
         const id = safe(w.id);
 
         const install = installationPath(w);
@@ -251,7 +251,7 @@
           </td>
           <td>${date}</td>
           <td>${series}</td>
-          <td>${links.join(" ù ") || "ù"}</td>
+          <td>${links.join(" | ") || "-"}</td>
           <td><code>${id}</code></td>
         `;
         rowsEl.appendChild(tr);
