@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-04-07",
+  "updated": "2026-04-08",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
