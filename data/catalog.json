@@ -409,7 +409,7 @@
         },
         "tech": [],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-with-elevation.html"
         },
         "surfaces": [
@@ -473,7 +473,7 @@
           "inlined"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing.html"
         },
         "surfaces": [
@@ -7918,7 +7918,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+      "id": "urn:walhimer:sketch:Technical:index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -7949,7 +7949,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing — chronicle",
+          "series": "Technical",
           "file": "technical-drawing-chronicle/index.html"
         }
       },
@@ -7962,7 +7962,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-021",
+      "id": "urn:walhimer:sketch:Technical:technical-drawing-021",
       "dublin_core": {
         "title": "technical-drawing-021",
         "creator": "Mark Walhimer",
@@ -7993,7 +7993,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-021.html"
         }
       },
@@ -8005,7 +8005,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-animated",
+      "id": "urn:walhimer:sketch:Technical:technical-drawing-animated",
       "dublin_core": {
         "title": "technical-drawing-animated",
         "creator": "Mark Walhimer",
@@ -8036,7 +8036,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-animated.html"
         }
       },
@@ -8050,7 +8050,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-static",
+      "id": "urn:walhimer:sketch:Technical:technical-drawing-static",
       "dublin_core": {
         "title": "technical-drawing-static",
         "creator": "Mark Walhimer",
@@ -8081,7 +8081,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-static.html"
         }
       },
@@ -8095,7 +8095,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:drawing-animation",
+      "id": "urn:walhimer:sketch:Technical:drawing-animation",
       "dublin_core": {
         "title": "drawing-animation",
         "creator": "Mark Walhimer",
@@ -8126,7 +8126,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "drawing-animation.html"
         }
       },
@@ -8140,7 +8140,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-fxhash",
+      "id": "urn:walhimer:sketch:Technical:technical-drawing-fxhash",
       "dublin_core": {
         "title": "technical-drawing-fxhash",
         "creator": "Mark Walhimer",
@@ -8171,7 +8171,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-fxhash.html"
         }
       },
@@ -8185,7 +8185,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-generator",
+      "id": "urn:walhimer:sketch:Technical:technical-drawing-generator",
       "dublin_core": {
         "title": "technical-drawing-generator",
         "creator": "Mark Walhimer",
@@ -8216,7 +8216,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-generator.html"
         }
       },
@@ -8230,7 +8230,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-generator-english",
+      "id": "urn:walhimer:sketch:Technical:technical-drawing-generator-english",
       "dublin_core": {
         "title": "technical-drawing-generator-english",
         "creator": "Mark Walhimer",
@@ -8261,7 +8261,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-generator-english.html"
         }
       },
@@ -8275,7 +8275,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical Drawing:technical-drawing-with-cubes",
+      "id": "urn:walhimer:sketch:Technical:technical-drawing-with-cubes",
       "dublin_core": {
         "title": "technical-drawing-with-cubes",
         "creator": "Mark Walhimer",
@@ -8306,7 +8306,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Technical Drawing",
+          "series": "Technical",
           "file": "technical-drawing-with-cubes.html"
         }
       },
