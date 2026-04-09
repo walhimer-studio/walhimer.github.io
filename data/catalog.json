@@ -7973,6 +7973,54 @@
           "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
         ]
       }
+    },
+    {
+      "id": "urn:walhimer:sketch:Breathing Columns:column-tiles-breathing",
+      "dublin_core": {
+        "title": "column-tiles-breathing",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Breathing Columns:column-tiles-breathing",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000182"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Breathing Columns-column-tiles-breathing",
+        "type": "HumanMadeObject",
+        "_label": "column-tiles-breathing",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Breathing Columns",
+          "file": "column-tiles-breathing.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/column-tiles-breathing.html"
+        ],
+        "external_urls": [
+          "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
+          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js",
+          "https://mark-walhimer.com/sketches/column-tiles-breathing.html",
+          "https://unpkg.com/gif.js@0.2.0/dist/gif.js"
+        ]
+      }
     }
   ]
 }
