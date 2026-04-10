@@ -42,8 +42,8 @@
           "inlined"
         ],
         "sketch": {
-          "series": "Bloom",
-          "file": "bloom/bloom-four-walls.html"
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/bloom-four-walls.html"
         },
         "surfaces": [
           "installation",
@@ -53,9 +53,11 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/bloom/bloom-four-walls.html"
+            "sketches/loop-miami-2026/bloom-four-walls.html"
           ],
-          "external_urls": []
+          "external_urls": [
+            "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+          ]
         },
         "installation_entry": {
           "repo_paths": [
@@ -584,6 +586,468 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/README.md",
+          "sketches/loop-miami-2026/bloom-four-walls.html",
+          "sketches/loop-miami-2026/bloom-hybrid-test.html",
+          "sketches/loop-miami-2026/bloom_room_hybrid.glb",
+          "sketches/loop-miami-2026/city_gradient_standalone.html",
+          "sketches/loop-miami-2026/index.html",
+          "sketches/loop-miami-2026/installation-composer-emergent-dna-soundscape.md",
+          "sketches/loop-miami-2026/orchestrator.html",
+          "sketches/loop-miami-2026/technical-drawing-with-elevation-2.html",
+          "sketches/loop-miami-2026/traveling-landscape.html",
+          "sketches/loop-miami-2026/walk_moon_audio_standalone.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:installation-composer-emergent-dna-soundscape",
+      "dublin_core": {
+        "title": "loop-miami-2026/installation-composer-emergent-dna-soundscape.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Miami 2026:installation-composer-emergent-dna-soundscape",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000183"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-installation-composer-emergent-dna-soundscape",
+        "type": "HumanMadeObject",
+        "_label": "loop-miami-2026/installation-composer-emergent-dna-soundscape.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/installation-composer-emergent-dna-soundscape.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/installation-composer-emergent-dna-soundscape.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:readme",
+      "dublin_core": {
+        "title": "loop-miami-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Miami 2026:readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "loop-miami-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:bloom-hybrid-test",
+      "dublin_core": {
+        "title": "loop-miami-2026/bloom-hybrid-test",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Miami 2026:bloom-hybrid-test",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000185"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-bloom-hybrid-test",
+        "type": "HumanMadeObject",
+        "_label": "loop-miami-2026/bloom-hybrid-test",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/bloom-hybrid-test.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/bloom-hybrid-test.html"
+        ],
+        "external_urls": [
+          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js",
+          "https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:bloom_room_hybrid",
+      "dublin_core": {
+        "title": "loop-miami-2026/bloom room hybrid.glb",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Miami 2026:bloom_room_hybrid",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000186"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-bloom_room_hybrid",
+        "type": "HumanMadeObject",
+        "_label": "loop-miami-2026/bloom room hybrid.glb",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/bloom_room_hybrid.glb"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/bloom_room_hybrid.glb"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:walk_moon_audio_standalone",
+      "dublin_core": {
+        "title": "loop-miami-2026/walk moon audio standalone",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Miami 2026:walk_moon_audio_standalone",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000187"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-walk_moon_audio_standalone",
+        "type": "HumanMadeObject",
+        "_label": "loop-miami-2026/walk moon audio standalone",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/walk_moon_audio_standalone.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/walk_moon_audio_standalone.html"
+        ],
+        "external_urls": [
+          "https://cdn.jsdelivr.net/npm/tone@14.7.77/build/Tone.js",
+          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:city_gradient_standalone",
+      "dublin_core": {
+        "title": "loop-miami-2026/city gradient standalone",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Miami 2026:city_gradient_standalone",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000188"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-city_gradient_standalone",
+        "type": "HumanMadeObject",
+        "_label": "loop-miami-2026/city gradient standalone",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/city_gradient_standalone.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/city_gradient_standalone.html"
+        ],
+        "external_urls": [
+          "https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:technical-drawing-with-elevation-2",
+      "dublin_core": {
+        "title": "loop-miami-2026/technical-drawing-with-elevation-2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Miami 2026:technical-drawing-with-elevation-2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000189"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-technical-drawing-with-elevation-2",
+        "type": "HumanMadeObject",
+        "_label": "loop-miami-2026/technical-drawing-with-elevation-2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/technical-drawing-with-elevation-2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/technical-drawing-with-elevation-2.html"
+        ],
+        "external_urls": [
+          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:traveling-landscape",
+      "dublin_core": {
+        "title": "Traveling Landscape",
+        "creator": "Mark Walhimer",
+        "date": "2026-03-15",
+        "description": "",
+        "identifier": "urn:walhimer:work:traveling-landscape",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000004"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/traveling-landscape",
+        "type": "HumanMadeObject",
+        "_label": "Traveling Landscape",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/traveling-landscape.html"
+        },
+        "tech": [
+          "p5.js",
+          "WEBGL",
+          "inlined"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/traveling-landscape.html"
+        ],
+        "external_urls": [
+          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.11/p5.min.js",
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Miami 2026:orchestrator",
+      "dublin_core": {
+        "title": "orchestrator",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Spatial Orchestrator:orchestrator",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000051"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Spatial Orchestrator-orchestrator",
+        "type": "HumanMadeObject",
+        "_label": "orchestrator",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Miami 2026",
+          "file": "loop-miami-2026/orchestrator.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-miami-2026/orchestrator.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
       "dublin_core": {
         "title": "tezos-early-works/index",
@@ -645,94 +1109,6 @@
           "sketches/tezos-early-works/assets/artifact.jpg",
           "sketches/tezos-early-works/assets/artifact.png",
           "sketches/tezos-early-works/index.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Miami 2026:index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Miami 2026",
-          "file": "loop-miami-2026/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-miami-2026/README.md",
-          "sketches/loop-miami-2026/index.html",
-          "sketches/loop-miami-2026/installation-composer-emergent-dna-soundscape.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Miami 2026:installation-composer-emergent-dna-soundscape",
-      "dublin_core": {
-        "title": "loop-miami-2026/installation-composer-emergent-dna-soundscape.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Miami 2026:installation-composer-emergent-dna-soundscape",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000183"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Miami 2026-installation-composer-emergent-dna-soundscape",
-        "type": "HumanMadeObject",
-        "_label": "loop-miami-2026/installation-composer-emergent-dna-soundscape.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Miami 2026",
-          "file": "loop-miami-2026/installation-composer-emergent-dna-soundscape.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-miami-2026/installation-composer-emergent-dna-soundscape.md"
         ],
         "external_urls": []
       }
@@ -7701,6 +8077,57 @@
       "artifacts": {
         "repo_paths": [
           "sketches/spatial-orchestrator-board.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-four-walls",
+      "dublin_core": {
+        "title": "Bloom / Four Walls",
+        "creator": "Mark Walhimer",
+        "date": "2026-03-15",
+        "description": "",
+        "identifier": "urn:walhimer:work:bloom-four-walls",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000003"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/bloom-four-walls",
+        "type": "HumanMadeObject",
+        "_label": "Bloom / Four Walls",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/bloom-four-walls.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL",
+          "inlined"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/bloom-four-walls.html"
         ],
         "external_urls": []
       }

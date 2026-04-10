@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>City gradient — p5 WEBGL</title>
+<style>
+html, body { height: 100%; margin: 0; background: #fafafa; overflow: hidden; }
+main { display: grid; place-items: center; min-height: 100%; }
+canvas { display: block; max-width: 100vw; max-height: 100vh; }
+</style>
+</head>
+<body>
+<main id="wrap"></main>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+<script>
+let city = [];
+let rows = 1;
+let spacing = 500;
+let palette = [310, 45, 30, 210, 270];
+
+let camZ = 500;                 // stationary camera
+let boxSpeed = 1;               // boxes move toward viewer
+
+let gradientTextures = [];
+
+function setup() {
+  const c = createCanvas(1000, 1000, WEBGL);
+  c.parent('wrap');
+  pixelDensity(4);
+  frameRate(60);
+  colorMode(HSB, 360, 100, 100, 255);
+  noStroke();
+  setAttributes('alpha', true);
+
+  textureWrap(CLAMP);
+
+  // Pre-generate shared gradient textures (no strokes, filled scanlines)
+  for (let i = 0; i < 10; i++) {
+    let hue1 = random(palette);
+    let hue2 = random(palette);
+    let tex = createGraphics(64, 256);
+    tex.colorMode(HSB, 360, 100, 100, 255);
+    tex.noStroke();
+    for (let y = 0; y < tex.height; y++) {
+      let inter = map(y, 0, tex.height, 0, 1);
+      let hBlend = lerp(hue1, hue2, inter);
+      tex.fill(hBlend, 100, 100, 100);
+      tex.rect(0, y, tex.width, 1);
+    }
+    gradientTextures.push(tex);
+  }
+
+  // Single centered column placed into the distance (negative Z)
+  for (let i = 0; i < rows; i++) {
+    let w = 200;
+    let d = 200;
+    let h = 200;
+    let tex = random(gradientTextures);
+    city.push({
+      x: 0,
+      z: -i * spacing,
+      w, h, d, tex
+    });
+  }
+}
+
+function draw() {
+  background(0, 0, 100); // white (HSB)
+
+  // Stationary camera looking directly at the origin
+  camera(0, 0, camZ, 0, 0, 0, 0, 1, 0);
+
+  ambientLight(255);
+  directionalLight(255, 255, 255, 0.3, -1, -0.5);
+  blendMode(BLEND);
+
+  const recycleFront = camZ + 100;
+  const loopDistance = rows * spacing;
+
+  for (let b of city) {
+    // Move toward the viewer
+    b.z += boxSpeed;
+
+    // Recycle once past camera
+    if (b.z > recycleFront) {
+      b.z -= loopDistance;
+      b.w = random(100, 200);
+      b.d = random(100, 200);
+      b.h = random(100, 300);
+      b.tex = random(gradientTextures);
+    }
+
+    push();
+    texture(b.tex);
+    translate(b.x, 0, b.z); // perfectly centered Y
+    box(b.w, b.h, b.d);
+    pop();
+  }
+}
+</script>
+</body>
+</html>
