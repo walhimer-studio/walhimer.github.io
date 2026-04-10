@@ -6,55 +6,179 @@
   <title>Loop Miami 2026 — Critique hub</title>
   <link rel="canonical" href="https://mark-walhimer.com/sketches/loop-miami-2026/critique-hub.html">
   <style>
-    :root { --bg: #0c0c0e; --fg: #eae8e3; --dim: #8a8780; --accent: #c8a882; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--fg); margin: 0; padding: 1.25rem 1rem 3rem; line-height: 1.55; max-width: 38rem; }
-    h1 { font-size: 1.15rem; font-weight: 600; letter-spacing: 0.02em; margin: 0 0 0.35rem; }
-    .sub { color: var(--dim); font-size: 0.8rem; margin-bottom: 1.25rem; }
-    h2 { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); margin: 1.35rem 0 0.4rem; }
-    a { color: var(--accent); }
-    ul { margin: 0.2rem 0 0; padding-left: 1.1rem; }
-    li { margin: 0.35rem 0; }
-    .box { border: 1px solid #2a2a30; border-radius: 8px; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.88rem; }
-    .box strong { color: var(--fg); }
-    code { font-size: 0.82em; background: #16161a; padding: 0.12em 0.35em; border-radius: 4px; }
+    :root {
+      --page: #0c0c0e;
+      --stage: #f7f5f0;
+      --ink: #1a1a1a;
+      --muted: #5c5a56;
+      --rule: #e2ddd4;
+      --accent: #8b6914;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--page);
+      color: var(--ink);
+      margin: 0;
+      padding: clamp(1rem, 4vw, 2.5rem);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    /* Outer breathing room + centered column */
+    .wrap {
+      max-width: 40rem;
+      margin: 0 auto;
+    }
+    .page-meta {
+      color: #9a9690;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    /* Light “white space” frame — everything important sits inside this */
+    .stage {
+      background: var(--stage);
+      color: var(--ink);
+      border-radius: 12px;
+      padding: clamp(1.25rem, 4vw, 2rem);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 12px 40px rgba(0,0,0,0.35);
+    }
+    .stage h1 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.02em;
+    }
+    .stage .lede {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0 0 1.5rem;
+      max-width: 36ch;
+    }
+    section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+    }
+    section:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+    h2 {
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 0.5rem;
+      font-weight: 600;
+    }
+    ul { margin: 0; padding-left: 1.15rem; }
+    li { margin: 0.4rem 0; }
+    a { color: var(--accent); font-weight: 500; }
+    .box {
+      background: #fff;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-size: 0.88rem;
+      color: #333;
+    }
+    .box strong { color: var(--ink); }
+    code { font-size: 0.82em; background: #eeeae4; padding: 0.15em 0.4em; border-radius: 4px; }
+
+    /* Open slot: your embed, image, or bullets — edit the HTML inside */
+    .slot {
+      border: 2px dashed #c9c2b6;
+      border-radius: 10px;
+      min-height: 6rem;
+      padding: 1rem 1.1rem;
+      background: #fff;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .slot .hint {
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      color: #8a8680;
+      margin-bottom: 0.65rem;
+    }
+    .slot ul { color: var(--ink); }
+
+    footer {
+      margin-top: 1.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); }
   </style>
 </head>
 <body>
-  <h1>Loop Miami 2026 — critique</h1>
-  <p class="sub">One link for sessions: planning notes + where to open each prototype. Heavy pages stay on the web; use a small upload only if the venue caps file size (~5&nbsp;MB).</p>
+  <div class="wrap">
+    <p class="page-meta">Loop · presentation</p>
 
-  <h2>Loop Art Critique (verse)</h2>
-  <ul>
-    <li><a href="https://verse.loop.onland.io/kfAkyqx/the-critique-club">The Critique Club</a> — Loop Art Critique room (open in Loop / browser as your host provides).</li>
-  </ul>
+    <main class="stage" aria-label="Critique content">
+      <h1>Loop Miami 2026</h1>
+      <p class="lede">Structured view: verse link, an open area for your material, then notes and prototypes.</p>
 
-  <div class="box">
-    <strong>Under 5&nbsp;MB?</strong> Do not zip the whole folder. Upload either: (1) a <strong>single GLB</strong> room/prop under 5&nbsp;MB, plus (2) this page or the <a href="index.html">bundle index</a> as a <strong>thin HTML</strong> that only links out — or paste <strong>one URL</strong> in world chat / QR: <code>https://mark-walhimer.com/sketches/loop-miami-2026/critique-hub.html</code>. Full Bloom / hybrid builds are multi-MB because of embedded audio; for a small package, use <strong>bloom_room_hybrid.glb</strong> + describe behavior, or screen-share the browser.
+      <section id="verse" aria-labelledby="verse-heading">
+        <h2 id="verse-heading">Loop Art Critique (verse)</h2>
+        <ul>
+          <li><a href="https://verse.loop.onland.io/kfAkyqx/the-critique-club">The Critique Club</a> — room for sessions (Loop / browser).</li>
+        </ul>
+      </section>
+
+      <section id="your-space" aria-labelledby="your-heading">
+        <h2 id="your-heading">Your space</h2>
+        <p class="lede" style="margin-bottom:0.65rem;">Use this block for screen-share or print: talking points, stills, or paste HTML below (image, iframe embed).</p>
+        <div class="slot" contenteditable="false">
+          <p class="hint">Edit <code>critique-hub.html</code> in this folder — replace this div’s inner HTML with your image, embed, or list.</p>
+          <ul>
+            <li>…</li>
+            <li>…</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="constraints" aria-labelledby="cap-heading">
+        <h2 id="cap-heading">Upload note</h2>
+        <div class="box">
+          <strong>Under ~5&nbsp;MB?</strong> Don’t zip the whole bundle. Prefer one small GLB + this link in chat: <code>https://mark-walhimer.com/sketches/loop-miami-2026/critique-hub.html</code> — or open prototypes in the browser / screen-share. See <a href="index.html">bundle index</a>.
+        </div>
+      </section>
+
+      <section id="planning" aria-labelledby="plan-heading">
+        <h2 id="plan-heading">Planning</h2>
+        <ul>
+          <li><a href="installation-composer-emergent-dna-soundscape.md">Installation Composer × Emergent DNA × Soundscape</a> — full notes</li>
+        </ul>
+      </section>
+
+      <section id="prototypes" aria-labelledby="proto-heading">
+        <h2 id="proto-heading">Open in browser</h2>
+        <ul>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-four-walls.html">Bloom / Four Walls</a></li>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-hybrid-test.html">Bloom hybrid</a> (HTTP for GLB)</li>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/walk_moon_audio_standalone.html">Walk — moon — audio</a></li>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/city_gradient_standalone.html">City gradient (p5)</a> — smallest</li>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/technical-drawing-with-elevation-2.html">Technical drawing + elevation</a></li>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/traveling-landscape.html">Traveling landscape</a></li>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/orchestrator.html">Spatial orchestrator</a></li>
+        </ul>
+      </section>
+
+      <section id="feedback" aria-labelledby="fb-heading">
+        <h2 id="fb-heading">Feedback prompts</h2>
+        <ul>
+          <li>Which <strong>one scene</strong> should lead: room, corridor, document, or world?</li>
+          <li>Is <strong>emergent / different each time</strong> clear vs fixed video?</li>
+          <li>What must live <strong>in-GLB</strong> vs <strong>web runtime</strong>?</li>
+        </ul>
+      </section>
+
+      <footer>
+        <a href="index.html">Bundle index</a> · <a href="https://mark-walhimer.com/sketches/index.html">Full catalog</a>
+      </footer>
+    </main>
   </div>
-
-  <h2>Planning (read first)</h2>
-  <ul>
-    <li><a href="installation-composer-emergent-dna-soundscape.md">Installation Composer × Emergent DNA × Soundscape</a> — full notes</li>
-  </ul>
-
-  <h2>Open in browser (full experience)</h2>
-  <ul>
-    <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-four-walls.html">Bloom / Four Walls</a></li>
-    <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-hybrid-test.html">Bloom hybrid</a> (serve folder over HTTP for GLB)</li>
-    <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/walk_moon_audio_standalone.html">Walk — moon — audio</a></li>
-    <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/city_gradient_standalone.html">City gradient (p5)</a> — smallest interactive</li>
-    <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/technical-drawing-with-elevation-2.html">Technical drawing + elevation</a></li>
-    <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/traveling-landscape.html">Traveling landscape</a></li>
-    <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/orchestrator.html">Spatial orchestrator</a></li>
-  </ul>
-
-  <h2>Feedback (for the group)</h2>
-  <ul>
-    <li>Which <strong>one scene</strong> should lead for Miami: room (Bloom), corridor (walk / gradient), document (technical drawing), or world (traveling landscape)?</li>
-    <li>Is the through-line clear: <strong>emergent / different each time</strong> vs fixed video?</li>
-    <li>What has to be <strong>in-GLB</strong> vs acceptable as <strong>runtime / web</strong> for this venue?</li>
-  </ul>
-
-  <p class="sub" style="margin-top:1.5rem;"><a href="index.html">Bundle index</a> · <a href="https://mark-walhimer.com/sketches/index.html">Full catalog</a></p>
 </body>
 </html>

@@ -6,40 +6,106 @@
   <title>Loop Miami 2026 · Mark Walhimer</title>
   <link rel="canonical" href="https://mark-walhimer.com/sketches/loop-miami-2026/">
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #111; }
-    h1 { font-weight: 600; font-size: 1.5rem; }
-    h2 { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: #666; margin-top: 1.75rem; }
-    ul { margin: 0.35rem 0 0; padding-left: 1.2rem; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background: #e8e4dc;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: clamp(1rem, 4vw, 2.5rem);
+    }
+    .wrap { max-width: 44rem; margin: 0 auto; }
+    .page-meta { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #6b6860; margin-bottom: 0.6rem; }
+    .sheet {
+      background: #faf9f6;
+      border-radius: 12px;
+      padding: clamp(1.5rem, 5vw, 2.25rem);
+      box-shadow: 0 1px 0 #fff inset, 0 8px 32px rgba(0,0,0,0.08);
+      border: 1px solid #dcd7ce;
+    }
+    h1 { font-weight: 600; font-size: 1.5rem; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+    .lede { color: #454238; margin: 0 0 1.25rem; line-height: 1.55; max-width: 40ch; }
+    h2 {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6b6860;
+      margin: 1.5rem 0 0.5rem;
+      font-weight: 600;
+    }
+    section:first-child h2 { margin-top: 0; }
+    ul { margin: 0.35rem 0 0; padding-left: 1.2rem; line-height: 1.5; }
+    li { margin: 0.35rem 0; }
     a { color: #0a58ca; }
-    .lede { color: #444; margin-bottom: 1rem; }
-    .callout { background: #f6f4ef; border: 1px solid #e0dcd4; border-radius: 8px; padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.9rem; }
+    .callout {
+      background: #f0ebe3;
+      border: 1px solid #dcd7ce;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .slot {
+      border: 2px dashed #c9c2b6;
+      border-radius: 10px;
+      min-height: 4rem;
+      padding: 1rem;
+      margin-top: 0.75rem;
+      background: #fff;
+      color: #6b6860;
+      font-size: 0.88rem;
+    }
+    .slot .hint { font-size: 0.78rem; margin-bottom: 0.5rem; color: #8a8680; }
+    footer { margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid #e0dcd4; font-size: 0.85rem; color: #6b6860; }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Loop Miami 2026</h1>
-    <p class="lede">Planning bundle for Loop Art Critique / Miami 2026: notes plus local copies of prototypes discussed for Installation Composer, Emergent DNA, Bloom, walking, technical drawing, traveling landscape, and orchestration.</p>
+  <div class="wrap">
+    <p class="page-meta">Catalog · bundle</p>
+    <main class="sheet">
+      <h1>Loop Miami 2026</h1>
+      <p class="lede">Planning bundle: notes and prototype copies. Same content as below, with room to add your own block.</p>
 
-    <div class="callout">
-      <strong>Critique / Metaverse (&lt; 5 MB uploads):</strong> use <a href="critique-hub.html">critique-hub.html</a> — one lightweight page that links to everything on the site so you are not uploading multi-megabyte HTML. Share the URL or QR in world.
-    </div>
+      <div class="callout">
+        <strong>Critique layout:</strong> <a href="critique-hub.html">critique-hub.html</a> uses a light “stage” panel + sections (verse ? your space ? notes ? links). Use that for Monday; this page is the file list.
+      </div>
 
-    <h2>Notes</h2>
-    <ul>
-      <li><a href="installation-composer-emergent-dna-soundscape.md">Installation Composer × Emergent DNA × Soundscape</a> (working summary)</li>
-      <li><a href="README.md">README</a></li>
-    </ul>
+      <section>
+        <h2>Your space (optional)</h2>
+        <p class="lede" style="margin:0 0 0.5rem;">Edit this file and replace the inner part of the <code>.slot</code> with an image, embed, or bullets.</p>
+        <div class="slot">
+          <p class="hint">Placeholder — add session title, still, or embed code here.</p>
+          <p>…</p>
+        </div>
+      </section>
 
-    <h2>Prototypes (copies)</h2>
-    <ul>
-      <li><a href="bloom-four-walls.html">Bloom / Four Walls</a></li>
-      <li><a href="bloom-hybrid-test.html">Bloom hybrid test</a> + <a href="bloom_room_hybrid.glb">bloom_room_hybrid.glb</a> (serve over HTTP for GLB)</li>
-      <li><a href="walk_moon_audio_standalone.html">Walk — moon — audio</a></li>
-      <li><a href="city_gradient_standalone.html">City gradient (p5 corridor)</a></li>
-      <li><a href="technical-drawing-with-elevation-2.html">Technical drawing with elevation</a></li>
-      <li><a href="traveling-landscape.html">Traveling landscape</a></li>
-      <li><a href="orchestrator.html">8-pillar spatial orchestrator</a></li>
-    </ul>
-  </main>
+      <section>
+        <h2>Notes</h2>
+        <ul>
+          <li><a href="installation-composer-emergent-dna-soundscape.md">Installation Composer × Emergent DNA × Soundscape</a></li>
+          <li><a href="README.md">README</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Prototypes (copies)</h2>
+        <ul>
+          <li><a href="bloom-four-walls.html">Bloom / Four Walls</a></li>
+          <li><a href="bloom-hybrid-test.html">Bloom hybrid test</a> + <a href="bloom_room_hybrid.glb">bloom_room_hybrid.glb</a></li>
+          <li><a href="walk_moon_audio_standalone.html">Walk — moon — audio</a></li>
+          <li><a href="city_gradient_standalone.html">City gradient (p5 corridor)</a></li>
+          <li><a href="technical-drawing-with-elevation-2.html">Technical drawing with elevation</a></li>
+          <li><a href="traveling-landscape.html">Traveling landscape</a></li>
+          <li><a href="orchestrator.html">8-pillar spatial orchestrator</a></li>
+        </ul>
+      </section>
+
+      <footer>
+        <a href="https://mark-walhimer.com/sketches/index.html">Full catalog</a>
+      </footer>
+    </main>
+  </div>
 </body>
 </html>
