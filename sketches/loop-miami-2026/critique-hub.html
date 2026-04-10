@@ -24,7 +24,7 @@
       line-height: 1.55;
       min-height: 100vh;
     }
-    .wrap { max-width: 40rem; margin: 0 auto; }
+    .wrap { max-width: 44rem; margin: 0 auto; }
     .page-meta {
       color: #9a9690;
       font-size: 0.72rem;
@@ -49,7 +49,7 @@
       color: var(--muted);
       font-size: 0.9rem;
       margin: 0 0 1.5rem;
-      max-width: 36ch;
+      max-width: 40ch;
     }
     section {
       margin-top: 1.5rem;
@@ -79,22 +79,55 @@
     .box + .box { margin-top: 0.65rem; }
     .box strong { color: var(--ink); }
     code { font-size: 0.82em; background: #eeeae4; padding: 0.15em 0.4em; border-radius: 4px; word-break: break-all; }
-    .slot {
-      border: 2px dashed #c9c2b6;
-      border-radius: 10px;
-      min-height: 6rem;
-      padding: 1rem 1.1rem;
-      background: #fff;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-    .slot .hint {
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
-      color: #8a8680;
+
+    .preview-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1rem;
       margin-bottom: 0.65rem;
     }
-    .slot ul { color: var(--ink); }
+    .preview-toolbar label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .preview-toolbar select {
+      flex: 1;
+      min-width: min(100%, 16rem);
+      font: inherit;
+      font-size: 0.88rem;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+    }
+    .preview-toolbar .open-tab {
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+    .preview-frame-wrap {
+      background: #fff;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      overflow: hidden;
+      min-height: 420px;
+    }
+    .preview-frame-wrap iframe {
+      display: block;
+      width: 100%;
+      height: min(72vh, 640px);
+      min-height: 420px;
+      border: 0;
+      background: #fff;
+    }
+    .preview-hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
     footer {
       margin-top: 1.75rem;
       padding-top: 1rem;
@@ -111,7 +144,7 @@
 
     <main class="stage" aria-label="Critique content">
       <h1>Loop Miami 2026</h1>
-      <p class="lede">Structured view: verse link, an open area for your material, then notes and prototypes.</p>
+      <p class="lede">Pick a prototype below — it runs in the white preview. Use the list further down to open any file in a full tab.</p>
 
       <section id="verse" aria-labelledby="verse-heading">
         <h2 id="verse-heading">Loop Art Critique (verse)</h2>
@@ -120,34 +153,43 @@
         </ul>
       </section>
 
+      <section id="live-preview" aria-labelledby="preview-heading">
+        <h2 id="preview-heading">Live preview</h2>
+        <div class="preview-toolbar">
+          <label for="preview-select">File</label>
+          <select id="preview-select" aria-label="Choose sketch file to preview">
+            <option value="city_gradient_standalone.html">City gradient (p5) — light</option>
+            <option value="walk_moon_audio_standalone.html">Walk — moon — audio</option>
+            <option value="technical-drawing-with-elevation-2.html">Technical drawing + elevation</option>
+            <option value="traveling-landscape.html">Traveling landscape</option>
+            <option value="orchestrator.html">8-pillar spatial orchestrator</option>
+            <option value="bloom-hybrid-test.html">Bloom hybrid (needs GLB path; may need full tab)</option>
+            <option value="bloom-four-walls.html">Bloom / Four Walls (large; audio — prefer new tab)</option>
+          </select>
+          <a id="preview-open-tab" class="open-tab" href="city_gradient_standalone.html" target="_blank" rel="noopener">Open in new tab ?</a>
+        </div>
+        <div class="preview-frame-wrap">
+          <iframe id="preview-frame" title="Selected sketch preview" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
+        </div>
+        <p class="preview-hint">Heavy sketches (especially Bloom) may load slowly in the frame; use <strong>Open in new tab</strong> if the preview misbehaves. Audio often needs a click inside the frame or a separate tab.</p>
+      </section>
+
       <section id="onland-upload" aria-labelledby="onland-heading">
         <h2 id="onland-heading">Onland / Loop — Upload dialog</h2>
         <div class="box">
-          <strong>Why <code>index.html</code> fails:</strong> The URL field next to “OR” only accepts a <strong>direct file</strong> (GLB, PNG, JPG, GIF, PDF, MP4, MP3). A webpage URL is not a valid “file type,” so you see <em>File type is not valid</em>.
+          <strong>Why <code>index.html</code> fails:</strong> The URL field next to “OR” only accepts a <strong>direct file</strong> (GLB, PNG, JPG, GIF, PDF, MP4, MP3). A webpage URL is not a valid file type for that field.
         </div>
         <div class="box">
-          <strong>Use this PNG URL in the Upload URL box</strong> (under 5 MB, valid type):<br>
+          <strong>PNG for the Upload URL box:</strong><br>
           <code>https://mark-walhimer.com/sketches/loop-miami-2026/loop-miami-critique-card.png</code><br>
-          It is a small placeholder card (cream). Put the real experience in <strong>Title / Description</strong> and paste <code>critique-hub.html</code> there, or open it from <strong>Advanced Options ? Custom URL</strong> on a placed object if the tool allows any https link (that path is separate from the Upload file-type check).
-        </div>
-      </section>
-
-      <section id="your-space" aria-labelledby="your-heading">
-        <h2 id="your-heading">Your space</h2>
-        <p class="lede" style="margin-bottom:0.65rem;">Use this block for screen-share or print: talking points, stills, or paste HTML below (image, iframe embed).</p>
-        <div class="slot" contenteditable="false">
-          <p class="hint">Edit <code>critique-hub.html</code> in this folder — replace this div’s inner HTML with your image, embed, or list.</p>
-          <ul>
-            <li>…</li>
-            <li>…</li>
-          </ul>
+          Put narrative + link to this page in Title / Description, or use Advanced Options ? Custom URL on an object if available.
         </div>
       </section>
 
       <section id="constraints" aria-labelledby="cap-heading">
         <h2 id="cap-heading">Size note</h2>
         <div class="box">
-          <strong>Under ~5 MB:</strong> Do not zip the whole bundle. For heavy sketches, screen-share or link from Description. See <a href="index.html">bundle index</a>.
+          <strong>Under ~5 MB:</strong> Do not zip the whole bundle. For heavy sketches, screen-share or full tab. See <a href="index.html">bundle index</a>.
         </div>
       </section>
 
@@ -159,12 +201,12 @@
       </section>
 
       <section id="prototypes" aria-labelledby="proto-heading">
-        <h2 id="proto-heading">Open in browser</h2>
+        <h2 id="proto-heading">Open in browser (same files)</h2>
         <ul>
           <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-four-walls.html">Bloom / Four Walls</a></li>
           <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-hybrid-test.html">Bloom hybrid</a> (HTTP for GLB)</li>
           <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/walk_moon_audio_standalone.html">Walk — moon — audio</a></li>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/city_gradient_standalone.html">City gradient (p5)</a> — smallest</li>
+          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/city_gradient_standalone.html">City gradient (p5)</a></li>
           <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/technical-drawing-with-elevation-2.html">Technical drawing + elevation</a></li>
           <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/traveling-landscape.html">Traveling landscape</a></li>
           <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/orchestrator.html">Spatial orchestrator</a></li>
@@ -185,5 +227,20 @@
       </footer>
     </main>
   </div>
+
+  <script>
+  (function () {
+    var sel = document.getElementById('preview-select');
+    var frame = document.getElementById('preview-frame');
+    var openTab = document.getElementById('preview-open-tab');
+    function sync() {
+      var path = sel.value;
+      frame.src = path;
+      openTab.href = path;
+    }
+    sel.addEventListener('change', sync);
+    sync();
+  })();
+  </script>
 </body>
 </html>
