@@ -1,0 +1,16 @@
+{
+  "name": "critique-frame-glb",
+  "version": "1.0.0",
+  "description": "16:9 ~9ft critique screen + bezel GLB for Loop/Verse",
+  "type": "module",
+  "main": "build.mjs",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "three": "^0.160.0"
+  }
+}
