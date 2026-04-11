@@ -214,8 +214,22 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
+      height: 100%;
       padding: 0.65rem 0.85rem 0.85rem;
       overflow: hidden;
+    }
+    /* Flex chain so the iframe gets real height (WebGL dies at 0×0; audio can still run). */
+    #live-preview {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      min-width: 0;
+    }
+    #live-preview > h2,
+    #live-preview > .preview-toolbar,
+    #live-preview > .preview-hint {
+      flex-shrink: 0;
     }
     .hub-sidebar .lede {
       color: var(--muted);
@@ -285,8 +299,9 @@
     }
     .preview-frame-wrap {
       position: relative;
-      flex: 1;
-      min-height: 0;
+      flex: 1 1 0;
+      min-height: min(50vh, 360px);
+      min-width: 0;
       background: #fff;
       border: 1px solid var(--rule);
       border-radius: 8px;
@@ -301,6 +316,7 @@
       width: 100%;
       height: 100%;
       border: 0;
+      display: block;
       background: #fff;
     }
     .preview-hint {
@@ -466,7 +482,8 @@
             <a id="preview-open-tab" class="open-tab" href="bloom-four-walls.html" target="_blank" rel="noopener">Open in new tab</a>
           </div>
           <div class="preview-frame-wrap">
-            <iframe id="preview-frame" title="Selected sketch preview" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups" allow="autoplay; fullscreen"></iframe>
+            <!-- No sandbox: same-origin sketches need WebGL/canvas in iframe; sandbox can blank WebGL while audio still plays. -->
+            <iframe id="preview-frame" title="Selected sketch preview" allow="autoplay; fullscreen"></iframe>
           </div>
           <p class="preview-hint" id="preview-hint">Heavy sketches may load slowly; use <strong>Open in new tab</strong> if needed. Audio often needs a click inside the frame. <strong>Next</strong> (corner or <kbd>]</kbd>) cycles the preview while you talk.</p>
         </section>
