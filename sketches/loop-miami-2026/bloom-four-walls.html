@@ -30,6 +30,12 @@
     #lifebar-wrap{position:fixed;bottom:0;left:0;width:100%;height:2px;background:rgba(0,0,0,.04);z-index:10;}
     #lifebar{height:100%;width:0%;background:rgba(0,0,0,.18);transition:width .1s linear;}
     #wall-counter{position:fixed;top:22px;right:28px;font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:rgba(0,0,0,.18);pointer-events:none;z-index:10;}
+    #corner-stop{
+      position:fixed;top:0;right:0;width:min(28vw,140px);height:min(28vw,140px);
+      z-index:40;cursor:pointer;background:transparent;border:none;padding:0;
+      pointer-events:none;
+    }
+    #corner-stop[aria-disabled="false"]:hover{background:rgba(0,0,0,.03);}
     #credit{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(0,0,0,.12);pointer-events:none;white-space:nowrap;z-index:10;}
   </style>
 </head>
@@ -38,13 +44,14 @@
   <div class="ov-label">Immersive Installation</div>
   <div class="ov-title">Bloom &nbsp;/ <em>Release</em></div>
   <div class="ov-dot"></div>
-  <div class="ov-hint" id="ov-hint">Click to enter &nbsp;·&nbsp; drag to look around</div>
+  <div class="ov-hint" id="ov-hint">Loading &nbsp;·&nbsp; top-right corner stops</div>
   <div class="ov-attribution"><i>Salamander Grand Piano</i> (Yamaha C5) by Alexander Holm · CC BY 3.0 · FreePats — https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html</div>
   <div class="ov-loading" id="ov-loading">Loading piano samples</div>
   <div id="progress-wrap"><div id="progress-bar"></div></div>
 </div>
-<div id="hint">Drag to look around the room</div>
+<div id="hint">Drag to look &nbsp;·&nbsp; tap top-right to stop</div>
 <div id="wall-counter">Wall 1 · North</div>
+<button type="button" id="corner-stop" aria-label="Stop experience" title="Stop" aria-disabled="true"></button>
 <div id="lifebar-wrap"><div id="lifebar"></div></div>
 <div id="credit">Bloom / Release &nbsp;·&nbsp; 2025–2026</div>
 
@@ -382,7 +389,22 @@ window.addEventListener('resize',()=>{
 
 // ── RENDER LOOP ───────────────────────────────────────────────────────
 const lifebar=document.getElementById('lifebar');
+const cornerStop=document.getElementById('corner-stop');
 let running=false,last=null,autoRotate=true;
+
+function setCornerStopActive(on){
+  cornerStop.setAttribute('aria-disabled', on ? 'false' : 'true');
+  cornerStop.style.pointerEvents=on?'auto':'none';
+}
+
+function stopExperience(){
+  if(!running)return;
+  running=false;
+  setCornerStopActive(false);
+  try{
+    if(actx&&actx.state==='running')actx.suspend();
+  }catch(_){/* ignore */}
+}
 function loop(t){
   requestAnimationFrame(loop);
   if(!running)return;
@@ -413,14 +435,26 @@ async function begin(){
   ovLoading.style.display='block';
   progressWrap.style.display='block';
   await loadAudio();
+  try{ if(actx&&actx.state==='suspended')await actx.resume(); }catch(_){/* autoplay may need a gesture */}
   overlay.classList.add('fade');
   running=true; last=null;
+  setCornerStopActive(true);
   setTimeout(()=>overlay.style.display='none',1400);
   setTimeout(()=>{if(!hintHidden){hintEl.classList.add('gone');hintHidden=true;}},6000);
 }
 
-overlay.addEventListener('click',begin,{once:true});
-document.addEventListener('keydown',()=>{if(!running)begin();},{once:true});
+cornerStop.addEventListener('click',function(e){
+  e.preventDefault();
+  e.stopPropagation();
+  stopExperience();
+});
+
+function tryResumeAudio(){
+  if(actx&&actx.state==='suspended')actx.resume().catch(function(){/* ignore */});
+}
+document.addEventListener('click',tryResumeAudio,{once:true,capture:true});
+
+void begin();
 ['mousedown','touchstart'].forEach(ev=>
   renderer.domElement.addEventListener(ev,()=>{
     autoRotate=false;
