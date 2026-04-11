@@ -13,6 +13,8 @@
       --muted: #5c5a56;
       --rule: #e2ddd4;
       --accent: #8b6914;
+      /* 16:9 preview: height leg = 9 at viewport scale (9vh); width follows 16:9 */
+      --preview-9: 9vh;
     }
     * { box-sizing: border-box; }
     body {
@@ -108,17 +110,21 @@
       white-space: nowrap;
     }
     .preview-frame-wrap {
+      position: relative;
       background: #fff;
       border: 1px solid var(--rule);
       border-radius: 10px;
       overflow: hidden;
-      min-height: 420px;
+      margin-inline: auto;
+      width: min(100%, calc(var(--preview-9) * 16 / 9));
+      aspect-ratio: 16 / 9;
+      height: auto;
     }
     .preview-frame-wrap iframe {
-      display: block;
+      position: absolute;
+      inset: 0;
       width: 100%;
-      height: min(72vh, 640px);
-      min-height: 420px;
+      height: 100%;
       border: 0;
       background: #fff;
     }
