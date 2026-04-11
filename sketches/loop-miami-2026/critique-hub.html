@@ -13,7 +13,9 @@
       --muted: #5c5a56;
       --rule: #e2ddd4;
       --accent: #8b6914;
-      --preview-9: min(42vh, calc(100vw * 9 / 16 * 0.42));
+      --meta-blue-deep: #0a1628;
+      --meta-blue-mid: #152a45;
+      --meta-blue-light: #e8f2ff;
     }
     * { box-sizing: border-box; }
     body {
@@ -22,14 +24,109 @@
       color: var(--ink);
       margin: 0;
       min-height: 100vh;
+      line-height: 1.45;
+    }
+    body.hub-active {
       display: flex;
       align-items: center;
       justify-content: center;
       padding: clamp(0.5rem, 2vw, 1.25rem);
-      line-height: 1.45;
     }
-    /* Entire UI lives in a 16:9 frame (fits viewport) */
+    /* --- Metaverse-style lobby (blue four walls) --- */
+    .meta-lobby {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(0.5rem, 2vw, 1.25rem);
+      background: radial-gradient(ellipse 120% 80% at 50% 20%, #1a3a62 0%, var(--meta-blue-deep) 55%, #050a12 100%);
+      position: relative;
+    }
+    .meta-lobby::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(15, 40, 75, 0.55) 0%, transparent 12%, transparent 88%, rgba(15, 40, 75, 0.55) 100%),
+        linear-gradient(180deg, rgba(40, 90, 140, 0.2) 0%, transparent 25%, transparent 75%, rgba(0, 20, 40, 0.35) 100%);
+      pointer-events: none;
+    }
+    .meta-room {
+      position: relative;
+      width: min(96vw, calc(96vh * 16 / 9));
+      max-height: min(96vh, calc(96vw * 9 / 16));
+      aspect-ratio: 16 / 9;
+      border: 2px solid rgba(120, 190, 255, 0.35);
+      border-radius: 8px;
+      box-shadow:
+        inset 0 0 100px rgba(0, 60, 120, 0.2),
+        0 16px 48px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+      background: linear-gradient(165deg, var(--meta-blue-mid) 0%, #0f2038 45%, #0a1528 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 2.5rem);
+      text-align: center;
+      color: var(--meta-blue-light);
+    }
+    .meta-room h1 {
+      font-size: clamp(1.15rem, 3vw, 1.65rem);
+      font-weight: 600;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+      text-shadow: 0 1px 12px rgba(0, 40, 80, 0.5);
+    }
+    .meta-room .meta-brand {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 0.35rem;
+    }
+    .meta-room .meta-lede {
+      font-size: clamp(0.82rem, 1.8vw, 0.95rem);
+      opacity: 0.88;
+      max-width: 36ch;
+      margin: 0 0 1.5rem;
+      line-height: 1.5;
+    }
+    .meta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      justify-content: center;
+    }
+    .meta-actions button {
+      font: inherit;
+      font-size: 0.88rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid rgba(160, 210, 255, 0.45);
+    }
+    #btn-open-hub-tab {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--meta-blue-light);
+    }
+    #btn-open-hub-tab:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    #btn-enter-hub {
+      background: rgba(80, 160, 255, 0.35);
+      color: #fff;
+      border-color: rgba(140, 200, 255, 0.6);
+    }
+    #btn-enter-hub:hover {
+      background: rgba(100, 175, 255, 0.5);
+    }
+    .meta-lobby.meta-lobby--away {
+      display: none;
+    }
+    /* --- Main hub (unchanged structure) --- */
     .critique-viewport {
+      display: none;
       width: min(96vw, calc(96vh * 16 / 9));
       max-height: min(96vh, calc(96vw * 9 / 16));
       aspect-ratio: 16 / 9;
@@ -37,9 +134,11 @@
       color: var(--ink);
       border-radius: 12px;
       box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 12px 40px rgba(0,0,0,0.35);
-      display: flex;
       flex-direction: column;
       overflow: hidden;
+    }
+    body.hub-active .critique-viewport {
+      display: flex;
     }
     .hub-topbar {
       display: flex;
@@ -68,6 +167,8 @@
       display: flex;
       align-items: center;
       gap: 0.4rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .hub-topbar button {
       font: inherit;
@@ -84,6 +185,11 @@
     }
     .hub-topbar button[aria-pressed="false"] {
       opacity: 0.85;
+    }
+    #btn-lobby {
+      border-color: #bcd;
+      color: #345;
+      background: #f0f6fa;
     }
     .hub-grid {
       flex: 1;
@@ -211,6 +317,32 @@
       color: var(--muted);
     }
     footer a { color: var(--accent); }
+    /* Discreet cycle control (critique: advance work without hunting the dropdown) */
+    .cycle-work-fab {
+      position: fixed;
+      right: max(0.5rem, env(safe-area-inset-right));
+      bottom: max(0.5rem, env(safe-area-inset-bottom));
+      z-index: 50;
+      font: inherit;
+      font-size: 0.72rem;
+      padding: 0.4rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--muted);
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+      opacity: 0.14;
+      transition: opacity 0.2s ease, transform 0.15s ease;
+    }
+    .cycle-work-fab:hover,
+    .cycle-work-fab:focus-visible {
+      opacity: 1;
+      color: var(--ink);
+    }
+    body:not(.hub-active) .cycle-work-fab {
+      display: none;
+    }
     @media (max-width: 720px) {
       .hub-grid {
         grid-template-columns: 1fr;
@@ -224,13 +356,28 @@
   </style>
 </head>
 <body>
-  <div class="critique-viewport" id="critique-viewport">
+  <div class="meta-lobby" id="meta-lobby" aria-label="Welcome space">
+    <div class="meta-room">
+      <p class="meta-brand">Loop &mdash; presentation</p>
+      <h1>Loop Miami 2026</h1>
+      <p class="meta-lede">
+        A threshold before the critique hub: open the full page in another tab, or step into the two-column space for notes and live preview.
+      </p>
+      <div class="meta-actions">
+        <button type="button" id="btn-open-hub-tab">Open hub in new tab</button>
+        <button type="button" id="btn-enter-hub">Enter critique space</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="critique-viewport" id="critique-viewport" hidden>
     <header class="hub-topbar">
       <div>
         <p class="brand" style="margin:0 0 0.15rem;">Loop &mdash; presentation</p>
         <h1>Loop Miami 2026</h1>
       </div>
       <div class="topbar-actions">
+        <button type="button" id="btn-lobby" title="Back to blue room">Lobby</button>
         <button type="button" id="btn-hide" aria-expanded="true" aria-controls="hub-sidebar">Hide</button>
         <button type="button" id="btn-sound" aria-pressed="true" title="Mute or unmute preview audio (same-origin sketches only)">Sound on</button>
       </div>
@@ -321,11 +468,13 @@
           <div class="preview-frame-wrap">
             <iframe id="preview-frame" title="Selected sketch preview" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups" allow="autoplay; fullscreen"></iframe>
           </div>
-          <p class="preview-hint" id="preview-hint">Heavy sketches may load slowly; use <strong>Open in new tab</strong> if needed. Audio often needs a click inside the frame.</p>
+          <p class="preview-hint" id="preview-hint">Heavy sketches may load slowly; use <strong>Open in new tab</strong> if needed. Audio often needs a click inside the frame. <strong>Next</strong> (corner or <kbd>]</kbd>) cycles the preview while you talk.</p>
         </section>
       </div>
     </main>
   </div>
+
+  <button type="button" class="cycle-work-fab" id="btn-cycle-work" title="Next artwork in preview (keyboard ] )" aria-label="Next artwork in preview">Next</button>
 
   <script>
   (function () {
@@ -334,13 +483,61 @@
     var openTab = document.getElementById("preview-open-tab");
     var btnHide = document.getElementById("btn-hide");
     var btnSound = document.getElementById("btn-sound");
+    var btnLobby = document.getElementById("btn-lobby");
+    var btnEnterHub = document.getElementById("btn-enter-hub");
+    var btnOpenHubTab = document.getElementById("btn-open-hub-tab");
+    var btnCycleWork = document.getElementById("btn-cycle-work");
+    var metaLobby = document.getElementById("meta-lobby");
+    var critiqueViewport = document.getElementById("critique-viewport");
     var STORAGE_HIDE = "critiqueHubChromeHidden";
     var STORAGE_SOUND = "critiqueHubSoundOn";
+
+    function showHub() {
+      metaLobby.classList.add("meta-lobby--away");
+      critiqueViewport.hidden = false;
+      document.body.classList.add("hub-active");
+      sync();
+    }
+
+    function showLobby() {
+      metaLobby.classList.remove("meta-lobby--away");
+      critiqueViewport.hidden = true;
+      document.body.classList.remove("hub-active");
+    }
 
     function sync() {
       var path = sel.value;
       frame.src = path;
       openTab.href = path;
+    }
+
+    function cycleNextWork() {
+      var n = sel.options.length;
+      if (n < 2) return;
+      sel.selectedIndex = (sel.selectedIndex + 1) % n;
+      sync();
+    }
+
+    btnEnterHub.addEventListener("click", showHub);
+    btnLobby.addEventListener("click", showLobby);
+    btnOpenHubTab.addEventListener("click", function () {
+      var u = window.location.href.split("#")[0].split("?")[0];
+      window.open(u, "_blank", "noopener");
+    });
+    btnCycleWork.addEventListener("click", cycleNextWork);
+
+    document.addEventListener("keydown", function (ev) {
+      if (!document.body.classList.contains("hub-active")) return;
+      var t = ev.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA")) return;
+      if (ev.key === "]" || ev.key === "}") {
+        ev.preventDefault();
+        cycleNextWork();
+      }
+    });
+
+    if (window.location.search.indexOf("hub=1") !== -1) {
+      showHub();
     }
 
     function applySoundToFrame(soundOn) {
