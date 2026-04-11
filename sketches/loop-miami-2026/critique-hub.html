@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Loop Miami 2026 � Critique hub</title>
+  <title>Loop Miami 2026 &mdash; Critique hub</title>
   <link rel="canonical" href="https://mark-walhimer.com/sketches/loop-miami-2026/critique-hub.html">
   <style>
     :root {
@@ -13,8 +13,7 @@
       --muted: #5c5a56;
       --rule: #e2ddd4;
       --accent: #8b6914;
-      /* 16:9 preview: height leg = 9 at viewport scale (9vh); width follows 16:9 */
-      --preview-9: 9vh;
+      --preview-9: min(42vh, calc(100vw * 9 / 16 * 0.42));
     }
     * { box-sizing: border-box; }
     body {
@@ -22,103 +21,173 @@
       background: var(--page);
       color: var(--ink);
       margin: 0;
-      padding: clamp(1rem, 4vw, 2.5rem);
-      line-height: 1.55;
       min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(0.5rem, 2vw, 1.25rem);
+      line-height: 1.45;
     }
-    .wrap { max-width: 44rem; margin: 0 auto; }
-    .page-meta {
-      color: #9a9690;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
-    }
-    .stage {
+    /* Entire UI lives in a 16:9 frame (fits viewport) */
+    .critique-viewport {
+      width: min(96vw, calc(96vh * 16 / 9));
+      max-height: min(96vh, calc(96vw * 9 / 16));
+      aspect-ratio: 16 / 9;
       background: var(--stage);
       color: var(--ink);
       border-radius: 12px;
-      padding: clamp(1.25rem, 4vw, 2rem);
       box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 12px 40px rgba(0,0,0,0.35);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
-    .stage h1 {
-      font-size: 1.35rem;
+    .hub-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      padding: 0.5rem 0.85rem;
+      border-bottom: 1px solid var(--rule);
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.5);
+    }
+    .hub-topbar .brand {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #9a9690;
+    }
+    .hub-topbar h1 {
+      font-size: clamp(0.95rem, 1.6vw, 1.2rem);
       font-weight: 600;
-      margin: 0 0 0.35rem;
+      margin: 0;
       letter-spacing: -0.02em;
     }
-    .stage .lede {
+    .hub-topbar .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .hub-topbar button {
+      font: inherit;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.65rem;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .hub-topbar button:hover {
+      background: #faf8f5;
+    }
+    .hub-topbar button[aria-pressed="false"] {
+      opacity: 0.85;
+    }
+    .hub-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 0;
+    }
+    body.hub-chrome-hidden .hub-grid {
+      grid-template-columns: 1fr;
+    }
+    body.hub-chrome-hidden .hub-sidebar {
+      display: none;
+    }
+    .hub-sidebar {
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0.65rem 0.85rem 0.85rem;
+      border-right: 1px solid var(--rule);
+    }
+    .hub-preview-column {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0.65rem 0.85rem 0.85rem;
+      overflow: hidden;
+    }
+    .hub-sidebar .lede {
       color: var(--muted);
-      font-size: 0.9rem;
-      margin: 0 0 1.5rem;
-      max-width: 40ch;
+      font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+      margin: 0 0 0.65rem;
     }
     section {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
       border-top: 1px solid var(--rule);
     }
     section:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
     h2 {
-      font-size: 0.65rem;
-      letter-spacing: 0.16em;
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--muted);
-      margin: 0 0 0.5rem;
+      margin: 0 0 0.35rem;
       font-weight: 600;
     }
-    ul { margin: 0; padding-left: 1.15rem; }
-    li { margin: 0.4rem 0; }
+    ul { margin: 0; padding-left: 1rem; font-size: clamp(0.72rem, 1.05vw, 0.82rem); }
+    li { margin: 0.25rem 0; }
     a { color: var(--accent); font-weight: 500; }
     .box {
       background: #fff;
       border: 1px solid var(--rule);
-      border-radius: 8px;
-      padding: 0.85rem 1rem;
-      font-size: 0.88rem;
+      border-radius: 6px;
+      padding: 0.5rem 0.65rem;
+      font-size: clamp(0.68rem, 1vw, 0.78rem);
       color: #333;
     }
-    .box + .box { margin-top: 0.65rem; }
+    .box + .box { margin-top: 0.45rem; }
     .box strong { color: var(--ink); }
-    code { font-size: 0.82em; background: #eeeae4; padding: 0.15em 0.4em; border-radius: 4px; word-break: break-all; }
-
+    code {
+      font-size: 0.82em;
+      background: #eeeae4;
+      padding: 0.12em 0.35em;
+      border-radius: 4px;
+      word-break: break-all;
+    }
     .preview-toolbar {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem 1rem;
-      margin-bottom: 0.65rem;
+      gap: 0.35rem 0.65rem;
+      margin-bottom: 0.45rem;
     }
     .preview-toolbar label {
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       color: var(--muted);
       font-weight: 500;
     }
     .preview-toolbar select {
       flex: 1;
-      min-width: min(100%, 16rem);
+      min-width: 0;
       font: inherit;
-      font-size: 0.88rem;
-      padding: 0.45rem 0.6rem;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.45rem;
       border: 1px solid var(--rule);
-      border-radius: 8px;
+      border-radius: 6px;
       background: #fff;
       color: var(--ink);
     }
     .preview-toolbar .open-tab {
-      font-size: 0.82rem;
+      font-size: 0.72rem;
       white-space: nowrap;
     }
     .preview-frame-wrap {
       position: relative;
+      flex: 1;
+      min-height: 0;
       background: #fff;
       border: 1px solid var(--rule);
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
-      margin-inline: auto;
-      width: min(100%, calc(var(--preview-9) * 16 / 9));
+      width: 100%;
       aspect-ratio: 16 / 9;
-      height: auto;
+      max-height: 100%;
     }
     .preview-frame-wrap iframe {
       position: absolute;
@@ -129,125 +198,224 @@
       background: #fff;
     }
     .preview-hint {
-      font-size: 0.78rem;
+      font-size: 0.68rem;
       color: var(--muted);
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
+      line-height: 1.35;
     }
-
     footer {
-      margin-top: 1.75rem;
-      padding-top: 1rem;
+      margin-top: 0.65rem;
+      padding-top: 0.5rem;
       border-top: 1px solid var(--rule);
-      font-size: 0.8rem;
+      font-size: 0.68rem;
       color: var(--muted);
     }
     footer a { color: var(--accent); }
+    @media (max-width: 720px) {
+      .hub-grid {
+        grid-template-columns: 1fr;
+      }
+      .hub-sidebar {
+        border-right: 0;
+        border-bottom: 1px solid var(--rule);
+        max-height: 38vh;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <p class="page-meta">Loop � presentation</p>
+  <div class="critique-viewport" id="critique-viewport">
+    <header class="hub-topbar">
+      <div>
+        <p class="brand" style="margin:0 0 0.15rem;">Loop &mdash; presentation</p>
+        <h1>Loop Miami 2026</h1>
+      </div>
+      <div class="topbar-actions">
+        <button type="button" id="btn-hide" aria-expanded="true" aria-controls="hub-sidebar">Hide</button>
+        <button type="button" id="btn-sound" aria-pressed="true" title="Mute or unmute preview audio (same-origin sketches only)">Sound on</button>
+      </div>
+    </header>
 
-    <main class="stage" aria-label="Critique content">
-      <h1>Loop Miami 2026</h1>
-      <p class="lede">Pick a prototype below � it runs in the white preview. Use the list further down to open any file in a full tab.</p>
+    <main class="hub-grid" aria-label="Critique content">
+      <div class="hub-sidebar" id="hub-sidebar">
+        <p class="lede">Pick a prototype &mdash; it runs in the preview. Links below open in a full tab.</p>
 
-      <section id="verse" aria-labelledby="verse-heading">
-        <h2 id="verse-heading">Loop Art Critique (verse)</h2>
-        <ul>
-          <li><a href="https://verse.loop.onland.io/kfAkyqx/the-critique-club">The Critique Club</a> � room for sessions (Loop / browser).</li>
-        </ul>
-      </section>
+        <section id="verse" aria-labelledby="verse-heading">
+          <h2 id="verse-heading">Loop Art Critique (verse)</h2>
+          <ul>
+            <li><a href="https://verse.loop.onland.io/kfAkyqx/the-critique-club">The Critique Club</a> &mdash; room for sessions (Loop / browser).</li>
+          </ul>
+        </section>
 
-      <section id="live-preview" aria-labelledby="preview-heading">
-        <h2 id="preview-heading">Live preview</h2>
-        <div class="preview-toolbar">
-          <label for="preview-select">File</label>
-          <select id="preview-select" aria-label="Choose sketch file to preview">
-            <option value="city_gradient_standalone.html">City gradient (p5) � light</option>
-            <option value="walk_moon_audio_standalone.html">Walk � moon � audio</option>
-            <option value="https://mark-walhimer.com/mangle/">Mangle (loop / garden / soundscape)</option>
-            <option value="technical-drawing-with-elevation-2.html">Technical drawing + elevation</option>
-            <option value="traveling-landscape.html">Traveling landscape</option>
-            <option value="orchestrator.html">8-pillar spatial orchestrator</option>
-            <option value="bloom-hybrid-test.html">Bloom hybrid (needs GLB path; may need full tab)</option>
-            <option value="bloom-four-walls.html">Bloom / Four Walls (large; audio � prefer new tab)</option>
-          </select>
-          <a id="preview-open-tab" class="open-tab" href="city_gradient_standalone.html" target="_blank" rel="noopener">Open in new tab ?</a>
-        </div>
-        <div class="preview-frame-wrap">
-          <iframe id="preview-frame" title="Selected sketch preview" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
-        </div>
-        <p class="preview-hint">Heavy sketches (especially Bloom) may load slowly in the frame; use <strong>Open in new tab</strong> if the preview misbehaves. Audio often needs a click inside the frame or a separate tab.</p>
-      </section>
+        <section id="onland-upload" aria-labelledby="onland-heading">
+          <h2 id="onland-heading">Onland / Loop &mdash; Upload dialog</h2>
+          <div class="box">
+            <strong>Why <code>index.html</code> fails:</strong> The URL field next to &ldquo;OR&rdquo; only accepts a <strong>direct file</strong> (GLB, PNG, JPG, GIF, PDF, MP4, MP3). A webpage URL is not a valid file type for that field.
+          </div>
+          <div class="box">
+            <strong>PNG for the Upload URL box:</strong><br>
+            <code>https://mark-walhimer.com/sketches/loop-miami-2026/loop-miami-critique-card.png</code><br>
+            Put narrative + link to this page in Title / Description, or use Advanced Options &rarr; Custom URL on an object if available.
+          </div>
+        </section>
 
-      <section id="onland-upload" aria-labelledby="onland-heading">
-        <h2 id="onland-heading">Onland / Loop � Upload dialog</h2>
-        <div class="box">
-          <strong>Why <code>index.html</code> fails:</strong> The URL field next to �OR� only accepts a <strong>direct file</strong> (GLB, PNG, JPG, GIF, PDF, MP4, MP3). A webpage URL is not a valid file type for that field.
-        </div>
-        <div class="box">
-          <strong>PNG for the Upload URL box:</strong><br>
-          <code>https://mark-walhimer.com/sketches/loop-miami-2026/loop-miami-critique-card.png</code><br>
-          Put narrative + link to this page in Title / Description, or use Advanced Options ? Custom URL on an object if available.
-        </div>
-      </section>
+        <section id="constraints" aria-labelledby="cap-heading">
+          <h2 id="cap-heading">Size note</h2>
+          <div class="box">
+            <strong>Under ~5 MB:</strong> Do not zip the whole bundle. For heavy sketches, screen-share or full tab. See <a href="index.html">bundle index</a>.
+          </div>
+        </section>
 
-      <section id="constraints" aria-labelledby="cap-heading">
-        <h2 id="cap-heading">Size note</h2>
-        <div class="box">
-          <strong>Under ~5 MB:</strong> Do not zip the whole bundle. For heavy sketches, screen-share or full tab. See <a href="index.html">bundle index</a>.
-        </div>
-      </section>
+        <section id="planning" aria-labelledby="plan-heading">
+          <h2 id="plan-heading">Planning</h2>
+          <ul>
+            <li><a href="installation-composer-emergent-dna-soundscape.md">Installation Composer &mdash; Emergent DNA &mdash; Soundscape</a> &mdash; full notes</li>
+          </ul>
+        </section>
 
-      <section id="planning" aria-labelledby="plan-heading">
-        <h2 id="plan-heading">Planning</h2>
-        <ul>
-          <li><a href="installation-composer-emergent-dna-soundscape.md">Installation Composer � Emergent DNA � Soundscape</a> � full notes</li>
-        </ul>
-      </section>
+        <section id="prototypes" aria-labelledby="proto-heading">
+          <h2 id="proto-heading">Open in browser</h2>
+          <ul>
+            <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-four-walls.html">Bloom / Four Walls</a></li>
+            <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-hybrid-test.html">Bloom hybrid</a> (HTTP for GLB)</li>
+            <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/walk_moon_audio_standalone.html">Walk &mdash; moon &mdash; audio</a></li>
+            <li><a href="https://mark-walhimer.com/mangle/">Mangle</a> (audio: loop, garden pulse, soundscape)</li>
+            <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/city_gradient_standalone.html">City gradient (p5)</a></li>
+            <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/technical-drawing-with-elevation-2.html">Technical drawing + elevation</a></li>
+            <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/traveling-landscape.html">Traveling landscape</a></li>
+            <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/orchestrator.html">Spatial orchestrator</a></li>
+          </ul>
+        </section>
 
-      <section id="prototypes" aria-labelledby="proto-heading">
-        <h2 id="proto-heading">Open in browser (same files)</h2>
-        <ul>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-four-walls.html">Bloom / Four Walls</a></li>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/bloom-hybrid-test.html">Bloom hybrid</a> (HTTP for GLB)</li>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/walk_moon_audio_standalone.html">Walk � moon � audio</a></li>
-          <li><a href="https://mark-walhimer.com/mangle/">Mangle</a> (audio: loop, garden pulse, soundscape)</li>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/city_gradient_standalone.html">City gradient (p5)</a></li>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/technical-drawing-with-elevation-2.html">Technical drawing + elevation</a></li>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/traveling-landscape.html">Traveling landscape</a></li>
-          <li><a href="https://mark-walhimer.com/sketches/loop-miami-2026/orchestrator.html">Spatial orchestrator</a></li>
-        </ul>
-      </section>
+        <section id="feedback" aria-labelledby="fb-heading">
+          <h2 id="fb-heading">Feedback prompts</h2>
+          <ul>
+            <li>Which <strong>one scene</strong> should lead: room, corridor, document, or world?</li>
+            <li>Is <strong>emergent / different each time</strong> clear vs fixed video?</li>
+            <li>What must live <strong>in-GLB</strong> vs <strong>web runtime</strong>?</li>
+          </ul>
+        </section>
 
-      <section id="feedback" aria-labelledby="fb-heading">
-        <h2 id="fb-heading">Feedback prompts</h2>
-        <ul>
-          <li>Which <strong>one scene</strong> should lead: room, corridor, document, or world?</li>
-          <li>Is <strong>emergent / different each time</strong> clear vs fixed video?</li>
-          <li>What must live <strong>in-GLB</strong> vs <strong>web runtime</strong>?</li>
-        </ul>
-      </section>
+        <footer>
+          <a href="index.html">Bundle index</a> &mdash; <a href="https://mark-walhimer.com/sketches/index.html">Full catalog</a>
+        </footer>
+      </div>
 
-      <footer>
-        <a href="index.html">Bundle index</a> � <a href="https://mark-walhimer.com/sketches/index.html">Full catalog</a>
-      </footer>
+      <div class="hub-preview-column">
+        <section id="live-preview" aria-labelledby="preview-heading">
+          <h2 id="preview-heading">Live preview</h2>
+          <div class="preview-toolbar">
+            <label for="preview-select">File</label>
+            <select id="preview-select" aria-label="Choose sketch file to preview">
+              <option value="city_gradient_standalone.html">City gradient (p5) &mdash; light</option>
+              <option value="walk_moon_audio_standalone.html">Walk &mdash; moon &mdash; audio</option>
+              <option value="https://mark-walhimer.com/mangle/">Mangle (loop / garden / soundscape)</option>
+              <option value="technical-drawing-with-elevation-2.html">Technical drawing + elevation</option>
+              <option value="traveling-landscape.html">Traveling landscape</option>
+              <option value="orchestrator.html">8-pillar spatial orchestrator</option>
+              <option value="bloom-hybrid-test.html">Bloom hybrid (needs GLB path; may need full tab)</option>
+              <option value="bloom-four-walls.html">Bloom / Four Walls (large; audio &mdash; prefer new tab)</option>
+            </select>
+            <a id="preview-open-tab" class="open-tab" href="city_gradient_standalone.html" target="_blank" rel="noopener">Open in new tab</a>
+          </div>
+          <div class="preview-frame-wrap">
+            <iframe id="preview-frame" title="Selected sketch preview" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups" allow="autoplay; fullscreen"></iframe>
+          </div>
+          <p class="preview-hint" id="preview-hint">Heavy sketches may load slowly; use <strong>Open in new tab</strong> if needed. Audio often needs a click inside the frame.</p>
+        </section>
+      </div>
     </main>
   </div>
 
   <script>
   (function () {
-    var sel = document.getElementById('preview-select');
-    var frame = document.getElementById('preview-frame');
-    var openTab = document.getElementById('preview-open-tab');
+    var sel = document.getElementById("preview-select");
+    var frame = document.getElementById("preview-frame");
+    var openTab = document.getElementById("preview-open-tab");
+    var btnHide = document.getElementById("btn-hide");
+    var btnSound = document.getElementById("btn-sound");
+    var STORAGE_HIDE = "critiqueHubChromeHidden";
+    var STORAGE_SOUND = "critiqueHubSoundOn";
+
     function sync() {
       var path = sel.value;
       frame.src = path;
       openTab.href = path;
     }
-    sel.addEventListener('change', sync);
+
+    function applySoundToFrame(soundOn) {
+      try {
+        var win = frame.contentWindow;
+        if (!win) return;
+        var doc = frame.contentDocument || win.document;
+        if (!doc) return;
+        var medias = doc.querySelectorAll("audio, video");
+        for (var i = 0; i < medias.length; i++) {
+          medias[i].muted = !soundOn;
+          medias[i].volume = soundOn ? 1 : 0;
+        }
+        if (win.Tone && win.Tone.getContext) {
+          var ctx = win.Tone.getContext();
+          if (soundOn) {
+            ctx.resume();
+          } else {
+            ctx.suspend();
+          }
+        }
+      } catch (e) {
+        /* cross-origin: cannot access */
+      }
+      frame.setAttribute("allow", soundOn ? "autoplay; fullscreen" : "fullscreen");
+    }
+
+    function loadSoundPreference() {
+      var on = localStorage.getItem(STORAGE_SOUND);
+      if (on === "0") {
+        btnSound.setAttribute("aria-pressed", "false");
+        btnSound.textContent = "Sound off";
+      } else {
+        btnSound.setAttribute("aria-pressed", "true");
+        btnSound.textContent = "Sound on";
+      }
+    }
+
+    function saveSoundPreference() {
+      var soundOn = btnSound.getAttribute("aria-pressed") === "true";
+      localStorage.setItem(STORAGE_SOUND, soundOn ? "1" : "0");
+    }
+
+    btnSound.addEventListener("click", function () {
+      var on = btnSound.getAttribute("aria-pressed") !== "true";
+      btnSound.setAttribute("aria-pressed", on ? "true" : "false");
+      btnSound.textContent = on ? "Sound on" : "Sound off";
+      saveSoundPreference();
+      applySoundToFrame(on);
+    });
+
+    frame.addEventListener("load", function () {
+      applySoundToFrame(btnSound.getAttribute("aria-pressed") === "true");
+    });
+
+    function loadHidePreference() {
+      if (localStorage.getItem(STORAGE_HIDE) === "1") {
+        document.body.classList.add("hub-chrome-hidden");
+        btnHide.textContent = "Show";
+        btnHide.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    btnHide.addEventListener("click", function () {
+      var hidden = document.body.classList.toggle("hub-chrome-hidden");
+      btnHide.textContent = hidden ? "Show" : "Hide";
+      btnHide.setAttribute("aria-expanded", hidden ? "false" : "true");
+      localStorage.setItem(STORAGE_HIDE, hidden ? "1" : "0");
+    });
+
+    sel.addEventListener("change", sync);
+    loadSoundPreference();
+    loadHidePreference();
     sync();
+    applySoundToFrame(btnSound.getAttribute("aria-pressed") === "true");
   })();
   </script>
 </body>
