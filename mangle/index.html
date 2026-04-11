@@ -122,7 +122,10 @@
       </label>
       <label><input type="checkbox" id="sc-drone" checked /> Low sine drone (bed)</label>
       <label><input type="checkbox" id="sc-texture-on" checked /> Pink-noise taps (texture)</label>
-      <p class="hint" style="opacity:0.7;margin-top:0.5rem;">Reverb is long and wet; samples should be your pentatonic/long-tail set. (Sketch used C <em>minor</em> pentatonic on synths; yours can stay major-pentatonic files.)</p>
+      <label><input type="checkbox" id="sc-triangle" checked /> Triangle line (sketch: C minor pentatonic, slow attack / long release)</label>
+      <label><input type="checkbox" id="sc-sketch-reverb" checked /> Sketch reverb sends (bass 6s / line+samples 5s / noise 2s)</label>
+      <label><input type="checkbox" id="sc-bass-drift" checked /> Slow bass drift (sketch: new root ~every 10s)</label>
+      <p class="hint" style="opacity:0.7;margin-top:0.5rem;">Matches the p5 <code>sketch.js</code> in your Audio_Scape folder: global reverb per layer, sine bass, triangle &ldquo;clarinet,&rdquo; pink hits. Samples layer on top (your long-tail bank).</p>
     </div>
   </fieldset>
 

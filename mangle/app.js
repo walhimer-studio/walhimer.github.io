@@ -14,6 +14,18 @@
   let textureLoop = null;
   /** @type {Tone.Reverb | null} */
   let reverbNode = null;
+  /** @type {Tone.Reverb | null} */
+  let reverbBass = null;
+  /** @type {Tone.Reverb | null} */
+  let reverbLine = null;
+  /** @type {Tone.Reverb | null} */
+  let reverbPerc = null;
+  /** @type {Tone.Loop | null} */
+  let bassDriftLoop = null;
+  /** @type {Tone.Oscillator | null} */
+  let clarinetOsc = null;
+  /** @type {Tone.Gain | null} */
+  let clarinetGain = null;
   /** @type {Tone.Oscillator | null} */
   let droneOsc = null;
   /** @type {Tone.Gain | null} */
@@ -59,6 +71,9 @@
   const scTextureLabel = document.getElementById("sc-texture-label");
   const scDrone = document.getElementById("sc-drone");
   const scTextureOn = document.getElementById("sc-texture-on");
+  const scTriangle = document.getElementById("sc-triangle");
+  const scSketchReverb = document.getElementById("sc-sketch-reverb");
+  const scBassDrift = document.getElementById("sc-bass-drift");
 
   const DEFAULT_SAMPLE =
     "https://tonejs.github.io/audio/casio/A1.mp3";
@@ -66,6 +81,15 @@
   const AUDIO_EXT = /\.(wav|mp3|flac|aiff|aif|ogg|m4a)$/i;
 
   const PENTA_LETTERS = new Set(["C", "D", "E", "G", "A"]);
+
+  /** C minor pentatonic (sketch.js notes array) */
+  const SKETCH_CM_PENTA = [48, 50, 53, 55, 57, 60];
+  const SKETCH_BASS_START = [36, 40, 43];
+  const SKETCH_BASS_DRIFT = [36, 38, 41, 43];
+
+  function mtof(midi) {
+    return Tone.Frequency(midi, "midi").toFrequency();
+  }
 
   function getMode() {
     const el = document.querySelector('input[name="mode"]:checked');
@@ -187,6 +211,25 @@
     melodyLoop = null;
     stopAndDisposeLoop(textureLoop);
     textureLoop = null;
+    stopAndDisposeLoop(bassDriftLoop);
+    bassDriftLoop = null;
+    if (clarinetOsc) {
+      try {
+        clarinetOsc.stop();
+        clarinetOsc.dispose();
+      } catch (e) {
+        console.warn(e);
+      }
+      clarinetOsc = null;
+    }
+    if (clarinetGain) {
+      try {
+        clarinetGain.dispose();
+      } catch (e) {
+        console.warn(e);
+      }
+      clarinetGain = null;
+    }
     if (playersObj) {
       try {
         playersObj.dispose();
@@ -236,6 +279,30 @@
         console.warn(e);
       }
       reverbNode = null;
+    }
+    if (reverbBass) {
+      try {
+        reverbBass.dispose();
+      } catch (e) {
+        console.warn(e);
+      }
+      reverbBass = null;
+    }
+    if (reverbLine) {
+      try {
+        reverbLine.dispose();
+      } catch (e) {
+        console.warn(e);
+      }
+      reverbLine = null;
+    }
+    if (reverbPerc) {
+      try {
+        reverbPerc.dispose();
+      } catch (e) {
+        console.warn(e);
+      }
+      reverbPerc = null;
     }
     bloomOrder = [];
     bloomStep = 0;
@@ -350,19 +417,41 @@
       urls["s" + k] = bank.urls[k];
     }
 
+    const useSketchReverbs = scSketchReverb.checked;
+
     master = new Tone.Gain(0.92);
     master.toDestination();
 
     recorder = new Tone.Recorder();
     master.connect(recorder);
 
-    reverbNode = new Tone.Reverb({
-      decay: 8,
-      wet: 0.52,
-    });
-    await reverbNode.generate();
+    if (useSketchReverbs) {
+      reverbBass = new Tone.Reverb({ decay: 6, wet: 0.5 });
+      reverbLine = new Tone.Reverb({ decay: 5, wet: 0.7 });
+      reverbPerc = new Tone.Reverb({ decay: 2, wet: 0.3 });
+      await Promise.all([
+        reverbBass.generate(),
+        reverbLine.generate(),
+        reverbPerc.generate(),
+      ]);
+      reverbBass.connect(master);
+      reverbLine.connect(master);
+      reverbPerc.connect(master);
+    } else {
+      reverbNode = new Tone.Reverb({
+        decay: 8,
+        wet: 0.52,
+      });
+      await reverbNode.generate();
+      reverbNode.connect(master);
+    }
 
-    reverbNode.connect(master);
+    /** @type {Tone.Reverb} */
+    const busLine = useSketchReverbs ? reverbLine : reverbNode;
+    /** @type {Tone.Reverb} */
+    const busBass = useSketchReverbs ? reverbBass : reverbNode;
+    /** @type {Tone.Reverb} */
+    const busPerc = useSketchReverbs ? reverbPerc : reverbNode;
 
     playersObj = new Tone.Players({
       urls: urls,
@@ -370,27 +459,48 @@
       onerror: function (e) {
         console.error(e);
       },
-    }).connect(reverbNode);
+    }).connect(busLine);
 
     await Tone.loaded();
 
     if (scDrone.checked) {
-      const roots = ["C2", "D2", "E2", "G2", "A2"];
-      const pick = roots[Math.floor(Math.random() * roots.length)];
+      const startMidi =
+        SKETCH_BASS_START[Math.floor(Math.random() * SKETCH_BASS_START.length)];
       droneOsc = new Tone.Oscillator({
         type: "sine",
-        frequency: Tone.Frequency(pick).toFrequency(),
+        frequency: mtof(startMidi),
       }).start();
-      droneGain = new Tone.Gain(0.032);
+      droneGain = new Tone.Gain(0.05);
       droneOsc.connect(droneGain);
-      droneGain.connect(reverbNode);
+      droneGain.connect(busBass);
+      if (scBassDrift.checked) {
+        bassDriftLoop = new Tone.Loop(function (time) {
+          if (!droneOsc) return;
+          const m =
+            SKETCH_BASS_DRIFT[
+              Math.floor(Math.random() * SKETCH_BASS_DRIFT.length)
+            ];
+          droneOsc.frequency.setValueAtTime(mtof(m), time);
+        }, "10s");
+        bassDriftLoop.start(0);
+      }
+    }
+
+    if (scTriangle.checked) {
+      clarinetOsc = new Tone.Oscillator({
+        type: "triangle",
+        frequency: mtof(SKETCH_CM_PENTA[0]),
+      }).start();
+      clarinetGain = new Tone.Gain(0.001);
+      clarinetOsc.connect(clarinetGain);
+      clarinetGain.connect(busLine);
     }
 
     if (scTextureOn.checked) {
       noiseSrc = new Tone.Noise("pink").start();
       noiseGain = new Tone.Gain(0);
       noiseSrc.connect(noiseGain);
-      noiseGain.connect(reverbNode);
+      noiseGain.connect(busPerc);
     }
 
     const mSec = parseFloat(scMelody.value) || 4;
@@ -403,6 +513,19 @@
       const pl = playersObj.player("s" + bankIdx);
       pl.volume.value = -14 + Math.random() * 8;
       pl.start(time);
+
+      if (scTriangle.checked && clarinetOsc && clarinetGain) {
+        const n =
+          SKETCH_CM_PENTA[
+            Math.floor(Math.random() * SKETCH_CM_PENTA.length)
+          ];
+        clarinetOsc.frequency.setValueAtTime(mtof(n), time);
+        clarinetGain.gain.cancelScheduledValues(time);
+        clarinetGain.gain.setValueAtTime(0.001, time);
+        clarinetGain.gain.linearRampToValueAtTime(0.1, time + 0.5);
+        clarinetGain.gain.setValueAtTime(0.1, time + 1.5);
+        clarinetGain.gain.linearRampToValueAtTime(0.001, time + 3.5);
+      }
     }, mSec + "s");
 
     melodyLoop.start(0);
@@ -411,8 +534,9 @@
       textureLoop = new Tone.Loop(function (time) {
         noiseGain.gain.cancelScheduledValues(time);
         noiseGain.gain.setValueAtTime(0.001, time);
-        noiseGain.gain.exponentialRampToValueAtTime(0.05, time + 0.02);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+        noiseGain.gain.linearRampToValueAtTime(0.05, time + 0.01);
+        noiseGain.gain.linearRampToValueAtTime(0.05, time + 0.2);
+        noiseGain.gain.linearRampToValueAtTime(0.001, time + 0.7);
       }, tSec + "s");
       textureLoop.start(0);
     }
@@ -471,6 +595,9 @@
     scTexture.disabled = !sc;
     scDrone.disabled = !sc;
     scTextureOn.disabled = !sc;
+    scTriangle.disabled = !sc;
+    scSketchReverb.disabled = !sc;
+    scBassDrift.disabled = !sc;
   }
 
   document.querySelectorAll('input[name="mode"]').forEach(function (r) {
@@ -532,7 +659,7 @@
         Tone.Transport.start();
         setTransportButtons(true);
         setStatus(
-          "Soundscape: pentatonic pulses + reverb; sketch used ~4s / ~7s noise (your sliders)."
+          "Soundscape: samples + optional sketch layers (triangle, 3 reverbs, bass drift, noise)."
         );
         return;
       }
