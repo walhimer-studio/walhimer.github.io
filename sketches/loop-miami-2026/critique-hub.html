@@ -361,7 +361,7 @@
       <p class="meta-brand">Loop &mdash; presentation</p>
       <h1>Loop Miami 2026</h1>
       <p class="meta-lede">
-        A threshold before the critique hub: open the full page in another tab, or step into the two-column space for notes and live preview.
+        This screen is the lobby &mdash; not the Bloom room. <strong>Enter critique space</strong> for notes and live preview; preview defaults to <strong>Bloom / Four Walls</strong> (change it under File). <strong>Open hub in new tab</strong> duplicates this page in another window.
       </p>
       <div class="meta-actions">
         <button type="button" id="btn-open-hub-tab">Open hub in new tab</button>
@@ -454,6 +454,7 @@
           <div class="preview-toolbar">
             <label for="preview-select">File</label>
             <select id="preview-select" aria-label="Choose sketch file to preview">
+              <option value="bloom-four-walls.html" selected>Bloom / Four Walls (default; large &mdash; prefer new tab if slow)</option>
               <option value="city_gradient_standalone.html">City gradient (p5) &mdash; light</option>
               <option value="walk_moon_audio_standalone.html">Walk &mdash; moon &mdash; audio</option>
               <option value="https://mark-walhimer.com/mangle/">Mangle (loop / garden / soundscape)</option>
@@ -461,9 +462,8 @@
               <option value="traveling-landscape.html">Traveling landscape</option>
               <option value="orchestrator.html">8-pillar spatial orchestrator</option>
               <option value="bloom-hybrid-test.html">Bloom hybrid (needs GLB path; may need full tab)</option>
-              <option value="bloom-four-walls.html">Bloom / Four Walls (large; audio &mdash; prefer new tab)</option>
             </select>
-            <a id="preview-open-tab" class="open-tab" href="city_gradient_standalone.html" target="_blank" rel="noopener">Open in new tab</a>
+            <a id="preview-open-tab" class="open-tab" href="bloom-four-walls.html" target="_blank" rel="noopener">Open in new tab</a>
           </div>
           <div class="preview-frame-wrap">
             <iframe id="preview-frame" title="Selected sketch preview" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups" allow="autoplay; fullscreen"></iframe>
