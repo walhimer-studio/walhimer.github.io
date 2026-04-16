@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "installations" / "traveling-landscape.html"
 OUT_INSTALL = ROOT / "installations" / "traveling-landscape.html"
-OUT_PROJECT = ROOT / "traveling-landscape" / "index.html"
+OUT_PROJECT = ROOT / "sketches" / "traveling-landscape" / "index.html"
 
 # Inner markup only (inside #landscape-stage). Prefix must end after instruction-bar </div>.
 NEW_STAGE_INNER = r'''
@@ -180,10 +180,10 @@ def main():
     OUT_INSTALL.write_text(out, encoding="utf-8")
     print("Wrote", OUT_INSTALL, "bytes", len(out))
 
-    # Project site /traveling-landscape/ — relative URL to artwork
+    # Catalog copy /sketches/traveling-landscape/ — relative URL to artwork
     out_project = out.replace(
         'src="/installations/traveling-landscape-artwork.html"',
-        'src="../installations/traveling-landscape-artwork.html"',
+        'src="../../installations/traveling-landscape-artwork.html"',
     )
     OUT_PROJECT.parent.mkdir(parents=True, exist_ok=True)
     OUT_PROJECT.write_text(out_project, encoding="utf-8")

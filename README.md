@@ -14,7 +14,7 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 | `sketches/` | Full archive — HTML sketches by series, plus optional folders like `tezos-early-works/` (chronicle + images) |
 | `sketches/index.html` | **Catalog UI** — series list, search, filters (**single source of truth** for sketch filenames; URL path remains `/sketches/`) |
 | `catalog-db.html` | **Collection DB viewer** — lightweight browser tool for `data/catalog.json` (search/filter/sort + Installation/Sketch/Linked Art links). |
-| `mangle/` | **Mangle** — Tone.js sample player (Start / Pause / Stop / Record + local folder audition). Vendored `Tone.js` in `mangle/vendor/`. Live: **[mark-walhimer.com/mangle/](https://mark-walhimer.com/mangle/)** |
+| `sketches/mangle/` | **Mangle** — Tone.js sample player (Start / Pause / Stop / Record + local folder audition). Vendored `Tone.js` in `sketches/mangle/vendor/`. Live: **[mark-walhimer.com/sketches/mangle/](https://mark-walhimer.com/sketches/mangle/)** |
 | `data/catalog.json` | **Single manifest** — canonical **`works[]`** only. Refresh merges **`SERIES`** from `sketches/index.html` and **`installations/*.html`** (plus existing **`works[]`** metadata). Soundscape works are rows in **`works`** (no separate section). See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
 | `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
 | `docs/archive-chronicle.md` | How the sketch index and narrative archives relate to the manifest. |
