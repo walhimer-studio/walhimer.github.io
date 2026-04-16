@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>p5.js Webcam Point Cloud (3D)</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script src="https://unpkg.com/ml5@1/dist/ml5.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overflow: hidden;
+      font-family: system-ui, sans-serif;
+    }
+    #hint {
+      position: fixed;
+      top: 10px;
+      left: 12px;
+      color: #ddd;
+      font-size: 13px;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 6px 8px;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">Allow camera • Move face into frame • Drag to orbit</div>
+
+  <script>
+    let cam;
+    let faceMesh;
+    let facePredictions = [];
+    const camW = 320;
+    const camH = 240;
+    const step = 3;
+    const fillAmount = 0.92;
+    const zDepth = 220;
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      pixelDensity(1);
+
+      cam = createCapture(VIDEO, () => {});
+      cam.size(camW, camH);
+      cam.hide();
+
+      // FaceMesh gives us a stable face region to keep.
+      faceMesh = ml5.faceMesh({ maxFaces: 1, refineLandmarks: true }, () => {});
+      faceMesh.detectStart(cam, (results) => {
+        facePredictions = results || [];
+      });
+
+      colorMode(RGB, 255);
+      stroke(255);
+      strokeWeight(1.6);
+      noFill();
+    }
+
+    function draw() {
+      background(0);
+      orbitControl();
+      scale(-1, 1, 1);
+
+      cam.loadPixels();
+      if (!cam.pixels.length) return;
+
+      translate(0, 0, -80);
+
+      const mask = getFaceMaskBounds(facePredictions);
+      if (!mask) {
+        return;
+      }
+
+      const maskWidth = max(1, mask.maxX - mask.minX);
+      const maskHeight = max(1, mask.maxY - mask.minY);
+      const cloudScale = min((width * fillAmount) / maskWidth, (height * fillAmount) / maskHeight);
+      const centerX = (mask.minX + mask.maxX) * 0.5;
+      const centerY = (mask.minY + mask.maxY) * 0.5;
+      strokeWeight(max(1.6, cloudScale * 0.16));
+
+      beginShape(POINTS);
+      for (let y = 0; y < camH; y += step) {
+        for (let x = 0; x < camW; x += step) {
+          if (!isInFaceNeckMask(x, y, mask)) continue;
+
+          const idx = (x + y * camW) * 4;
+          const r = cam.pixels[idx + 0];
+          const g = cam.pixels[idx + 1];
+          const b = cam.pixels[idx + 2];
+
+          const bright = (r + g + b) / 3;
+          const z = map(bright, 0, 255, -zDepth, zDepth);
+          const px = (x - centerX) * cloudScale;
+          const py = (y - centerY) * cloudScale;
+
+          vertex(px, py, z);
+        }
+      }
+      endShape();
+    }
+
+    function getFaceMaskBounds(predictions) {
+      if (!predictions || !predictions.length) return null;
+      const keypoints = predictions[0].keypoints || [];
+      if (!keypoints.length) return null;
+
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+
+      for (const p of keypoints) {
+        minX = min(minX, p.x);
+        minY = min(minY, p.y);
+        maxX = max(maxX, p.x);
+        maxY = max(maxY, p.y);
+      }
+
+      const w = maxX - minX;
+      const h = maxY - minY;
+
+      return {
+        minX: max(0, minX - w * 0.30),      // wider to include ears
+        maxX: min(camW - 1, maxX + w * 0.30),
+        minY: max(0, minY - h * 0.18),
+        maxY: min(camH - 1, maxY + h * 0.72) // lower to include neck
+      };
+    }
+
+    function isInFaceNeckMask(x, y, bounds) {
+      return x >= bounds.minX && x <= bounds.maxX && y >= bounds.minY && y <= bounds.maxY;
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>

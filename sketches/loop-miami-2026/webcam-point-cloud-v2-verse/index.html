@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Point Cloud Exporter (Verse Edition)</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0b0b;
+      --panel: #171717;
+      --text: #ececec;
+      --accent: #8ac6ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 100vh;
+    }
+
+    aside {
+      border-right: 1px solid #272727;
+      background: var(--panel);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--accent);
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #cfcfcf;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    button, input[type="file"] {
+      width: 100%;
+      font-size: 13px;
+      padding: 8px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      background: #202020;
+      color: var(--text);
+    }
+
+    button:hover { border-color: #505050; cursor: pointer; }
+
+    .stats {
+      border: 1px solid #2f2f2f;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      color: #cfcfcf;
+      line-height: 1.5;
+    }
+
+    main {
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    canvas {
+      width: min(92vw, 1100px);
+      height: min(88vh, 880px);
+      background: #000;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <aside>
+    <h1>Point Cloud Exporter</h1>
+    <p>Build a JSON point cloud from an image so it can be re-used in Verse scripting without browser-only webcam/ML dependencies.</p>
+
+    <label>
+      Source image
+      <input id="imageInput" type="file" accept="image/*" />
+    </label>
+
+    <label>
+      Sample step: <span id="stepValue">3</span>
+      <input id="step" type="range" min="1" max="10" step="1" value="3" />
+    </label>
+
+    <label>
+      Depth scale: <span id="depthValue">220</span>
+      <input id="depth" type="range" min="20" max="600" step="10" value="220" />
+    </label>
+
+    <label>
+      Brightness threshold: <span id="thresholdValue">25</span>
+      <input id="threshold" type="range" min="0" max="255" step="1" value="25" />
+    </label>
+
+    <button id="generateButton">Generate Point Cloud</button>
+    <button id="downloadButton" disabled>Download points.json</button>
+
+    <div class="stats" id="stats">
+      No image loaded.
+    </div>
+  </aside>
+
+  <main>
+    <canvas id="preview" width="1200" height="900"></canvas>
+  </main>
+
+  <script>
+    const imageInput = document.getElementById("imageInput");
+    const stepInput = document.getElementById("step");
+    const depthInput = document.getElementById("depth");
+    const thresholdInput = document.getElementById("threshold");
+    const stepValue = document.getElementById("stepValue");
+    const depthValue = document.getElementById("depthValue");
+    const thresholdValue = document.getElementById("thresholdValue");
+    const generateButton = document.getElementById("generateButton");
+    const downloadButton = document.getElementById("downloadButton");
+    const stats = document.getElementById("stats");
+    const preview = document.getElementById("preview");
+    const ctx = preview.getContext("2d");
+
+    const sourceCanvas = document.createElement("canvas");
+    const sourceCtx = sourceCanvas.getContext("2d", { willReadFrequently: true });
+
+    let loadedImage = null;
+    let currentPoints = [];
+
+    const updateLabels = () => {
+      stepValue.textContent = stepInput.value;
+      depthValue.textContent = depthInput.value;
+      thresholdValue.textContent = thresholdInput.value;
+    };
+
+    updateLabels();
+    stepInput.addEventListener("input", updateLabels);
+    depthInput.addEventListener("input", updateLabels);
+    thresholdInput.addEventListener("input", updateLabels);
+
+    imageInput.addEventListener("change", async (event) => {
+      const [file] = event.target.files || [];
+      if (!file) return;
+
+      const bitmap = await createImageBitmap(file);
+      loadedImage = bitmap;
+      sourceCanvas.width = bitmap.width;
+      sourceCanvas.height = bitmap.height;
+      sourceCtx.drawImage(bitmap, 0, 0);
+      drawMessage(`Loaded ${bitmap.width}x${bitmap.height}. Click "Generate Point Cloud".`);
+      currentPoints = [];
+      downloadButton.disabled = true;
+    });
+
+    generateButton.addEventListener("click", () => {
+      if (!loadedImage) {
+        drawMessage("Load an image first.");
+        return;
+      }
+
+      const step = Number(stepInput.value);
+      const zDepth = Number(depthInput.value);
+      const threshold = Number(thresholdInput.value);
+
+      const imageData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height).data;
+      const centerX = sourceCanvas.width * 0.5;
+      const centerY = sourceCanvas.height * 0.5;
+
+      const points = [];
+      for (let y = 0; y < sourceCanvas.height; y += step) {
+        for (let x = 0; x < sourceCanvas.width; x += step) {
+          const idx = (x + y * sourceCanvas.width) * 4;
+          const r = imageData[idx + 0];
+          const g = imageData[idx + 1];
+          const b = imageData[idx + 2];
+          const a = imageData[idx + 3];
+
+          if (a === 0) continue;
+
+          const bright = (r + g + b) / 3;
+          if (bright < threshold) continue;
+
+          const z = ((bright / 255) * 2 - 1) * zDepth;
+          points.push({
+            x: x - centerX,
+            y: y - centerY,
+            z,
+            r,
+            g,
+            b
+          });
+        }
+      }
+
+      currentPoints = points;
+      drawPreview(points, zDepth);
+      downloadButton.disabled = points.length === 0;
+
+      stats.textContent =
+        `Points: ${points.length}\n` +
+        `Image: ${sourceCanvas.width}x${sourceCanvas.height}\n` +
+        `Step: ${step} | Depth: ${zDepth} | Threshold: ${threshold}`;
+    });
+
+    downloadButton.addEventListener("click", () => {
+      if (!currentPoints.length) return;
+      const payload = {
+        version: "v2-verse",
+        generatedAt: new Date().toISOString(),
+        source: {
+          width: sourceCanvas.width,
+          height: sourceCanvas.height
+        },
+        params: {
+          step: Number(stepInput.value),
+          zDepth: Number(depthInput.value),
+          threshold: Number(thresholdInput.value)
+        },
+        points: currentPoints
+      };
+      const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "points.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    function drawMessage(message) {
+      ctx.clearRect(0, 0, preview.width, preview.height);
+      ctx.fillStyle = "#0f0f0f";
+      ctx.fillRect(0, 0, preview.width, preview.height);
+      ctx.fillStyle = "#d0d0d0";
+      ctx.font = "20px system-ui, sans-serif";
+      ctx.fillText(message, 24, 46);
+      stats.textContent = "No points generated.";
+    }
+
+    function drawPreview(points, zDepth) {
+      ctx.clearRect(0, 0, preview.width, preview.height);
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, preview.width, preview.height);
+
+      if (!points.length) {
+        drawMessage("No points generated with current parameters.");
+        return;
+      }
+
+      const scale = Math.min(preview.width / sourceCanvas.width, preview.height / sourceCanvas.height) * 0.9;
+      const ox = preview.width / 2;
+      const oy = preview.height / 2;
+
+      for (const p of points) {
+        const perspective = 0.85 + (p.z / zDepth) * 0.35;
+        const sx = ox + p.x * scale * perspective;
+        const sy = oy + p.y * scale * perspective;
+        const radius = Math.max(1, 1.4 + (p.z / zDepth) * 0.8);
+        ctx.fillStyle = `rgb(${p.r}, ${p.g}, ${p.b})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    drawMessage("Load an image to begin.");
+  </script>
+</body>
+</html>
