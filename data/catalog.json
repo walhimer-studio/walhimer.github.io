@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-04-16",
+  "updated": "2026-04-19",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -145,11 +145,7 @@
         },
         "installation_entry": {
           "repo_paths": [
-            "bio/index.html",
-            "contact/index.html",
-            "index.html",
-            "installations/bloom-release.html",
-            "sketches/index.html"
+            "installations/bloom-release.html"
           ],
           "external_urls": [
             "https://medium.com/@markwalhimer",
@@ -225,11 +221,7 @@
         },
         "installation_entry": {
           "repo_paths": [
-            "bio/index.html",
-            "contact/index.html",
-            "index.html",
-            "installations/living-commons.html",
-            "sketches/index.html"
+            "installations/living-commons.html"
           ],
           "external_urls": [
             "https://museumplanning.com",
@@ -1737,49 +1729,6 @@
         "external_urls": [
           "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
         ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Traveling Landscape:index",
-      "dublin_core": {
-        "title": "traveling-landscape/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Traveling Landscape:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Traveling Landscape-index",
-        "type": "HumanMadeObject",
-        "_label": "traveling-landscape/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Traveling Landscape",
-          "file": "traveling-landscape/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/traveling-landscape/index.html"
-        ],
-        "external_urls": []
       }
     },
     {
@@ -8055,8 +8004,12 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/light-art-023/ART_INSTALLATION_LAB.md",
           "sketches/light-art-023/LIGHT_ART_023.md",
+          "sketches/light-art-023/LIGHT_ART_023_OSC.md",
+          "sketches/light-art-023/WHEN_YOU_RETURN.md",
           "sketches/light-art-023/index.html",
+          "sketches/light-art-023/light_art_023_osc.js",
           "sketches/light-art-023/light_art_023_technical_drawing.py",
           "sketches/light-art-023/light_art_023_technical_drawing.svg",
           "sketches/light-art-023/main.js"
@@ -8110,101 +8063,6 @@
           "https://mark-walhimer.com/sketches/column-tiles-breathing.html",
           "https://unpkg.com/gif.js@0.2.0/dist/gif.js"
         ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Mangle:index",
-      "dublin_core": {
-        "title": "mangle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Mangle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Mangle-index",
-        "type": "HumanMadeObject",
-        "_label": "mangle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Mangle",
-          "file": "mangle/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/mangle/README.md",
-          "sketches/mangle/app.js",
-          "sketches/mangle/audition.html",
-          "sketches/mangle/audition.js",
-          "sketches/mangle/index.html",
-          "sketches/mangle/vendor/TONE-LICENSE.md",
-          "sketches/mangle/vendor/Tone.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Mangle:audition",
-      "dublin_core": {
-        "title": "mangle/audition",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Mangle:audition",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000193"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Mangle-audition",
-        "type": "HumanMadeObject",
-        "_label": "mangle/audition",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Mangle",
-          "file": "mangle/audition.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/mangle/audition.html",
-          "sketches/mangle/audition.js",
-          "sketches/mangle/index.html",
-          "sketches/mangle/vendor/Tone.js"
-        ],
-        "external_urls": []
       }
     },
     {
@@ -8407,12 +8265,13 @@
           "sketches/loop-miami-2026/loop-miami-critique-card.png",
           "sketches/loop-miami-2026/loop-miami-critique-qr.png",
           "sketches/loop-miami-2026/orchestrator.html",
-          "sketches/loop-miami-2026/technical-drawing-with-elevation-2.html",
           "sketches/loop-miami-2026/traveling-landscape.html",
           "sketches/loop-miami-2026/walk_moon_audio_standalone.html",
+          "sketches/loop-miami-2026/webcam-point-cloud/face-circle/index.html",
           "sketches/loop-miami-2026/webcam-point-cloud/v1/index.html",
           "sketches/loop-miami-2026/webcam-point-cloud/v2-verse/README.md",
-          "sketches/loop-miami-2026/webcam-point-cloud/v2-verse/index.html"
+          "sketches/loop-miami-2026/webcam-point-cloud/v2-verse/index.html",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3/index.html"
         ],
         "external_urls": []
       }
@@ -8542,10 +8401,7 @@
           "Three.js",
           "WebGL",
           "inlined"
-        ],
-        "installation": {
-          "homepage": true
-        }
+        ]
       },
       "artifacts": {
         "repo_paths": [
@@ -8778,9 +8634,7 @@
         "repo_paths": [
           "sketches/loop-miami-2026/technical-drawing-with-elevation-2.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -8822,10 +8676,7 @@
           "p5.js",
           "WEBGL",
           "inlined"
-        ],
-        "installation": {
-          "homepage": true
-        }
+        ]
       },
       "artifacts": {
         "repo_paths": [
@@ -8836,93 +8687,6 @@
           "https://fonts.googleapis.com",
           "https://fonts.gstatic.com"
         ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Miami 2026:index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Miami 2026",
-          "file": "loop-miami-2026/webcam-point-cloud/v1/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-miami-2026/webcam-point-cloud/v1/index.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Miami 2026:index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Miami 2026",
-          "file": "loop-miami-2026/webcam-point-cloud/v2-verse/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-miami-2026/webcam-point-cloud/v2-verse/README.md",
-          "sketches/loop-miami-2026/webcam-point-cloud/v2-verse/index.html"
-        ],
-        "external_urls": []
       }
     },
     {

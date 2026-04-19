@@ -91,7 +91,8 @@ def extract_installations_from_works(works: list[dict]) -> list[dict]:
     seen: set[str] = set()
     for w in works:
         site = w.get("site") or {}
-        if not site.get("installation"):
+        inst = site.get("installation")
+        if not inst or not inst.get("path"):
             continue
         row = installation_dict_from_work(w)
         key = row["path"]
