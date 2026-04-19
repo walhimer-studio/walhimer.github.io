@@ -12,106 +12,34 @@
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <meta name="description" content="Selected installation works by Mark Walhimer — digital installation artist." />
+  <link rel="canonical" href="https://mark-walhimer.com/installations/index.html" />
+  <meta property="og:title" content="Selected Works — Mark Walhimer" />
+  <meta property="og:description" content="Installation works by Mark Walhimer, digital installation artist." />
+  <meta property="og:url" content="https://mark-walhimer.com/installations/index.html" />
+  <meta property="og:image" content="https://mark-walhimer.com/drafts/bloom-four-walls-carousel-preview.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/cathedral-shell.css" />
   <title>Selected Works — Mark Walhimer</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black:    #0a0a0a;
-      --offwhite: #f0ede6;
-      --dim:      #666660;
-      --rule:     #1e1e1e;
-      --accent:   #c8a882;
-      --border:   #2a2a2a;
-      --bright:   #f0f0f0;
+      --page-bg: #ffffff;
+      --text: #3a3834;
+      --ink: #3a3834;
+      --black: #ffffff;
+      --offwhite: #3a3834;
+      --dim: #6b6760;
+      --rule: rgba(58, 56, 52, 0.12);
+      --accent: #b8976a;
+      --border: rgba(58, 56, 52, 0.18);
+      --bright: #3a3834;
     }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--black);
-      color: var(--offwhite);
-      font-family: Georgia, 'Times New Roman', serif;
-      font-weight: 300;
-      min-height: 100vh;
-    }
-
-    /* NAV — matches Projects, Bio, Exhibitions, Contact */
-    nav {
-      display: flex;
-      align-items: stretch;
-      padding: 0 40px;
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--accent);
-      text-decoration: none;
-      padding: 22px 32px 22px 0;
-      margin-right: 8px;
-      border-right: 1px solid var(--border);
-    }
-    .nav-links { display: flex; align-items: stretch; gap: 0; }
-    .nav-links a {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--dim);
-      text-decoration: none;
-      padding: 22px 20px;
-      transition: color 0.15s;
-      display: flex;
-      align-items: center;
-    }
-    .nav-links a:hover { color: var(--bright); }
-    .nav-links a.active { color: var(--accent); border-bottom: 1px solid var(--accent); margin-bottom: -1px; }
-
-    .nav-toggle {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      margin-left: auto;
-      padding: 10px 12px;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--accent);
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .nav-toggle svg { width: 20px; height: 14px; display: block; }
-    .nav-toggle .line { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; fill: none; }
-    @media (max-width: 800px) {
-      nav { flex-wrap: wrap; align-items: center; padding: 0 16px; }
-      .nav-toggle { display: flex; }
-      .nav-logo {
-        padding: 18px 16px 18px 0;
-        margin-right: 0;
-        border-right: none;
-        flex: 1;
-        min-width: 0;
-      }
-      .nav-links {
-        display: none;
-        flex-basis: 100%;
-        flex-direction: column;
-        align-items: stretch;
-        border-top: 1px solid var(--border);
-      }
-      nav.nav-open .nav-links { display: flex; }
-      .nav-links a {
-        padding: 16px 0;
-        border-bottom: 1px solid var(--border);
-        border-left: 3px solid transparent;
-      }
-      .nav-links a.active {
-        border-bottom: 1px solid var(--border);
-        border-left-color: var(--accent);
-        margin-bottom: 0;
-      }
-    }
 
     /* HEADER */
     header {
@@ -144,7 +72,7 @@
       font-size: clamp(17px, 2vw, 21px);
       font-weight: 300;
       line-height: 1.7;
-      color: rgba(240,237,230,0.85);
+      color: rgba(58, 56, 52, 0.88);
     }
     .lede strong { font-weight: 400; color: var(--offwhite); }
     .meta-row {
@@ -218,7 +146,7 @@
       transition: background 0.25s;
       min-height: 0;
     }
-    .work-card:hover { background: #111; }
+    .work-card:hover { background: #f5f3ef; }
 
     .card-thumb {
       width: 100%;
@@ -293,7 +221,7 @@
       font-size: 13px;
       font-weight: 300;
       line-height: 1.75;
-      color: rgba(240,237,230,0.45);
+      color: rgba(58, 56, 52, 0.62);
       margin-top: 3px;
       flex: 1;
       min-height: 0;
@@ -356,11 +284,11 @@
       text-decoration: none;
       transition: color 0.2s;
     }
-    .social-links a:hover { color: var(--offwhite); }
-    .artist-bio { font-size: 15px; font-weight: 300; line-height: 1.9; color: rgba(240,237,230,0.6); }
+    .social-links a:hover { color: var(--ink); }
+    .artist-bio { font-size: 15px; font-weight: 300; line-height: 1.9; color: rgba(58,56,52,0.72); }
     .artist-bio p { margin-bottom: 16px; }
     .artist-bio p:last-child { margin-bottom: 0; }
-    .artist-bio strong { font-weight: 400; color: var(--offwhite); }
+    .artist-bio strong { font-weight: 500; color: var(--ink); }
 
     /* FOOTER */
     footer {
@@ -375,18 +303,18 @@
     footer span { font-family: 'SF Mono', 'Monaco', 'Consolas', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.08em; }
   </style>
 </head>
-<body>
+<body class="installations-page">
 
 <nav>
-  <a class="nav-logo" href="../index.html">Mark Walhimer</a>
+  <a class="nav-logo" href="/">Mark Walhimer</a>
   <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
     <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
   </button>
   <div class="nav-links" id="site-nav-links">
-    <a href="../index.html" class="active">Selected Works</a>
-    <a href="../sketches/index.html">Catalog</a>
-    <a href="../bio/index.html">Bio / CV</a>
-    <a href="../contact/index.html">Contact</a>
+    <a href="/" class="active">Selected Works</a>
+    <a href="/sketches/index.html">Catalog</a>
+    <a href="/bio/index.html">Bio / CV</a>
+    <a href="/contact/index.html">Contact</a>
   </div>
 </nav>
 
@@ -499,7 +427,7 @@
   <div class="artist-left">
     <div class="label">Artist</div>
     <div class="name">Mark Walhimer</div>
-    <div class="role">Museum planner &nbsp;·&nbsp; Generative artist</div>
+    <div class="role">Museum planner &nbsp;·&nbsp; Digital installation artist</div>
     <div class="social-links">
       <a href="https://www.instagram.com/markwalhimer/" target="_blank">↗ Instagram</a>
       <a href="https://x.com/WalhimerArt" target="_blank">↗ X / Twitter</a>
@@ -507,7 +435,7 @@
     </div>
   </div>
   <div class="artist-bio">
-    <p>Mark Walhimer (1964) is a generative artist and museum designer with twenty years of experience creating interactive public spaces. His practice moves between the computational and the spatial — finding in generative code the same structural logic that underlies the design of institutions.</p>
+    <p>Mark Walhimer (1964) is a digital installation artist and museum designer with twenty years of experience creating interactive public spaces. His practice moves between the computational and the spatial — finding in generative code the same structural logic that underlies the design of institutions.</p>
     <p>Managing partner of <strong><a href="https://museumplanning.com" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">Museum Planning, LLC</a></strong>. Executive Director, Museum of Arts &amp; Sciences (Macon, Georgia). Fulbright Specialist. Author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury). Former design consultant, Smithsonian Institution. Faculty, Georgia Institute of Technology and Tec de Monterrey.</p>
     <p>Began in the studio of Judy Pfaff, 1985. Exhibited at MIRADAS TANGENTES, Madrid, 2026.</p>
   </div>

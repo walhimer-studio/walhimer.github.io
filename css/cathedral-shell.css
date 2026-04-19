@@ -1,0 +1,158 @@
+/* Cathedral shell — shared tokens, nav, and base layout (mark-walhimer.com) */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+:root {
+  --page-bg: #ffffff;
+  --text: #3a3834;
+  --text-soft: #6b6760;
+  --dim: #6b6760;
+  --rule: rgba(58, 56, 52, 0.12);
+  --accent: #b8976a;
+  --border: rgba(58, 56, 52, 0.18);
+  --paper: #ffffff;
+  --ink: #3a3834;
+  --ink-soft: #6b6760;
+  --gold: #b8976a;
+  --gold-light: #d4c4a8;
+  --line: rgba(58, 56, 52, 0.12);
+}
+
+html { scroll-behavior: smooth; }
+
+body.shell-page {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--ink);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+nav {
+  display: flex;
+  align-items: stretch;
+  padding: 0 40px;
+  border-bottom: 1px solid var(--line);
+  background: var(--page-bg);
+  position: relative;
+  z-index: 200;
+}
+
+.nav-logo {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 22px 32px 22px 0;
+  margin-right: 8px;
+  border-right: 1px solid var(--line);
+}
+
+.nav-links { display: flex; align-items: stretch; gap: 0; }
+
+.nav-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  text-decoration: none;
+  padding: 22px 20px;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a:hover { color: var(--ink); }
+.nav-links a.active { color: var(--accent); border-bottom: 1px solid var(--accent); margin-bottom: -1px; }
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 10px 12px;
+  background: var(--page-bg);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-toggle svg { width: 20px; height: 14px; display: block; }
+.nav-toggle .line { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; fill: none; }
+
+@media (max-width: 800px) {
+  nav { flex-wrap: wrap; align-items: center; padding: 0 16px; }
+  .nav-toggle { display: flex; }
+  .nav-logo {
+    padding: 18px 16px 18px 0;
+    margin-right: 0;
+    border-right: none;
+    flex: 1;
+    min-width: 0;
+  }
+  .nav-links {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    border-top: 1px solid var(--line);
+  }
+  nav.nav-open .nav-links { display: flex; }
+  .nav-links a {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    border-left: 3px solid transparent;
+  }
+  .nav-links a.active {
+    border-bottom: 1px solid var(--line);
+    border-left-color: var(--accent);
+    margin-bottom: 0;
+  }
+}
+
+.shell-footer {
+  border-top: 1px solid var(--line);
+  padding: 22px 40px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+  background: var(--page-bg);
+}
+
+.shell-footer-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Catalog / data-dense pages: monospace body, same nav */
+body.catalog-page {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 300;
+  min-height: 100vh;
+}
+
+/* Installations index — serif body, same nav */
+body.installations-page {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--ink);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 300;
+  min-height: 100vh;
+}

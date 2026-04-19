@@ -1,84 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVXX0YPGCN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TVXX0YPGCN');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
   <title>Catalog — Mark Walhimer</title>
-  <meta name="description" content="Selected installation works at a glance, plus the full studio archive by series — searchable files and versions." />
+  <meta name="description" content="Catalog — Mark Walhimer, digital installation artist. Selected installation works and the full studio archive by series." />
   <link rel="canonical" href="https://mark-walhimer.com/sketches/index.html" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Catalog — Mark Walhimer" />
-  <meta property="og:description" content="Selected installation works at a glance, plus the full studio archive by series — searchable files and versions." />
+  <meta property="og:description" content="Catalog — Mark Walhimer, digital installation artist. Selected installation works and the full studio archive by series." />
   <meta property="og:url" content="https://mark-walhimer.com/sketches/index.html" />
-  <meta property="og:image" content="https://mark-walhimer.com/installations/technical-drawing-preview.png" />
+  <meta property="og:image" content="https://mark-walhimer.com/drafts/bloom-four-walls-carousel-preview.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Catalog — Mark Walhimer" />
-  <meta name="twitter:description" content="Selected installation works at a glance, plus the full studio archive by series — searchable files and versions." />
-  <meta name="twitter:image" content="https://mark-walhimer.com/installations/technical-drawing-preview.png" />
+  <meta name="twitter:description" content="Catalog — Mark Walhimer, digital installation artist. Selected installation works and the full studio archive by series." />
+  <meta name="twitter:image" content="https://mark-walhimer.com/drafts/bloom-four-walls-carousel-preview.png" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/cathedral-shell.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black:   #0a0a0a;
-      --off:     #f0ede6;
-      --dim:     #666660;
-      --rule:    #1e1e1e;
-      --accent:  #c8a882;
-      --border:  #2a2a2a;
-      --bright:  #f0f0f0;
-      --surface: #111;
-    }
-    body { background: var(--black); color: var(--off); font-family: 'IBM Plex Mono', monospace; font-weight: 300; min-height: 100vh; }
-
-    nav { display: flex; align-items: stretch; padding: 0 40px; border-bottom: 1px solid var(--border); }
-    .nav-logo { font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); text-decoration: none; padding: 22px 32px 22px 0; margin-right: 8px; border-right: 1px solid var(--border); }
-    .nav-links { display: flex; align-items: stretch; }
-    .nav-links a { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--dim); text-decoration: none; padding: 22px 20px; transition: color .15s; display: flex; align-items: center; }
-    .nav-links a:hover { color: var(--bright); }
-    .nav-links a.active { color: var(--accent); border-bottom: 1px solid var(--accent); margin-bottom: -1px; }
-
-    .nav-toggle {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      margin-left: auto;
-      padding: 10px 12px;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--accent);
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .nav-toggle svg { width: 20px; height: 14px; display: block; }
-    .nav-toggle .line { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; fill: none; }
-    @media (max-width: 800px) {
-      nav { flex-wrap: wrap; align-items: center; padding: 0 16px; }
-      .nav-toggle { display: flex; }
-      .nav-logo {
-        padding: 18px 16px 18px 0;
-        margin-right: 0;
-        border-right: none;
-        flex: 1;
-        min-width: 0;
-      }
-      .nav-links {
-        display: none;
-        flex-basis: 100%;
-        flex-direction: column;
-        align-items: stretch;
-        border-top: 1px solid var(--border);
-      }
-      nav.nav-open .nav-links { display: flex; }
-      .nav-links a {
-        padding: 16px 0;
-        border-bottom: 1px solid var(--border);
-        border-left: 3px solid transparent;
-      }
-      .nav-links a.active {
-        border-bottom: 1px solid var(--border);
-        border-left-color: var(--accent);
-        margin-bottom: 0;
-      }
+      --page-bg: #ffffff;
+      --text: #3a3834;
+      --text-soft: #6b6760;
+      --ink: #3a3834;
+      --black: #ffffff;
+      --off: #3a3834;
+      --dim: #6b6760;
+      --rule: rgba(58, 56, 52, 0.12);
+      --accent: #b8976a;
+      --border: rgba(58, 56, 52, 0.18);
+      --bright: #3a3834;
+      --surface: #f5f3ef;
     }
 
     /* —— Selected installation works (formerly homepage grid) —— */
@@ -102,9 +65,9 @@
       font-size: clamp(16px, 1.8vw, 19px);
       font-weight: 300;
       line-height: 1.7;
-      color: rgba(240, 237, 230, 0.85);
+      color: rgba(58, 56, 52, 0.88);
     }
-    .sw-home-header .lede strong { font-weight: 400; color: var(--off); }
+    .sw-home-header .lede strong { font-weight: 500; color: var(--ink); }
     .grid-wrapper {
       max-width: 1100px;
       margin: 0 auto;
@@ -150,7 +113,7 @@
       transition: background 0.25s;
       min-height: 0;
     }
-    .work-card:hover { background: #111; }
+    .work-card:hover { background: #f5f3ef; }
     .card-thumb {
       width: 100%;
       aspect-ratio: 4 / 3;
@@ -219,7 +182,7 @@
       font-size: 13px;
       font-weight: 300;
       line-height: 1.75;
-      color: rgba(240, 237, 230, 0.45);
+      color: rgba(58, 56, 52, 0.62);
       margin-top: 3px;
       flex: 1;
       min-height: 0;
@@ -248,16 +211,16 @@
     .kicker { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); margin-bottom: 18px; }
     h1 { font-family: Georgia, serif; font-size: clamp(40px,6vw,72px); font-weight: 300; line-height: 1; letter-spacing: -.02em; margin-bottom: 20px; }
     h1 em { font-style: italic; color: var(--accent); }
-    .lede { font-size: 13px; color: rgba(240,237,230,.5); line-height: 1.8; max-width: 560px; }
+    .lede { font-size: 13px; color: rgba(58,56,52,.55); line-height: 1.8; max-width: 560px; }
 
     .controls { max-width: 1100px; margin: 0 auto; padding: 18px 48px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ctrl-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-right: 4px; }
     .ctrl-btn { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: transparent; border: 1px solid var(--border); color: var(--dim); padding: 5px 13px; cursor: pointer; transition: all .15s; }
-    .ctrl-btn:hover { border-color: var(--dim); color: var(--off); }
+    .ctrl-btn:hover { border-color: var(--dim); color: var(--ink); }
     .ctrl-btn.active { border-color: var(--accent); color: var(--accent); }
     .ctrl-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ctrl-group + .ctrl-group { padding-left: 16px; margin-left: 8px; border-left: 1px solid var(--rule); }
-    #search { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: transparent; border: 1px solid var(--border); color: var(--off); padding: 5px 12px; outline: none; width: 200px; transition: border-color .15s; margin-left: auto; }
+    #search { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: var(--page-bg); border: 1px solid var(--border); color: var(--ink); padding: 5px 12px; outline: none; width: 200px; transition: border-color .15s; margin-left: auto; }
     #search::placeholder { color: var(--dim); }
     #search:focus { border-color: var(--accent); }
 
@@ -306,18 +269,18 @@
     footer span { font-size: 10px; color: var(--dim); letter-spacing: .08em; }
   </style>
 </head>
-<body>
+<body class="catalog-page">
 
 <nav>
-  <a class="nav-logo" href="../index.html">Mark Walhimer</a>
+  <a class="nav-logo" href="/">Mark Walhimer</a>
   <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
     <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
   </button>
   <div class="nav-links" id="site-nav-links">
-    <a href="../index.html">Selected Works</a>
-    <a href="index.html" class="active">Catalog</a>
-    <a href="../bio/index.html">Bio / CV</a>
-    <a href="../contact/index.html">Contact</a>
+    <a href="/">Selected Works</a>
+    <a href="/sketches/index.html" class="active">Catalog</a>
+    <a href="/bio/index.html">Bio / CV</a>
+    <a href="/contact/index.html">Contact</a>
   </div>
 </nav>
 
