@@ -173,93 +173,6 @@
 
   .live-work-caption a:hover { color: var(--ink); }
 
-  /* ── MACHINE AESTHETIC ARTIFACT LIST ── */
-  .ma-catalog {
-    margin-bottom: 64px;
-    border-top: 1px solid var(--rule);
-    padding-top: 36px;
-  }
-
-  .ma-catalog-lede {
-    font-size: 17px;
-    font-weight: 300;
-    line-height: 1.65;
-    color: #2a2620;
-    margin-bottom: 32px;
-    max-width: 52em;
-  }
-
-  .ma-catalog-ol {
-    list-style: none;
-    counter-reset: ma;
-    padding: 0;
-    margin: 0;
-  }
-
-  .ma-catalog-ol > li {
-    counter-increment: ma;
-    margin-bottom: 44px;
-    padding-left: 52px;
-    position: relative;
-  }
-
-  .ma-catalog-ol > li::before {
-    content: counter(ma);
-    position: absolute;
-    left: 0;
-    top: 2px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: .08em;
-    width: 40px;
-    text-align: right;
-  }
-
-  .ma-catalog-ol h3 {
-    margin: 0 0 8px;
-    font-size: 20px;
-  }
-
-  .ma-catalog-ol p {
-    font-size: 16px;
-    margin-bottom: 12px;
-    max-width: 52em;
-  }
-
-  .ma-media {
-    margin: 14px 0 10px;
-    border: 1px solid var(--rule);
-    background: #0f0f12;
-    overflow: hidden;
-  }
-
-  .ma-media img,
-  .ma-media video {
-    display: block;
-    width: 100%;
-    height: auto;
-    vertical-align: bottom;
-  }
-
-  .ma-media video {
-    max-height: min(70vh, 520px);
-    margin: 0 auto;
-    background: #000;
-  }
-
-  .ma-ref-link {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: .06em;
-    color: var(--muted);
-    text-decoration: none;
-    border-bottom: 1px dotted var(--rule);
-    word-break: break-all;
-  }
-
-  .ma-ref-link:hover { color: var(--ink); }
-
   /* ── SECTION ── */
   section {
     margin-bottom: 72px;
@@ -483,8 +396,6 @@
     .artist-row { grid-template-columns: 1fr; gap: 6px; }
     .fab-grid { grid-template-columns: 1fr; }
     .live-work-caption { flex-direction: column; }
-    .ma-catalog-ol > li { padding-left: 36px; }
-    .ma-catalog-ol > li::before { width: 28px; font-size: 10px; }
   }
 </style>
 </head>
@@ -531,50 +442,6 @@
     <a href="https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html" target="_blank">mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html</a>
   </div>
 </div>
-
-<!-- ── MACHINE AESTHETIC: CONCRETE ANCHORS ── -->
-<section id="machine-aesthetic-catalog" class="ma-catalog" aria-labelledby="ma-catalog-heading">
-  <div class="section-header">
-    <span class="section-number">Ref —</span>
-    <h2 id="ma-catalog-heading">Machine Aesthetic · Artifacts</h2>
-  </div>
-  <p class="ma-catalog-lede">Four references that ground this critique in image, loop capture, executable seed, and installation.</p>
-  <ol class="ma-catalog-ol">
-    <li>
-      <h3>Surrender Machine #1</h3>
-      <p>Artifact still from the Tezos-era documentation set.</p>
-      <div class="ma-media">
-        <img
-          src="https://mark-walhimer.com/sketches/tezos-early-works/assets/artifact-20.png"
-          alt="Surrender Machine #1 — artifact 20"
-          loading="lazy"
-          decoding="async"
-        >
-      </div>
-      <a class="ma-ref-link" href="https://mark-walhimer.com/sketches/tezos-early-works/assets/artifact-20.png" target="_blank" rel="noopener">mark-walhimer.com/sketches/tezos-early-works/assets/artifact-20.png</a>
-    </li>
-    <li>
-      <h3>May 1, 2026 — loop capture (MP4)</h3>
-      <p>Screen recording of the loop output; a document of behavior in time, not a substitute for running code.</p>
-      <div class="ma-media">
-        <video controls playsinline preload="metadata" title="Loop capture May 1 2026">
-          <source src="https://mark-walhimer.com/sketches/April%2025/loop-5-1-2026-v2.mp4" type="video/mp4">
-        </video>
-      </div>
-      <a class="ma-ref-link" href="https://mark-walhimer.com/sketches/April%2025/loop-5-1-2026-v2.mp4" target="_blank" rel="noopener">mark-walhimer.com/sketches/April%2025/loop-5-1-2026-v2.mp4</a>
-    </li>
-    <li>
-      <h3>Seed file — Three.js · HTML5</h3>
-      <p>Self-contained browser sketch: building outline, facade, seeded flow, handoff toward surrender machines.</p>
-      <p><a class="ma-ref-link" href="https://mark-walhimer.com/sketches/April%2025/loop-art-critique-technical-surrender.html" target="_blank" rel="noopener">Open loop-art-critique-technical-surrender.html ↗</a></p>
-    </li>
-    <li>
-      <h3>Surrender Machines</h3>
-      <p>Installation-tier work — the spatial / systemic end state this critique points toward.</p>
-      <p><a class="ma-ref-link" href="https://mark-walhimer.com/installations/surrender-machines.html" target="_blank" rel="noopener">Open surrender-machines installation ↗</a></p>
-    </li>
-  </ol>
-</section>
 
 <!-- ─────────────────────────────────────────────────────────────────── -->
 <section id="overview">
