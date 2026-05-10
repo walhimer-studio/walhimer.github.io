@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Artifact SVG components (preview)</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 1rem; background: #1a1a1f; color: #e8e8ee; }
+    h1 { font-size: 1.1rem; font-weight: 600; }
+    p.note { font-size: 0.85rem; opacity: 0.85; max-width: 52rem; }
+    section { margin: 1.5rem 0; border-top: 1px solid #333; padding-top: 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    figure {
+      margin: 0; padding: 0.5rem; background: #252530; border-radius: 8px;
+      border: 1px solid #3a3a48;
+    }
+    figcaption { font-size: 0.75rem; word-break: break-all; margin-top: 0.35rem; opacity: 0.9; }
+    object, iframe { width: 100%; height: 220px; background: #333; border-radius: 4px; border: none; }
+    code { font-size: 0.72rem; }
+  </style>
+</head>
+<body>
+  <h1>Artifact SVG components</h1>
+  <p class="note">
+    Serve this folder over HTTP (e.g. <code>python3 -m http.server 8765</code> from <code>sketches/loop-snippets/reference</code>)
+    so <code>fetch</code> can load <code>registry.json</code>. Paths resolve from this directory to parent <code>reference/*.svg</code>.
+  </p>
+  <section>
+    <h2>Full artifacts</h2>
+    <div class="grid" id="artifacts"></div>
+  </section>
+  <section>
+    <h2>DSPG split groups</h2>
+    <div class="grid" id="groups"></div>
+  </section>
+  <script type="module">
+    const here = new URL(".", import.meta.url);
+    const regUrl = new URL("./registry.json", import.meta.url);
+
+    function refPath(rel) {
+      if (rel.startsWith("reference/")) return new URL("../" + rel.slice("reference/".length), here).href;
+      if (rel.startsWith("svg-components/")) return new URL("./" + rel.slice("svg-components/".length), here).href;
+      return new URL(rel, here).href;
+    }
+
+    const reg = await fetch(regUrl).then((r) => r.json());
+
+    const artEl = document.getElementById("artifacts");
+    for (const a of reg.artifacts) {
+      const url = refPath(a.file);
+      const fig = document.createElement("figure");
+      fig.innerHTML = `
+        <object type="image/svg+xml" data="${url}" title="${a.id}"></object>
+        <figcaption><strong>${a.id}</strong><br/><code>${a.file}</code></figcaption>
+      `;
+      artEl.appendChild(fig);
+    }
+
+    const grpEl = document.getElementById("groups");
+    for (const g of reg.groups || []) {
+      const url = refPath(g.file);
+      const fig = document.createElement("figure");
+      fig.innerHTML = `
+        <object type="image/svg+xml" data="${url}" title="${g.id}"></object>
+        <figcaption><strong>${g.id}</strong><br/><code>${g.file}</code></figcaption>
+      `;
+      grpEl.appendChild(fig);
+    }
+  </script>
+</body>
+</html>

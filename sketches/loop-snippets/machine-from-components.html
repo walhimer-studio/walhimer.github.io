@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!-- Demo layout only: SVGs here are mostly potrace fills (see COMPONENTS.md). Procedural blueprint uses artifact_blueprint.py for stroke-native linework. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Machine — assembled SVG components</title>
+  <style>
+    :root {
+      --bg: #0e0f14;
+      --panel: #16181f;
+      --edge: #2a2d38;
+      --muted: #8b90a0;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: #e8eaf0;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+    header {
+      padding: 1rem 1.25rem 0.5rem;
+      border-bottom: 1px solid var(--edge);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    header p {
+      margin: 0.35rem 0 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      max-width: 42rem;
+      line-height: 1.45;
+    }
+    .stage {
+      padding: 1rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    /* Main hull: central blueprint assembly */
+    .hull {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid var(--edge);
+      background: var(--panel);
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+    .hull object {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: min(56vh, 520px);
+      pointer-events: none;
+    }
+    /* Twin feeds: pair traces as side machinery */
+    .feeds {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    @media (max-width: 720px) {
+      .feeds { grid-template-columns: 1fr; }
+    }
+    .feed {
+      border-radius: 10px;
+      border: 1px solid var(--edge);
+      background: var(--panel);
+      overflow: hidden;
+    }
+    .feed label {
+      display: block;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0.35rem 0.6rem;
+      border-bottom: 1px solid var(--edge);
+    }
+    .feed object {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 180px;
+      pointer-events: none;
+    }
+    /* Accent strip: second DSPG + classic blueprint trace */
+    .strip {
+      margin-top: 0.75rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 720px) {
+      .strip { grid-template-columns: 1fr; }
+    }
+    .strip .feed object {
+      min-height: 160px;
+    }
+    footer {
+      padding: 1rem 1.25rem 2rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    footer code { font-size: 0.7rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Machine (component assembly)</h1>
+    <p>
+      One scene built only from traced/DSPG SVGs in <code>reference/</code> — central hull, twin feeds, lower strip.
+      Open via GitHub Pages or a local server from <code>sketches/loop-snippets/</code> so assets resolve.
+    </p>
+  </header>
+
+  <div class="stage" id="stage">
+    <section class="hull" aria-label="Main assembly">
+      <object
+        type="image/svg+xml"
+        data="reference/artifact_dspg_3_dspg.svg"
+        title="Primary hull (DSPG)"
+      >
+        Primary hull SVG
+      </object>
+    </section>
+
+    <section class="feeds" aria-label="Side machinery">
+      <div class="feed">
+        <label>Feed A — pair 1</label>
+        <object
+          type="image/svg+xml"
+          data="reference/artifact_pair_1_traced.svg"
+          title="Artifact pair 1"
+        ></object>
+      </div>
+      <div class="feed">
+        <label>Feed B — pair 2</label>
+        <object
+          type="image/svg+xml"
+          data="reference/artifact_pair_2_traced.svg"
+          title="Artifact pair 2"
+        ></object>
+      </div>
+    </section>
+
+    <section class="strip" aria-label="Auxiliary modules">
+      <div class="feed">
+        <label>Module — DSPG 4</label>
+        <object
+          type="image/svg+xml"
+          data="reference/artifact_dspg_4_dspg.svg"
+          title="DSPG 4"
+        ></object>
+      </div>
+      <div class="feed">
+        <label>Module — blueprint target trace</label>
+        <object
+          type="image/svg+xml"
+          data="reference/artifact_blueprint_target_traced.svg"
+          title="Blueprint target traced"
+        ></object>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    Components listed in <code>reference/svg-components/registry.json</code>. Replace <code>object[data]</code>
+    paths or load via <code>artifacts.mjs</code> if you switch to a bundler.
+  </footer>
+
+  <script type="module">
+    // Light parallax on the main hull only — reads like one connected machine.
+    const stage = document.getElementById("stage");
+    const hull = document.querySelector(".hull");
+    if (!hull || !stage) {
+      /* empty */
+    } else {
+      stage.addEventListener(
+        "pointermove",
+        (e) => {
+          const r = hull.getBoundingClientRect();
+          const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+          const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+          hull.style.transform =
+            `perspective(900px) rotateY(${nx * 2.5}deg) rotateX(${-ny * 2}deg)`;
+        },
+        { passive: true }
+      );
+      stage.addEventListener(
+        "pointerleave",
+        () => {
+          hull.style.transform = "";
+        },
+        { passive: true }
+      );
+    }
+  </script>
+</body>
+</html>

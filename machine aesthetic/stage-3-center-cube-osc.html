@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Redirecting to gallery room…</title>
+  <meta http-equiv="refresh" content="0; url=room.html" />
+  <script>
+    (function () {
+      var q = new URLSearchParams(window.location.search);
+      var s = q.get("loopSeed") || q.get("seed") || "";
+      var url = "room.html" + (s ? "?seed=" + encodeURIComponent(s) : "");
+      location.replace(url);
+    })();
+  </script>
+</head>
+<body style="font: 14px system-ui; padding: 24px; background: #111; color: #aaa;">
+  <p><a href="room.html" style="color:#8cf;">Continue to gallery room</a> — works live on the walls (centered · cube · OSC).</p>
+</body>
+</html>

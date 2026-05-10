@@ -1,0 +1,114 @@
+{
+  "base": "reference",
+  "artifacts": [
+    {
+      "id": "artifact_blueprint_target_traced",
+      "file": "reference/artifact_blueprint_target_traced.svg",
+      "kind": "traced"
+    },
+    {
+      "id": "artifact_dspg_3_dspg",
+      "file": "reference/artifact_dspg_3_dspg.svg",
+      "kind": "dspg"
+    },
+    {
+      "id": "artifact_dspg_3_traced",
+      "file": "reference/artifact_dspg_3_traced.svg",
+      "kind": "dspg"
+    },
+    {
+      "id": "artifact_dspg_4_dspg",
+      "file": "reference/artifact_dspg_4_dspg.svg",
+      "kind": "dspg"
+    },
+    {
+      "id": "artifact_dspg_4_traced",
+      "file": "reference/artifact_dspg_4_traced.svg",
+      "kind": "dspg"
+    },
+    {
+      "id": "artifact_pair_1_traced",
+      "file": "reference/artifact_pair_1_traced.svg",
+      "kind": "traced"
+    },
+    {
+      "id": "artifact_pair_2_traced",
+      "file": "reference/artifact_pair_2_traced.svg",
+      "kind": "traced"
+    }
+  ],
+  "groups": [
+    {
+      "id": "dspg-dspg_3-root",
+      "file": "svg-components/split/artifact_dspg_3_dspg/dspg-dspg_3-root.svg",
+      "source": "reference/artifact_dspg_3_dspg.svg",
+      "bundle": "artifact_dspg_3_dspg"
+    },
+    {
+      "id": "dspg-dspg_3-slot-layer-turbines",
+      "file": "svg-components/split/artifact_dspg_3_dspg/dspg-dspg_3-slot-layer-turbines.svg",
+      "source": "reference/artifact_dspg_3_dspg.svg",
+      "bundle": "artifact_dspg_3_dspg"
+    },
+    {
+      "id": "dspg-dspg_3-slot-layer-supports",
+      "file": "svg-components/split/artifact_dspg_3_dspg/dspg-dspg_3-slot-layer-supports.svg",
+      "source": "reference/artifact_dspg_3_dspg.svg",
+      "bundle": "artifact_dspg_3_dspg"
+    },
+    {
+      "id": "dspg-dspg_3-slot-layer-wiring",
+      "file": "svg-components/split/artifact_dspg_3_dspg/dspg-dspg_3-slot-layer-wiring.svg",
+      "source": "reference/artifact_dspg_3_dspg.svg",
+      "bundle": "artifact_dspg_3_dspg"
+    },
+    {
+      "id": "dspg-dspg_3-slot-layer-base",
+      "file": "svg-components/split/artifact_dspg_3_dspg/dspg-dspg_3-slot-layer-base.svg",
+      "source": "reference/artifact_dspg_3_dspg.svg",
+      "bundle": "artifact_dspg_3_dspg"
+    },
+    {
+      "id": "dspg-dspg_3-traced",
+      "file": "svg-components/split/artifact_dspg_3_dspg/dspg-dspg_3-traced.svg",
+      "source": "reference/artifact_dspg_3_dspg.svg",
+      "bundle": "artifact_dspg_3_dspg"
+    },
+    {
+      "id": "dspg-dspg_4-root",
+      "file": "svg-components/split/artifact_dspg_4_dspg/dspg-dspg_4-root.svg",
+      "source": "reference/artifact_dspg_4_dspg.svg",
+      "bundle": "artifact_dspg_4_dspg"
+    },
+    {
+      "id": "dspg-dspg_4-slot-layer-orange-solids",
+      "file": "svg-components/split/artifact_dspg_4_dspg/dspg-dspg_4-slot-layer-orange-solids.svg",
+      "source": "reference/artifact_dspg_4_dspg.svg",
+      "bundle": "artifact_dspg_4_dspg"
+    },
+    {
+      "id": "dspg-dspg_4-slot-layer-wireframe",
+      "file": "svg-components/split/artifact_dspg_4_dspg/dspg-dspg_4-slot-layer-wireframe.svg",
+      "source": "reference/artifact_dspg_4_dspg.svg",
+      "bundle": "artifact_dspg_4_dspg"
+    },
+    {
+      "id": "dspg-dspg_4-slot-layer-central-core",
+      "file": "svg-components/split/artifact_dspg_4_dspg/dspg-dspg_4-slot-layer-central-core.svg",
+      "source": "reference/artifact_dspg_4_dspg.svg",
+      "bundle": "artifact_dspg_4_dspg"
+    },
+    {
+      "id": "dspg-dspg_4-slot-layer-base",
+      "file": "svg-components/split/artifact_dspg_4_dspg/dspg-dspg_4-slot-layer-base.svg",
+      "source": "reference/artifact_dspg_4_dspg.svg",
+      "bundle": "artifact_dspg_4_dspg"
+    },
+    {
+      "id": "dspg-dspg_4-traced",
+      "file": "svg-components/split/artifact_dspg_4_dspg/dspg-dspg_4-traced.svg",
+      "source": "reference/artifact_dspg_4_dspg.svg",
+      "bundle": "artifact_dspg_4_dspg"
+    }
+  ]
+}

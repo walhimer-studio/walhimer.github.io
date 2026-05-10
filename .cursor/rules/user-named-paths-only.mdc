@@ -1,0 +1,10 @@
+---
+description: Edit only paths the user explicitly names; never substitute alternate files.
+alwaysApply: true
+---
+
+# User-named paths only
+
+- **Only modify files whose paths the user explicitly attaches (`@path`) or names in full.** If it is unclear, ask once which path to edit—do **not** guess.
+- **Do not substitute** “mirror” or “canonical” repo paths for copies elsewhere (e.g. do not edit `installations/surrender-machines.html` when the user pointed at a Desktop HTML file, unless they explicitly ask for that repo path).
+- **Do not use** “recently viewed,” repo layout, or similarity of filenames as permission to change a different file.

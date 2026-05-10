@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surrender Piano Node</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101317;
+      --panel: #171d24;
+      --ink: #d8e2ef;
+      --muted: #8da0b8;
+      --accent: #7db5ff;
+      --line: #2b3746;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 15%, #1a2533 0%, var(--bg) 55%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100%;
+    }
+    .wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(22px, 3.4vw, 34px);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .sub {
+      color: var(--muted);
+      margin: 0 0 18px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .panel {
+      background: rgba(23, 29, 36, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .status {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      font-size: 13px;
+    }
+    .k {
+      color: var(--muted);
+      margin-right: 8px;
+    }
+    .v {
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+    .dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 99px;
+      margin-right: 8px;
+      background: #b56a6a;
+      vertical-align: middle;
+      box-shadow: 0 0 0 transparent;
+      transition: all 0.2s ease;
+    }
+    .dot.on {
+      background: #75d59a;
+      box-shadow: 0 0 14px rgba(117, 213, 154, 0.45);
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #1d2630;
+      color: var(--ink);
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 500;
+      width: 100%;
+    }
+    button:hover { background: #253240; }
+    #meter {
+      width: 100%;
+      height: 70px;
+      display: block;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #111822, #0e141c);
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 8px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Surrender Piano Node</h1>
+    <p class="sub">Custom Web Audio piano layer that follows the same bridge events as your Roland S-1.</p>
+
+    <div class="panel status">
+      <div><span class="dot" id="wsDot"></span><span class="k">WebSocket</span><span class="v" id="wsState">connecting...</span></div>
+      <div><span class="k">Seed</span><span class="v" id="seedVal">-</span></div>
+      <div><span class="k">Last note</span><span class="v" id="noteVal">-</span></div>
+      <div><span class="k">Voices</span><span class="v" id="voiceVal">0</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <div>
+          <label for="master">Piano level</label>
+          <input id="master" type="range" min="0" max="1" step="0.01" value="0.44" />
+        </div>
+        <div>
+          <label for="release">Release (seconds)</label>
+          <input id="release" type="range" min="1.2" max="12" step="0.1" value="7.2" />
+        </div>
+        <div>
+          <label for="softness">Softness (velocity curve)</label>
+          <input id="softness" type="range" min="0" max="1" step="0.01" value="0.62" />
+        </div>
+        <div>
+          <label for="maxVoices">Max active voices</label>
+          <input id="maxVoices" type="range" min="4" max="28" step="1" value="14" />
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button id="startBtn" type="button">Start Audio + Load Piano Samples</button>
+      </div>
+      <p class="hint">Uses a small local Salamander subset in <code>public/salamander-lite/</code>. No DAW/plugin required.</p>
+    </div>
+
+    <div class="panel">
+      <canvas id="meter" width="800" height="70"></canvas>
+      <p class="hint">This meter reflects note energy only (not returned hardware audio).</p>
+    </div>
+  </div>
+
+  <script>
+    const SAMPLE_ROOTS = [
+      { key: "A1", midi: 33, file: "salamander-lite/A1v8.wav" },
+      { key: "C2", midi: 36, file: "salamander-lite/C2v8.wav" },
+      { key: "A2", midi: 45, file: "salamander-lite/A2v8.wav" },
+      { key: "C3", midi: 48, file: "salamander-lite/C3v8.wav" },
+      { key: "A3", midi: 57, file: "salamander-lite/A3v8.wav" },
+      { key: "C4", midi: 60, file: "salamander-lite/C4v8.wav" },
+      { key: "A4", midi: 69, file: "salamander-lite/A4v8.wav" },
+      { key: "C5", midi: 72, file: "salamander-lite/C5v8.wav" },
+      { key: "A5", midi: 81, file: "salamander-lite/A5v8.wav" },
+      { key: "C6", midi: 84, file: "salamander-lite/C6v8.wav" }
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const wsDot = $("wsDot");
+    const wsState = $("wsState");
+    const seedVal = $("seedVal");
+    const noteVal = $("noteVal");
+    const voiceVal = $("voiceVal");
+    const startBtn = $("startBtn");
+    const masterCtl = $("master");
+    const releaseCtl = $("release");
+    const softnessCtl = $("softness");
+    const maxVoicesCtl = $("maxVoices");
+    const meter = $("meter");
+    const mctx = meter.getContext("2d");
+
+    let audioCtx = null;
+    let masterGain = null;
+    let loaded = false;
+    const sampleBuffers = new Map();
+    const voices = [];
+    let state = { seed: 123456, paused: false };
+    let energy = 0;
+
+    function midiToName(midi) {
+      const names = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+      const n = Math.max(0, Math.min(127, Math.floor(midi)));
+      return names[n % 12] + (Math.floor(n / 12) - 1);
+    }
+
+    function clamp(v, lo, hi) {
+      return Math.max(lo, Math.min(hi, v));
+    }
+
+    function velocityToGain(velocity01) {
+      const soft = Number(softnessCtl.value);
+      // Higher softness => gentler response at lower velocities.
+      const curved = Math.pow(clamp(velocity01, 0, 1), 1.8 - soft * 1.2);
+      return 0.04 + curved * 0.52;
+    }
+
+    function closestRoot(midiNote) {
+      let best = SAMPLE_ROOTS[0];
+      let bestDist = Math.abs(midiNote - best.midi);
+      for (let i = 1; i < SAMPLE_ROOTS.length; i++) {
+        const c = SAMPLE_ROOTS[i];
+        const d = Math.abs(midiNote - c.midi);
+        if (d < bestDist) {
+          best = c;
+          bestDist = d;
+        }
+      }
+      return best;
+    }
+
+    async function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = Number(masterCtl.value);
+        masterGain.connect(audioCtx.destination);
+      }
+      if (audioCtx.state === "suspended") await audioCtx.resume();
+      if (loaded) return;
+
+      startBtn.textContent = "Loading sample set...";
+      for (const s of SAMPLE_ROOTS) {
+        const res = await fetch(s.file);
+        if (!res.ok) throw new Error(`Failed to load ${s.file}`);
+        const ab = await res.arrayBuffer();
+        const buffer = await audioCtx.decodeAudioData(ab);
+        sampleBuffers.set(s.key, buffer);
+      }
+      loaded = true;
+      startBtn.textContent = "Audio Ready";
+    }
+
+    function cleanupVoices() {
+      const now = audioCtx ? audioCtx.currentTime : 0;
+      for (let i = voices.length - 1; i >= 0; i--) {
+        if (voices[i].endsAt <= now) voices.splice(i, 1);
+      }
+      voiceVal.textContent = String(voices.length);
+    }
+
+    function pruneIfNeeded() {
+      const maxVoices = Number(maxVoicesCtl.value);
+      if (voices.length <= maxVoices) return;
+      // Fade out oldest notes first.
+      const overflow = voices.length - maxVoices;
+      for (let i = 0; i < overflow; i++) {
+        const v = voices[i];
+        try {
+          v.gain.cancelScheduledValues(audioCtx.currentTime);
+          v.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.03);
+          v.source.stop(audioCtx.currentTime + 0.12);
+          v.endsAt = audioCtx.currentTime + 0.12;
+        } catch (_) {}
+      }
+    }
+
+    function silenceVoices() {
+      if (!audioCtx) {
+        voices.length = 0;
+        voiceVal.textContent = "0";
+        return;
+      }
+      for (let i = voices.length - 1; i >= 0; i--) {
+        const v = voices[i];
+        try {
+          v.gain.cancelScheduledValues(audioCtx.currentTime);
+          v.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.04);
+          v.source.stop(audioCtx.currentTime + 0.12);
+          v.endsAt = audioCtx.currentTime + 0.12;
+        } catch (_) {}
+      }
+      energy = 0;
+      cleanupVoices();
+    }
+
+    function playMidiNote(note, velocity) {
+      if (state.paused || !loaded || !audioCtx || !masterGain) return;
+      const midi = clamp(Math.floor(Number(note) || 60), 0, 127);
+      const velRaw = clamp(Number(velocity) || 90, 1, 127);
+      const root = closestRoot(midi);
+      const buf = sampleBuffers.get(root.key);
+      if (!buf) return;
+
+      const semitone = midi - root.midi;
+      const playbackRate = Math.pow(2, semitone / 12);
+      const gainValue = velocityToGain(velRaw / 127);
+      const releaseSec = Number(releaseCtl.value);
+      const now = audioCtx.currentTime;
+
+      const source = audioCtx.createBufferSource();
+      source.buffer = buf;
+      source.playbackRate.value = playbackRate;
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(gainValue, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + releaseSec);
+
+      source.connect(gain);
+      gain.connect(masterGain);
+      source.start(now);
+      source.stop(now + releaseSec + 0.8);
+
+      voices.push({ source, gain, startedAt: now, endsAt: now + releaseSec + 0.8 });
+      pruneIfNeeded();
+      cleanupVoices();
+
+      noteVal.textContent = `${midiToName(midi)} (${midi})`;
+      energy = Math.min(1.0, energy + gainValue * 1.25);
+    }
+
+    function drawMeter() {
+      const w = meter.width;
+      const h = meter.height;
+      mctx.clearRect(0, 0, w, h);
+      mctx.fillStyle = "rgba(10, 16, 22, 0.95)";
+      mctx.fillRect(0, 0, w, h);
+
+      const bars = 40;
+      const barW = (w - (bars + 1) * 4) / bars;
+      for (let i = 0; i < bars; i++) {
+        const x = 4 + i * (barW + 4);
+        const local = clamp(energy * 1.3 - i * 0.014, 0, 1);
+        const bh = 6 + local * (h - 12);
+        const y = h - bh - 3;
+        mctx.fillStyle = `rgba(${40 + local * 80}, ${120 + local * 90}, ${170 + local * 70}, ${0.16 + local * 0.8})`;
+        mctx.fillRect(x, y, barW, bh);
+      }
+      mctx.strokeStyle = "rgba(125, 166, 220, 0.35)";
+      mctx.strokeRect(0.5, 0.5, w - 1, h - 1);
+
+      energy *= 0.93;
+      requestAnimationFrame(drawMeter);
+    }
+    requestAnimationFrame(drawMeter);
+
+    masterCtl.addEventListener("input", () => {
+      if (masterGain && audioCtx) {
+        masterGain.gain.setTargetAtTime(Number(masterCtl.value), audioCtx.currentTime, 0.06);
+      }
+    });
+
+    startBtn.addEventListener("click", async () => {
+      try {
+        await ensureAudio();
+      } catch (err) {
+        console.error(err);
+        startBtn.textContent = "Load failed (check console)";
+      }
+    });
+
+    const ws = new WebSocket(`ws://${location.host}`);
+    ws.onopen = () => {
+      wsDot.classList.add("on");
+      wsState.textContent = "connected";
+    };
+    ws.onclose = () => {
+      wsDot.classList.remove("on");
+      wsState.textContent = "disconnected";
+    };
+    ws.onmessage = async (ev) => {
+      const msg = JSON.parse(ev.data);
+      if (msg.type === "state") {
+        state = { ...state, ...msg.payload };
+        seedVal.textContent = String(state.seed ?? "-");
+        if (state.paused) {
+          noteVal.textContent = "paused";
+          silenceVoices();
+        }
+        return;
+      }
+
+      if (!loaded && msg.type === "event") return;
+      if (msg.type === "event") {
+        if (state.paused) return;
+        const p = msg.payload || {};
+        if (Number.isFinite(Number(p.pitch))) {
+          playMidiNote(Number(p.pitch), Number(p.velocity) || 88);
+        }
+      }
+      if (msg.type === "synthMidi") {
+        if (state.paused) return;
+        const p = msg.payload || {};
+        if (p.kind === "noteon" && Number.isFinite(Number(p.note))) {
+          playMidiNote(Number(p.note), Number(p.velocity) || 90);
+        }
+      }
+    };
+  </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ __pycache__/
 !.cursor/rules/**
 node_modules/
 .venv/
+.venv-mlviz/
 
 # Local Firebase web config (copy from machine aesthetic/firebase-config.example.js)
 **/firebase-config.local.js

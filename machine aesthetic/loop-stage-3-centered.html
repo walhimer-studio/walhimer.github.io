@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Centered — breathing layers (Loop stage 3a)</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #0a0a0a; }
+    body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+    canvas { display: block; flex-shrink: 0; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35); }
+    /* Wall embed: canvas must fill iframe exactly — no letterboxing, no scrollbars */
+    html.embed,
+    html.embed body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    html.embed body {
+      display: block;
+      min-height: 0;
+    }
+    html.embed canvas {
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      vertical-align: top;
+    }
+    #controls {
+      position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 10;
+      display: flex; align-items: center; gap: 10px; font-family: system-ui, sans-serif; font-size: 14px;
+    }
+    html.embed #controls { display: none; }
+    #newSeed { padding: 8px 14px; cursor: pointer; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+    #newSeed:hover { background: #f5f5f5; }
+    #seedDisplay { color: #eee; user-select: all; }
+    #controls button.secondary { background: #333; color: #eee; border-color: #555; }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <button type="button" id="newSeed">New seed</button>
+    <button type="button" id="pauseBtn" class="secondary">Pause</button>
+    <button type="button" id="saveBtn" class="secondary">Save PNG</button>
+    <span id="seedDisplay"></span>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script>
+    const IS_EMBED = new URLSearchParams(location.search).get("embed") === "1";
+    if (IS_EMBED) {
+      document.documentElement.classList.add("embed");
+    }
+
+    let colors = [];
+    let shapes = [];
+    let currentSeed = 0;
+    let paused = false;
+    let holdFrame = 0;
+    const PIXEL_DENSITY_STANDALONE = 4;
+
+    function maxShapeExtent() {
+      if (!IS_EMBED) return 820;
+      const m = min(width || windowWidth, height || windowHeight);
+      return max(120, m * 0.88);
+    }
+
+    function buildShapes() {
+      shapes = [];
+      randomSeed(currentSeed);
+      const el = document.getElementById("seedDisplay");
+      if (el) el.textContent = "Seed: " + currentSeed;
+      const cap = maxShapeExtent();
+      for (let j = 0; j < 6; j++) {
+        let w = random(30, cap);
+        let h = random(30, cap);
+        shapes.push({
+          w, h,
+          colorSet: random(colors),
+          baseA1: 30, baseA2: 30,
+          amp: random(10, 22),
+          speed: random(0.004, 0.012),
+          phase: random(TWO_PI)
+        });
+      }
+    }
+
+    function setup() {
+      const q = new URLSearchParams(window.location.search);
+      const fromUrl = q.get("seed");
+      if (fromUrl !== null && fromUrl !== "") {
+        const n = parseInt(fromUrl, 10);
+        if (!Number.isNaN(n)) currentSeed = n >>> 0;
+        else currentSeed = 923000001;
+      } else {
+        currentSeed = 923000001;
+      }
+
+      if (IS_EMBED) {
+        pixelDensity(Math.min(2, window.devicePixelRatio || 1));
+        createCanvas(windowWidth, windowHeight, WEBGL);
+        window.addEventListener("resize", onEmbedResize);
+      } else {
+        pixelDensity(PIXEL_DENSITY_STANDALONE);
+        createCanvas(1000, 1000, WEBGL);
+      }
+
+      colorMode(HSB, 360, 100, 100, 100);
+      colors = [
+        [color(0, 100, 100, 30), color(45, 100, 100, 30)],
+        [color(180, 100, 100, 30), color(240, 100, 100, 30)],
+        [color(300, 100, 100, 30), color(60, 100, 100, 30)]
+      ];
+      buildShapes();
+
+      document.getElementById("newSeed").addEventListener("click", () => {
+        currentSeed = floor(random(1, 1_000_000_000)) >>> 0;
+        buildShapes();
+      });
+      document.getElementById("pauseBtn").addEventListener("click", () => {
+        paused = !paused;
+        holdFrame = frameCount;
+        document.getElementById("pauseBtn").textContent = paused ? "Resume" : "Pause";
+      });
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        saveCanvas("loop_centered_" + currentSeed, "png");
+      });
+    }
+
+    function onEmbedResize() {
+      resizeCanvas(windowWidth, windowHeight);
+      buildShapes();
+    }
+
+    function draw() {
+      background(255);
+      for (let i = 0; i < shapes.length; i++) {
+        let shape = shapes[i];
+        let fc = paused ? holdFrame : frameCount;
+        let t = fc * shape.speed + shape.phase;
+        let breathe01 = 0.5 + 0.5 * sin(t);
+        let a = shape.baseA1 + shape.amp * breathe01;
+        let c1 = shape.colorSet[0];
+        let c2 = shape.colorSet[1];
+        let c1b = color(hue(c1), saturation(c1), brightness(c1), a);
+        let c2b = color(hue(c2), saturation(c2), brightness(c2), a);
+        drawSoftGradientPlane(0, 0, shape.w, shape.h, c1b, c2b);
+      }
+    }
+
+    function drawSoftGradientPlane(x, y, w, h, c1, c2) {
+      push();
+      translate(x, y, 0);
+      noStroke();
+      beginShape();
+      fill(c1);
+      vertex(-w / 2, -h / 2, 0);
+      fill(c2);
+      vertex(w / 2, -h / 2, 0);
+      vertex(w / 2, h / 2, 0);
+      vertex(-w / 2, h / 2, 0);
+      endShape(CLOSE);
+      pop();
+    }
+  </script>
+</body>
+</html>

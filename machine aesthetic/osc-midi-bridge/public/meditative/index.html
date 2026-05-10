@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Centered still — meditative breath</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: radial-gradient(ellipse 120% 80% at 50% 40%, #141820 0%, #0a0c10 45%, #060708 100%);
+      color: #c8cfd8;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: "Georgia", "Times New Roman", serif;
+    }
+    canvas {
+      display: block;
+      flex-shrink: 0;
+      border-radius: 2px;
+      box-shadow: 0 8px 48px rgba(0, 0, 0, 0.45), 0 0 1px rgba(255,255,255,0.06);
+    }
+    #controls {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      max-width: 96vw;
+    }
+    #controls button {
+      padding: 8px 14px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      background: rgba(28,32,40,0.85);
+      color: #e6eaef;
+    }
+    #controls button:hover { background: rgba(40,46,58,0.95); }
+    #controls button.secondary { opacity: 0.85; }
+    #seedDisplay {
+      color: rgba(230,235,240,0.65);
+      user-select: all;
+      font-size: 12px;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #personal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 28px 24px 36px;
+      text-align: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+    #personal .for-line {
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: rgba(210,218,228,0.42);
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+    #personal .intention {
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 34rem;
+      margin: 0 auto;
+      color: rgba(220,226,235,0.55);
+      font-weight: 400;
+    }
+    body.hide-chrome #controls { opacity: 0; pointer-events: none; transition: opacity 1.2s ease; }
+  </style>
+</head>
+<body>
+
+  <div id="controls">
+    <button type="button" id="newSeed">New seed</button>
+    <button type="button" id="pauseBtn" class="secondary">Pause</button>
+    <button type="button" id="saveBtn" class="secondary">Save PNG</button>
+    <span id="seedDisplay"></span>
+  </div>
+
+  <div id="personal" aria-live="polite">
+    <div class="for-line" id="forLine" hidden></div>
+    <p class="intention" id="intentionLine"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script>
+/**
+ * Soft WEBGL gradient planes — breathing layers (kin to Studio/centered 923).
+ * Personalize with URL: ?seed=923000001 &for=a+name &intention=short+line &bridge=1
+ */
+    let shapes = [];
+    let colors = [];
+    let currentSeed = 923000001;
+    let paused = false;
+    let holdFrame = 0;
+    const PIXEL_DENSITY = 2;
+
+    let bridgeMood = 0.5;
+    let bridgeWs = null;
+    const params = new URLSearchParams(window.location.search);
+    const dedicatedFor = (params.get("for") || params.get("dedicated") || params.get("you") || "").trim();
+    const intentionText = (params.get("intention") || params.get("note") || params.get("line") || "").trim();
+    const useBridge = params.get("bridge") === "1" || params.get("bridge") === "true";
+    const minimalChrome = params.get("minimal") === "1" || params.get("minimal") === "true";
+
+    function mergeSeedWithPhrase(numeric, phrase) {
+      let h = numeric >>> 0;
+      if (!phrase) return h || 1;
+      for (let i = 0; i < phrase.length; i++) {
+        h = (((h * 31) >>> 0) + phrase.charCodeAt(i)) >>> 0;
+      }
+      return h || 1;
+    }
+
+    function buildCalmPalette(s) {
+      randomSeed(s);
+      const spread = 48;
+      const base = random(145, 268);
+      const sat = random(22, 42);
+      const brLo = random(78, 88);
+      const brHi = random(92, 98);
+      const aPlane = random(16, 26);
+      colors = [
+        [
+          color(base % 360, sat, brLo, aPlane),
+          color((base + spread * 0.4) % 360, sat * 0.9, brHi, aPlane)
+        ],
+        [
+          color((base + 18) % 360, sat * 0.85, brLo + 4, aPlane),
+          color((base + spread * 0.75) % 360, sat * 0.75, brHi, aPlane)
+        ],
+        [
+          color((base + 60) % 360, sat * 0.7, brLo + 2, aPlane),
+          color((base + spread) % 360, sat * 0.65, brHi - 2, aPlane)
+        ]
+      ];
+    }
+
+    function buildShapes() {
+      shapes = [];
+      randomSeed(currentSeed);
+      const el = document.getElementById("seedDisplay");
+      let label = "Seed: " + currentSeed;
+      if (dedicatedFor) label += " · for " + dedicatedFor;
+      if (el) el.textContent = label;
+
+      buildCalmPalette(currentSeed);
+
+      const nLayers = 6;
+      for (let j = 0; j < nLayers; j++) {
+        const w = random(220, 920);
+        const h = random(220, 920);
+        shapes.push({
+          w,
+          h,
+          colorSet: random(colors),
+          baseA1: random(10, 22),
+          baseA2: 8,
+          amp: random(6, 16),
+          speed: random(0.0011, 0.0042),
+          phase: random(TWO_PI)
+        });
+      }
+    }
+
+    function setup() {
+      const fromUrl = params.get("seed");
+      if (fromUrl !== null && fromUrl !== "") {
+        const n = parseInt(fromUrl, 10);
+        if (!Number.isNaN(n)) currentSeed = mergeSeedWithPhrase(n, dedicatedFor);
+        else currentSeed = mergeSeedWithPhrase(923000001, dedicatedFor);
+      } else {
+        currentSeed = mergeSeedWithPhrase(923000001, dedicatedFor);
+      }
+
+      const intentionEl = document.getElementById("intentionLine");
+      const forEl = document.getElementById("forLine");
+      if (intentionText && intentionEl) intentionEl.textContent = intentionText;
+      if (dedicatedFor && forEl) {
+        forEl.hidden = false;
+        forEl.textContent = "for " + dedicatedFor;
+      }
+      if (!intentionText && intentionEl) intentionEl.textContent = "";
+
+      if (minimalChrome) document.body.classList.add("hide-chrome");
+
+      pixelDensity(PIXEL_DENSITY);
+      const side = min(windowWidth, windowHeight) * 0.88;
+      createCanvas(side, side, WEBGL);
+      colorMode(HSB, 360, 100, 100, 100);
+
+      buildShapes();
+
+      document.getElementById("newSeed").addEventListener("click", () => {
+        currentSeed = floor(random(1, 2000000000));
+        currentSeed = mergeSeedWithPhrase(currentSeed, dedicatedFor);
+        buildShapes();
+      });
+
+      document.getElementById("pauseBtn").addEventListener("click", () => {
+        paused = !paused;
+        holdFrame = frameCount;
+        document.getElementById("pauseBtn").textContent = paused ? "Resume" : "Pause";
+      });
+
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        saveCanvas("centered_still_" + currentSeed, "png");
+      });
+
+      if (useBridge && (location.protocol === "http:" || location.protocol === "https:")) {
+        tryConnectBridge();
+      }
+    }
+
+    function tryConnectBridge() {
+      const proto = location.protocol === "https:" ? "wss:" : "ws:";
+      try {
+        bridgeWs = new WebSocket(proto + "//" + location.host);
+      } catch (_) {
+        return;
+      }
+      bridgeWs.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data);
+          if (msg.type === "state" && msg.payload && typeof msg.payload.mood === "number") {
+            bridgeMood = msg.payload.mood;
+          }
+        } catch (_) {}
+      };
+    }
+
+    function draw() {
+      const moodBreath = useBridge ? (0.92 + bridgeMood * 0.14) : 1;
+      background(235, 12, 8);
+
+      for (let i = 0; i < shapes.length; i++) {
+        const shape = shapes[i];
+        const fc = paused ? holdFrame : frameCount;
+        const t = fc * shape.speed * moodBreath + shape.phase;
+        const breathe01 = 0.5 + 0.5 * sin(t);
+        const a = shape.baseA1 + shape.amp * breathe01;
+
+        const c1 = shape.colorSet[0];
+        const c2 = shape.colorSet[1];
+        const c1b = color(hue(c1), saturation(c1), brightness(c1), a);
+        const c2b = color(hue(c2), saturation(c2), brightness(c2), a);
+
+        drawSoftGradientPlane(0, 0, shape.w, shape.h, c1b, c2b);
+      }
+    }
+
+    function drawSoftGradientPlane(x, y, w, h, c1, c2) {
+      push();
+      translate(x, y, 0);
+      noStroke();
+      beginShape();
+      fill(c1);
+      vertex(-w / 2, -h / 2, 0);
+      fill(c2);
+      vertex(w / 2, -h / 2, 0);
+      vertex(w / 2, h / 2, 0);
+      vertex(-w / 2, h / 2, 0);
+      endShape(CLOSE);
+      pop();
+    }
+
+    function windowResized() {
+      const side = min(windowWidth, windowHeight) * 0.88;
+      resizeCanvas(side, side);
+    }
+  </script>
+</body>
+</html>

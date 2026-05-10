@@ -7,9 +7,11 @@ alwaysApply: true
 
 ## Defaults for this workspace
 
-This repo (**walhimer.github.io**) is for **artwork**, sketches, experimental pages, and personal creative tooling paths such as `sketches/`, `machine aesthetic/`, `practice/`, etc.
+This repo (**walhimer.github.io**, **Walhimer Studio**) is for **artwork**, sketches, experimental pages, and personal creative tooling paths such as `sketches/`, `machine aesthetic/`, `practice/`, etc.
 
-Do **not** assume commits here ship **Museum Planning LLC’s production marketing site**.
+Do **not** assume commits here ship **Museum Planning LLC’s production marketing site** or **Museum Planner** strategy/docs repos.
+
+**Museum Planning LLC** work (**museumplanning.com**, **museumplanner.org** positioning, commercial copy, and related Git repos under **`Museum-Planning-LLC`** on GitHub) belongs in **those org repos** — not in walhimer.github.io unless the user explicitly blends repos.
 
 ## Where museum-planning website work belongs
 
@@ -19,6 +21,10 @@ When the user asks about museum-planning **SEO**, **site hierarchy**, **metadata
 
 1. Edit files under that repo’s checkout — locally commonly **`/Users/markwalhimer/Documents/GitHub/museum-planning-llc-website-2.0`** (or whatever clone path they use), **unless they explicitly point at another path**.
 2. Run **`git status`** / **`git push`** in **that** repo — **not** in walhimer.github.io — unless they explicitly ask to touch artwork too.
+
+### Museum Planner docs and related repos
+
+Strategy guides, style docs, and repo scaffolding for **Museum Planner** (e.g. **`Museum-Planning-LLC/museum-planner-2.0`**) belong under the **Museum Planning GitHub org**, not in walhimer.github.io. Local checkout is commonly a sibling under **`/Users/markwalhimer/Documents/GitHub/`** (e.g. **`museum-planner-2.0`**).
 
 ## When overlap is intentional
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OSC — city column (Loop stage 3c)</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #111; }
+    iframe { border: 0; width: 100%; height: 100%; display: block; }
+    .fallback {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px; font: 14px/1.6 system-ui, sans-serif; color: #bbb;
+      max-width: 440px; margin: 0 auto; text-align: center;
+    }
+    .fallback a { color: #7be7b3; }
+    code { font-size: 12px; background: #222; padding: 2px 8px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <iframe id="bridge" title="City column + OSC bridge"></iframe>
+  <script>
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var seed = q.get("seed") || "923000001";
+      var bridgeBase = "http://127.0.0.1:8787/city-column-emergent.html";
+      var url = bridgeBase + "?seed=" + encodeURIComponent(seed) + "&bridge=1";
+      var frame = document.getElementById("bridge");
+
+      if (location.protocol === "https:") {
+        document.body.innerHTML =
+          '<div class="fallback"><p><strong>HTTPS page</strong> cannot embed <code>http://localhost:8787</code>.</p>' +
+          '<p>Open the bridge on your machine, then use this link:</p>' +
+          '<p><a href="' + url + '" target="_blank" rel="noopener">' + url + "</a></p></div>";
+        return;
+      }
+
+      frame.src = url;
+      frame.onerror = function () {};
+      setTimeout(function () {
+        try {
+          if (frame.contentWindow && frame.contentWindow.location.href === "about:blank") {
+            throw new Error("blank");
+          }
+        } catch (e) {
+          /* cross-origin ok */
+        }
+      }, 8000);
+    })();
+  </script>
+</body>
+</html>

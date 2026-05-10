@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surrender Visual Node</title>
+  <style>
+    :root {
+      --bg: #6492d7;
+      --line: rgba(255, 255, 255, 0.82);
+      --muted: rgba(255, 255, 255, 0.6);
+    }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #hud {
+      position: fixed;
+      left: 12px;
+      top: 10px;
+      z-index: 10;
+      font-size: 12px;
+      line-height: 1.45;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      user-select: none;
+      pointer-events: none;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    }
+    #hud .title {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    #dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.35);
+      margin-right: 6px;
+      vertical-align: middle;
+      transition: all 0.2s ease;
+    }
+    #dot.on {
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+    #actions {
+      position: fixed;
+      right: 12px;
+      top: 10px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(25, 50, 90, 0.2);
+      color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: rgba(25, 50, 90, 0.35);
+    }
+    #recordPanel {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      width: min(360px, calc(100vw - 24px));
+      z-index: 12;
+      background: rgba(22, 44, 78, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 10px;
+      padding: 10px;
+      backdrop-filter: blur(6px);
+    }
+    #recordPanel .row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+    #recordPanel .row2 {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    #recordPanel label {
+      display: block;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 5px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    #recordPanel select {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 8px;
+      background: rgba(13, 28, 50, 0.55);
+      color: #fff;
+      padding: 7px 8px;
+      font-size: 12px;
+    }
+    #recordStatus {
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.74);
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="hud">
+    <div class="title">Surrender Visual Node</div>
+    <div><span id="dot"></span><span id="wsText">connecting...</span></div>
+    <div id="stateText">seed:- density:- mood:- brightness:-</div>
+    <div id="eventText">events:0</div>
+  </div>
+  <div id="actions">
+    <button id="resetBtn" type="button">Reset</button>
+    <button id="pauseBtn" type="button">Pause</button>
+  </div>
+  <div id="recordPanel">
+    <label for="audioSource">Record audio source</label>
+    <div class="row">
+      <select id="audioSource">
+        <option value="none">Visual only (no audio)</option>
+      </select>
+      <button id="refreshAudioBtn" type="button">Inputs</button>
+      <button id="recordBtn" type="button">Record</button>
+    </div>
+    <div class="row2">
+      <button id="pianoBtn" type="button">Enable Piano</button>
+      <input id="pianoLevel" type="range" min="0" max="1" step="0.01" value="0.35" />
+      <span style="font-size:11px;color:rgba(255,255,255,.8);">Piano</span>
+    </div>
+    <div id="recordStatus">idle</div>
+  </div>
+
+  <script>
+    // Canonical deterministic RNG shape aligned with EmergentDNA/bridge.
+    function SeedRng(seed) {
+      this.s = (seed >>> 0) || 1;
+    }
+    SeedRng.prototype.next = function next() {
+      const x = Math.sin(this.s++) * 10000;
+      return x - Math.floor(x);
+    };
+
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d");
+    const dotEl = document.getElementById("dot");
+    const wsTextEl = document.getElementById("wsText");
+    const stateTextEl = document.getElementById("stateText");
+    const eventTextEl = document.getElementById("eventText");
+    const resetBtn = document.getElementById("resetBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const audioSourceEl = document.getElementById("audioSource");
+    const refreshAudioBtn = document.getElementById("refreshAudioBtn");
+    const recordBtn = document.getElementById("recordBtn");
+    const pianoBtn = document.getElementById("pianoBtn");
+    const pianoLevelEl = document.getElementById("pianoLevel");
+    const recordStatusEl = document.getElementById("recordStatus");
+    const SAMPLE_ROOTS = [
+      { key: "A1", midi: 33, file: "salamander-lite/A1v8.wav" },
+      { key: "C2", midi: 36, file: "salamander-lite/C2v8.wav" },
+      { key: "A2", midi: 45, file: "salamander-lite/A2v8.wav" },
+      { key: "C3", midi: 48, file: "salamander-lite/C3v8.wav" },
+      { key: "A3", midi: 57, file: "salamander-lite/A3v8.wav" },
+      { key: "C4", midi: 60, file: "salamander-lite/C4v8.wav" },
+      { key: "A4", midi: 69, file: "salamander-lite/A4v8.wav" },
+      { key: "C5", midi: 72, file: "salamander-lite/C5v8.wav" },
+      { key: "A5", midi: 81, file: "salamander-lite/A5v8.wav" },
+      { key: "C6", midi: 84, file: "salamander-lite/C6v8.wav" }
+    ];
+
+    let state = {
+      seed: 123456,
+      density: 0.45,
+      mood: 0.5,
+      brightness: 0.6,
+      tempo: 96,
+      paused: false
+    };
+
+    let rng = new SeedRng(state.seed);
+    let eventCount = 0;
+    let paused = false;
+    let mediaRecorder = null;
+    let recordChunks = [];
+    let recordStream = null;
+    let audioInputStream = null;
+    let recordingStartedAt = 0;
+    let recordMimeType = "";
+    let audioCtx = null;
+    let pianoOn = false;
+    let sampleLoaded = false;
+    const sampleBuffers = new Map();
+    const pianoVoices = [];
+    let pianoMasterGain = null;
+    let recordMixDest = null;
+    let inputGain = null;
+    let micSourceNode = null;
+
+    const lines = [];
+    const rings = [];
+    const glyphs = [];
+    const maxLines = 180;
+
+    let camRot = 0;
+    let camRotTarget = 0;
+    let drift = 0;
+
+    function resize() {
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function clamp(v, min, max) {
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function resetScene() {
+      lines.length = 0;
+      rings.length = 0;
+      glyphs.length = 0;
+      eventCount = 0;
+      drift = 0;
+      camRot = 0;
+      camRotTarget = 0;
+      rng = new SeedRng(state.seed);
+      eventTextEl.textContent = `events:${eventCount}`;
+    }
+
+    function setRecordStatus(text) {
+      recordStatusEl.textContent = text;
+    }
+
+    function midiClamp(v, lo, hi) {
+      return Math.max(lo, Math.min(hi, v));
+    }
+
+    function closestRoot(midiNote) {
+      let best = SAMPLE_ROOTS[0];
+      let bestDist = Math.abs(midiNote - best.midi);
+      for (let i = 1; i < SAMPLE_ROOTS.length; i++) {
+        const c = SAMPLE_ROOTS[i];
+        const d = Math.abs(midiNote - c.midi);
+        if (d < bestDist) {
+          best = c;
+          bestDist = d;
+        }
+      }
+      return best;
+    }
+
+    async function ensureAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        recordMixDest = audioCtx.createMediaStreamDestination();
+        pianoMasterGain = audioCtx.createGain();
+        pianoMasterGain.gain.value = Number(pianoLevelEl.value);
+        inputGain = audioCtx.createGain();
+        inputGain.gain.value = 1.0;
+        pianoMasterGain.connect(audioCtx.destination);
+        pianoMasterGain.connect(recordMixDest);
+        inputGain.connect(recordMixDest);
+      }
+      if (audioCtx.state === "suspended") {
+        await audioCtx.resume();
+      }
+    }
+
+    async function ensurePianoSamples() {
+      await ensureAudioContext();
+      if (sampleLoaded) return;
+      setRecordStatus("loading piano samples...");
+      for (const s of SAMPLE_ROOTS) {
+        const res = await fetch(s.file);
+        if (!res.ok) throw new Error(`Failed ${s.file}`);
+        const ab = await res.arrayBuffer();
+        const buffer = await audioCtx.decodeAudioData(ab);
+        sampleBuffers.set(s.key, buffer);
+      }
+      sampleLoaded = true;
+      setRecordStatus("piano ready");
+    }
+
+    function cleanupPianoVoices() {
+      if (!audioCtx) {
+        pianoVoices.length = 0;
+        return;
+      }
+      const now = audioCtx.currentTime;
+      for (let i = pianoVoices.length - 1; i >= 0; i--) {
+        if (pianoVoices[i].endsAt <= now) pianoVoices.splice(i, 1);
+      }
+    }
+
+    function silencePiano() {
+      if (!audioCtx) return;
+      for (let i = pianoVoices.length - 1; i >= 0; i--) {
+        const v = pianoVoices[i];
+        try {
+          v.gain.cancelScheduledValues(audioCtx.currentTime);
+          v.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.04);
+          v.source.stop(audioCtx.currentTime + 0.12);
+          v.endsAt = audioCtx.currentTime + 0.12;
+        } catch (_) {}
+      }
+    }
+
+    function playPianoNote(note, velocity) {
+      if (!pianoOn || !sampleLoaded || !audioCtx) return;
+      const midi = midiClamp(Math.floor(Number(note) || 60), 0, 127);
+      const vel = midiClamp(Number(velocity) || 88, 1, 127);
+      const root = closestRoot(midi);
+      const buf = sampleBuffers.get(root.key);
+      if (!buf) return;
+
+      const semitone = midi - root.midi;
+      const playbackRate = Math.pow(2, semitone / 12);
+      const vel01 = vel / 127;
+      const gainValue = 0.04 + Math.pow(vel01, 1.2) * 0.42;
+      const releaseSec = 6.5;
+      const now = audioCtx.currentTime;
+
+      const source = audioCtx.createBufferSource();
+      source.buffer = buf;
+      source.playbackRate.value = playbackRate;
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(gainValue, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + releaseSec);
+
+      source.connect(gain);
+      gain.connect(pianoMasterGain);
+      source.start(now);
+      source.stop(now + releaseSec + 0.8);
+      pianoVoices.push({ source, gain, endsAt: now + releaseSec + 0.8 });
+      cleanupPianoVoices();
+    }
+
+    async function listAudioInputs() {
+      try {
+        // Request permission once so labels are visible.
+        const tmp = await navigator.mediaDevices.getUserMedia({ audio: true });
+        tmp.getTracks().forEach((t) => t.stop());
+      } catch (_) {
+        // Keep going; labels may be hidden until permission is granted.
+      }
+
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const selected = audioSourceEl.value;
+      audioSourceEl.innerHTML = "";
+      const noneOpt = document.createElement("option");
+      noneOpt.value = "none";
+      noneOpt.textContent = "Visual only (no audio)";
+      audioSourceEl.appendChild(noneOpt);
+
+      let count = 0;
+      for (const d of devices) {
+        if (d.kind !== "audioinput") continue;
+        const opt = document.createElement("option");
+        opt.value = d.deviceId;
+        opt.textContent = d.label || `Audio input ${count + 1}`;
+        audioSourceEl.appendChild(opt);
+        count++;
+      }
+
+      if (selected && [...audioSourceEl.options].some((o) => o.value === selected)) {
+        audioSourceEl.value = selected;
+      } else {
+        audioSourceEl.value = "none";
+      }
+      setRecordStatus(count ? "ready" : "no input devices found (visual-only still works)");
+    }
+
+    function pickMimeType() {
+      const candidates = [
+        "video/webm;codecs=vp9,opus",
+        "video/webm;codecs=vp8,opus",
+        "video/webm",
+        "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+        "video/mp4"
+      ];
+      for (const t of candidates) {
+        if (window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return t;
+      }
+      return "";
+    }
+
+    async function openAudioInput(deviceId) {
+      if (deviceId === "none") return null;
+      const attempts = [
+        { audio: { deviceId: { exact: deviceId } } },
+        { audio: { deviceId: { ideal: deviceId } } },
+        { audio: true }
+      ];
+      for (const c of attempts) {
+        try {
+          const s = await navigator.mediaDevices.getUserMedia(c);
+          if (s && s.getAudioTracks().length > 0) return s;
+          if (s) s.getTracks().forEach((t) => t.stop());
+        } catch (_) {
+          // Try next fallback.
+        }
+      }
+      return null;
+    }
+
+    async function startRecording() {
+      if (mediaRecorder) return;
+      if (!("MediaRecorder" in window)) {
+        setRecordStatus("MediaRecorder unsupported in this browser");
+        return;
+      }
+
+      const canvasStream = canvas.captureStream(30);
+      const tracks = [...canvasStream.getVideoTracks()];
+      await ensureAudioContext();
+
+      const audioSource = audioSourceEl.value;
+      if (audioSource !== "none") {
+        audioInputStream = await openAudioInput(audioSource);
+        if (!audioInputStream) {
+          setRecordStatus("audio input failed: could not open selected source");
+          return;
+        }
+        try {
+          micSourceNode = audioCtx.createMediaStreamSource(audioInputStream);
+          micSourceNode.connect(inputGain);
+        } catch (_) {}
+      }
+      if (recordMixDest && recordMixDest.stream.getAudioTracks().length > 0) {
+        tracks.push(...recordMixDest.stream.getAudioTracks());
+      }
+
+      recordStream = new MediaStream(tracks);
+      recordChunks = [];
+      recordMimeType = pickMimeType();
+      mediaRecorder = recordMimeType
+        ? new MediaRecorder(recordStream, { mimeType: recordMimeType })
+        : new MediaRecorder(recordStream);
+
+      mediaRecorder.ondataavailable = (ev) => {
+        if (ev.data && ev.data.size > 0) recordChunks.push(ev.data);
+      };
+
+      mediaRecorder.onerror = (ev) => {
+        const msg = ev?.error?.message || "unknown recorder error";
+        setRecordStatus(`recording error: ${msg}`);
+      };
+
+      mediaRecorder.onstop = () => {
+        const type = mediaRecorder.mimeType || recordMimeType || "video/webm";
+        const blob = new Blob(recordChunks, { type });
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const ext = type.includes("mp4") ? "mp4" : "webm";
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `surrender-session-${stamp}.${ext}`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+
+        if (audioInputStream) {
+          audioInputStream.getTracks().forEach((t) => t.stop());
+          audioInputStream = null;
+        }
+        if (micSourceNode) {
+          try { micSourceNode.disconnect(); } catch (_) {}
+          micSourceNode = null;
+        }
+        if (recordStream) {
+          recordStream.getTracks().forEach((t) => t.stop());
+          recordStream = null;
+        }
+        mediaRecorder = null;
+        recordMimeType = "";
+        recordBtn.textContent = "Record";
+        const secs = Math.max(0, (performance.now() - recordingStartedAt) / 1000);
+        setRecordStatus(`saved (${secs.toFixed(1)}s, ${type})`);
+      };
+
+      mediaRecorder.start(1000);
+      recordingStartedAt = performance.now();
+      recordBtn.textContent = "Stop";
+      const audioTrackCount = recordStream.getAudioTracks().length;
+      setRecordStatus(`recording... video + ${audioTrackCount ? "audio" : "no-audio"} (${recordMimeType || mediaRecorder.mimeType || "default"})`);
+    }
+
+    function stopRecording() {
+      if (!mediaRecorder) return;
+      try {
+        mediaRecorder.stop();
+      } catch (_) {
+        setRecordStatus("could not stop recorder");
+      }
+    }
+
+    function addEventVisual(p) {
+      const pitch = clamp(Number(p.pitch) || 60, 24, 96);
+      const velocity = clamp(Number(p.velocity) || 80, 1, 127);
+      const vel01 = velocity / 127;
+      const mood = clamp(Number(state.mood) || 0.5, 0, 1);
+      const brightness = clamp(Number(state.brightness) || 0.6, 0, 1);
+      const density = clamp(Number(state.density) || 0.45, 0, 1);
+
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const nx = (pitch - 24) / 72;
+      const baseX = nx * w;
+      const baseY = h * (0.25 + (1 - nx) * 0.5);
+
+      // Primary technical line (machine-like).
+      const segLen = lerp(50, 260, vel01 * 0.8 + brightness * 0.2);
+      const angle = (rng.next() - 0.5) * 0.6 + lerp(-0.18, 0.18, mood);
+      const x1 = baseX + (rng.next() - 0.5) * w * 0.18;
+      const y1 = baseY + (rng.next() - 0.5) * h * 0.12;
+      const x2 = x1 + Math.cos(angle) * segLen;
+      const y2 = y1 + Math.sin(angle) * segLen;
+
+      lines.push({
+        x1, y1, x2, y2,
+        life: 1.0,
+        ttl: lerp(260, 1400, 1 - density),
+        width: lerp(0.65, 2.3, vel01),
+        alpha: lerp(0.35, 0.9, brightness * 0.6 + vel01 * 0.4)
+      });
+
+      // Ring pulse.
+      rings.push({
+        x: lerp(x1, x2, 0.5),
+        y: lerp(y1, y2, 0.5),
+        r: lerp(10, 40, vel01),
+        grow: lerp(30, 140, 1 - mood),
+        life: 1.0,
+        ttl: lerp(420, 1800, 1 - density),
+        alpha: lerp(0.22, 0.6, brightness)
+      });
+
+      // Tiny glyph (blueprint node marker).
+      if (rng.next() < 0.8 - density * 0.35) {
+        glyphs.push({
+          x: x2,
+          y: y2,
+          t: rng.next() < 0.5 ? "cross" : "box",
+          life: 1.0,
+          ttl: lerp(900, 3200, 1 - density),
+          size: lerp(4, 11, vel01 * 0.7 + mood * 0.3),
+          alpha: lerp(0.3, 0.75, brightness)
+        });
+      }
+
+      while (lines.length > maxLines) lines.shift();
+      while (rings.length > maxLines) rings.shift();
+      while (glyphs.length > maxLines) glyphs.shift();
+
+      camRotTarget += (rng.next() - 0.5) * 0.03 + (mood - 0.5) * 0.015;
+
+      eventCount += 1;
+      eventTextEl.textContent = `events:${eventCount}`;
+    }
+
+    function tick(now, dt) {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const mood = clamp(Number(state.mood) || 0.5, 0, 1);
+      const brightness = clamp(Number(state.brightness) || 0.6, 0, 1);
+
+      drift += dt * 0.00002 * lerp(0.5, 1.25, mood);
+      camRot = lerp(camRot, camRotTarget, 0.015);
+      camRotTarget *= 0.999;
+
+      ctx.fillStyle = `rgba(100, 146, 215, ${paused ? 0.02 : 0.085})`;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.rotate(camRot);
+      ctx.translate(-w / 2, -h / 2);
+
+      // Quiet architectural guide lines.
+      ctx.strokeStyle = "rgba(255,255,255,0.13)";
+      ctx.lineWidth = 1;
+      const step = lerp(70, 150, 1 - brightness);
+      const yShift = Math.sin(now * 0.00009 + drift) * 8;
+      for (let x = -step; x < w + step; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x + (drift * 50) % step, 0);
+        ctx.lineTo(x + (drift * 50) % step, h);
+        ctx.stroke();
+      }
+      for (let y = -step; y < h + step; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y + yShift);
+        ctx.lineTo(w, y + yShift);
+        ctx.stroke();
+      }
+
+      // Dynamic lines.
+      for (let i = lines.length - 1; i >= 0; i--) {
+        const l = lines[i];
+        const decay = dt / Math.max(80, l.ttl);
+        if (!paused) l.life -= decay;
+        if (l.life <= 0) {
+          lines.splice(i, 1);
+          continue;
+        }
+        ctx.strokeStyle = `rgba(255,255,255,${l.alpha * l.life})`;
+        ctx.lineWidth = l.width;
+        ctx.beginPath();
+        ctx.moveTo(l.x1, l.y1);
+        ctx.lineTo(l.x2, l.y2);
+        ctx.stroke();
+      }
+
+      // Ring pulses.
+      for (let i = rings.length - 1; i >= 0; i--) {
+        const r = rings[i];
+        const decay = dt / Math.max(80, r.ttl);
+        if (!paused) {
+          r.life -= decay;
+          r.r += (r.grow * dt) / r.ttl;
+        }
+        if (r.life <= 0) {
+          rings.splice(i, 1);
+          continue;
+        }
+        ctx.strokeStyle = `rgba(255,255,255,${r.alpha * r.life})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Glyph markers.
+      for (let i = glyphs.length - 1; i >= 0; i--) {
+        const g = glyphs[i];
+        const decay = dt / Math.max(80, g.ttl);
+        if (!paused) g.life -= decay;
+        if (g.life <= 0) {
+          glyphs.splice(i, 1);
+          continue;
+        }
+        ctx.strokeStyle = `rgba(255,255,255,${g.alpha * g.life})`;
+        ctx.lineWidth = 1;
+        if (g.t === "cross") {
+          ctx.beginPath();
+          ctx.moveTo(g.x - g.size, g.y);
+          ctx.lineTo(g.x + g.size, g.y);
+          ctx.moveTo(g.x, g.y - g.size);
+          ctx.lineTo(g.x, g.y + g.size);
+          ctx.stroke();
+        } else {
+          ctx.strokeRect(g.x - g.size, g.y - g.size, g.size * 2, g.size * 2);
+        }
+      }
+
+      ctx.restore();
+    }
+
+    let last = performance.now();
+    function frame(now) {
+      const dt = Math.min(50, now - last || 16.67);
+      last = now;
+      tick(now, dt);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    resetBtn.addEventListener("click", resetScene);
+    pauseBtn.addEventListener("click", () => {
+      paused = !paused;
+      state.paused = paused;
+      if (paused) silencePiano();
+      pauseBtn.textContent = paused ? "Resume" : "Pause";
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: "control", payload: { key: "paused", value: paused ? 1 : 0 } }));
+      }
+    });
+    pianoBtn.addEventListener("click", async () => {
+      if (!pianoOn) {
+        try {
+          await ensurePianoSamples();
+          pianoOn = true;
+          pianoBtn.textContent = "Piano On";
+          setRecordStatus("piano enabled");
+        } catch (err) {
+          setRecordStatus(`piano load failed: ${err.message}`);
+        }
+      } else {
+        pianoOn = false;
+        silencePiano();
+        pianoBtn.textContent = "Enable Piano";
+        setRecordStatus("piano disabled");
+      }
+    });
+    pianoLevelEl.addEventListener("input", async () => {
+      await ensureAudioContext();
+      pianoMasterGain.gain.setTargetAtTime(Number(pianoLevelEl.value), audioCtx.currentTime, 0.05);
+    });
+    refreshAudioBtn.addEventListener("click", () => {
+      listAudioInputs().catch((err) => setRecordStatus(`audio list failed: ${err.message}`));
+    });
+    recordBtn.addEventListener("click", () => {
+      if (mediaRecorder) stopRecording();
+      else startRecording().catch((err) => setRecordStatus(`record start failed: ${err.message}`));
+    });
+    listAudioInputs().catch((err) => setRecordStatus(`audio list failed: ${err.message}`));
+
+    const ws = new WebSocket(`ws://${location.host}`);
+    ws.onopen = () => {
+      dotEl.classList.add("on");
+      wsTextEl.textContent = "connected";
+    };
+    ws.onclose = () => {
+      dotEl.classList.remove("on");
+      wsTextEl.textContent = "disconnected";
+    };
+    ws.onmessage = (ev) => {
+      const msg = JSON.parse(ev.data);
+      if (msg.type === "state") {
+        state = { ...state, ...msg.payload };
+        paused = !!state.paused;
+        pauseBtn.textContent = paused ? "Resume" : "Pause";
+        rng = new SeedRng(state.seed);
+        if (paused) silencePiano();
+        stateTextEl.textContent =
+          `seed:${state.seed} density:${Number(state.density).toFixed(2)} mood:${Number(state.mood).toFixed(2)} brightness:${Number(state.brightness).toFixed(2)} paused:${paused ? "on" : "off"}`;
+        return;
+      }
+      if (msg.type === "event" && msg.payload) {
+        if (paused) return;
+        addEventVisual(msg.payload);
+        playPianoNote(msg.payload.pitch, msg.payload.velocity);
+      }
+    };
+  </script>
+</body>
+</html>

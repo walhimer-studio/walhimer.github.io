@@ -61,6 +61,7 @@
   <div id="controls">
     <button id="restart-outline" type="button">Restart Entry</button>
     <button id="restart-seeded" type="button">Restart Facade (same seed)</button>
+    <button id="go-stage-3" type="button">Gallery room · works on walls</button>
   </div>
 
   <script>
@@ -73,6 +74,7 @@
       var hud = document.getElementById("hud");
       var btnOutline = document.getElementById("restart-outline");
       var btnSeeded = document.getElementById("restart-seeded");
+      var btnStage3 = document.getElementById("go-stage-3");
 
       var sessionSeed = null;
 
@@ -131,6 +133,15 @@
           return;
         }
         goTo(FACADE + "?seed=" + encodeURIComponent(sessionSeed));
+      });
+
+      btnStage3.addEventListener("click", function () {
+        if (sessionSeed) {
+          goTo(ROOM + "?seed=" + encodeURIComponent(sessionSeed));
+        } else {
+          goTo(ROOM);
+        }
+        setHudLabel("GALLERY ROOM · CENTERED · CUBE · OSC ON WALLS");
       });
 
       frame.addEventListener("load", updateStateFromFrame);

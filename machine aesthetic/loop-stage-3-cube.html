@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cube rotate Y — translucent gradient (Loop stage 3b)</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; background: #0a0a0a; }
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    canvas { display: block; box-shadow: 0 4px 24px rgba(0,0,0,0.35); }
+    html.embed,
+    html.embed body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+    }
+    html.embed body {
+      display: block;
+      min-height: 0;
+    }
+    html.embed canvas {
+      box-shadow: none !important;
+      margin: 0 !important;
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script>
+    const IS_EMBED = new URLSearchParams(location.search).get("embed") === "1";
+    if (IS_EMBED) {
+      document.documentElement.classList.add("embed");
+    }
+
+    let angleY = 0;
+    let spin = 0.007;
+
+    function setup() {
+      const q = new URLSearchParams(location.search);
+      const s = q.get("seed");
+      if (s !== null && s !== "") {
+        const n = parseInt(s, 10) >>> 0;
+        randomSeed(n);
+        spin = 0.005 + random() * 0.006;
+      }
+
+      if (IS_EMBED) {
+        pixelDensity(Math.min(2, window.devicePixelRatio || 1));
+        createCanvas(windowWidth, windowHeight, WEBGL);
+        window.addEventListener("resize", () => resizeCanvas(windowWidth, windowHeight));
+      } else {
+        createCanvas(1000, 1000, WEBGL);
+      }
+      background(255);
+    }
+
+    function draw() {
+      background(255);
+      rotateY(angleY);
+      angleY += spin;
+      let gl = this._renderer.GL;
+      gl.disable(gl.DEPTH_TEST);
+      const sz = IS_EMBED ? min(width, height) * 0.42 : 500;
+      drawGradientCube(sz);
+      gl.enable(gl.DEPTH_TEST);
+    }
+
+    function drawGradientCube(size) {
+      noStroke();
+      beginShape();
+      fill(255, 0, 0, 120);
+      vertex(-size / 2, -size / 2, size / 2);
+      vertex(size / 2, -size / 2, size / 2);
+      fill(255, 255, 0, 120);
+      vertex(size / 2, size / 2, size / 2);
+      vertex(-size / 2, size / 2, size / 2);
+      endShape(CLOSE);
+
+      beginShape();
+      fill(0, 0, 255, 120);
+      vertex(-size / 2, -size / 2, -size / 2);
+      vertex(size / 2, -size / 2, -size / 2);
+      fill(0, 255, 255, 120);
+      vertex(size / 2, size / 2, -size / 2);
+      vertex(-size / 2, size / 2, -size / 2);
+      endShape(CLOSE);
+
+      beginShape();
+      fill(255, 0, 255, 120);
+      vertex(-size / 2, -size / 2, -size / 2);
+      vertex(-size / 2, -size / 2, size / 2);
+      fill(255, 255, 255, 120);
+      vertex(-size / 2, size / 2, size / 2);
+      vertex(-size / 2, size / 2, -size / 2);
+      endShape(CLOSE);
+
+      beginShape();
+      fill(0, 255, 0, 120);
+      vertex(size / 2, -size / 2, -size / 2);
+      vertex(size / 2, -size / 2, size / 2);
+      fill(255, 255, 0, 120);
+      vertex(size / 2, size / 2, size / 2);
+      vertex(size / 2, size / 2, -size / 2);
+      endShape(CLOSE);
+
+      beginShape();
+      fill(255, 255, 255, 120);
+      vertex(-size / 2, -size / 2, -size / 2);
+      vertex(size / 2, -size / 2, -size / 2);
+      fill(200, 200, 200, 120);
+      vertex(size / 2, -size / 2, size / 2);
+      vertex(-size / 2, -size / 2, size / 2);
+      endShape(CLOSE);
+
+      beginShape();
+      fill(0, 255, 255, 120);
+      vertex(-size / 2, size / 2, -size / 2);
+      vertex(size / 2, size / 2, -size / 2);
+      fill(0, 0, 255, 120);
+      vertex(size / 2, size / 2, size / 2);
+      vertex(-size / 2, size / 2, size / 2);
+      endShape(CLOSE);
+    }
+  </script>
+</body>
+</html>
