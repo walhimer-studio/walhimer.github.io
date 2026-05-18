@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hoodo (Laura) — Ether Wind · Alice Aycock, 1981</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #c4c4cc; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    .overlay {
+      position: fixed; pointer-events: none; color: #2c3034;
+      font-family: "Courier New", Courier, monospace;
+    }
+    .piece-nav {
+      left: 0; right: 0; top: 0.75rem; font-size: 10px; line-height: 1.55;
+      text-align: center; opacity: 0.8;
+    }
+    .piece-nav a { color: #2c3034; text-decoration: none; pointer-events: auto; }
+    .piece-nav a:hover { text-decoration: underline; }
+    .all-footer {
+      left: 0; right: 0; bottom: 0; padding: 0.75rem 1rem; text-align: center;
+    }
+    .all-footer-text {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.35rem; max-width: 40rem; margin: 0 auto;
+    }
+    .title-block { font-size: 11px; line-height: 1.45; }
+    .title-block em { font-style: normal; color: #5a6068; }
+    .science-note { font-size: 11px; line-height: 1.4; font-style: italic; }
+    .hidden { display: none; }
+    body.layout-all canvas { touch-action: none; cursor: default; }
+    body.dragging canvas { cursor: grabbing !important; }
+  </style>
+</head>
+<body>
+  <nav class="overlay piece-nav" id="pieceNav">
+    <a href="?piece=tower">tower</a> · <a href="?piece=sail">sail</a> · <a href="?piece=scaffold">scaffold</a> ·
+    <a href="?piece=turbine">turbine</a> · <a href="?piece=ring">ring</a> · <a href="?piece=cage">cage</a> ·
+    <a href="?piece=all"><strong>all</strong></a>
+  </nav>
+  <footer class="overlay all-footer hidden" id="allFooter">
+    <div class="all-footer-text">
+      <div class="title-block">
+        <strong>Hoodo (Laura)</strong>, from the series <em>How to Catch and Manufacture Ghosts</em>:
+        Vertical and Horizontal Cross-section of the Ether Wind · Alice Aycock, 1981
+      </div>
+      <p class="science-note">
+        1887 Michelson-Morley experiment disproved the existence of the &ldquo;luminiferous aether&rdquo;
+      </p>
+    </div>
+  </footer>
+  <script src="aycock-ether-wind-geometry.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+(() => {
+  "use strict";
+  const C30 = Math.cos(Math.PI / 6);
+  const PIECE = new URLSearchParams(location.search).get("piece") || "all";
+  const PIECE_IDS = ["sail", "tower", "turbine", "scaffold", "ring", "cage"];
+  const STORAGE_KEY = "aycock-ether-wind-three-placements";
+  const TEX = 768;
+  const DEFAULT_PLACEMENTS = {
+    sail: { x: -5.2, y: 2.7, z: 0 },
+    tower: { x: -3.3, y: 0.8, z: 0 },
+    turbine: { x: -1.4, y: -1.1, z: 0 },
+    scaffold: { x: 0.7, y: -3.2, z: 0 },
+    ring: { x: 2.8, y: -5.3, z: 0 },
+    cage: { x: 4.9, y: -7.4, z: 0 },
+  };
+
+  const PLACEMENTS = loadPlacements();
+  const drawer = window.createAycockDrawer();
+  const pieceSprites = {};
+  const hitMeshes = [];
+  let scene, camera, renderer, raycaster, pointer, dragPlane;
+  let dragState = null, hoverId = null, selectHelper = null;
+  const connectors = new THREE.Group();
+
+  function loadPlacements() {
+    const out = {};
+    for (const [k, v] of Object.entries(DEFAULT_PLACEMENTS)) {
+      out[k] = { ...v };
+    }
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        for (const k of Object.keys(out)) {
+          if (saved[k]) Object.assign(out[k], saved[k]);
+        }
+      }
+    } catch { /* ignore */ }
+    return out;
+  }
+
+  function savePlacements() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(PLACEMENTS)); } catch { /* ignore */ }
+  }
+
+  function spriteScale(id) {
+    const sz = drawer.worldSize(id);
+    const span = Math.max(sz.w, sz.d, 1.1);
+    const h = Math.max(sz.h, 0.8);
+    return { w: span * 1.15, h: (span * 0.55 + h) * 1.1, lift: h * 0.45 };
+  }
+
+  function makePieceSprite(id) {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = TEX;
+    drawer.drawToCanvas(canvas, id, 0, 0, 0);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(mat);
+    const sc = spriteScale(id);
+    sprite.scale.set(sc.w, sc.h, 1);
+    sprite.center.set(0.5, 0.12);
+    sprite.userData.pieceId = id;
+    sprite.userData.lift = sc.lift;
+
+    const hit = new THREE.Mesh(
+      new THREE.BoxGeometry(sc.w, sc.h, sc.w * 0.65),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    hit.userData.pieceId = id;
+    hitMeshes.push(hit);
+
+    const group = new THREE.Group();
+    group.userData.pieceId = id;
+    group.add(sprite);
+    group.add(hit);
+    pieceSprites[id] = { group, sprite, hit, texture, canvas };
+    return group;
+  }
+
+  function applyPlacement(id) {
+    const p = PLACEMENTS[id];
+    const entry = pieceSprites[id];
+    if (!p || !entry) return;
+    const lift = entry.sprite.userData.lift || 0.5;
+    entry.group.position.set(p.x, lift, p.y);
+    entry.hit.position.set(0, 0, 0);
+  }
+
+  function updateConnectors() {
+    while (connectors.children.length) connectors.remove(connectors.children[0]);
+    if (PIECE !== "all") return;
+    const mat = new THREE.LineBasicMaterial({ color: 0x5a788c });
+    for (let i = 0; i < PIECE_IDS.length - 1; i++) {
+      const a = PLACEMENTS[PIECE_IDS[i]], b = PLACEMENTS[PIECE_IDS[i + 1]];
+      const ay = (pieceSprites[PIECE_IDS[i]]?.sprite.userData.lift || 0.5) * 0.5;
+      const by = (pieceSprites[PIECE_IDS[i + 1]]?.sprite.userData.lift || 0.5) * 0.5;
+      const geo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(a.x, ay, a.y),
+        new THREE.Vector3(b.x, by, b.y),
+      ]);
+      connectors.add(new THREE.Line(geo, mat));
+    }
+  }
+
+  function updateSelectHelper() {
+    if (selectHelper) {
+      scene.remove(selectHelper);
+      selectHelper = null;
+    }
+    const id = dragState?.id ?? hoverId;
+    if (!id || PIECE !== "all") return;
+    const g = pieceSprites[id]?.group;
+    if (!g) return;
+    const box = new THREE.Box3().setFromObject(g);
+    selectHelper = new THREE.Box3Helper(box, dragState ? 0x662020 : 0x2c3034);
+    scene.add(selectHelper);
+  }
+
+  function init() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xc4c4cc);
+
+    const aspect = window.innerWidth / window.innerHeight;
+    const frustum = 7.2;
+    camera = new THREE.OrthographicCamera(
+      -frustum * aspect, frustum * aspect, frustum, -frustum, 0.1, 200
+    );
+    camera.position.set(14, 16, 14);
+    camera.lookAt(-0.5, 1.2, -2.5);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    raycaster = new THREE.Raycaster();
+    pointer = new THREE.Vector2();
+    dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+
+    for (const id of PIECE_IDS) {
+      scene.add(makePieceSprite(id));
+      applyPlacement(id);
+    }
+    scene.add(connectors);
+    updateConnectors();
+
+    const isAll = PIECE === "all";
+    document.body.classList.toggle("layout-all", isAll);
+    document.getElementById("allFooter").classList.toggle("hidden", !isAll);
+    document.getElementById("pieceNav").style.opacity = isAll ? "0.55" : "0.8";
+
+    if (!isAll && PIECE_IDS.includes(PIECE)) {
+      for (const id of PIECE_IDS) {
+        pieceSprites[id].group.visible = id === PIECE;
+      }
+      const g = pieceSprites[PIECE].group;
+      const box = new THREE.Box3().setFromObject(g);
+      const c = box.getCenter(new THREE.Vector3());
+      const sz = box.getSize(new THREE.Vector3());
+      const d = Math.max(sz.x, sz.y, sz.z) * 1.8;
+      camera.position.set(c.x + d, c.y + d * 0.9, c.z + d);
+      camera.lookAt(c.x, c.y, c.z);
+    }
+
+    function pickPiece(clientX, clientY) {
+      const r = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((clientX - r.left) / r.width) * 2 - 1;
+      pointer.y = -((clientY - r.top) / r.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(hitMeshes, false);
+      if (!hits.length) return null;
+      return hits[0].object.userData.pieceId;
+    }
+
+    function planeHit(clientX, clientY, target) {
+      const r = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((clientX - r.left) / r.width) * 2 - 1;
+      pointer.y = -((clientY - r.top) / r.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      return raycaster.ray.intersectPlane(dragPlane, target) ? target : null;
+    }
+
+    renderer.domElement.addEventListener("pointerdown", (e) => {
+      if (PIECE !== "all") return;
+      const id = pickPiece(e.clientX, e.clientY);
+      if (!id) return;
+      e.preventDefault();
+      renderer.domElement.setPointerCapture(e.pointerId);
+      const p = PLACEMENTS[id];
+      dragState = { id, startX: p.x, startY: p.y, grab: new THREE.Vector3() };
+      if (planeHit(e.clientX, e.clientY, dragState.grab)) {
+        dragState.offsetX = p.x - dragState.grab.x;
+        dragState.offsetY = p.y - dragState.grab.z;
+      } else {
+        dragState.offsetX = 0;
+        dragState.offsetY = 0;
+      }
+      document.body.classList.add("dragging");
+      updateSelectHelper();
+    });
+
+    renderer.domElement.addEventListener("pointermove", (e) => {
+      if (dragState) {
+        const hit = new THREE.Vector3();
+        if (planeHit(e.clientX, e.clientY, hit)) {
+          PLACEMENTS[dragState.id].x = hit.x + dragState.offsetX;
+          PLACEMENTS[dragState.id].y = hit.z + dragState.offsetY;
+          applyPlacement(dragState.id);
+          updateConnectors();
+          updateSelectHelper();
+        }
+        return;
+      }
+      if (PIECE !== "all") return;
+      const id = pickPiece(e.clientX, e.clientY);
+      if (id !== hoverId) {
+        hoverId = id;
+        renderer.domElement.style.cursor = id ? "grab" : "default";
+        updateSelectHelper();
+      }
+    });
+
+    renderer.domElement.addEventListener("pointerup", (e) => {
+      if (!dragState) return;
+      savePlacements();
+      dragState = null;
+      document.body.classList.remove("dragging");
+      try { renderer.domElement.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
+      updateSelectHelper();
+    });
+
+    renderer.domElement.addEventListener("pointercancel", () => {
+      dragState = null;
+      document.body.classList.remove("dragging");
+      updateSelectHelper();
+    });
+
+    renderer.domElement.addEventListener("dblclick", (e) => {
+      if (PIECE !== "all") return;
+      const id = pickPiece(e.clientX, e.clientY);
+      if (!id) return;
+      Object.assign(PLACEMENTS[id], DEFAULT_PLACEMENTS[id]);
+      savePlacements();
+      applyPlacement(id);
+      updateConnectors();
+      updateSelectHelper();
+    });
+
+    window.addEventListener("resize", onResize);
+    onResize();
+    animate();
+  }
+
+  function onResize() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const aspect = w / h;
+    const frustum = 7.2;
+    camera.left = -frustum * aspect;
+    camera.right = frustum * aspect;
+    camera.top = frustum;
+    camera.bottom = -frustum;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+
+  init();
+})();
+  </script>
+</body>
+</html>
