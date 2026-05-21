@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-05-04",
+  "updated": "2026-05-21",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -3581,6 +3581,49 @@
         "external_urls": [
           "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
         ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Three.js / LVE:traffic-light-axometric",
+      "dublin_core": {
+        "title": "traffic-light-axometric",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Three.js / LVE:traffic-light-axometric",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000201"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Three.js / LVE-traffic-light-axometric",
+        "type": "HumanMadeObject",
+        "_label": "traffic-light-axometric",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Three.js / LVE",
+          "file": "traffic-light-axometric.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/traffic-light-axometric.html"
+        ],
+        "external_urls": []
       }
     },
     {
@@ -9511,11 +9554,19 @@
           "sketches/loop-miami-2026/orchestrator.html",
           "sketches/loop-miami-2026/traveling-landscape.html",
           "sketches/loop-miami-2026/walk_moon_audio_standalone.html",
+          "sketches/loop-miami-2026/webcam-point-cloud/.DS_Store",
           "sketches/loop-miami-2026/webcam-point-cloud/face-circle/index.html",
           "sketches/loop-miami-2026/webcam-point-cloud/v1/index.html",
           "sketches/loop-miami-2026/webcam-point-cloud/v2-verse/README.md",
           "sketches/loop-miami-2026/webcam-point-cloud/v2-verse/index.html",
-          "sketches/loop-miami-2026/webcam-point-cloud/v3/index.html"
+          "sketches/loop-miami-2026/webcam-point-cloud/v3/.DS_Store",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3/index.html",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3-breath/.DS_Store",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3-breath/C2v8.wav",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3-breath/OVERVIEW.md",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3-breath/README.md",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3-breath/index.html",
+          "sketches/loop-miami-2026/webcam-point-cloud/v3-breath/style-guide.md"
         ],
         "external_urls": []
       }
