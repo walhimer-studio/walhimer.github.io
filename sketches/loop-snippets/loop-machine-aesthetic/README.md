@@ -19,7 +19,6 @@ Path: `sketches/loop-snippets/loop-machine-aesthetic/`
 | `ghost-machine-core.mjs` | Rooms + ghost wireframe |
 | `surrender-machines-three-core.js` | Surrender machine embed |
 | `surrender-machine-core.mjs` | Surrender build (GLB export) |
-| `loop_portal_room_a.glb` | Black lobby shell for Loop (optional) |
 | `counterproduction-essay-v2.md` | Doreen Rios essay (draft, markdown) |
 | `counterproduction-essay-v2.pdf` | Doreen Rios essay (draft, PDF) |
 
@@ -33,10 +32,3 @@ python3 -m http.server 8765
 ```
 
 Open http://localhost:8765/ghost_dense_77823_room.html
-
-## GLB builds (optional)
-
-```bash
-npm install
-npm run build:portal-room
-```
