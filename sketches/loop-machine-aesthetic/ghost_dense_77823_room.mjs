@@ -59,17 +59,17 @@ const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerH
 const world = new THREE.Group();
 scene.add(world);
 
-await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
+await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, {
+  wallpaper: true,
+  essayPanelWall: true,
+});
 const { builder } = buildGhostMachine(world);
 
-/** Essay panel — east wall, right of door (south segment), facing into Room A */
+/** Essay panel — east wall, right of door (south jamb), facing into Room A */
 const ESSAY_PDF = new URL("counterproduction-essay-v2.pdf", import.meta.url).href;
 const ESSAY_PANEL_TEX = new URL("counterproduction-essay-panel.png", import.meta.url).href;
 const WALL_T = 0.15;
 const halfDoor = LAYOUT.doorwayWidth / 2;
-const segD = RD - halfDoor;
-const essayXFace = ROOM_A_X + RW - WALL_T / 2 - 0.006;
-const essayZ = -halfDoor - segD / 2;
 const essayY = ROOM.height * 0.52;
 const essayEdgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
 
@@ -82,11 +82,14 @@ essayTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 const essayAspect = essayTex.image.width / essayTex.image.height;
 let essayPanelH = 2.55;
 let essayPanelW = essayPanelH * essayAspect;
-const maxPanelW = segD - 0.5;
+const maxPanelW = RD - halfDoor - 0.6;
 if (essayPanelW > maxPanelW) {
   essayPanelW = maxPanelW;
   essayPanelH = essayPanelW / essayAspect;
 }
+
+const essayXFace = ROOM_A_X + RW - WALL_T / 2 - 0.05;
+const essayZ = -halfDoor - essayPanelW / 2 - 0.35;
 
 const essayGroup = new THREE.Group();
 essayGroup.name = "essay_panel_link";
@@ -94,13 +97,19 @@ world.add(essayGroup);
 
 const essayPlane = new THREE.Mesh(
   new THREE.PlaneGeometry(essayPanelW, essayPanelH),
-  new THREE.MeshBasicMaterial({ map: essayTex })
+  new THREE.MeshBasicMaterial({
+    map: essayTex,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+  })
 );
 essayPlane.name = "essay_panel";
 essayPlane.position.set(essayXFace, essayY, essayZ);
 essayPlane.rotation.y = -Math.PI / 2;
 essayPlane.userData.link = ESSAY_PDF;
-essayPlane.renderOrder = 2;
+essayPlane.renderOrder = 10;
 essayGroup.add(essayPlane);
 
 function essayEdge(ax, ay, az, bx, by, bz) {
@@ -198,7 +207,7 @@ function updateHud(pos) {
   if (pos.x < HALL_AB.x1) {
     hudRoom.textContent = pos.x >= ROOM_A_X - RW ? "Room A · black · code mural" : "Approach · Room A";
     hudSeed.textContent = pos.x >= ROOM_A_X - RW
-      ? "essay panel · east wall right of door · ghost seed 77823 ahead"
+      ? "essay panel · east wall right of door · turn toward door · click panel for PDF"
       : "ghost seed 77823 · room B ahead";
   } else if (pos.x < HALL_BC.x0) {
     hudRoom.textContent = pos.x < 0 ? "Hall A–B" : "Room B · ghost wireframe";
