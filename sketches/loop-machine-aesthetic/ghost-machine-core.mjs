@@ -700,20 +700,18 @@ function addCodeWallPlane(parent, mat, w, height, x, y, z, rotY, n) {
   parent.add(mesh);
 }
 
-function applyRoomAWallpaper(room, cx, cz, hw, hd, height, halfDoor, segD, wallT, codeMat, width, depth, { skipEastSouth = false } = {}) {
+function applyRoomAWallpaper(room, cx, cz, hw, hd, height, halfDoor, segD, wallT, codeMat, width, depth) {
   const yMid = height * 0.5;
   const face = wallT / 2 + 0.002;
   addCodeWallPlane(room, codeMat, width, height, cx, yMid, cz - hd + face, 0, "room_a_wp_n");
   addCodeWallPlane(room, codeMat, width, height, cx, yMid, cz + hd - face, Math.PI, "room_a_wp_s");
   addCodeWallPlane(room, codeMat, depth, height, cx - hw + face, yMid, cz, Math.PI / 2, "room_a_wp_w");
-  if (!skipEastSouth) {
-    addCodeWallPlane(room, codeMat, segD, height, cx + hw - face, yMid, cz - halfDoor - segD / 2, -Math.PI / 2, "room_a_wp_e_s");
-  }
+  addCodeWallPlane(room, codeMat, segD, height, cx + hw - face, yMid, cz - halfDoor - segD / 2, -Math.PI / 2, "room_a_wp_e_s");
   addCodeWallPlane(room, codeMat, segD, height, cx + hw - face, yMid, cz + halfDoor + segD / 2, -Math.PI / 2, "room_a_wp_e_n");
 }
 
 /** One 28×28 room at (cx, 0, cz) with optional 4 m doorways on east/west walls. */
-function buildRoomAt(group, cx, cz, name, { doorWest = false, doorEast = false }, codeMat, dims, { skipEastSouthWallpaper = false } = {}) {
+function buildRoomAt(group, cx, cz, name, { doorWest = false, doorEast = false }, codeMat, dims) {
   const { width, depth, height } = dims;
   const isCodeRoom = name === "room_a";
   const surfMat = new THREE.MeshBasicMaterial({ color: isCodeRoom ? 0x000000 : 0xffffff });
@@ -789,9 +787,7 @@ function buildRoomAt(group, cx, cz, name, { doorWest = false, doorEast = false }
   edge("corner_sw", ix0, yFloorEdge + cg, iz1, ix0, yCeilEdge - cg, iz1);
 
   if (name === "room_a" && codeMat) {
-    applyRoomAWallpaper(room, cx, cz, hw, hd, height, halfDoor, segD, wallT, codeMat, width, depth, {
-      skipEastSouth: skipEastSouthWallpaper,
-    });
+    applyRoomAWallpaper(room, cx, cz, hw, hd, height, halfDoor, segD, wallT, codeMat, width, depth);
   }
 
   return room;
@@ -962,7 +958,7 @@ export async function buildWalkthroughRoomComplex(
   width = ROOM.width,
   depth = ROOM.depth,
   height = ROOM.height,
-  { wallpaper = true, essayPanelWall = false } = {}
+  { wallpaper = true } = {}
 ) {
   const complex = new THREE.Group();
   complex.name = "white_room_complex";
@@ -973,9 +969,7 @@ export async function buildWalkthroughRoomComplex(
     : null;
   const dims = { width, depth, height };
 
-  buildRoomAt(complex, ROOM_A_X, 0, "room_a", { doorEast: true }, codeMat, dims, {
-    skipEastSouthWallpaper: essayPanelWall,
-  });
+  buildRoomAt(complex, ROOM_A_X, 0, "room_a", { doorEast: true }, codeMat, dims);
   buildRoomAt(complex, 0, 0, "room_b", { doorWest: true, doorEast: true }, null, dims);
   buildRoomAt(complex, ROOM_C_X, 0, "room_c", { doorWest: true }, null, dims);
   buildHallwayAt(complex, HALL_AB.x0, HALL_AB.x1, "hall_a_b", true, codeMat, height);

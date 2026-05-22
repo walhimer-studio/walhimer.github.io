@@ -59,16 +59,14 @@ const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerH
 const world = new THREE.Group();
 scene.add(world);
 
-await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, {
-  wallpaper: true,
-  essayPanelWall: true,
-});
+await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
 const { builder } = buildGhostMachine(world);
 
-/** Essay panel — east wall, right of door (south jamb), facing into Room A */
+/** Essay panel — east wall, right of door (south jamb), on top of code wallpaper */
 const ESSAY_PDF = new URL("counterproduction-essay-v2.pdf", import.meta.url).href;
 const ESSAY_PANEL_TEX = new URL("counterproduction-essay-panel.png", import.meta.url).href;
 const WALL_T = 0.15;
+const wallFace = WALL_T / 2 + 0.002;
 const halfDoor = LAYOUT.doorwayWidth / 2;
 const essayY = ROOM.height * 0.52;
 const essayEdgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
@@ -88,7 +86,7 @@ if (essayPanelW > maxPanelW) {
   essayPanelH = essayPanelW / essayAspect;
 }
 
-const essayXFace = ROOM_A_X + RW - WALL_T / 2 - 0.05;
+const essayXFace = ROOM_A_X + RW - wallFace - 0.03;
 const essayZ = -halfDoor - essayPanelW / 2 - 0.35;
 
 const essayGroup = new THREE.Group();
