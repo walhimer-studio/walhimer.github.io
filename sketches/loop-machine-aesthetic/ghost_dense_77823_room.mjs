@@ -64,29 +64,44 @@ const { builder } = buildGhostMachine(world);
 
 /** Essay panel — east wall, right of door (south segment), facing into Room A */
 const ESSAY_PDF = new URL("counterproduction-essay-v2.pdf", import.meta.url).href;
+const ESSAY_PANEL_TEX = new URL("counterproduction-essay-panel.png", import.meta.url).href;
 const WALL_T = 0.15;
 const halfDoor = LAYOUT.doorwayWidth / 2;
 const segD = RD - halfDoor;
-const essayXFace = ROOM_A_X + RW - WALL_T / 2 - 0.004;
+const essayXFace = ROOM_A_X + RW - WALL_T / 2 - 0.006;
 const essayZ = -halfDoor - segD / 2;
-const essayPanelH = 2.4;
-const essayPanelW = 3.2;
 const essayY = ROOM.height * 0.52;
 const essayEdgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
-const essayHitMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+
+const essayTex = await new Promise((resolve, reject) => {
+  new THREE.TextureLoader().load(ESSAY_PANEL_TEX, resolve, undefined, reject);
+});
+essayTex.colorSpace = THREE.SRGBColorSpace;
+essayTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+const essayAspect = essayTex.image.width / essayTex.image.height;
+let essayPanelH = 2.55;
+let essayPanelW = essayPanelH * essayAspect;
+const maxPanelW = segD - 0.5;
+if (essayPanelW > maxPanelW) {
+  essayPanelW = maxPanelW;
+  essayPanelH = essayPanelW / essayAspect;
+}
 
 const essayGroup = new THREE.Group();
 essayGroup.name = "essay_panel_link";
 world.add(essayGroup);
 
-const essayHit = new THREE.Mesh(
-  new THREE.BoxGeometry(0.08, essayPanelH, essayPanelW),
-  essayHitMat
+const essayPlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(essayPanelW, essayPanelH),
+  new THREE.MeshBasicMaterial({ map: essayTex })
 );
-essayHit.name = "essay_panel";
-essayHit.position.set(essayXFace - 0.04, essayY, essayZ);
-essayHit.userData.link = ESSAY_PDF;
-essayGroup.add(essayHit);
+essayPlane.name = "essay_panel";
+essayPlane.position.set(essayXFace, essayY, essayZ);
+essayPlane.rotation.y = -Math.PI / 2;
+essayPlane.userData.link = ESSAY_PDF;
+essayPlane.renderOrder = 2;
+essayGroup.add(essayPlane);
 
 function essayEdge(ax, ay, az, bx, by, bz) {
   const line = new THREE.Line(
@@ -96,11 +111,11 @@ function essayEdge(ax, ay, az, bx, by, bz) {
     ]),
     essayEdgeMat
   );
-  line.renderOrder = 2;
+  line.renderOrder = 3;
   essayGroup.add(line);
 }
 
-const ex = essayXFace;
+const ex = essayXFace + 0.002;
 const ey0 = essayY - essayPanelH / 2;
 const ey1 = essayY + essayPanelH / 2;
 const ez0 = essayZ - essayPanelW / 2;
@@ -110,7 +125,7 @@ essayEdge(ex, ey1, ez0, ex, ey1, ez1);
 essayEdge(ex, ey0, ez0, ex, ey1, ez0);
 essayEdge(ex, ey0, ez1, ex, ey1, ez1);
 
-const linkMeshes = [essayHit];
+const linkMeshes = [essayPlane];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
