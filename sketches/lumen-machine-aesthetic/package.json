@@ -1,0 +1,13 @@
+{
+  "name": "lumen-machine-aesthetic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:ghost-room": "node build-ghost-room-glb.mjs",
+    "build:portal-room": "node build-loop-portal-room-glb.mjs"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.0.0",
+    "three": "^0.160.0"
+  }
+}
