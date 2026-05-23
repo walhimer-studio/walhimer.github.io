@@ -7,6 +7,13 @@ Project umbrella for **Surrender Machines** and related work: **Pure Data**, **o
 - **`machine aesthetic/`** (space in name): existing in-repo sketches, OSC/MIDI bridge pages, and combined critique flows already living under the site.
 - **`machine-aesthetic/`** (this folder): contracts, docs, and future host/firmware-friendly layout without renaming legacy paths.
 
+## Emergent DNA (kernel)
+
+| Path | Purpose |
+|------|--------|
+| [emergent-dna/README.md](emergent-dna/README.md) | Style guide, principles, kernel API, host workflow. |
+| [emergent-dna/kernel/](emergent-dna/kernel/) | Reference kernel v0 (JavaScript, language-agnostic spec). |
+
 ## Docs
 
 | File | Purpose |

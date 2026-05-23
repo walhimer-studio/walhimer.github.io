@@ -1,0 +1,10 @@
+{
+  "name": "@walhimer/emergent-dna",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Emergent DNA reference kernel for Surrender Machines (v0 draft)",
+  "scripts": {
+    "step": "node examples/step.mjs"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "speciesId": "surrender-machines",
+  "label": "world-one-node-zero",
+  "seed": 77823,
+  "generation": 0,
+  "parentId": null,
+  "age": 142.5,
+  "lifespanSeconds": 3600,
+  "normalizedAge": 0.0396,
+  "lifeStage": "juvenile",
+  "vitality": 0.986,
+  "stress": 0.31,
+  "traits": {
+    "warmth": 0.48,
+    "machine": 0.74,
+    "surrender": 0.41,
+    "scar": 0.06,
+    "gold": 0.04
+  },
+  "phases": [0.72, 0.19, 0.88, 0.44, 0.61],
+  "scars": [
+    {
+      "id": "0-77823",
+      "trait": "scar",
+      "delta": 0.12,
+      "reason": "break",
+      "atAge": 98.2
+    },
+    {
+      "id": "1-77823",
+      "trait": "gold",
+      "delta": 0.18,
+      "reason": "gold",
+      "atAge": 98.2
+    }
+  ],
+  "flags": {
+    "breaking": false,
+    "recentGold": false,
+    "dead": false
+  }
+}
