@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Light art — breathing (p5.js)</title>
+  <meta name="description" content="Three gradient columns on a light ground — seedable colors with a subtle breathing pulse." />
+  <link rel="canonical" href="https://mark-walhimer.com/sketches/light-art.html" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #f5f5f5;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      gap: 12px;
+      font: 14px/1.4 system-ui, sans-serif;
+      color: #333;
+    }
+    #toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+    }
+    #toolbar label { display: inline-flex; align-items: center; gap: 6px; }
+    #toolbar input[type="number"] {
+      width: 7rem;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    #toolbar button {
+      padding: 8px 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+    }
+    #toolbar button:hover:not(:disabled) { background: #eee; }
+    #status { flex: 1 1 100%; text-align: center; min-height: 1.4em; color: #555; }
+    main { text-align: center; }
+    canvas { display: block; max-width: 100%; height: auto; }
+    .hint { font-size: 12px; color: #666; max-width: 520px; text-align: center; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+</head>
+<body>
+  <div id="toolbar">
+    <label>Seed <input type="number" id="seedInput" min="0" step="1" title="Deterministic tile gradients" /></label>
+    <button type="button" id="btnRandomSeed">Random seed</button>
+    <button type="button" id="btnApplySeed">Apply seed</button>
+    <span id="status"></span>
+  </div>
+  <p class="hint">Seed fixes the random gradients. The frame breathes on a slow sine — same seed always rebuilds the same base image.</p>
+  <main id="wrap"></main>
+  <script>
+let gradientCount = 3;
+let borderColor;
+let borderOn = true;
+
+let artSeed;
+let baseImage;
+let brightImage;
+
+const BREATH_SPEED = 2;
+const BREATH_INTENSITY = 125;
+const BRIGHTEN_FACTOR = 0.18;
+const BG_BRIGHTNESS = 95;
+
+function setup() {
+  createCanvas(800, 800).parent('wrap');
+  artSeed = floor(random(1e9));
+  syncSeedInput();
+  rebuildArtwork();
+
+  document.getElementById('btnApplySeed').addEventListener('click', applySeedFromInput);
+  document.getElementById('btnRandomSeed').addEventListener('click', randomizeSeed);
+}
+
+function draw() {
+  drawBreathingFrame(millis() * 0.001);
+}
+
+function syncSeedInput() {
+  const el = document.getElementById('seedInput');
+  if (el) el.value = String(artSeed);
+}
+
+function setStatus(msg) {
+  const el = document.getElementById('status');
+  if (el) el.textContent = msg || '';
+}
+
+function readSeedFromInput() {
+  const el = document.getElementById('seedInput');
+  const v = parseInt(el && el.value, 10);
+  if (!Number.isFinite(v) || v < 0) {
+    setStatus('Enter a non-negative integer seed.');
+    return null;
+  }
+  return v;
+}
+
+function applySeedFromInput() {
+  const v = readSeedFromInput();
+  if (v === null) return;
+  artSeed = v;
+  rebuildArtwork();
+  setStatus('Applied seed ' + artSeed + '.');
+}
+
+function randomizeSeed() {
+  artSeed = floor(random(1e9));
+  syncSeedInput();
+  rebuildArtwork();
+  setStatus('New random seed: ' + artSeed + '.');
+}
+
+function rebuildArtwork() {
+  pixelDensity(1);
+  randomSeed(artSeed);
+  colorMode(HSB, 360, 100, 100, 255);
+  rectMode(CENTER);
+  imageMode(CENTER);
+  borderColor = color(0, 0, 50, 200);
+  background(0, 0, BG_BRIGHTNESS);
+  drawArtwork();
+  applyBlurEffect();
+  baseImage = get(0, 0, width, height);
+  brightImage = baseImage.get();
+  brightenImage(brightImage, BRIGHTEN_FACTOR);
+}
+
+function drawBreathingFrame(tSec) {
+  const phase = (sin(tSec * TWO_PI * BREATH_SPEED) + 1) * 0.5;
+  const overlayAlpha = phase * BREATH_INTENSITY;
+  background(0, 0, BG_BRIGHTNESS);
+  push();
+  imageMode(CORNER);
+  noTint();
+  image(baseImage, 0, 0);
+  tint(255, overlayAlpha);
+  image(brightImage, 0, 0);
+  pop();
+}
+
+function drawArtwork() {
+  if (borderOn) {
+    stroke(borderColor);
+    strokeWeight(4);
+  } else {
+    noStroke();
+  }
+  rect(width / 2, height / 2, 600, 700);
+
+  for (let i = 0; i < 3; i++) {
+    const x = 200 + 200 * i;
+    const y = height / 2;
+
+    noStroke();
+    fill(0, 0, 75, 100);
+    rect(x, y, 200, 700);
+
+    for (let j = 0; j < 3; j++) {
+      const tileY = map(j, 0, 3, 166, 863);
+      const colors = getRandomColors(gradientCount);
+      drawGradientTile(x, tileY, colors);
+    }
+  }
+}
+
+function drawGradientTile(x, y, colors) {
+  const cnv = createGraphics(150, 233);
+  cnv.pixelDensity(1);
+  cnv.colorMode(HSB, 360, 100, 100, 255);
+  cnv.noStroke();
+  cnv.loadPixels();
+
+  for (let i = 0; i < cnv.width; i++) {
+    for (let j = 0; j < cnv.height; j++) {
+      const index = (i + j * cnv.width) * 4;
+      const colorValue = interpolateColors(colors, i);
+      const alpha = map(j, 0, cnv.height, 20, 100);
+
+      cnv.pixels[index] = red(colorValue);
+      cnv.pixels[index + 1] = green(colorValue);
+      cnv.pixels[index + 2] = blue(colorValue);
+      cnv.pixels[index + 3] = alpha;
+    }
+  }
+
+  cnv.updatePixels();
+  image(cnv, x, y);
+}
+
+function interpolateColors(colors, x) {
+  const segmentLength = 150 / (colors.length - 1);
+  const segmentIndex = floor(x / segmentLength);
+  const startColor = colors[segmentIndex];
+  const endColor = colors[segmentIndex + 1];
+  const t = (x % segmentLength) / segmentLength;
+  return lerpColor(startColor, endColor, t);
+}
+
+function getRandomColors(count) {
+  const colors = [];
+  for (let i = 0; i < count; i++) {
+    const hue = random([0, 30, 210]);
+    const saturation = random(80, 100);
+    const brightness = random(80, 100);
+    colors.push(color(hue, saturation, brightness, 120));
+  }
+  return colors;
+}
+
+function applyBlurEffect() {
+  for (let i = 0; i < 3; i++) {
+    const x = 200 + 200 * i;
+    const y = height / 2;
+    const img = get(x - 50, y - 350, 100, 700);
+    img.filter(BLUR, 10);
+    image(img, x, y);
+  }
+}
+
+function brightenImage(img, factor) {
+  img.loadPixels();
+  for (let i = 0; i < img.pixels.length; i += 4) {
+    img.pixels[i] = lerp(img.pixels[i], 255, factor);
+    img.pixels[i + 1] = lerp(img.pixels[i + 1], 255, factor);
+    img.pixels[i + 2] = lerp(img.pixels[i + 2], 255, factor);
+  }
+  img.updatePixels();
+}
+  </script>
+</body>
+</html>

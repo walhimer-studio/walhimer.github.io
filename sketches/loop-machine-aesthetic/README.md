@@ -19,6 +19,12 @@ https://mark-walhimer.com/sketches/loop-machine-aesthetic/ghost_dense_77823_room
 
 - `sketches/2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html`
 
+## Emergent DNA (kernel)
+
+Style guide and reference kernel v0: [`../../machine-aesthetic/emergent-dna/README.md`](../../machine-aesthetic/emergent-dna/README.md)
+
+Catalog hub: [`../emergent-dna/index.html`](../emergent-dna/index.html)
+
 ## GitHub
 
 Path: `sketches/loop-machine-aesthetic/`

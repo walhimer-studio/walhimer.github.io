@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surrender Machines — Three.js</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #0a0a0a;
+      --offwhite: #f0ede6;
+      --dim: #888880;
+      --rule: #2a2a2a;
+      --accent: #c8a882;
+    }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; }
+
+    #machine-stage {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+    }
+    #machine-stage canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(900px, 94vw);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto auto;
+      gap: 12px;
+      pointer-events: none;
+      z-index: 10;
+      align-items: stretch;
+    }
+    .ctrl {
+      pointer-events: all;
+      background: rgba(10,10,10,0.82);
+      border: 1px solid var(--rule);
+      padding: 12px 14px;
+      backdrop-filter: blur(6px);
+    }
+    .ctrl-label {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ctrl-label span.val { color: var(--offwhite); font-size: 11px; }
+    .ctrl input[type=range] {
+      display: block !important;
+      width: 100%;
+      height: 3px;
+      appearance: none;
+      background: var(--rule);
+      outline: none;
+      cursor: pointer;
+    }
+    .ctrl input[type=range]::-webkit-slider-thumb {
+      appearance: none;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--offwhite);
+      cursor: pointer;
+    }
+    .ctrl-desc {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 9.5px;
+      color: #555;
+      margin-top: 6px;
+      letter-spacing: 0.06em;
+    }
+    #fs-btn, #surrender-btn {
+      pointer-events: all;
+      background: rgba(10,10,10,0.82);
+      border: 1px solid var(--rule);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 12px 14px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    #fs-btn { color: var(--dim); transition: color 0.15s, border-color 0.15s; }
+    #fs-btn:hover { color: var(--offwhite); border-color: var(--accent); }
+    #fs-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    #surrender-btn {
+      background: rgba(200,168,130,0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    #surrender-btn:hover { background: rgba(200,168,130,0.25); }
+    #surrender-btn:disabled { opacity: 0.35; cursor: default; }
+    #surrender-btn.surrendered { border-color: rgba(200,168,130,0.2); color: rgba(200,168,130,0.3); }
+
+    #fs-close, #fs-refresh {
+      display: none;
+      position: fixed;
+      top: 20px;
+      z-index: 1010;
+      background: rgba(10,10,10,0.85);
+      border: 1px solid var(--rule);
+      color: var(--offwhite);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      align-items: center;
+      gap: 8px;
+    }
+    #fs-close { right: 20px; }
+    #fs-refresh { right: 110px; }
+    #machine-stage.is-fullscreen #fs-close,
+    #machine-stage.is-fullscreen #fs-refresh { display: flex; }
+    #machine-stage.is-fullscreen #fs-btn { display: none; }
+    #machine-stage.is-fullscreen {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 1000;
+    }
+
+    #zero-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      z-index: 5;
+    }
+    #zero-hint.visible { opacity: 1; }
+    #zero-hint p {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: clamp(16px, 2.5vw, 24px);
+      color: #333;
+      letter-spacing: 0.06em;
+    }
+
+    #sound-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(10,10,10,0.82);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.55;
+      transition: opacity 0.2s, border-color 0.2s;
+      padding: 0;
+      color: var(--offwhite);
+    }
+    #sound-btn:hover { opacity: 1; border-color: var(--accent); }
+    #sound-btn.on { opacity: 1; border-color: var(--accent); }
+    #sound-btn svg { width: 16px; height: 16px; display: block; }
+
+    .hud {
+      position: fixed;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: min(92vw, 640px);
+      pointer-events: none;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #666;
+      z-index: 20;
+    }
+    .hud .seed { letter-spacing: 0.12em; text-transform: none; color: #888; }
+    .hint {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: #555;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    @media (max-width: 620px) {
+      #controls { grid-template-columns: 1fr 1fr; }
+      #controls #fs-btn { grid-column: 1 / 2; flex-direction: row; justify-content: center; }
+      #controls #surrender-btn { grid-column: 2 / 3; }
+    }
+  </style>
+</head>
+<body>
+  <p class="hint">drag orbit · scroll zoom · sliders · surrender</p>
+  <div class="hud">
+    <span>Surrender Machines · Three.js</span>
+    <span class="seed" id="seed-label">seed …</span>
+  </div>
+
+  <div id="machine-stage">
+    <div id="controls">
+      <div class="ctrl" id="ctrl-anger">
+        <div class="ctrl-label">Anger <span class="val" id="val-anger">50</span></div>
+        <input type="range" id="sl-anger" min="0" max="100" value="50" />
+        <div class="ctrl-desc">gears break</div>
+      </div>
+      <div class="ctrl" id="ctrl-ego">
+        <div class="ctrl-label">Ego <span class="val" id="val-ego">50</span></div>
+        <input type="range" id="sl-ego" min="0" max="100" value="50" />
+        <div class="ctrl-desc">static interference</div>
+      </div>
+      <div class="ctrl" id="ctrl-attachment">
+        <div class="ctrl-label">Attachment <span class="val" id="val-attachment">50</span></div>
+        <input type="range" id="sl-attachment" min="0" max="100" value="50" />
+        <div class="ctrl-desc">static residue</div>
+      </div>
+      <button id="fs-btn" title="Fullscreen" aria-label="Enter fullscreen">
+        <svg viewBox="0 0 24 24">
+          <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+          <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+        </svg>
+        Fullscreen
+      </button>
+      <button id="surrender-btn">Surrender</button>
+    </div>
+    <button id="fs-close" aria-label="Exit fullscreen">
+      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="1.5">
+        <polyline points="4 14 4 20 10 20"/><polyline points="20 10 20 4 14 4"/>
+        <line x1="20" y1="4" x2="13" y2="11"/><line x1="4" y1="20" x2="11" y2="13"/>
+      </svg>
+      Collapse
+    </button>
+    <button id="fs-refresh" aria-label="New machine">
+      <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" fill="none" stroke-width="1.5">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      New Machine
+    </button>
+    <div id="zero-hint"><p>The circuit is open.</p></div>
+  </div>
+
+  <button id="sound-btn" title="Toggle sound" aria-label="Toggle sound">
+    <svg id="icon-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+    </svg>
+    <svg id="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+    </svg>
+  </button>
+
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+/**
+ * Surrender Machines — Three.js port of sketches/loop-snippets/surrender-machines.html
+ */
+(function (global) {
+  "use strict";
+
+  const TAU = Math.PI * 2;
+  const FADE_DURATION = 14;
+  const CYL_SEG = 16;
+
+  function makeRng(seed) {
+    let s = seed >>> 0;
+    return {
+      seed: s,
+      random() {
+        s = (s + 0x6d2b79f5) >>> 0;
+        let t = s;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      },
+      uniform(a, b) { return a + this.random() * (b - a); },
+      randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+      choice(arr) { return arr[this.randint(0, arr.length - 1)]; },
+    };
+  }
+
+  function richness(val) { return Math.min(val / 0.65, 1); }
+  function stressOf(val) { return Math.max(0, (val - 0.65) / 0.35); }
+
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function map(v, a, b, c, d) { return c + (d - c) * ((v - a) / (b - a)); }
+
+  /** p5 colorMode(HSB, 360, 100, 100, 100) → Three.js RGB */
+  function hsbColor(h, s, b) {
+    const c = new THREE.Color();
+    h = ((h % 360) + 360) % 360;
+    s = clamp(s / 100, 0, 1);
+    b = clamp(b / 100, 0, 1);
+    if (s === 0) {
+      c.setRGB(b, b, b);
+      return c;
+    }
+    const sector = h / 60;
+    const i = Math.floor(sector) % 6;
+    const f = sector - Math.floor(sector);
+    const p = b * (1 - s);
+    const q = b * (1 - s * f);
+    const t = b * (1 - s * (1 - f));
+    switch (i) {
+      case 0: c.setRGB(b, t, p); break;
+      case 1: c.setRGB(q, b, p); break;
+      case 2: c.setRGB(p, b, t); break;
+      case 3: c.setRGB(p, q, b); break;
+      case 4: c.setRGB(t, p, b); break;
+      default: c.setRGB(b, p, q); break;
+    }
+    return c;
+  }
+
+  function pseudoNoise(x, y, z) {
+    const n = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453;
+    return n - Math.floor(n);
+  }
+
+  function initSurrenderMachinesThree(container) {
+    const THREE = global.THREE;
+    if (!THREE || !THREE.OrbitControls) throw new Error("Three.js + OrbitControls required");
+
+    const state = {
+      seed: 0,
+      angerVal: 0.5,
+      egoVal: 0.5,
+      attachmentVal: 0.5,
+      angerStress: 0,
+      egoStress: 0,
+      attachmentStress: 0,
+      shadowAmount: 0,
+      surrenderStart: null,
+      surrendered: false,
+      gPlatformExtras: 0,
+      gColumnCount: 4,
+      gGearCount: 60,
+      gPulleyCount: 10,
+      gRodCount: 5,
+      machineBuilt: false,
+      prevPlatformExtras: -1,
+      prevColumnCount: -1,
+      prevGearCount: -1,
+      prevPulleyCount: -1,
+      prevRodCount: -1,
+    };
+
+    const spinners = [];
+    const animatedMats = [];
+    let rng = makeRng(0);
+    let builtSig = "";
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
+
+    const camera = new THREE.PerspectiveCamera(55, 1, 1, 12000);
+    camera.position.set(0, 420, 1950);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(global.devicePixelRatio, 2));
+    renderer.sortObjects = true;
+    container.appendChild(renderer.domElement);
+
+    const staticCanvas = document.createElement("canvas");
+    staticCanvas.id = "static-overlay";
+    staticCanvas.style.cssText = "position:absolute;inset:0;pointer-events:none;z-index:5;";
+    container.appendChild(staticCanvas);
+    const staticCtx = staticCanvas.getContext("2d");
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.65);
+    const dir1 = new THREE.DirectionalLight(0xffffff, 0.55);
+    dir1.position.set(350, -400, -1000);
+    const dir2 = new THREE.DirectionalLight(0xb4b4ff, 0.35);
+    dir2.position.set(-300, 200, 1000);
+    scene.add(ambient, dir1, dir2);
+
+    const machinePivot = new THREE.Group();
+    machinePivot.rotation.x = -0.4;
+    machinePivot.rotation.y = 0.3;
+    machinePivot.position.y = 50;
+    const machineRoot = new THREE.Group();
+    machineRoot.scale.y = -1; // p5 WEBGL Y-down → Three.js Y-up
+    machinePivot.add(machineRoot);
+    scene.add(machinePivot);
+
+    const orbit = new THREE.OrbitControls(camera, renderer.domElement);
+    orbit.enableDamping = true;
+    orbit.target.set(0, 80, 0);
+
+    function machineFill(x, y, z, baseHue, hueSpread, maxAlpha, t, stress) {
+      if (state.shadowAmount >= 1) {
+        const nz = pseudoNoise(x * 0.002, y * 0.002, t * 0.05);
+        return { h: 0, s: 0, b: lerp(90, 96, nz), a: 0.08 };
+      }
+      const nx = clamp(map(x, -600, 600, -1, 1), -1, 1);
+      const ny = clamp(map(y, -600, 600, -1, 1), -1, 1);
+      const nz = clamp(map(z, -600, 600, -1, 1), -1, 1);
+      const pf = nx + ny + nz;
+      const tf = Math.sin(t * 0.9 + pf * 2.5);
+      let h = baseHue + hueSpread * (0.5 * pf + 0.5 * tf);
+      h = lerp(h, 0, stress * 0.7);
+      maxAlpha = Math.min(maxAlpha, 85);
+      let alpha = lerp(maxAlpha * 0.25, maxAlpha, (ny + 1) * 0.5);
+      if (stress > 0.5 && rng.random() < stress * 0.35) alpha *= rng.uniform(0.1, 0.5);
+      const sat = lerp(100, 0, state.shadowAmount);
+      const bri = lerp(100, 95, state.shadowAmount);
+      alpha = lerp(alpha, 6, state.shadowAmount);
+      return { h: ((h % 360) + 360) % 360, s: sat, b: bri, a: alpha / 100 };
+    }
+
+    function makeMat(fill, meta) {
+      const mat = new THREE.MeshLambertMaterial({
+        color: hsbColor(fill.h, fill.s, fill.b),
+        transparent: true,
+        opacity: fill.a,
+        depthWrite: fill.a > 0.9,
+      });
+      if (meta) {
+        mat.userData.fillMeta = meta;
+        animatedMats.push(mat);
+      }
+      return mat;
+    }
+
+    function matFrom(x, y, z, baseHue, hueSpread, maxAlpha, t, stress) {
+      const fill = machineFill(x, y, z, baseHue, hueSpread, maxAlpha, t, stress);
+      return makeMat(fill, { x, y, z, baseHue, hueSpread, maxAlpha, stress });
+    }
+
+    function updateMaterials(t) {
+      for (let i = 0; i < animatedMats.length; i++) {
+        const mat = animatedMats[i];
+        const m = mat.userData.fillMeta;
+        const fill = machineFill(m.x, m.y, m.z, m.baseHue, m.hueSpread, m.maxAlpha, t, m.stress);
+        mat.color.copy(hsbColor(fill.h, fill.s, fill.b));
+        mat.opacity = fill.a;
+        mat.depthWrite = fill.a > 0.9;
+        mat.needsUpdate = true;
+      }
+    }
+
+    function addBox(parent, w, h, d, mat) {
+      parent.add(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat));
+    }
+
+    function addCyl(parent, r, h, mat) {
+      parent.add(new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, CYL_SEG), mat));
+    }
+
+    function addSpinner(pivot, axis, speed, stressKind) {
+      spinners.push({ pivot, axis, baseSpeed: speed, stressKind: stressKind || "anger" });
+    }
+
+    function jitter(stress) {
+      if (stress <= 0 || state.shadowAmount >= 1) return { x: 0, y: 0, z: 0 };
+      const m = stress * stress * 120;
+      return { x: rng.uniform(-m, m), y: rng.uniform(-m, m), z: rng.uniform(-m, m) };
+    }
+
+    function speedMult(stress) {
+      return (1 + stress * stress * 7) * lerp(1, 0.04, state.shadowAmount);
+    }
+
+    function buildGearTeeth(parent, radius, thickness, teeth, x, y, z, toothHue, maxAlpha, stress, t, axis) {
+      const tD = thickness * 1.1;
+      const tW = (TAU * radius) / (teeth * 4);
+      const tH = radius * 0.12;
+      const toothMat = matFrom(x, y, z, toothHue, 130, maxAlpha, t, stress);
+      for (let i = 0; i < teeth; i++) {
+        const a = (TAU * i) / teeth;
+        const g = new THREE.Group();
+        if (axis === "y") {
+          g.position.set(Math.cos(a) * radius, 0, Math.sin(a) * radius);
+          g.rotation.y = a;
+        } else {
+          g.position.set(0, Math.cos(a) * radius, Math.sin(a) * radius);
+          g.rotation.x = a;
+        }
+        addBox(g, tW, tH, tD, toothMat);
+        parent.add(g);
+      }
+    }
+
+    function clearMachine() {
+      while (machineRoot.children.length) {
+        const ch = machineRoot.children[0];
+        ch.traverse((o) => {
+          if (o.geometry) o.geometry.dispose();
+          if (o.material) o.material.dispose();
+        });
+        machineRoot.remove(ch);
+      }
+      spinners.length = 0;
+      animatedMats.length = 0;
+    }
+
+    function signature() {
+      return [
+        state.seed, state.gPlatformExtras, state.gColumnCount, state.gGearCount,
+        state.gPulleyCount, state.gRodCount,
+      ].join("|");
+    }
+
+    function buildMachine(t) {
+      clearMachine();
+      rng = makeRng(state.seed);
+      const sf = 1.2;
+      const bW = 600 * sf, bD = 600 * sf, bT = 25 * sf;
+
+      function plate(x, y, z, w, h, d) {
+        const j = jitter(state.egoStress);
+        const g = new THREE.Group();
+        g.position.set(x + j.x, y + h / 2 + j.y, z + j.z);
+        addBox(g, w, h, d, matFrom(x, y, z, 305, 110, 80, t, state.egoStress));
+        machineRoot.add(g);
+      }
+
+      plate(0, 0, 0, bW, bT, bD);
+      for (let i = 0; i < state.gPlatformExtras; i++) {
+        plate(
+          rng.uniform(-60, 60) * sf,
+          -rng.uniform(80, 220) * sf,
+          rng.uniform(-60, 60) * sf,
+          bW * rng.uniform(0.5, 1),
+          bT * rng.uniform(0.6, 1.4),
+          bD * rng.uniform(0.5, 1)
+        );
+      }
+
+      const colPositions = [];
+      const colH = rng.uniform(140, 220) * sf;
+      const colR = rng.uniform(14, 24) * sf;
+      for (let i = 0; i < state.gColumnCount; i++) {
+        const x = rng.uniform(-bW * 0.35, bW * 0.35);
+        const z = rng.uniform(-bD * 0.35, bD * 0.35);
+        const y = -colH / 2 - bT / 2;
+        const j = jitter(state.egoStress);
+        const g = new THREE.Group();
+        g.position.set(x + j.x, y + j.y, z + j.z);
+        g.rotation.x = Math.PI / 2;
+        addCyl(g, colR, colH, matFrom(x, y, z, 320, 90, 78, t, state.egoStress));
+        machineRoot.add(g);
+        colPositions.push(new THREE.Vector3(x, -colH, z));
+      }
+
+      for (let i = 0; i < state.gGearCount; i++) {
+        const anch = rng.choice(colPositions);
+        const r = rng.uniform(40, 80) * sf;
+        const thick = rng.uniform(14, 26) * sf;
+        const teeth = rng.randint(8, 18);
+        const horizontal = rng.random() < 0.5;
+        const j = jitter(state.angerStress);
+        const g = new THREE.Group();
+        g.position.set(
+          anch.x + rng.uniform(-80, 20) + j.x,
+          anch.y + rng.uniform(-200, 200) + j.y,
+          anch.z + rng.uniform(-20, 20) + j.z
+        );
+        g.rotation.y = rng.uniform(0, TAU);
+        const px = g.position.x, py = g.position.y, pz = g.position.z;
+        const s = state.angerStress;
+        addCyl(g, r, thick, matFrom(px, py, pz, horizontal ? 15 : 25, horizontal ? 140 : 160, 80, t, s));
+        buildGearTeeth(g, r, thick, teeth, px, py, pz, horizontal ? 30 : 40, 82, s, t, horizontal ? "y" : "x");
+        addSpinner(g, horizontal ? "y" : "x", rng.choice([-1, 1]) * rng.uniform(0.2, 0.8), "anger");
+        machineRoot.add(g);
+      }
+
+      for (let i = 0; i < state.gPulleyCount; i++) {
+        const a = rng.choice(colPositions);
+        const b = rng.choice(colPositions);
+        if (a === b) continue;
+        const mid = a.clone().add(b).multiplyScalar(0.5);
+        const r = rng.uniform(25, 55) * sf;
+        const th = rng.uniform(10, 18) * sf;
+        const j = jitter(state.attachmentStress);
+        const g = new THREE.Group();
+        g.position.set(mid.x + j.x, mid.y + rng.uniform(-40, 40) + j.y, mid.z + j.z);
+        const px = g.position.x, py = g.position.y, pz = g.position.z;
+        const s = state.attachmentStress;
+        addCyl(g, r, th * 0.5, matFrom(px, py, pz, 80, 130, 75, t, s));
+        const inner = new THREE.Group();
+        addCyl(inner, r * 0.7, th * 1.2, matFrom(px, py, pz, 200, 90, 60, t, s));
+        g.add(inner);
+        addSpinner(g, "y", rng.choice([-1, 1]) * rng.uniform(0.4, 1), "attachment");
+        machineRoot.add(g);
+      }
+
+      for (let i = 0; i < state.gRodCount; i++) {
+        const a = rng.choice(colPositions);
+        const b = rng.choice(colPositions);
+        if (a === b) continue;
+        const dir = b.clone().sub(a);
+        const len = dir.length();
+        const mid = a.clone().add(b).multiplyScalar(0.5);
+        dir.normalize();
+        const rotY = Math.atan2(dir.x, dir.z);
+        const rotX = Math.atan2(-dir.y, Math.sqrt(dir.z * dir.z + dir.x * dir.x));
+        const radius = rng.uniform(5, 9) * sf;
+        const jR = jitter(state.egoStress);
+        const g = new THREE.Group();
+        g.position.set(mid.x + jR.x, mid.y + jR.y, mid.z + jR.z);
+        g.rotation.set(rotX, rotY, 0);
+        addCyl(g, radius, len, matFrom(mid.x, mid.y, mid.z, 210, 160, 70, t, state.egoStress));
+        const rAng = richness(state.angerVal);
+        const rAtt = richness(state.attachmentVal);
+        const eff = rAtt <= 0 ? 0 : rAng;
+        const nG = Math.floor(map(eff, 0, 1, 0, 8));
+        const nP = Math.floor(map(rAtt, 0, 1, 0, 8));
+        const total = nG + nP;
+        let gc = 0, pc = 0, idx = 0;
+        while (idx < total) {
+          let kind;
+          if (gc < nG && pc < nP) kind = rng.random() * (nG - gc + nP - pc) < (nG - gc) ? "gear" : "pulley";
+          else kind = gc < nG ? "gear" : "pulley";
+          const attG = new THREE.Group();
+          attG.position.y = ((idx + 1) / (total + 1) - 0.5) * len;
+          const isG = kind === "gear";
+          const aS = isG ? state.angerStress : state.attachmentStress;
+          const jA = jitter(aS);
+          attG.position.x += jA.x;
+          attG.position.y += jA.y;
+          attG.position.z += jA.z;
+          const attR = radius * rng.uniform(1.4, 2.2);
+          const attT = radius * rng.uniform(0.6, 1.3);
+          const horiz = rng.random() < 0.5;
+          attG.rotation[horiz ? "y" : "x"] = rng.uniform(0, TAU);
+          if (isG) {
+            addCyl(attG, attR, attT, matFrom(0, 0, 0, horiz ? 15 : 25, 150, 80, t, aS));
+            buildGearTeeth(attG, attR, attT, rng.randint(6, 14), 0, 0, 0, 30, 82, aS, t, horiz ? "y" : "x");
+            addSpinner(attG, horiz ? "y" : "x", rng.choice([-1, 1]) * rng.uniform(0.3, 1), "anger");
+          } else {
+            addCyl(attG, attR, attT * 0.5, matFrom(0, 0, 0, 80, 130, 75, t, aS));
+            const in2 = new THREE.Group();
+            addCyl(in2, attR * 0.7, attT * 1.1, matFrom(0, 0, 0, 200, 90, 60, t, aS));
+            attG.add(in2);
+            addSpinner(attG, "y", rng.choice([-1, 1]) * rng.uniform(0.3, 1), "attachment");
+          }
+          g.add(attG);
+          if (kind === "gear") gc++; else pc++;
+          idx++;
+        }
+        machineRoot.add(g);
+      }
+
+      state.machineBuilt = true;
+      builtSig = signature();
+    }
+
+    function updateTargets(sliders) {
+      state.angerVal = sliders.anger / 100;
+      state.egoVal = sliders.ego / 100;
+      state.attachmentVal = sliders.attachment / 100;
+      state.angerStress = stressOf(state.angerVal);
+      state.egoStress = stressOf(state.egoVal);
+      state.attachmentStress = stressOf(state.attachmentVal);
+      const rA = richness(state.angerVal);
+      const rE = richness(state.egoVal);
+      const rAt = richness(state.attachmentVal);
+      state.gGearCount = Math.floor(map(rA, 0, 1, 4, 200));
+      state.gPlatformExtras = Math.floor(map(rE, 0, 1, 0, 3));
+      state.gColumnCount = Math.floor(map(rE, 0, 1, 3, 12));
+      state.gPulleyCount = Math.floor(map(rAt, 0, 1, 2, 60));
+      state.gRodCount = Math.floor(map(rAt, 0, 1, 1, 20));
+      if (state.gColumnCount < 2) state.gGearCount = Math.min(state.gGearCount, 4);
+    }
+
+    function needsRebuild() {
+      return !state.machineBuilt ||
+        state.gPlatformExtras !== state.prevPlatformExtras ||
+        state.gColumnCount !== state.prevColumnCount ||
+        state.gGearCount !== state.prevGearCount ||
+        state.gPulleyCount !== state.prevPulleyCount ||
+        state.gRodCount !== state.prevRodCount ||
+        signature() !== builtSig;
+    }
+
+    function syncRebuildFlags() {
+      state.prevPlatformExtras = state.gPlatformExtras;
+      state.prevColumnCount = state.gColumnCount;
+      state.prevGearCount = state.gGearCount;
+      state.prevPulleyCount = state.gPulleyCount;
+      state.prevRodCount = state.gRodCount;
+    }
+
+    function drawStatic(t) {
+      const W = staticCanvas.width;
+      const H = staticCanvas.height;
+      staticCtx.clearRect(0, 0, W, H);
+      const staticLevel = Math.max(state.egoStress, state.attachmentStress);
+      if (staticLevel <= 0 || state.shadowAmount >= 1) return;
+
+      if (state.egoStress > 0) {
+        const egoCount = Math.floor(state.egoStress * state.egoStress * 1800);
+        for (let i = 0; i < egoCount; i++) {
+          const sx = rng.uniform(0, W);
+          const sy = rng.uniform(0, H);
+          const sw = rng.uniform(1, lerp(1, 5, state.egoStress));
+          const sh = rng.uniform(1, 2);
+          staticCtx.fillStyle = `hsla(${rng.random() < 0.6 ? 0 : rng.uniform(45, 60)}, ${rng.random() < 0.6 ? 0 : 80}%, ${rng.uniform(88, 100)}%, ${rng.uniform(0.4, 0.8) * state.egoStress})`;
+          staticCtx.fillRect(sx - sw / 2, sy - sh / 2, sw, sh);
+        }
+      }
+
+      if (state.attachmentStress > 0) {
+        const attCount = Math.floor(state.attachmentStress * state.attachmentStress * 2400);
+        const driftX = (Math.sin(t * 0.08) * 0.5 + 0.5) * 80 - 40;
+        const driftY = (Math.sin(t * 0.08 + 100) * 0.5 + 0.5) * 80 - 40;
+        for (let i = 0; i < attCount; i++) {
+          const sx = rng.uniform(0, W) + driftX;
+          const sy = rng.uniform(0, H) + driftY;
+          staticCtx.fillStyle = `hsla(${rng.uniform(20, 40)}, ${rng.uniform(10, 30)}%, ${rng.uniform(40, 72)}%, ${rng.uniform(0.15, 0.45) * state.attachmentStress})`;
+          staticCtx.fillRect(sx - rng.uniform(0, 3), sy - rng.uniform(0, lerp(1, 6, state.attachmentStress)), rng.uniform(1, 3), rng.uniform(1, 3));
+        }
+      }
+    }
+
+    function resize() {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      staticCanvas.width = w;
+      staticCanvas.height = h;
+    }
+
+    function setSeed(s) {
+      state.seed = s >>> 0;
+      state.surrendered = false;
+      state.surrenderStart = null;
+      state.shadowAmount = 0;
+      state.machineBuilt = false;
+      syncRebuildFlags();
+      state.prevPlatformExtras = -1;
+    }
+
+    function triggerSurrender() {
+      if (state.surrendered || state.surrenderStart != null) return false;
+      state.surrenderStart = performance.now() / 1000;
+      return true;
+    }
+
+    function newSeedRandom() {
+      setSeed(Math.floor(Math.random() * 999999));
+    }
+
+    const clock = new THREE.Clock();
+    function tick() {
+      requestAnimationFrame(tick);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const t = clock.getElapsedTime();
+
+      if (state.surrenderStart != null) {
+        state.shadowAmount = Math.min((t - state.surrenderStart) / FADE_DURATION, 1);
+        if (state.shadowAmount >= 1) state.surrendered = true;
+      }
+
+      const lightBright = lerp(0.65, 0.4, state.shadowAmount);
+      ambient.intensity = lightBright;
+      dir1.visible = dir2.visible = state.shadowAmount < 1;
+
+      if (!state.surrendered && needsRebuild()) {
+        buildMachine(t);
+        syncRebuildFlags();
+      }
+
+      const smA = speedMult(state.angerStress);
+      const smAt = speedMult(state.attachmentStress);
+      spinners.forEach((s) => {
+        const sm = s.stressKind === "attachment" ? smAt : smA;
+        const d = -s.baseSpeed * sm * dt;
+        if (s.axis === "x") s.pivot.rotation.x += d;
+        else if (s.axis === "y") s.pivot.rotation.y += d;
+        else s.pivot.rotation.z += d;
+      });
+
+      updateMaterials(t);
+      drawStatic(t);
+      orbit.update();
+      renderer.render(scene, camera);
+    }
+
+    resize();
+    global.addEventListener("resize", resize);
+    tick();
+
+    return {
+      state,
+      setSeed,
+      updateTargets,
+      buildMachine,
+      triggerSurrender,
+      newSeedRandom,
+      resize,
+    };
+  }
+
+  global.initSurrenderMachinesThree = initSurrenderMachinesThree;
+  global.SurrenderMachinesThree = { FADE_DURATION };
+})(typeof window !== "undefined" ? window : globalThis);
+  </script>
+  <script>
+const stage    = document.getElementById('machine-stage');
+const fsBtn    = document.getElementById('fs-btn');
+const fsClose      = document.getElementById('fs-close');
+const fsRefresh    = document.getElementById('fs-refresh');
+const surrenderBtn = document.getElementById('surrender-btn');
+
+const _slAnger      = document.getElementById('sl-anger');
+const _slEgo        = document.getElementById('sl-ego');
+const _slAttachment = document.getElementById('sl-attachment');
+
+function _getSliderVal(el) { return parseInt(el.value, 10); }
+
+function readSliders() {
+  return {
+    anger: _getSliderVal(_slAnger),
+    ego: _getSliderVal(_slEgo),
+    attachment: _getSliderVal(_slAttachment),
+  };
+}
+
+function updateSeedHud(seed) {
+  const el = document.getElementById('seed-label');
+  if (el) el.textContent = 'seed ' + seed;
+}
+
+function resetSurrenderBtn() {
+  surrenderBtn.disabled = false;
+  surrenderBtn.classList.remove('surrendered');
+  surrenderBtn.textContent = 'Surrender';
+}
+
+function syncZeroHint() {
+  const s = readSliders();
+  const allZero = s.anger === 0 && s.ego === 0 && s.attachment === 0;
+  document.getElementById('zero-hint').classList.toggle('visible', allZero);
+}
+
+let app = null;
+
+function bootThree() {
+  if (typeof THREE === 'undefined' || typeof THREE.OrbitControls !== 'function') {
+    document.querySelector('.hint').textContent = 'Three.js failed to load — check network';
+    return;
+  }
+  if (typeof initSurrenderMachinesThree !== 'function') {
+    document.querySelector('.hint').textContent = 'Three.js engine failed to initialize';
+    return;
+  }
+
+  const seedParam = new URLSearchParams(location.search).get('seed');
+  const initialSeed = seedParam != null && seedParam !== ''
+    ? (parseInt(seedParam, 10) >>> 0)
+    : Math.floor(Math.random() * 999999);
+
+  app = initSurrenderMachinesThree(stage);
+  app.setSeed(initialSeed);
+  app.updateTargets(readSliders());
+  app.buildMachine(0);
+  updateSeedHud(app.state.seed);
+  syncZeroHint();
+}
+
+surrenderBtn.addEventListener('click', () => {
+  if (!app) return;
+  if (app.triggerSurrender()) {
+    surrenderBtn.textContent = 'Surrendering…';
+    surrenderBtn.disabled = true;
+    surrenderBtn.classList.add('surrendered');
+  }
+});
+
+fsRefresh.addEventListener('click', () => {
+  if (!app) return;
+  _slAnger.value = 50;
+  _slEgo.value = 50;
+  _slAttachment.value = 50;
+  document.getElementById('val-anger').textContent = 50;
+  document.getElementById('val-ego').textContent = 50;
+  document.getElementById('val-attachment').textContent = 50;
+  document.getElementById('zero-hint').classList.remove('visible');
+  app.newSeedRandom();
+  app.updateTargets(readSliders());
+  updateSeedHud(app.state.seed);
+  resetSurrenderBtn();
+});
+
+function enterFullscreen() {
+  stage.classList.add('is-fullscreen');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { if (app) app.resize(); window.dispatchEvent(new Event('resize')); }, 30);
+  if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {});
+}
+
+function exitFullscreen() {
+  stage.classList.remove('is-fullscreen');
+  document.body.style.overflow = '';
+  setTimeout(() => { if (app) app.resize(); window.dispatchEvent(new Event('resize')); }, 30);
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+}
+
+fsBtn.addEventListener('click', enterFullscreen);
+fsClose.addEventListener('click', exitFullscreen);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && stage.classList.contains('is-fullscreen')) exitFullscreen();
+});
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && stage.classList.contains('is-fullscreen')) exitFullscreen();
+});
+
+[_slAnger, _slEgo, _slAttachment].forEach((sl, i) => {
+  const ids = ['anger', 'ego', 'attachment'];
+  sl.addEventListener('input', () => {
+    document.getElementById('val-' + ids[i]).textContent = sl.value;
+    if (app) app.updateTargets(readSliders());
+    syncZeroHint();
+  });
+});
+
+if (document.readyState === 'complete') bootThree();
+else window.addEventListener('load', bootThree);
+
+// ── SURRENDER MACHINES — SOUND ENGINE ────────────────────────────────────────
+let _ctx        = null;
+let _soundOn    = false;
+let _masterGain = null;
+
+let _angerGain, _angerOsc1, _angerOsc2;
+let _egoGain,   _egoOsc1,   _egoOsc2;
+let _attachGain, _attachOsc1, _attachOsc2;
+let _zeroGain,  _zeroOsc;
+let _surrGain,  _surrOsc;
+
+let _sndSurrendering  = false;
+let _sndSurrStart     = null;
+const SURR_DURATION   = 14;
+
+function _initAudio() {
+  if (_ctx) return;
+  _ctx        = new (window.AudioContext || window.webkitAudioContext)();
+  _masterGain = _ctx.createGain();
+  _masterGain.gain.value = 0;
+  _masterGain.connect(_ctx.destination);
+
+  function makeDrone(type, freq, filterType, filterFreq, filterQ) {
+    const osc  = _ctx.createOscillator();
+    const filt = _ctx.createBiquadFilter();
+    const gain = _ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    filt.type = filterType; filt.frequency.value = filterFreq;
+    if (filterQ) filt.Q.value = filterQ;
+    gain.gain.value = 0;
+    osc.connect(filt); filt.connect(gain); gain.connect(_masterGain);
+    osc.start();
+    return { osc, filt, gain };
+  }
+
+  const a1 = makeDrone('sawtooth', 55,    'bandpass', 140, 0.9);
+  const a2 = makeDrone('sawtooth', 56.8,  'bandpass', 140, 0.9);
+  _angerGain = a1.gain;
+  _angerOsc1 = a1.osc; _angerOsc2 = a2.osc;
+  a2.gain.gain.value = 0;
+  _angerOsc2.disconnect();
+  _angerOsc2.connect(a1.filt);
+
+  const e1 = makeDrone('sine', 880, 'highpass', 700);
+  const e2 = makeDrone('sine', 887, 'highpass', 700);
+  _egoGain = e1.gain;
+  _egoOsc1 = e1.osc; _egoOsc2 = e2.osc;
+  e2.gain.gain.value = 0;
+  _egoOsc2.disconnect();
+  _egoOsc2.connect(e1.filt);
+
+  const at1 = makeDrone('triangle', 110,   'lowpass', 280);
+  const at2 = makeDrone('triangle', 111.4, 'lowpass', 280);
+  _attachGain = at1.gain;
+  _attachOsc1 = at1.osc; _attachOsc2 = at2.osc;
+  at2.gain.gain.value = 0;
+  _attachOsc2.disconnect();
+  _attachOsc2.connect(at1.filt);
+  const lfo  = _ctx.createOscillator();
+  const lfoG = _ctx.createGain();
+  lfo.frequency.value = 0.055; lfoG.gain.value = 0.007;
+  lfo.connect(lfoG); lfoG.connect(_attachGain.gain); lfo.start();
+
+  const z = makeDrone('sine', 220, 'lowpass', 800);
+  _zeroGain = z.gain; _zeroOsc = z.osc;
+
+  const s = makeDrone('sine', 432, 'lowpass', 600);
+  _surrGain = s.gain; _surrOsc = s.osc;
+
+  setInterval(() => {
+    if (!_soundOn) return;
+    const anger = parseInt(document.getElementById('sl-anger').value, 10) / 100;
+    const stress = Math.max(0, (anger - 0.65) / 0.35);
+    if (stress < 0.05 || Math.random() > stress * stress * 0.9) return;
+    const bufLen = Math.floor(_ctx.sampleRate * 0.025);
+    const buf  = _ctx.createBuffer(1, bufLen, _ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++)
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufLen, 2.5);
+    const src  = _ctx.createBufferSource();
+    const env  = _ctx.createGain();
+    const bp   = _ctx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.value = 180 + Math.random() * 260; bp.Q.value = 1.8;
+    src.buffer = buf;
+    env.gain.setValueAtTime(0.12 * stress, _ctx.currentTime);
+    env.gain.exponentialRampToValueAtTime(0.0001, _ctx.currentTime + 0.035);
+    src.connect(bp); bp.connect(env); env.connect(_masterGain);
+    src.start(); src.stop(_ctx.currentTime + 0.04);
+  }, 110);
+
+  _runUpdateLoop();
+}
+
+function _runUpdateLoop() {
+  if (!_ctx) return;
+  const now  = _ctx.currentTime;
+  const RAMP = 0.18;
+
+  const anger  = parseInt(document.getElementById('sl-anger').value,      10) / 100;
+  const ego    = parseInt(document.getElementById('sl-ego').value,         10) / 100;
+  const attach = parseInt(document.getElementById('sl-attachment').value,  10) / 100;
+
+  const angerRich   = Math.min(anger  / 0.65, 1.0);
+  const egoRich     = Math.min(ego    / 0.65, 1.0);
+  const attachRich  = Math.min(attach / 0.65, 1.0);
+  const angerStr    = Math.max(0, (anger  - 0.65) / 0.35);
+  const egoStr      = Math.max(0, (ego    - 0.65) / 0.35);
+  const attachStr   = Math.max(0, (attach - 0.65) / 0.35);
+  const allZero     = anger < 0.01 && ego < 0.01 && attach < 0.01;
+
+  const surBtn       = document.getElementById('surrender-btn');
+  const surrendering = surBtn && surBtn.disabled && surBtn.textContent !== 'Surrender';
+
+  if (_soundOn) {
+    _angerGain.gain.setTargetAtTime(
+      surrendering ? 0 : angerRich * 0.16 + angerStr * 0.10, now, RAMP);
+    _angerOsc2.frequency.setTargetAtTime(55 + 1.8 + angerStr * 9, now, RAMP);
+
+    _egoGain.gain.setTargetAtTime(
+      surrendering ? 0 : egoRich * 0.035 + egoStr * 0.07, now, RAMP);
+    _egoOsc2.frequency.setTargetAtTime(880 + 7 + egoStr * 28, now, RAMP);
+
+    _attachGain.gain.setTargetAtTime(
+      surrendering ? 0 : attachRich * 0.09 + attachStr * 0.11, now, RAMP);
+
+    _zeroGain.gain.setTargetAtTime(
+      (!surrendering && allZero) ? 0.055 : 0, now, RAMP);
+
+    if (surrendering) {
+      if (!_sndSurrendering) { _sndSurrendering = true; _sndSurrStart = now; }
+      const p = Math.min((now - _sndSurrStart) / SURR_DURATION, 1);
+      const g = p < 0.25 ? (p / 0.25) * 0.065
+              : p < 0.75 ? 0.065
+              : ((1 - p) / 0.25) * 0.065;
+      _surrGain.gain.setTargetAtTime(g, now, 0.6);
+    } else {
+      _sndSurrendering = false;
+      _surrGain.gain.setTargetAtTime(0, now, RAMP);
+    }
+  }
+
+  setTimeout(_runUpdateLoop, 80);
+}
+
+const _sBtn   = document.getElementById('sound-btn');
+const _iMute  = document.getElementById('icon-mute');
+const _iOn    = document.getElementById('icon-on');
+
+_sBtn.addEventListener('click', () => {
+  _initAudio();
+  if (_ctx.state === 'suspended') _ctx.resume();
+  _soundOn = !_soundOn;
+  if (_soundOn) {
+    _masterGain.gain.cancelScheduledValues(_ctx.currentTime);
+    _masterGain.gain.setValueAtTime(_masterGain.gain.value, _ctx.currentTime);
+    _masterGain.gain.linearRampToValueAtTime(1, _ctx.currentTime + 1.8);
+    _sBtn.classList.add('on');
+    _iMute.style.display = 'none'; _iOn.style.display = '';
+  } else {
+    _masterGain.gain.cancelScheduledValues(_ctx.currentTime);
+    _masterGain.gain.setValueAtTime(_masterGain.gain.value, _ctx.currentTime);
+    _masterGain.gain.linearRampToValueAtTime(0, _ctx.currentTime + 1.2);
+    _sBtn.classList.remove('on');
+    _iMute.style.display = ''; _iOn.style.display = 'none';
+  }
+});
+  </script>
+</body>
+</html>
