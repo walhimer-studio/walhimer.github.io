@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Machine Aesthetic — Seed 77823</title>
+  <meta name="description" content="Machine Aesthetic — seed 77823 room walkthrough. Room A code mural, ghost wireframe, Surrender Machines. The Lumen Prize 2026." />
+  <link rel="canonical" href="https://mark-walhimer.com/sketches/2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+    canvas { display: block; width: 100% !important; height: 100% !important; }
+    .hud {
+      position: fixed; left: 50%; bottom: 14px;
+      transform: translateX(-50%);
+      display: flex; justify-content: space-between; align-items: flex-end;
+      width: min(92vw, 640px);
+      pointer-events: none;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #888;
+    }
+    .hud .seed { letter-spacing: 0.12em; text-transform: none; color: #aaa; }
+    #prompt {
+      position: fixed; inset: 0; display: grid; place-items: center;
+      z-index: 10;
+      background: rgba(255,255,255,0.88); color: #2c3034;
+      font-family: Georgia, "Times New Roman", serif; font-weight: 300;
+      text-align: center; line-height: 1.75; cursor: pointer;
+    }
+    #prompt.hidden { display: none; }
+    #mode {
+      position: fixed; top: 14px; right: 14px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; color: #aaa; pointer-events: none;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="prompt">
+    <div>
+      <p><em>Machine Aesthetic</em></p>
+      <p style="margin-top:0.75rem;font-size:14px;">Click to enter — seed 77823</p>
+      <p style="font-size:12px;color:#888;margin-top:0.35rem;">drag to look · WASD move · F first-person (forward into hall)</p>
+    </div>
+  </div>
+  <div id="mode">walk</div>
+  <div class="hud">
+    <span id="hud-room">Room A · black · code mural</span>
+    <span class="seed" id="hud-seed">seed 77823 · rooms</span>
+  </div>
+
+  <script type="module" src="seed-77823-rooms.mjs"></script>
+</body>
+</html>

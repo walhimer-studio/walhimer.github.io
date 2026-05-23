@@ -42,7 +42,7 @@ const HEIGHT = ROOM.height;
 const WALL_T = 0.15;
 
 const WALKTHROUGH_URL =
-  "https://mark-walhimer.com/sketches/lumen-machine-aesthetic/ghost_dense_77823_room.html";
+  "https://mark-walhimer.com/sketches/2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html";
 
 const scene = new THREE.Scene();
 scene.name = "LoopPortalRoomA";

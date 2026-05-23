@@ -2,22 +2,22 @@
 
 Walkthrough: Room A (code mural + essay panel) → ghost 77823 → Surrender Machines in Room C.
 
-The Lumen Prize 2026 submission.
+The Lumen Prize 2026 submission — frozen snapshot. Do not edit after submission.
 
-## Live URL
+## Live URL (submit this)
 
-https://mark-walhimer.com/sketches/lumen-machine-aesthetic/ghost_dense_77823_room.html
+https://mark-walhimer.com/sketches/2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html
 
 ## GitHub
 
 Repo: [walhimer-studio/walhimer.github.io](https://github.com/walhimer-studio/walhimer.github.io)
 
-Path: `sketches/lumen-machine-aesthetic/`
+Path: `sketches/2026-lumen-prize-machine-aesthetic/`
 
 | File | Role |
 |------|------|
-| `ghost_dense_77823_room.html` | Entry page |
-| `ghost_dense_77823_room.mjs` | Walkthrough app |
+| `seed-77823-rooms.html` | Entry page |
+| `seed-77823-rooms.mjs` | Walkthrough app |
 | `ghost-machine-core.mjs` | Rooms + ghost wireframe |
 | `surrender-machines-three-core.js` | Surrender machine embed |
 | `surrender-machine-core.mjs` | Surrender build (GLB export) |
@@ -29,8 +29,8 @@ Path: `sketches/lumen-machine-aesthetic/`
 Serve over HTTP (modules need a server):
 
 ```bash
-cd sketches/lumen-machine-aesthetic
+cd sketches/2026-lumen-prize-machine-aesthetic
 python3 -m http.server 8765
 ```
 
-Open http://localhost:8765/ghost_dense_77823_room.html
+Open http://localhost:8765/seed-77823-rooms.html
