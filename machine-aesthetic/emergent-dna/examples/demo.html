@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Emergent DNA — machine demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #6b8fc2;
+      --stroke: #ffffff;
+      --panel: rgba(10, 12, 18, 0.92);
+      --text: #e8e4dc;
+      --dim: #9aa8b8;
+      --gold: #c8a882;
+      --scar: #c07070;
+      --rule: rgba(255,255,255,0.12);
+    }
+    html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; }
+    .layout { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; min-height: 100vh; }
+    @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+    aside { padding: 20px; background: var(--panel); border-right: 1px solid var(--rule); overflow-y: auto; }
+    main { display: grid; place-items: center; padding: 20px; }
+    h1 { font-family: Georgia, serif; font-weight: 300; font-size: 22px; margin-bottom: 4px; }
+    h1 em { color: var(--gold); font-style: italic; }
+    .sub { color: var(--dim); line-height: 1.65; margin-bottom: 18px; font-size: 11px; }
+    .stat { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid var(--rule); }
+    .stat span:last-child { color: var(--gold); text-align: right; }
+    .flags { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+    .flag { padding: 4px 8px; border: 1px solid var(--rule); color: var(--dim); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+    .flag.on { border-color: var(--gold); color: var(--gold); }
+    .flag.jam.on { border-color: var(--scar); color: #e0a0a0; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    button { background: transparent; border: 1px solid var(--rule); color: var(--text); padding: 8px 12px; font: inherit; cursor: pointer; }
+    button:hover { border-color: var(--gold); color: var(--gold); }
+    label { display: block; margin-bottom: 12px; color: var(--dim); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+    input[type="range"] { width: 100%; margin-top: 6px; accent-color: var(--gold); }
+    .gears { margin-top: 12px; font-size: 10px; color: var(--dim); line-height: 1.55; max-height: 140px; overflow-y: auto; }
+    canvas { width: min(94vw, 560px); height: min(70vh, 420px); border: 1px solid rgba(255,255,255,0.2); background: var(--bg); }
+    .hint { margin-top: 14px; font-size: 10px; color: #7a8a9a; line-height: 1.65; }
+    .sound-prompt { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,0.55); z-index: 20; cursor: pointer; text-align: center; }
+    .sound-prompt.hidden { display: none; }
+    .sound-prompt p { font-family: Georgia, serif; font-size: 18px; font-weight: 300; margin-bottom: 8px; }
+    .sound-prompt small { color: var(--dim); letter-spacing: 0.08em; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <h1>Emergent <em>DNA</em></h1>
+      <p class="sub">Machine-first demo. The kernel <strong>builds</strong> a mechanism (platform, posts, gears) and <strong>runs</strong> it. Sight and sound are the same motion — tooth pitch, mesh load, jam, kintsugi gold. Browser JS stands in for future C++.</p>
+
+      <div id="stats"></div>
+      <div class="flags">
+        <span class="flag" id="flag-sound">running</span>
+        <span class="flag jam" id="flag-jam">jammed</span>
+        <span class="flag" id="flag-gold">gold</span>
+        <span class="flag" id="flag-dead">stopped</span>
+      </div>
+
+      <div class="controls">
+        <button type="button" id="btn-jam">Jam gear</button>
+        <button type="button" id="btn-gold">Kintsugi</button>
+        <button type="button" id="btn-nudge">Load nudge</button>
+        <button type="button" id="btn-seed">New seed</button>
+      </div>
+
+      <label>Visitor load (co-creation)
+        <input type="range" id="load" min="0" max="1" step="0.01" value="0.4" />
+      </label>
+      <label>Damping / calm
+        <input type="range" id="calm" min="0" max="1" step="0.01" value="0.45" />
+      </label>
+
+      <div class="gears" id="gear-log"></div>
+      <p class="hint">Install path: C++ machine sim → OSC state → openFrameworks (draw) + Pure Data (sound). This file is one process doing all three in JS.</p>
+    </aside>
+    <main><canvas id="canvas" width="560" height="420"></canvas></main>
+  </div>
+
+  <div class="sound-prompt" id="sound-prompt">
+    <div>
+      <p>Click to run the machine</p>
+      <small>build · simulate · hear meshing</small>
+    </div>
+  </div>
+
+  <script>
+  /* ── PRNG (portable — same family as ghost-machine-core / armature blueprint) ── */
+  function makeRng(seed) {
+    let s = seed >>> 0;
+    return {
+      random() {
+        s = (s + 0x6d2b79f5) >>> 0;
+        let t = s;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      },
+      randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+      uniform(a, b) { return a + this.random() * (b - a); },
+    };
+  }
+
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const TAU = Math.PI * 2;
+
+  /* ── Machine kernel: build → simulate → express (future C++ owns this) ── */
+  function buildMachine(seed) {
+    const rand = makeRng(seed);
+    const totalPosts = 3 + rand.randint(0, 4);
+    const totalGears = 4 + rand.randint(0, 5);
+    const heroTeeth = 20 + rand.randint(0, 10);
+    const heroR = lerp(38, 62, rand.random());
+    const MOD = (TAU * heroR) / heroTeeth;
+
+    const platform = { w: lerp(220, 320, rand.random()), d: lerp(120, 200, rand.random()) };
+    const posts = [];
+    for (let i = 0; i < totalPosts; i++) {
+      posts.push({
+        id: i,
+        x: rand.uniform(-platform.w * 0.38, platform.w * 0.38),
+        y: rand.uniform(-platform.d * 0.32, platform.d * 0.32),
+        h: lerp(40, 110, rand.random()),
+        r: lerp(4, 8, rand.random()),
+      });
+    }
+
+    const gears = [];
+    for (let i = 0; i < totalGears; i++) {
+      const teeth = i === 0 ? heroTeeth : 10 + rand.randint(0, 12);
+      let R = (MOD * teeth) / TAU;
+      R = Math.min(R, i === 0 ? heroR : heroR * 0.55);
+      const post = posts[i % posts.length];
+      gears.push({
+        id: i,
+        x: i === 0 ? lerp(-40, 40, rand.random()) : post.x + rand.uniform(-18, 18),
+        y: i === 0 ? lerp(-20, 30, rand.random()) : post.y + rand.uniform(-12, 12),
+        R,
+        teeth,
+        angle: rand.random() * TAU,
+        rpm: (i === 0 ? 1 : 0.55 + rand.random() * 0.45) * lerp(8, 28, rand.random()),
+        jammed: false,
+        gold: 0,
+        scar: 0,
+        label: i === 0 ? "HERO" : `G${i}`,
+      });
+    }
+
+    const arm = {
+      x0: -platform.w * 0.35,
+      y0: -platform.d * 0.2,
+      x1: gears[0].x,
+      y1: gears[0].y - gears[0].R - 20,
+    };
+
+    return {
+      seed,
+      generation: 0,
+      age: 0,
+      lifespan: lerp(240, 480, rand.random()),
+      load: 0,
+      vitality: 1,
+      platform,
+      posts,
+      gears,
+      arm,
+      scars: [],
+      flags: { dead: false, anyJam: false, recentGold: false },
+      _goldTimer: 0,
+      _rng: rand,
+    };
+  }
+
+  function toothHz(gear) {
+    return Math.max(20, (Math.abs(gear.rpm) / 60) * gear.teeth);
+  }
+
+  function simulateMachine(m, dt, input) {
+    if (m.flags.dead) return;
+
+    m.age += dt;
+    const life = clamp01(m.age / m.lifespan);
+    m.vitality = clamp01(1 - life * 0.95);
+    if (life >= 1) {
+      m.flags.dead = true;
+      m.gears.forEach((g) => { g.rpm = 0; });
+      return;
+    }
+
+    const load = clamp01(input.load ?? 0);
+    const calm = clamp01(input.calm ?? 0.5);
+    m.load = clamp01(m.load + (load - m.load) * dt * 2);
+    const effectiveLoad = clamp01(m.load * (1.1 - calm * 0.5));
+
+    m.flags.anyJam = m.gears.some((g) => g.jammed);
+    if (m._goldTimer > 0) {
+      m._goldTimer = Math.max(0, m._goldTimer - dt);
+      if (m._goldTimer === 0) m.flags.recentGold = false;
+    }
+
+    for (const g of m.gears) {
+      if (g.jammed) {
+        g.rpm *= 0.92;
+        if (Math.abs(g.rpm) < 0.5 && !m.flags.recentGold) g.rpm = 0;
+        continue;
+      }
+      const target = g.id === 0
+        ? lerp(10, 32, 0.35 + effectiveLoad * 0.65) * m.vitality
+        : lerp(4, 18, 0.3 + effectiveLoad * 0.5) * m.vitality * (0.85 + g.id * 0.03);
+      g.rpm += (target - g.rpm) * dt * 1.8;
+      g.angle += (g.rpm / 60) * TAU * dt;
+    }
+
+    if (!m.flags.anyJam && effectiveLoad > 0.72 && m._rng.random() < dt * 0.35) {
+      jamGear(m, m.gears[m._rng.randint(0, m.gears.length - 1)].id, effectiveLoad);
+    }
+  }
+
+  function jamGear(m, gearId, intensity = 0.7) {
+    const g = m.gears.find((x) => x.id === gearId);
+    if (!g || m.flags.dead) return;
+    g.jammed = true;
+    g.scar = clamp01(g.scar + intensity * 0.25);
+    m.scars.push({ gearId, type: "jam", at: m.age, delta: intensity * 0.25 });
+    m.flags.anyJam = true;
+    if (m._rng.random() < 0.3 + intensity * 0.45) applyKintsugi(m, gearId, intensity);
+  }
+
+  function applyKintsugi(m, gearId, intensity = 0.7) {
+    const g = m.gears.find((x) => x.id === gearId);
+    if (!g) return;
+    g.jammed = false;
+    g.gold = clamp01(g.gold + intensity * 0.35);
+    g.rpm = lerp(6, 14, intensity);
+    m.flags.recentGold = true;
+    m._goldTimer = 6;
+    m.scars.push({ gearId, type: "gold", at: m.age, delta: intensity * 0.35 });
+    m.flags.anyJam = m.gears.some((x) => x.jammed);
+  }
+
+  function expressMachine(m) {
+    return {
+      schemaVersion: 2,
+      kind: "machine",
+      seed: m.seed,
+      generation: m.generation,
+      age: m.age,
+      lifespan: m.lifespan,
+      load: m.load,
+      vitality: m.vitality,
+      platform: { ...m.platform },
+      posts: m.posts.map((p) => ({ ...p })),
+      gears: m.gears.map((g) => ({
+        id: g.id,
+        x: g.x, y: g.y, R: g.R,
+        teeth: g.teeth,
+        angle: g.angle,
+        rpm: g.rpm,
+        hz: toothHz(g),
+        jammed: g.jammed,
+        gold: g.gold,
+        scar: g.scar,
+        label: g.label,
+      })),
+      arm: { ...m.arm },
+      scars: m.scars.map((s) => ({ ...s })),
+      flags: { ...m.flags },
+    };
+  }
+
+  function reseedMachine(m) {
+    const next = buildMachine(m._rng.randint(1, 999999));
+    next.generation = m.generation + 1;
+    return next;
+  }
+
+  /* ── Visual host: blueprint draw (future: openFrameworks / Three.js armature) ── */
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  const CX = canvas.width / 2;
+  const CY = canvas.height / 2 + 10;
+
+  function strokeLine(x0, y0, x1, y1, w, color, alpha = 1) {
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = w;
+    ctx.beginPath();
+    ctx.moveTo(CX + x0, CY - y0);
+    ctx.lineTo(CX + x1, CY - y1);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  function renderBlueprint(s) {
+    ctx.fillStyle = "#6b8fc2";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const pw = s.platform.w / 2;
+    const pd = s.platform.d / 2;
+    strokeLine(-pw, -pd, pw, -pd, 2, "#fff", 0.95);
+    strokeLine(pw, -pd, pw, pd, 2, "#fff", 0.95);
+    strokeLine(pw, pd, -pw, pd, 2, "#fff", 0.95);
+    strokeLine(-pw, pd, -pw, -pd, 2, "#fff", 0.95);
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.font = "10px IBM Plex Mono, monospace";
+    ctx.fillText("BASE", CX - pw + 8, CY + pd - 10);
+
+    strokeLine(s.arm.x0, s.arm.y0, s.arm.x1, s.arm.y1, 1.2, "rgba(255,255,255,0.5)", 0.7);
+    ctx.fillText("ARMATURE", CX + s.arm.x0 + 6, CY - s.arm.y0 - 6);
+
+    for (const p of s.posts) {
+      strokeLine(p.x, -pd, p.x, p.y, 1.5, "rgba(255,255,255,0.35)", 0.5);
+      strokeLine(p.x - p.r, p.y + p.h, p.x + p.r, p.y + p.h, 2, "#fff", 0.85);
+      ctx.beginPath();
+      ctx.arc(CX + p.x, CY - (p.y + p.h), p.r, 0, TAU);
+      ctx.strokeStyle = "rgba(255,255,255,0.9)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    for (const g of s.gears) {
+      const col = g.gold > 0.2 ? "#c8a882" : g.jammed ? "#c07070" : "#ffffff";
+      ctx.strokeStyle = col;
+      ctx.lineWidth = g.id === 0 ? 2.2 : 1.4;
+      ctx.globalAlpha = g.jammed ? 0.55 : 0.92;
+      ctx.beginPath();
+      ctx.arc(CX + g.x, CY - g.y, g.R, 0, TAU);
+      ctx.stroke();
+      for (let i = 0; i < g.teeth; i++) {
+        const a = g.angle + (i / g.teeth) * TAU;
+        const r0 = g.R - 3;
+        const r1 = g.R + (g.id === 0 ? 5 : 3);
+        strokeLine(
+          g.x + Math.cos(a) * r0, g.y + Math.sin(a) * r0,
+          g.x + Math.cos(a) * r1, g.y + Math.sin(a) * r1,
+          g.id === 0 ? 1.8 : 1.1,
+          col,
+          g.jammed ? 0.45 : 0.85
+        );
+      }
+      if (g.gold > 0.05) {
+        ctx.strokeStyle = "#c8a882";
+        ctx.lineWidth = 2.5;
+        ctx.globalAlpha = 0.35 + g.gold * 0.5;
+        ctx.beginPath();
+        ctx.arc(CX + g.x, CY - g.y, g.R + 4, g.angle * 0.2, g.angle * 0.2 + Math.PI * 0.7);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = col;
+      ctx.font = "9px IBM Plex Mono, monospace";
+      ctx.fillText(g.label, CX + g.x - 12, CY - g.y - g.R - 8);
+    }
+  }
+
+  /* ── Audio host: tooth frequencies + jam grind (future: Pure Data reads OSC) ── */
+  function createMachineAudio() {
+    let ac = null;
+    let started = false;
+    const voices = new Map();
+
+    function ensureStarted() {
+      if (started) return;
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      const master = ac.createGain();
+      master.gain.value = 0.28;
+      master.connect(ac.destination);
+      started = true;
+      return { ac, master };
+    }
+
+    function syncVoices(snapshot, master) {
+      if (!started) return;
+      const now = ac.currentTime;
+      const ids = new Set(snapshot.gears.map((g) => g.id));
+
+      for (const [id, voice] of voices) {
+        if (!ids.has(id)) {
+          voice.gain.gain.setTargetAtTime(0, now, 0.05);
+          voices.delete(id);
+        }
+      }
+
+      for (const g of snapshot.gears) {
+        let voice = voices.get(g.id);
+        if (!voice) {
+          const osc = ac.createOscillator();
+          const gain = ac.createGain();
+          osc.type = g.id === 0 ? "sawtooth" : "triangle";
+          osc.start();
+          osc.connect(gain);
+          gain.connect(master);
+          voice = { osc, gain };
+          voices.set(g.id, voice);
+        }
+
+        const hz = Math.min(880, g.hz * (g.id === 0 ? 0.55 : 0.85));
+        voice.osc.frequency.setTargetAtTime(g.jammed ? hz * 0.47 : hz, now, 0.06);
+        const amp = snapshot.flags.dead ? 0 : (g.jammed ? 0.04 : 0.035 + (g.rpm / 40) * 0.04) * snapshot.vitality;
+        voice.gain.gain.setTargetAtTime(amp, now, 0.08);
+      }
+
+      if (snapshot.flags.recentGold) {
+        master.gain.setTargetAtTime(0.34, now, 0.2);
+      } else if (snapshot.flags.anyJam) {
+        master.gain.setTargetAtTime(0.18, now, 0.05);
+      } else {
+        master.gain.setTargetAtTime(0.28 * snapshot.vitality, now, 0.15);
+      }
+    }
+
+    return {
+      ensureStarted() {
+        const nodes = ensureStarted();
+        return nodes;
+      },
+      update(snapshot) { syncVoices(snapshot, this._master); },
+      isStarted: () => started,
+      _master: null,
+      boot() {
+        const { master } = this.ensureStarted();
+        this._master = master;
+      },
+    };
+  }
+
+  /* ── App loop ── */
+  let machine = buildMachine(77823);
+  const audio = createMachineAudio();
+  const loadEl = document.getElementById("load");
+  const calmEl = document.getElementById("calm");
+  const soundPrompt = document.getElementById("sound-prompt");
+  let last = performance.now();
+
+  function boot() {
+    audio.boot();
+    soundPrompt.classList.add("hidden");
+    document.removeEventListener("pointerdown", boot);
+  }
+  document.addEventListener("pointerdown", boot);
+  soundPrompt.addEventListener("click", boot);
+
+  document.getElementById("btn-jam").onclick = () => {
+    boot();
+    jamGear(machine, machine._rng.randint(0, machine.gears.length - 1), 0.85);
+  };
+  document.getElementById("btn-gold").onclick = () => {
+    boot();
+    applyKintsugi(machine, machine.gears[0].id, 0.85);
+  };
+  document.getElementById("btn-nudge").onclick = () => {
+    boot();
+    machine.load = clamp01(machine.load + 0.15);
+  };
+  document.getElementById("btn-seed").onclick = () => {
+    boot();
+    machine = reseedMachine(machine);
+  };
+
+  function renderUI(s) {
+    const hero = s.gears[0];
+    document.getElementById("stats").innerHTML = [
+      ["Seed", s.seed],
+      ["Generation", s.generation],
+      ["Age", s.age.toFixed(1) + "s"],
+      ["Hero RPM", hero.rpm.toFixed(1)],
+      ["Mesh Hz", hero.hz.toFixed(1)],
+      ["Load", s.load.toFixed(2)],
+      ["Gears / Posts", s.gears.length + " / " + s.posts.length],
+    ].map(([k, v]) => `<div class="stat"><span>${k}</span><span>${v}</span></div>`).join("");
+
+    document.getElementById("flag-sound").classList.toggle("on", audio.isStarted() && !s.flags.dead);
+    document.getElementById("flag-jam").classList.toggle("on", s.flags.anyJam);
+    document.getElementById("flag-gold").classList.toggle("on", s.flags.recentGold);
+    document.getElementById("flag-dead").classList.toggle("on", s.flags.dead);
+
+    document.getElementById("gear-log").textContent = s.gears.map((g) =>
+      `${g.label} · ${g.teeth}t · ${g.rpm.toFixed(1)} rpm · ${g.hz.toFixed(0)} hz` +
+      (g.jammed ? " · JAM" : "") +
+      (g.gold > 0.05 ? ` · gold ${g.gold.toFixed(2)}` : "")
+    ).join("\n");
+  }
+
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    simulateMachine(machine, dt, { load: +loadEl.value, calm: +calmEl.value });
+    const s = expressMachine(machine);
+    renderUI(s);
+    renderBlueprint(s);
+    if (audio.isStarted()) audio.update(s);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

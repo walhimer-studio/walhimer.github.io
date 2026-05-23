@@ -142,9 +142,11 @@ Do not block audio or frame loop on network I/O. Sync is slow path; expression i
 Edit `kernel/*.mjs` → run:
 
 ```bash
-cd machine-aesthetic/emergent-dna
+cd ~/Documents/GitHub/walhimer.github.io/machine-aesthetic/emergent-dna
 node examples/step.mjs
 ```
+
+**Browser demo (machine-first):** open [`examples/demo.html`](examples/demo.html) — kernel **builds** platform/posts/gears, simulation drives blueprint + tooth-pitch audio. Click to run. See [`docs/HOSTS.md`](docs/HOSTS.md) for C++ / OSC / OF / PD roles.
 
 Optional: import the same module from a minimal HTML page or Three.js host when wiring World One. The kernel has **zero** Three.js dependency.
 

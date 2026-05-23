@@ -20,6 +20,7 @@ Project umbrella for **Surrender Machines** and related work: **Pure Data**, **o
 |------|--------|
 | [docs/OSC.md](docs/OSC.md) | OSC address map (contract between PD, OF, Python, hardware). |
 | [docs/FIREBASE_DNA.md](docs/FIREBASE_DNA.md) | Firebase / emergent DNA data shapes (draft). |
+| [emergent-dna/docs/HOSTS.md](emergent-dna/docs/HOSTS.md) | C++, OSC, openFrameworks, Pure Data vs browser — who owns what. |
 
 ## On Land / Loop
 
