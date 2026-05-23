@@ -31,4 +31,4 @@ Ideas while you wait on tech:
 
 After `git push`, the file is available at:
 
-`https://mark-walhimer.com/sketches/loop-miami-2026/critique-frame-glb/critique-frame-16x9-9ft.glb`
+`https://mark-walhimer.com/sketches/loop-art-critique-2026/critique-frame-glb/critique-frame-16x9-9ft.glb`

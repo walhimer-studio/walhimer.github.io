@@ -9,7 +9,7 @@ How to organize **competitions**, **residencies**, **critiques**, and **ongoing 
 | [`sketches/loop-machine-aesthetic/`](../sketches/loop-machine-aesthetic/) | **Living workspace** | Ongoing Machine Aesthetic development |
 | [`sketches/2026-ars-electronica/`](../sketches/2026-ars-electronica/) | **Frozen submission** | Prix Ars Electronica 2026 — add entry files here |
 | [`sketches/2026-lumen-prize-machine-aesthetic/`](../sketches/2026-lumen-prize-machine-aesthetic/) | **Frozen submission** | The Lumen Prize 2026 — do not edit after submit |
-| [`sketches/loop-miami-2026/`](../sketches/loop-miami-2026/) | **Event / residency bundle** | Loop Miami 2026 planning + prototype copies |
+| [`sketches/loop-art-critique-2026/`](../sketches/loop-art-critique-2026/) | **Event bundle** | Loop Art Critique 2026 — all Loop 2026 project files |
 
 ---
 
@@ -34,7 +34,7 @@ A **snapshot** for one opportunity. Names include **year + opportunity + project
 
 ```
 sketches/2026-lumen-prize-machine-aesthetic/
-sketches/loop-miami-2026/
+sketches/loop-art-critique-2026/
 sketches/2027-lumen-prize-machine-aesthetic/   ← next year, new copy
 ```
 
@@ -51,7 +51,7 @@ Use lowercase kebab-case under `sketches/`.
 | Kind | Pattern | Example |
 |------|---------|---------|
 | Prize / competition | `{year}-{prize-or-org}-{project}` | `2026-lumen-prize-machine-aesthetic` |
-| Residency / event / critique | `{event}-{year}` or `{year}-{event}-{project}` | `loop-miami-2026` |
+| Residency / event / critique | `{event}-{year}` or `{year}-{event}-{project}` | `loop-art-critique-2026` |
 | Living series | `{project}` or `{project}-{variant}` | `loop-machine-aesthetic`, `bloom` |
 
 **Avoid:** `lumen-machine-aesthetic` without a year — you will not find it next year next to ARS, Loop, and Lumen folders.

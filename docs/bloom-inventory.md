@@ -51,7 +51,7 @@ These are **small HTML files** (~600 bytes) that **redirect** to the canonical f
 | Location | Why |
 |----------|-----|
 | **`installations/bloom-*.html`** | Installation-tier pages; stay in `installations/`. Catalog links **sketches** under `bloom/` to these where applicable. |
-| **`sketches/loop-miami-2026/*bloom*`** | Bundle / critique copies for Loop Miami 2026 — separate “chapter”; still listed under **Loop Miami 2026** in `SERIES`. |
+| **`sketches/loop-art-critique-2026/*bloom*`** | Bundle / critique copies for Loop Art Critique 2026 — separate “chapter”; still listed under **Loop Art Critique 2026** in `SERIES`. |
 | **`drafts/bloom-*`** | Drafts and previews; prune or promote into `sketches/bloom/` when ready. |
 
 ---

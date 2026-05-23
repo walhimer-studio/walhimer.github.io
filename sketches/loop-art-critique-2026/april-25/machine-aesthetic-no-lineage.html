@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Aesthetic — Mark Walhimer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:    #111010;
+    --paper:  #f5f0e8;
+    --rule:   #c8b89a;
+    --accent: #8b2020;
+    --muted:  #7a7060;
+    --pale:   #ece6d8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { background: var(--paper); color: var(--ink); }
+
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    background: var(--paper);
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 32px 100px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding: 40px 0 28px;
+    margin-bottom: 52px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: end;
+  }
+
+  .doc-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: -.01em;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    line-height: 1.9;
+    letter-spacing: .1em;
+    color: var(--muted);
+  }
+
+  .header-meta a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* ── ARTIST STATEMENT ── */
+  .statement {
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    padding: 32px 0 28px;
+    margin-bottom: 52px;
+  }
+
+  .statement-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .statement p {
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.65;
+  }
+
+  /* ── ARTWORK ── */
+  .artwork-block {
+    margin-bottom: 52px;
+  }
+
+  .artwork-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .artwork-label a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--rule);
+    font-size: 9px;
+    letter-spacing: .12em;
+  }
+
+  .artwork-label a:hover { color: var(--ink); }
+
+  .artwork-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--rule);
+    background: #0f0f12;
+    display: block;
+  }
+
+  .artwork-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .12em;
+    color: var(--muted);
+    margin-top: 10px;
+    text-align: right;
+  }
+
+  /* ── THREE DIMENSIONS ── */
+  .dimensions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 52px;
+  }
+
+  .dim {
+    background: var(--pale);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--ink);
+    padding: 20px 22px;
+  }
+
+  .dim-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .dim p {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #2a2620;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 3px solid var(--ink);
+    padding-top: 24px;
+    margin-top: 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 0 20px 80px; }
+    header { grid-template-columns: 1fr; }
+    .header-meta { text-align: left; }
+    .dimensions { grid-template-columns: 1fr; }
+    .influence-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="doc-label">Loop Art &nbsp;·&nbsp; ICA Miami &nbsp;·&nbsp; Cohort #21</div>
+    <h1>Machine<br><em>Aesthetic</em></h1>
+  </div>
+  <div class="header-meta">
+    Mark Walhimer<br>
+    <a href="https://mark-walhimer.com">mark-walhimer.com</a><br>
+    April 2026
+  </div>
+</header>
+
+<div class="statement">
+  <div class="statement-label">Artist Statement</div>
+  <p>This work begins with code. The code is the origin and the authority — a living digital thing that exists in time, loops, breathes, and ends. Any subsequent form must remain faithful to what the code actually does. The chain is specific: code creates a digital loop; the loop informs an object; the object opens into a physical experience.</p>
+</div>
+
+<div class="artwork-block">
+  <div class="artwork-label">
+    <span>Live Work</span>
+    <a href="https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html" target="_blank">Open full screen ↗</a>
+  </div>
+  <iframe
+    class="artwork-frame"
+    src="https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html"
+    title="Machine Aesthetic — Loop Art Critique Combined"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+  <div class="artwork-caption">
+    Loop Art Critique — Combined Flow &nbsp;·&nbsp; Enter the building &nbsp;·&nbsp; Sound on<br>
+    <a href="https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html" target="_blank" style="color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--rule);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;">mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html</a>
+  </div>
+</div>
+
+<div class="dimensions">
+  <div class="dim">
+    <span class="dim-name">Digital</span>
+    <p>A seeded generative loop running in the Loop Metaverse. The algorithm is the work. The seed is its identity.</p>
+  </div>
+  <div class="dim">
+    <span class="dim-name">Object</span>
+    <p>The same code on a Teensy 4.1 driving an LED panel. Hardware and software as a single entity.</p>
+  </div>
+  <div class="dim">
+    <span class="dim-name">Spatial</span>
+    <p>A distributed room — projectors, motors, sensors, sound — each node running the same code in a different context.</p>
+  </div>
+</div>
+
+<footer>
+  <span>Machine Aesthetic · Loop Art Critique · ICA Miami · Cohort #21</span>
+  <span>Mark Walhimer · 2026</span>
+</footer>
+
+</body>
+</html>

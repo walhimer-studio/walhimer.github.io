@@ -41,7 +41,7 @@ ALLOWED_FILES = {
 FORBIDDEN_ROOTS = {
     "mangle",
     "traveling-landscape",
-    "loop-miami-2026",
+    "loop-art-critique-2026",
 }
 
 

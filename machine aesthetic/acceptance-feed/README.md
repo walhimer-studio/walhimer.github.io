@@ -19,7 +19,7 @@ A **Machine Aesthetic** sketch: soundscape-first browser audio, **soothing** sam
 | `style-guide.md` | Voice, UI, and documentation conventions for this piece |
 | Samples / patches | Added incrementally (e.g. piano samples, Web Audio or p5.sound layers) |
 
-**Prototype (camera breath + piano):** [`sketches/loop-miami-2026/webcam-point-cloud/v3-breath/`](../../sketches/loop-miami-2026/webcam-point-cloud/v3-breath/) — has its **own** `README.md` and `style-guide.md` next to `index.html` so the runnable sketch stays documented in place.
+**Prototype (camera breath + piano):** [`sketches/loop-art-critique-2026/webcam-point-cloud/v3-breath/`](../../sketches/loop-art-critique-2026/webcam-point-cloud/v3-breath/) — has its **own** `README.md` and `style-guide.md` next to `index.html` so the runnable sketch stays documented in place.
 
 ## Alignment
 

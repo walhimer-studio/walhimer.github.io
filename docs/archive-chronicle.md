@@ -48,7 +48,7 @@ These are **not** nested Git repos; they are folders in the site repo, linked fr
 ### 4. Prize, residency, and event bundles
 
 - **Role:** **Frozen snapshots** for a specific opportunity (Lumen Prize, Loop Miami, ARS, etc.) — separate from the **living workspace** where you keep developing.
-- **Naming:** `{year}-{opportunity}-{project}` (e.g. `2026-lumen-prize-machine-aesthetic`) or `{event}-{year}` (e.g. `loop-miami-2026`).
+- **Naming:** `{year}-{opportunity}-{project}` (e.g. `2026-lumen-prize-machine-aesthetic`) or `{event}-{year}` (e.g. `loop-art-critique-2026`).
 - **Public entry URL:** descriptive filename (e.g. `seed-77823-rooms.html`), not internal build names.
 - **Details:** See **[submission-and-series-structure.md](./submission-and-series-structure.md)**.
 

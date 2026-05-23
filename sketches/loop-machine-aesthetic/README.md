@@ -1,6 +1,8 @@
 # Loop · Machine Aesthetic
 
-**Living workspace** — ongoing development. For prize submissions, copy this folder to a dated snapshot (see [Submission & series structure](../../docs/submission-and-series-structure.md)).
+**Living workspace** — develop here, then copy into the Loop Art Critique 2026 bundle before deadlines.
+
+**2026 bundle (canonical for critique):** [`../loop-art-critique-2026/machine-aesthetic/`](../loop-art-critique-2026/machine-aesthetic/)
 
 Walkthrough: Room A (code mural + essay panel) → ghost 77823 → Surrender Machines in Room C.
 
@@ -8,28 +10,18 @@ Walkthrough: Room A (code mural + essay panel) → ghost 77823 → Surrender Mac
 
 https://mark-walhimer.com/sketches/loop-machine-aesthetic/ghost_dense_77823_room.html
 
-## Frozen submission (example)
+## Loop Art Critique 2026 bundle
 
-The Lumen Prize 2026 snapshot lives separately — do not submit this folder for Lumen:
+- **Hub:** https://mark-walhimer.com/sketches/loop-art-critique-2026/
+- **Walkthrough copy:** https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html
 
-- **Path:** `sketches/2026-lumen-prize-machine-aesthetic/`
-- **Submit URL:** https://mark-walhimer.com/sketches/2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html
+## Frozen Lumen submission (separate prize)
+
+- `sketches/2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html`
 
 ## GitHub
 
-Repo: [walhimer-studio/walhimer.github.io](https://github.com/walhimer-studio/walhimer.github.io)
-
 Path: `sketches/loop-machine-aesthetic/`
-
-| File | Role |
-|------|------|
-| `ghost_dense_77823_room.html` | Entry page (workspace) |
-| `ghost_dense_77823_room.mjs` | Walkthrough app |
-| `ghost-machine-core.mjs` | Rooms + ghost wireframe |
-| `surrender-machines-three-core.js` | Surrender machine embed |
-| `surrender-machine-core.mjs` | Surrender build (GLB export) |
-| `counterproduction-essay-v2.md` | Doreen Rios essay (draft, markdown) |
-| `counterproduction-essay-v2.pdf` | Doreen Rios essay (draft, PDF) |
 
 ## Run locally
 

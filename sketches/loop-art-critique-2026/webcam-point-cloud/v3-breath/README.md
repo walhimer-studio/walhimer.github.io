@@ -1,6 +1,6 @@
 # Webcam point cloud · v3 breath
 
-Live sketch under **`sketches/loop-miami-2026/webcam-point-cloud/v3-breath/`**.
+Live sketch under **`sketches/loop-art-critique-2026/webcam-point-cloud/v3-breath/`**.
 
 ## Files
 
@@ -30,7 +30,7 @@ python3 -m http.server 8080
 
 Open:
 
-`/sketches/loop-miami-2026/webcam-point-cloud/v3-breath/index.html`
+`/sketches/loop-art-critique-2026/webcam-point-cloud/v3-breath/index.html`
 
 Click **Enable sound** — you should hear a short test tone; exhale with lips slightly open for breath-linked audio.
 
