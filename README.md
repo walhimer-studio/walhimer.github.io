@@ -22,6 +22,7 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 | `data/catalog.json` | **Single manifest** — canonical **`works[]`** only. Refresh merges **`SERIES`** from **`sketches/catalog-work.html`** (fallback: **`sketches/index.html`** when **`SERIES`** is empty) and **`installations/*.html`**. See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
 | `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
 | `docs/archive-chronicle.md` | How the sketch index, catalog workspace, and narrative archives relate to the manifest. |
+| `docs/submission-and-series-structure.md` | **Prize / residency / event folders** — living workspace vs dated submission snapshots, naming, README template, catalog checklist. |
 | `docs/bloom-inventory.md` | **Bloom** series: canonical paths under `sketches/bloom/`, redirect stubs, what stays outside (installations, Loop Miami, drafts). |
 
 Site nav: **Selected Works · Catalog · Bio / CV · Contact**

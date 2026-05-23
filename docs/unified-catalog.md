@@ -84,6 +84,8 @@ The **catalog** and **backup story** for *artworks* is unchanged: **`works[]`** 
 
 Some repo folders are **versioned tooling** (OSC bridges, Python/Node helpers, Mermaid specs). They are **not** automatic rows in **`works[]`** unless you also add a sketch URL under **`sketches/`** and register it in **`SERIES`** like any other piece.
 
+**Prize / residency / event folders:** use dated snapshots under `sketches/` (living workspace vs frozen submission). See **[submission-and-series-structure.md](./submission-and-series-structure.md)**.
+
 | Path | Role |
 |------|------|
 | `sketches/` | **Catalog-eligible HTML** — register in **`SERIES`**, then **refresh** and commit **`data/catalog.json`**. |
