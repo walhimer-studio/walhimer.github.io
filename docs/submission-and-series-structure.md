@@ -7,6 +7,7 @@ How to organize **competitions**, **residencies**, **critiques**, and **ongoing 
 | Folder | Type | Role |
 |--------|------|------|
 | [`sketches/loop-machine-aesthetic/`](../sketches/loop-machine-aesthetic/) | **Living workspace** | Ongoing Machine Aesthetic development |
+| [`sketches/2026-ars-electronica/`](../sketches/2026-ars-electronica/) | **Frozen submission** | Prix Ars Electronica 2026 — add entry files here |
 | [`sketches/2026-lumen-prize-machine-aesthetic/`](../sketches/2026-lumen-prize-machine-aesthetic/) | **Frozen submission** | The Lumen Prize 2026 — do not edit after submit |
 | [`sketches/loop-miami-2026/`](../sketches/loop-miami-2026/) | **Event / residency bundle** | Loop Miami 2026 planning + prototype copies |
 
@@ -166,7 +167,7 @@ Next year: repeat from step 2 with `2027-…`; leave `2026-…` untouched.
 
 | Gap | Recommendation |
 |-----|----------------|
-| **Prix Ars Electronica 2026** | No dated folder in repo yet. When you locate the work, add `sketches/2026-ars-electronica-{project}/` with README + submit URL — same pattern as Lumen. |
+| **Prix Ars Electronica 2026** | Folder ready at `sketches/2026-ars-electronica/`. Copy entry files from sources listed in that README; update submit URL before filing. |
 | **Submission date in README** | Add `Submitted: YYYY-MM-DD` when you file — helps distinguish frozen copies. |
 | **`catalog-work.html`** | When populated, mirror new series there (see [unified-catalog.md](./unified-catalog.md)); until then `sketches/index.html` is the source. |
 | **Standalone vs walkthrough URL** | Submit the **full** piece URL unless the form asks for one component only. |
