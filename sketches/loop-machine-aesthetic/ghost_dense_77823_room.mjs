@@ -19,9 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-building-shot";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-building-shot2";
 
-const BUILD = "20260524-building-shot";
+const BUILD = "20260524-building-shot2";
 
 globalThis.THREE = THREE;
 
