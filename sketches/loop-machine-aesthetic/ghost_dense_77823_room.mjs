@@ -64,75 +64,113 @@ scene.add(world);
 await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
 const { builder } = buildGhostMachine(world);
 
-/** Essay panel — east wall, right of door (south jamb), on top of code wallpaper */
-const ESSAY_PDF = new URL("counterproduction-essay-v2.pdf", import.meta.url).href;
-const ESSAY_PANEL_TEX = new URL("counterproduction-essay-panel.png", import.meta.url).href;
+/** Walk moon panel — east wall, left of door (north jamb), replaces essay panel */
+const WALK_MOON_URL = new URL("../../loop-art-critique-2026/walk_moon_audio_standalone.html", import.meta.url).href;
 const WALL_T = 0.15;
 const wallFace = WALL_T / 2 + 0.002;
 const halfDoor = LAYOUT.doorwayWidth / 2;
-const essayY = ROOM.height * 0.52;
-const essayEdgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
+const panelY = ROOM.height * 0.52;
+const panelEdgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
 
-const essayTex = await new Promise((resolve, reject) => {
-  new THREE.TextureLoader().load(ESSAY_PANEL_TEX, resolve, undefined, reject);
-});
-essayTex.colorSpace = THREE.SRGBColorSpace;
-essayTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+function makeWalkMoonPanelTexture() {
+  const w = 480;
+  const h = 600;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#0d0d0d";
+  ctx.fillRect(0, 0, w, h);
 
-const essayAspect = essayTex.image.width / essayTex.image.height;
-let essayPanelH = 2.55;
-let essayPanelW = essayPanelH * essayAspect;
-const maxPanelW = RD - halfDoor - 0.6;
-if (essayPanelW > maxPanelW) {
-  essayPanelW = maxPanelW;
-  essayPanelH = essayPanelW / essayAspect;
+  for (let i = 0; i < 120; i++) {
+    const x = Math.random() * w;
+    const y = Math.random() * h * 0.72;
+    const r = Math.random() * 1.4 + 0.2;
+    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.55 + 0.15})`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const grd = ctx.createRadialGradient(w * 0.5, h * 0.34, 8, w * 0.5, h * 0.34, 88);
+  grd.addColorStop(0, "#f2efe8");
+  grd.addColorStop(0.85, "#c8c4bc");
+  grd.addColorStop(1, "rgba(200,196,188,0)");
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.arc(w * 0.5, h * 0.34, 82, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255,255,255,0.88)";
+  ctx.font = '600 26px "Helvetica Neue", Helvetica, Arial, sans-serif';
+  ctx.textAlign = "center";
+  ctx.fillText("Walk — Moon — Audio", w / 2, h * 0.72);
+
+  ctx.fillStyle = "rgba(170,170,170,0.75)";
+  ctx.font = '400 14px "IBM Plex Mono", ui-monospace, monospace';
+  ctx.fillText("click to open", w / 2, h * 0.78);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return { tex, aspect: w / h };
 }
 
-const essayXFace = ROOM_A_X + RW - wallFace - 0.03;
-const essayZ = -halfDoor - essayPanelW / 2 - 0.35;
+const { tex: walkMoonTex, aspect: walkMoonAspect } = makeWalkMoonPanelTexture();
+walkMoonTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-const essayGroup = new THREE.Group();
-essayGroup.name = "essay_panel_link";
-world.add(essayGroup);
+let walkMoonPanelH = 2.55;
+let walkMoonPanelW = walkMoonPanelH * walkMoonAspect;
+const maxPanelW = RD - halfDoor - 0.6;
+if (walkMoonPanelW > maxPanelW) {
+  walkMoonPanelW = maxPanelW;
+  walkMoonPanelH = walkMoonPanelW / walkMoonAspect;
+}
 
-const essayPlane = new THREE.Mesh(
-  new THREE.PlaneGeometry(essayPanelW, essayPanelH),
+const walkMoonXFace = ROOM_A_X + RW - wallFace - 0.03;
+const walkMoonZ = -halfDoor - walkMoonPanelW / 2 - 0.35;
+
+const walkMoonGroup = new THREE.Group();
+walkMoonGroup.name = "walk_moon_panel_link";
+world.add(walkMoonGroup);
+
+const walkMoonPlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(walkMoonPanelW, walkMoonPanelH),
   new THREE.MeshBasicMaterial({
-    map: essayTex,
+    map: walkMoonTex,
     depthWrite: false,
     polygonOffset: true,
     polygonOffsetFactor: -2,
     polygonOffsetUnits: -2,
   })
 );
-essayPlane.name = "essay_panel";
-essayPlane.position.set(essayXFace, essayY, essayZ);
-essayPlane.rotation.y = -Math.PI / 2;
-essayPlane.userData.link = ESSAY_PDF;
-essayPlane.renderOrder = 10;
-essayGroup.add(essayPlane);
+walkMoonPlane.name = "walk_moon_panel";
+walkMoonPlane.position.set(walkMoonXFace, panelY, walkMoonZ);
+walkMoonPlane.rotation.y = -Math.PI / 2;
+walkMoonPlane.userData.link = WALK_MOON_URL;
+walkMoonPlane.renderOrder = 10;
+walkMoonGroup.add(walkMoonPlane);
 
-function essayEdge(ax, ay, az, bx, by, bz) {
+function panelEdge(ax, ay, az, bx, by, bz) {
   const line = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(ax, ay, az),
       new THREE.Vector3(bx, by, bz),
     ]),
-    essayEdgeMat
+    panelEdgeMat
   );
   line.renderOrder = 3;
-  essayGroup.add(line);
+  walkMoonGroup.add(line);
 }
 
-const ex = essayXFace + 0.002;
-const ey0 = essayY - essayPanelH / 2;
-const ey1 = essayY + essayPanelH / 2;
-const ez0 = essayZ - essayPanelW / 2;
-const ez1 = essayZ + essayPanelW / 2;
-essayEdge(ex, ey0, ez0, ex, ey0, ez1);
-essayEdge(ex, ey1, ez0, ex, ey1, ez1);
-essayEdge(ex, ey0, ez0, ex, ey1, ez0);
-essayEdge(ex, ey0, ez1, ex, ey1, ez1);
+const px = walkMoonXFace + 0.002;
+const py0 = panelY - walkMoonPanelH / 2;
+const py1 = panelY + walkMoonPanelH / 2;
+const pz0 = walkMoonZ - walkMoonPanelW / 2;
+const pz1 = walkMoonZ + walkMoonPanelW / 2;
+panelEdge(px, py0, pz0, px, py0, pz1);
+panelEdge(px, py1, pz0, px, py1, pz1);
+panelEdge(px, py0, pz0, px, py1, pz0);
+panelEdge(px, py0, pz1, px, py1, pz1);
 
 const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
 const textCylinder = createTextCylinder({
@@ -141,7 +179,7 @@ const textCylinder = createTextCylinder({
 });
 world.add(textCylinder.group);
 
-const linkMeshes = [essayPlane, ...textCylinder.linkMeshes];
+const linkMeshes = [walkMoonPlane, ...textCylinder.linkMeshes];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
@@ -214,7 +252,7 @@ function updateHud(pos) {
   if (pos.x < HALL_AB.x1) {
     hudRoom.textContent = pos.x >= ROOM_A_X - RW ? "Room A · black · code mural" : "Approach · Room A";
     hudSeed.textContent = pos.x >= ROOM_A_X - RW
-      ? "text cylinder · center · click to make your own · essay · east wall · PDF"
+      ? "text cylinder · center · click to make your own · walk moon · left wall · click"
       : "ghost seed 77823 · room B ahead";
   } else if (pos.x < HALL_BC.x0) {
     hudRoom.textContent = pos.x < 0 ? "Hall A–B" : "Room B · ghost wireframe";
