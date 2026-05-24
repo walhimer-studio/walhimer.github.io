@@ -65,8 +65,8 @@ function drawTextCylinderFrame(ctx, w, h, {
     ctx.font = `${fontSize}px ${FONT}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.globalAlpha = facing ? 1 : 0.5;
-    ctx.fillStyle = facing ? "#ffffff" : "#aaaaaa";
+    ctx.globalAlpha = facing ? 1 : 0.55;
+    ctx.fillStyle = facing ? "#ffffff" : "#888888";
     ctx.save();
     ctx.translate(sx, sy);
     const hScale = LETTER_HSCALE * foreshorten;
@@ -80,8 +80,8 @@ function drawTextCylinderFrame(ctx, w, h, {
 }
 
 /**
- * text11 word cylinder in world space — canvas illusion on crossed 3D planes.
- * @returns {{ group: THREE.Group, linkMeshes: THREE.Object3D[], update: (dt: number) => void }}
+ * text11 word cylinder in world space — canvas illusion on a billboard plane.
+ * @returns {{ group: THREE.Group, focus: THREE.Vector3, linkMeshes: THREE.Object3D[], update: (dt: number, camera?: THREE.Camera) => void }}
  */
 export function createTextCylinder({
   phrase = "ME - I WILL NOT BECOME THEIR NARRATIVE ",
@@ -91,8 +91,8 @@ export function createTextCylinder({
   baseFontSize = 64,
   tiltAngle = 0.14,
   rotSpeed = 0.55,
-  planeSize = 8.5,
-  position = { x: 0, y: 4.15, z: 0 },
+  planeSize = 7,
+  position = { x: 0, y: 2.85, z: 0 },
   link = null,
 } = {}) {
   const canvas = document.createElement("canvas");
@@ -106,7 +106,8 @@ export function createTextCylinder({
   const faceMat = new THREE.MeshBasicMaterial({
     map: texture,
     transparent: true,
-    depthWrite: false,
+    alphaTest: 0.06,
+    depthWrite: true,
     side: THREE.DoubleSide,
   });
 
@@ -114,23 +115,25 @@ export function createTextCylinder({
   group.name = "text_cylinder";
   group.position.set(position.x, position.y, position.z);
 
-  // Crossed planes so the cylinder reads from more viewpoints in the room.
-  for (const rotY of [0, Math.PI / 2]) {
-    const plane = new THREE.Mesh(new THREE.PlaneGeometry(planeSize, planeSize), faceMat);
-    plane.rotation.y = rotY;
-    plane.renderOrder = 6;
-    group.add(plane);
-  }
+  const faces = new THREE.Group();
+  faces.name = "text_cylinder_faces";
+  group.add(faces);
+
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(planeSize, planeSize), faceMat);
+  plane.renderOrder = 8;
+  faces.add(plane);
 
   const hitMesh = new THREE.Mesh(
-    new THREE.BoxGeometry(planeSize * 0.75, planeSize * 0.75, planeSize * 0.75),
+    new THREE.BoxGeometry(planeSize * 0.7, planeSize * 0.7, planeSize * 0.35),
     new THREE.MeshBasicMaterial({ visible: false })
   );
   hitMesh.name = "text_cylinder_hit";
   hitMesh.userData.link = link;
   group.add(hitMesh);
 
+  const focus = new THREE.Vector3(position.x, position.y, position.z);
   let angle = 0;
+
   drawTextCylinderFrame(ctx, canvas.width, canvas.height, {
     phrase,
     rows,
@@ -144,8 +147,9 @@ export function createTextCylinder({
 
   return {
     group,
+    focus,
     linkMeshes: [hitMesh],
-    update(dt) {
+    update(dt, camera) {
       angle += rotSpeed * dt;
       drawTextCylinderFrame(ctx, canvas.width, canvas.height, {
         phrase,
@@ -157,6 +161,7 @@ export function createTextCylinder({
         angle,
       });
       texture.needsUpdate = true;
+      if (camera) faces.lookAt(camera.position);
     },
   };
 }

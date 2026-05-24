@@ -41,6 +41,7 @@ const SPAWN_A = {
   z: 0,
   lookX: HALL_AB.x0 + LAYOUT.hallwayLengthAB * 0.45,
 };
+const TEXT_CYLINDER_POS = { x: ROOM_A_X, y: 2.85, z: 0 };
 
 const prompt = document.getElementById("prompt");
 const modeEl = document.getElementById("mode");
@@ -135,7 +136,7 @@ essayEdge(ex, ey0, ez1, ex, ey1, ez1);
 
 const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
 const textCylinder = createTextCylinder({
-  position: { x: ROOM_A_X, y: ROOM.height * 0.46, z: 0 },
+  position: TEXT_CYLINDER_POS,
   link: TEXT_CYLINDER_URL,
 });
 world.add(textCylinder.group);
@@ -194,8 +195,8 @@ let ghostSpinActive = false;
 
 function orientSpawnEast() {
   camera.position.set(SPAWN_A.x, SPAWN_A.y, SPAWN_A.z);
-  camera.lookAt(SPAWN_A.lookX, SPAWN_A.y, SPAWN_A.z);
-  orbit.target.set(SPAWN_A.lookX, SPAWN_A.y, SPAWN_A.z);
+  camera.lookAt(TEXT_CYLINDER_POS.x, TEXT_CYLINDER_POS.y, TEXT_CYLINDER_POS.z);
+  orbit.target.set(TEXT_CYLINDER_POS.x, TEXT_CYLINDER_POS.y, TEXT_CYLINDER_POS.z);
 }
 
 function clampWalk(pos) {
@@ -278,7 +279,7 @@ function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock.getDelta(), 0.05);
 
-  textCylinder.update(dt);
+  textCylinder.update(dt, camera);
 
   if (ghostSpinActive) {
     builder.spinners.forEach((s) => {
