@@ -19,9 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-wallsize";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-building";
 
-const BUILD = "20260524-wallsize";
+const BUILD = "20260524-building";
 
 globalThis.THREE = THREE;
 
@@ -96,6 +96,33 @@ walkMoonPlane.userData.link = WALK_MOON_URL;
 walkMoonPlane.renderOrder = 10;
 world.add(walkMoonPlane);
 
+/** Building outline — your file on full south (right-hand) wall face */
+const BUILDING_OUTLINE_URL = new URL("building-outline-only.html", import.meta.url).href;
+const BUILDING_OUTLINE_TEX = new URL("building-outline-wall-panel.png", import.meta.url).href;
+
+const buildingOutlineTex = await new Promise((resolve, reject) => {
+  new THREE.TextureLoader().load(BUILDING_OUTLINE_TEX, resolve, undefined, reject);
+});
+buildingOutlineTex.colorSpace = THREE.SRGBColorSpace;
+buildingOutlineTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+const buildingOutlinePlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(ROOM.width, ROOM.height),
+  new THREE.MeshBasicMaterial({
+    map: buildingOutlineTex,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+  })
+);
+buildingOutlinePlane.name = "building_outline_panel";
+buildingOutlinePlane.position.set(ROOM_A_X, ROOM.height * 0.5, RD - wallFace);
+buildingOutlinePlane.rotation.y = Math.PI;
+buildingOutlinePlane.userData.link = BUILDING_OUTLINE_URL;
+buildingOutlinePlane.renderOrder = 10;
+world.add(buildingOutlinePlane);
+
 const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
 const textCylinder = createTextCylinder({
   position: TEXT_CYLINDER_POS,
@@ -103,7 +130,7 @@ const textCylinder = createTextCylinder({
 });
 world.add(textCylinder.group);
 
-const linkMeshes = [walkMoonPlane, ...textCylinder.linkMeshes];
+const linkMeshes = [walkMoonPlane, buildingOutlinePlane, ...textCylinder.linkMeshes];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 

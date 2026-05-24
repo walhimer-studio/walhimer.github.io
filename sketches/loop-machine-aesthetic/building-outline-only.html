@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Building outline — 3D</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      touch-action: none;
+      cursor: grab;
+    }
+    canvas:active { cursor: grabbing; }
+    #bottom-hud {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+      user-select: none;
+    }
+    #lifeline-track {
+      width: min(44vw, 228px);
+      height: 1px;
+      background: rgba(255, 255, 255, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+    #lifeline-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      transform: scaleX(0);
+      transform-origin: left center;
+    }
+    #seed-hud {
+      margin: 0;
+      padding: 0;
+      font: 13px/1.35 "Courier Prime", ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: rgba(255, 255, 255, 0.88);
+      letter-spacing: 0.14em;
+    }
+  </style>
+</head>
+<body>
+  <div id="bottom-hud">
+    <div id="lifeline-track" aria-hidden="true"><span id="lifeline-fill"></span></div>
+    <p id="seed-hud" aria-live="polite"></p>
+  </div>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
+    import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
+    import { LineMaterial } from "three/addons/lines/LineMaterial.js";
+
+    function randomSeed6() {
+      return ("00000" + ((Math.random() * 0x1000000) | 0).toString(16)).slice(-6).toUpperCase();
+    }
+
+    function makeRng(seedStr) {
+      let h = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        h = ((h << 5) - h + seedStr.charCodeAt(i)) | 0;
+      }
+      return function () {
+        h |= 0;
+        h = (h + 0x6d2b79f5) | 0;
+        let t = Math.imul(h ^ (h >>> 15), 1 | h);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function seedFromUrlOrNull() {
+      try {
+        const p = new URLSearchParams(window.location.search || "");
+        const raw = (p.get("seed") || "").trim();
+        if (!raw) return null;
+        if (/^[0-9a-fA-F]{1,6}$/.test(raw)) {
+          return ("00000" + raw.toUpperCase()).slice(-6);
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    /** Lobby outline: procedural shell with open front wall. */
+    let currentSeed = seedFromUrlOrNull() || randomSeed6();
+    let rng = makeRng(currentSeed);
+
+    function v3(x, y, z) {
+      return [x, y, z];
+    }
+
+    function addLine(edges, a, b) {
+      edges.push(a[0], a[1], a[2], b[0], b[1], b[2]);
+    }
+
+    function lerp3(a, b, t) {
+      return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+    }
+
+    function buildExterior(r) {
+      // Wider footprint in X and Z; vertical scale unchanged.
+      var horizX = 1.58;
+      var horizZ = 1.52;
+      var n = 5 + (r() < 0.38 ? 1 : 0);
+      var phase = r() * Math.PI * 2;
+      var sqx = 0.52 + r() * 0.55;
+      var sqz = 0.48 + r() * 0.5;
+      var rad0 = 0.26 + r() * 0.18;
+
+      var base = [];
+      var i;
+      for (i = 0; i < n; i++) {
+        var u = (i + (r() - 0.5) * 0.35) / n;
+        var ang = u * Math.PI * 2 + phase;
+        var rad = rad0 * (0.75 + r() * 0.45);
+        var x = Math.cos(ang) * rad * sqx * horizX;
+        var z = Math.sin(ang) * rad * sqz * horizZ;
+        x += (r() - 0.5) * 0.1 * horizX;
+        z += (r() - 0.5) * 0.1 * horizZ;
+        base.push(v3(x, 0, z));
+      }
+
+      var eave = [];
+      var yMax = 0.15;
+      for (i = 0; i < n; i++) {
+        var yw = 0.14 + r() * 0.22 + (i % 3) * 0.03 * (0.3 + r());
+        eave.push(v3(base[i][0], yw, base[i][2]));
+        yMax = Math.max(yMax, yw);
+      }
+
+      var lift = 0.1 + r() * 0.38;
+      var Ax = (r() - 0.5) * 0.32 * horizX;
+      var Az = (r() - 0.5) * 0.28 * horizZ;
+      var Bx = (0.1 + (r() - 0.4) * 0.4) * horizX;
+      var Bz = (r() - 0.3) * 0.3 * horizZ;
+      var Ay = yMax + lift + r() * 0.2;
+      var By = yMax + lift * (0.5 + r() * 0.55) + r() * 0.1;
+      var peakA = v3(Ax, Ay, Az);
+      var peakB = v3(Bx, By, Bz);
+
+      var split = 2 + ((r() * (n - 3)) | 0);
+      if (split < 2) split = 2;
+      if (split > n - 1) split = n - 1;
+
+      var edges = [];
+
+      for (i = 0; i < n; i++) {
+        addLine(edges, base[i], base[(i + 1) % n]);
+      }
+      for (i = 0; i < n; i++) {
+        addLine(edges, base[i], eave[i]);
+      }
+      for (i = 0; i < n; i++) {
+        addLine(edges, eave[i], eave[(i + 1) % n]);
+      }
+
+      for (i = 0; i < split; i++) {
+        addLine(edges, peakA, eave[i]);
+      }
+      for (i = split; i < n; i++) {
+        addLine(edges, peakB, eave[i]);
+      }
+      addLine(edges, peakA, peakB);
+
+      var frontI = 0;
+      var bestLen = -1;
+      for (i = 0; i < n; i++) {
+        var j = (i + 1) % n;
+        var dx = base[j][0] - base[i][0];
+        var dz = base[j][2] - base[i][2];
+        var el = Math.sqrt(dx * dx + dz * dz);
+        if (el > bestLen) {
+          bestLen = el;
+          frontI = i;
+        }
+      }
+      var jf = (frontI + 1) % n;
+      var margin = 0.08;
+      var widthFrac = 0.34;
+      var maxSpan = 1 - 2 * margin;
+      if (widthFrac > maxSpan) widthFrac = maxSpan;
+      var t0 = 0.5 - widthFrac * 0.5;
+      var t1 = 0.5 + widthFrac * 0.5;
+      var bl = lerp3(base[frontI], base[jf], t0);
+      var br = lerp3(base[frontI], base[jf], t1);
+      var dxw = br[0] - bl[0];
+      var dzw = br[2] - bl[2];
+      var doorW = Math.sqrt(dxw * dxw + dzw * dzw);
+      var yE0 = lerp3(eave[frontI], eave[jf], t0)[1];
+      var yE1 = lerp3(eave[frontI], eave[jf], t1)[1];
+      var yEaveMin = Math.min(yE0, yE1);
+      var lintel = 0.07;
+      var maxH = Math.max(0.06, yEaveMin - lintel);
+      var doorH = Math.min(doorW, maxH);
+      var minOpening = 0.09;
+      if (doorH < minOpening) doorH = Math.min(maxH, minOpening);
+      var tl = v3(bl[0], doorH, bl[2]);
+      var tr = v3(br[0], doorH, br[2]);
+      addLine(edges, bl, br);
+      addLine(edges, bl, tl);
+      addLine(edges, br, tr);
+      addLine(edges, tl, tr);
+      // Opening cut in mesh; door rectangle drawn with same white outline material as the shell.
+
+      var cxm = 0;
+      var czm = 0;
+      for (i = 0; i < n; i++) {
+        cxm += base[i][0];
+        czm += base[i][2];
+      }
+      cxm /= n;
+      czm /= n;
+      var cyy = (yMax + peakA[1] + peakB[1]) / 3 * 0.42;
+
+      var verts = [];
+      for (i = 0; i < n; i++) {
+        verts.push([base[i][0], base[i][1], base[i][2]]);
+      }
+      for (i = 0; i < n; i++) {
+        verts.push([eave[i][0], eave[i][1], eave[i][2]]);
+      }
+      verts.push([bl[0], bl[1], bl[2]]);
+      verts.push([br[0], br[1], br[2]]);
+      verts.push([tl[0], tl[1], tl[2]]);
+      verts.push([tr[0], tr[1], tr[2]]);
+      var indexA = verts.length;
+      verts.push([peakA[0], peakA[1], peakA[2]]);
+      var indexB = verts.length;
+      verts.push([peakB[0], peakB[1], peakB[2]]);
+
+      var faces = [];
+      for (var f = 1; f < n - 1; f++) {
+        faces.push([0, f, f + 1]);
+      }
+      for (i = 0; i < n; i++) {
+        var jn = (i + 1) % n;
+        var b0 = i;
+        var b1 = jn;
+        var t0v = n + i;
+        var t1v = n + jn;
+        if (i === frontI) {
+          var iBL = 2 * n;
+          var iBR = 2 * n + 1;
+          var iTL = 2 * n + 2;
+          var iTR = 2 * n + 3;
+          // Wall minus door: left column, lintel band, right column (no diagonal through opening).
+          faces.push([b0, iBL, iTL]);
+          faces.push([b0, iTL, t0v]);
+          faces.push([iTL, iTR, t1v]);
+          faces.push([iTL, t1v, t0v]);
+          faces.push([b1, iBR, iTR]);
+          faces.push([b1, iTR, t1v]);
+        } else {
+          faces.push([b0, b1, t1v]);
+          faces.push([b0, t1v, t0v]);
+        }
+      }
+      for (i = 0; i < n; i++) {
+        var jm = (i + 1) % n;
+        var ei2 = n + i;
+        var ej2 = n + jm;
+        var iLeft = i < split;
+        var jLeft = jm < split;
+        if (iLeft && jLeft) {
+          faces.push([indexA, ei2, ej2]);
+        } else if (!iLeft && !jLeft) {
+          faces.push([indexB, ei2, ej2]);
+        } else {
+          faces.push([indexA, ei2, ej2]);
+          faces.push([indexB, ei2, ej2]);
+        }
+      }
+
+      return {
+        edges: edges,
+        faces: faces,
+        vertices: verts,
+        center: v3(cxm, cyy, czm),
+        doorQuad: { bl, br, tr, tl }
+      };
+    }
+
+    function dataToObject3D(data) {
+      const verts = data.vertices;
+      const pos = new Float32Array(verts.length * 3);
+      for (let i = 0; i < verts.length; i++) {
+        pos[i * 3] = verts[i][0];
+        pos[i * 3 + 1] = verts[i][1];
+        pos[i * 3 + 2] = verts[i][2];
+      }
+      const index = [];
+      for (const f of data.faces) {
+        index.push(f[0], f[1], f[2]);
+      }
+      const faceGeo = new THREE.BufferGeometry();
+      faceGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      faceGeo.setIndex(index);
+      faceGeo.computeVertexNormals();
+
+      const bodyMat = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        side: THREE.DoubleSide,
+        depthWrite: true,
+        polygonOffset: true,
+        polygonOffsetFactor: 1,
+        polygonOffsetUnits: 1
+      });
+      const body = new THREE.Mesh(faceGeo, bodyMat);
+      body.renderOrder = 0;
+
+      const edgePos = new Float32Array(data.edges.length);
+      let p = 0;
+      for (let i = 0; i < data.edges.length; i += 6) {
+        edgePos[p++] = data.edges[i];
+        edgePos[p++] = data.edges[i + 1];
+        edgePos[p++] = data.edges[i + 2];
+        edgePos[p++] = data.edges[i + 3];
+        edgePos[p++] = data.edges[i + 4];
+        edgePos[p++] = data.edges[i + 5];
+      }
+      const lineGeo = new LineSegmentsGeometry();
+      lineGeo.setPositions(edgePos);
+      const lineMat = new LineMaterial({
+        color: 0xffffff,
+        linewidth: 3,
+        worldUnits: false,
+        depthTest: true,
+        depthWrite: true,
+        transparent: true,
+        opacity: 1,
+        resolution: new THREE.Vector2(window.innerWidth, window.innerHeight)
+      });
+      const lines = new LineSegments2(lineGeo, lineMat);
+      lines.renderOrder = 1;
+      lines.raycast = () => {};
+
+      const g = new THREE.Group();
+      g.add(body);
+      g.add(lines);
+      if (data.doorQuad) {
+        const dq = data.doorQuad;
+        const dv = [dq.bl, dq.br, dq.tr, dq.bl, dq.tr, dq.tl];
+        const dpos = new Float32Array(18);
+        for (let i = 0; i < 6; i++) {
+          dpos[i * 3] = dv[i][0];
+          dpos[i * 3 + 1] = dv[i][1];
+          dpos[i * 3 + 2] = dv[i][2];
+        }
+        const doorGeo = new THREE.BufferGeometry();
+        doorGeo.setAttribute("position", new THREE.BufferAttribute(dpos, 3));
+        const doorMat = new THREE.MeshBasicMaterial({
+          color: 0x000000,
+          transparent: true,
+          opacity: 0.001,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        });
+        const doorMesh = new THREE.Mesh(doorGeo, doorMat);
+        doorMesh.name = "door";
+        g.add(doorMesh);
+      }
+      return g;
+    }
+
+    function disposeObject3D(obj) {
+      obj.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+          else o.material.dispose();
+        }
+      });
+    }
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000);
+
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 200);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 0.45;
+    controls.maxDistance = 9;
+    controls.autoRotate = true;
+    const ORBIT_SECONDS = 38;
+    controls.autoRotateSpeed = 60 / ORBIT_SECONDS;
+
+    const seedHud = document.getElementById("seed-hud");
+    const lifelineFill = document.getElementById("lifeline-fill");
+    const TAU = Math.PI * 2;
+    let lastAzimuth = 0;
+    let azimuthAccum = 0;
+
+    function updateSeedHud() {
+      if (seedHud) seedHud.textContent = currentSeed;
+    }
+
+    function updateLifeline() {
+      if (!lifelineFill) return;
+      const progress = Math.min(1, azimuthAccum / TAU);
+      lifelineFill.style.transform = "scaleX(" + progress + ")";
+    }
+
+    function resetAzimuthTracker() {
+      lastAzimuth = controls.getAzimuthalAngle();
+      azimuthAccum = 0;
+      updateLifeline();
+    }
+
+    function onFullRotation() {
+      currentSeed = randomSeed6();
+      rng = makeRng(currentSeed);
+      buildScene();
+    }
+
+    let buildingGroup = null;
+    let navPayload = null;
+
+    const raycaster = new THREE.Raycaster();
+    const pointerNdc = new THREE.Vector2();
+
+    function goInside() {
+      if (!navPayload || !navPayload.doorQuad) return;
+      const dq = navPayload.doorQuad;
+      const c = navPayload.center;
+      const midB = new THREE.Vector3(
+        (dq.bl[0] + dq.br[0]) * 0.5,
+        (dq.bl[1] + dq.br[1]) * 0.5,
+        (dq.bl[2] + dq.br[2]) * 0.5
+      );
+      const midT = new THREE.Vector3(
+        (dq.tl[0] + dq.tr[0]) * 0.5,
+        (dq.tl[1] + dq.tr[1]) * 0.5,
+        (dq.tl[2] + dq.tr[2]) * 0.5
+      );
+      const doorMid = new THREE.Vector3().addVectors(midB, midT).multiplyScalar(0.5);
+      const buildingCenter = new THREE.Vector3(c[0], c[1], c[2]);
+      const inward = buildingCenter.clone().sub(doorMid);
+      inward.y = 0;
+      if (inward.lengthSq() < 1e-10) inward.set(0, 0, 1);
+      inward.normalize();
+      const eye = 0.09;
+      const depth = 0.52;
+      const endPos = doorMid.clone().addScaledVector(inward, depth);
+      endPos.y = Math.max(doorMid.y + eye, 0.06);
+      const endTarget = buildingCenter.clone();
+      endTarget.y += 0.04;
+      const startPos = camera.position.clone();
+      const startTarget = controls.target.clone();
+      controls.enabled = false;
+      let u = 0;
+      function step() {
+        u += 0.06;
+        const k = Math.min(1, u);
+        const s = k * k * (3 - 2 * k);
+        camera.position.lerpVectors(startPos, endPos, s);
+        controls.target.lerpVectors(startTarget, endTarget, s);
+        controls.update();
+        if (k < 1) requestAnimationFrame(step);
+        else controls.enabled = true;
+      }
+      requestAnimationFrame(step);
+    }
+
+    function onPointerDown(e) {
+      if (!buildingGroup) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointerNdc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointerNdc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointerNdc, camera);
+      const hits = raycaster.intersectObject(buildingGroup, true);
+      for (let i = 0; i < hits.length; i++) {
+        if (hits[i].object && hits[i].object.name === "door") {
+          e.preventDefault();
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: "go-facade", seed: currentSeed }, "*");
+            return;
+          }
+          goInside();
+          return;
+        }
+      }
+    }
+
+    function setCameraToData(data) {
+      const dist = 1.45 + rng() * 1.1;
+      const az = -0.5 + rng() * 1.3;
+      const el = 0.2 + rng() * 0.45;
+      const c0 = Math.cos(az);
+      const s0 = Math.sin(az);
+      const ce = Math.cos(el);
+      const se = Math.sin(el);
+      const center = new THREE.Vector3(data.center[0], data.center[1], data.center[2]);
+      camera.position.set(
+        center.x + dist * s0 * ce,
+        center.y + dist * se,
+        center.z + dist * c0 * ce + 0.15 * (rng() - 0.5)
+      );
+      controls.target.copy(center);
+      camera.near = 0.02;
+      camera.far = 200;
+      camera.updateProjectionMatrix();
+    }
+
+    function buildScene() {
+      if (buildingGroup) {
+        scene.remove(buildingGroup);
+        disposeObject3D(buildingGroup);
+        buildingGroup = null;
+      }
+      const data = buildExterior(rng);
+      navPayload = { doorQuad: data.doorQuad, center: data.center };
+      buildingGroup = dataToObject3D(data);
+      scene.add(buildingGroup);
+      setCameraToData(data);
+      updateSeedHud();
+      resetAzimuthTracker();
+    }
+
+    function newVariation() {
+      currentSeed = randomSeed6();
+      rng = makeRng(currentSeed);
+      buildScene();
+    }
+
+    function onResize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      if (buildingGroup) {
+        buildingGroup.traverse((o) => {
+          if (o.isLineSegments2 && o.material && o.material.resolution) {
+            o.material.resolution.set(w, h);
+          }
+        });
+      }
+    }
+
+    function tick() {
+      requestAnimationFrame(tick);
+      const az = controls.getAzimuthalAngle();
+      let delta = az - lastAzimuth;
+      if (delta > Math.PI) delta -= Math.PI * 2;
+      if (delta < -Math.PI) delta += Math.PI * 2;
+      azimuthAccum += Math.abs(delta);
+      lastAzimuth = az;
+      updateLifeline();
+      if (azimuthAccum >= TAU) {
+        azimuthAccum = 0;
+        updateLifeline();
+        onFullRotation();
+      }
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    buildScene();
+    onResize();
+    window.addEventListener("resize", onResize);
+    renderer.domElement.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault();
+        newVariation();
+      }
+    });
+    tick();
+  </script>
+</body>
+</html>
