@@ -19,7 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260525-walkmoon";
+
+const BUILD = "20260525-walkmoon";
 
 globalThis.THREE = THREE;
 
@@ -47,6 +49,7 @@ const prompt = document.getElementById("prompt");
 const modeEl = document.getElementById("mode");
 const hudRoom = document.getElementById("hud-room");
 const hudSeed = document.getElementById("hud-seed");
+modeEl.textContent = `build · ${BUILD}`;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

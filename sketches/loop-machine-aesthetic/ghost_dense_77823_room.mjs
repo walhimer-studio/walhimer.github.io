@@ -19,7 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260525-walkmoon";
+
+const BUILD = "20260525-walkmoon";
 
 globalThis.THREE = THREE;
 
@@ -47,6 +49,7 @@ const prompt = document.getElementById("prompt");
 const modeEl = document.getElementById("mode");
 const hudRoom = document.getElementById("hud-room");
 const hudSeed = document.getElementById("hud-seed");
+modeEl.textContent = `build · ${BUILD}`;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -64,7 +67,7 @@ scene.add(world);
 await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
 const { builder } = buildGhostMachine(world);
 
-/** Walk moon panel — east wall, left of door (north jamb), replaces essay panel */
+/** Walk moon panel — east wall, left of door (south jamb), replaces essay panel */
 const WALK_MOON_URL = new URL("../../loop-art-critique-2026/walk_moon_audio_standalone.html", import.meta.url).href;
 const WALL_T = 0.15;
 const wallFace = WALL_T / 2 + 0.002;
