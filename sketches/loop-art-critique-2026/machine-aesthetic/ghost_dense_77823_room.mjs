@@ -19,9 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260525-fix2";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-walkmoon-panel";
 
-const BUILD = "20260525-fix2";
+const BUILD = "20260524-walkmoon-panel";
 
 globalThis.THREE = THREE;
 
@@ -67,49 +67,33 @@ scene.add(world);
 await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
 const { builder } = buildGhostMachine(world);
 
-/** Walk moon — full left-hand wall (north wall), click opens walk_moon_audio_standalone.html */
+/** Walk moon — your artwork on full left-hand wall; click opens walk_moon_audio_standalone.html */
 const WALK_MOON_URL = new URL("../walk_moon_audio_standalone.html", import.meta.url).href;
+const WALK_MOON_PANEL_TEX = new URL("walk-moon-wall-panel.png", import.meta.url).href;
 const WALL_T = 0.15;
 const wallFace = WALL_T / 2 + 0.002;
 const panelEdgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
 
-function makeWalkMoonWallTexture(w, h) {
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#0d0d0d";
-  ctx.fillRect(0, 0, w, h);
-
-  for (let i = 0; i < 280; i++) {
-    const x = Math.random() * w;
-    const y = Math.random() * h;
-    const r = Math.random() * 2.2 + 0.2;
-    ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.5 + 0.08})`;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  const moonR = Math.min(w, h) * 0.22;
-  const grd = ctx.createRadialGradient(w * 0.5, h * 0.42, 8, w * 0.5, h * 0.42, moonR);
-  grd.addColorStop(0, "#f2efe8");
-  grd.addColorStop(0.85, "#c8c4bc");
-  grd.addColorStop(1, "rgba(200,196,188,0)");
-  ctx.fillStyle = grd;
-  ctx.beginPath();
-  ctx.arc(w * 0.5, h * 0.42, moonR, 0, Math.PI * 2);
-  ctx.fill();
-
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
 const walkMoonWallW = ROOM.width - 0.35;
 const walkMoonWallH = ROOM.height - 0.45;
-const walkMoonTex = makeWalkMoonWallTexture(1536, Math.round(1536 * (walkMoonWallH / walkMoonWallW)));
+
+const walkMoonTex = await new Promise((resolve, reject) => {
+  new THREE.TextureLoader().load(WALK_MOON_PANEL_TEX, resolve, undefined, reject);
+});
+walkMoonTex.colorSpace = THREE.SRGBColorSpace;
 walkMoonTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+const imgAspect = walkMoonTex.image.width / walkMoonTex.image.height;
+const wallAspect = walkMoonWallW / walkMoonWallH;
+if (imgAspect > wallAspect) {
+  const sx = wallAspect / imgAspect;
+  walkMoonTex.repeat.set(sx, 1);
+  walkMoonTex.offset.set((1 - sx) / 2, 0);
+} else {
+  const sy = imgAspect / wallAspect;
+  walkMoonTex.repeat.set(1, sy);
+  walkMoonTex.offset.set(0, (1 - sy) / 2);
+}
 
 const walkMoonZFace = -RD + wallFace + 0.03;
 const walkMoonGroup = new THREE.Group();
