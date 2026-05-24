@@ -19,6 +19,7 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
+import { createTextCylinder } from "./text-cylinder-core.mjs";
 
 globalThis.THREE = THREE;
 
@@ -132,7 +133,14 @@ essayEdge(ex, ey1, ez0, ex, ey1, ez1);
 essayEdge(ex, ey0, ez0, ex, ey1, ez0);
 essayEdge(ex, ey0, ez1, ex, ey1, ez1);
 
-const linkMeshes = [essayPlane];
+const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
+const textCylinder = createTextCylinder({
+  position: { x: ROOM_A_X, y: ROOM.height * 0.46, z: 0 },
+  link: TEXT_CYLINDER_URL,
+});
+world.add(textCylinder.group);
+
+const linkMeshes = [essayPlane, ...textCylinder.linkMeshes];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
@@ -205,7 +213,7 @@ function updateHud(pos) {
   if (pos.x < HALL_AB.x1) {
     hudRoom.textContent = pos.x >= ROOM_A_X - RW ? "Room A · black · code mural" : "Approach · Room A";
     hudSeed.textContent = pos.x >= ROOM_A_X - RW
-      ? "essay panel · east wall right of door · turn toward door · click panel for PDF"
+      ? "text cylinder · center · click to make your own · essay · east wall · PDF"
       : "ghost seed 77823 · room B ahead";
   } else if (pos.x < HALL_BC.x0) {
     hudRoom.textContent = pos.x < 0 ? "Hall A–B" : "Room B · ghost wireframe";
@@ -269,6 +277,8 @@ const clock = new THREE.Clock();
 function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock.getDelta(), 0.05);
+
+  textCylinder.update(dt);
 
   if (ghostSpinActive) {
     builder.spinners.forEach((s) => {
