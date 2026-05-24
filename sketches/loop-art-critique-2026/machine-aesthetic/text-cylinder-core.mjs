@@ -1,75 +1,40 @@
 import * as THREE from "three";
 
 const FONT = '"Helvetica Neue", Helvetica, Arial, sans-serif';
-const charTexCache = new Map();
-
-function letterTexture(ch, opacity = 1) {
-  const key = `${ch}\0${opacity}`;
-  if (charTexCache.has(key)) return charTexCache.get(key);
-
-  const size = 128;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, size, size);
-  ctx.font = `600 ${Math.round(size * 0.68)}px ${FONT}`;
-  ctx.fillStyle = `rgba(255,255,255,${opacity})`;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(ch, size / 2, size / 2);
-
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.needsUpdate = true;
-  charTexCache.set(key, tex);
-  return tex;
-}
-
-function makeLetterMesh(ch, letterHeight, hScale) {
-  const aspect = hScale;
-  const w = letterHeight * aspect;
-  const mat = new THREE.MeshBasicMaterial({
-    map: letterTexture(ch, 1),
-    transparent: true,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-  });
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, letterHeight), mat);
-  mesh.renderOrder = 5;
-  return mesh;
-}
+const CANVAS_REF = 1450;
+const LETTER_HSCALE = 0.45;
 
 /**
- * 3D text cylinder — layout from text11.html, placed in world space.
- * @returns {{ group: THREE.Group, linkMeshes: THREE.Object3D[], update: (dt: number) => void }}
+ * text11.html draw loop — white letters on transparent, for Room A black background.
  */
-export function createTextCylinder({
-  phrase = "ME - I WILL NOT BECOME THEIR NARRATIVE ",
-  rows = 8,
-  radius = 2.75,
-  rowSpacing = 0.52,
-  letterHeight = 0.34,
-  letterHScale = 0.45,
-  tiltAngle = 0.14,
-  rotSpeed = 0.38,
-  position = { x: 0, y: 4.15, z: 0 },
-  link = null,
-} = {}) {
-  const group = new THREE.Group();
-  group.name = "text_cylinder";
-  group.position.set(position.x, position.y, position.z);
-
-  const spin = new THREE.Group();
-  spin.rotation.x = tiltAngle;
-  group.add(spin);
+function drawTextCylinderFrame(ctx, w, h, {
+  phrase,
+  rows,
+  baseFontSize,
+  rowSpacing,
+  radius,
+  tiltAngle,
+  angle,
+}) {
+  const sc = w / CANVAS_REF;
+  ctx.clearRect(0, 0, w, h);
 
   const letters = phrase.split("");
-  const step = (2 * Math.PI) / letters.length;
-  const midRow = (rows - 1) / 2;
+  if (!letters.length) return;
 
+  const step = (2 * Math.PI) / letters.length;
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+  const cx = w / 2;
+  const cy = h / 2;
+  const midRow = (rows - 1) / 2;
+  const cosTilt = Math.cos(tiltAngle);
+  const sinTilt = Math.sin(tiltAngle);
+  const camZ = 1000;
+
+  const drawn = [];
   for (let row = 0; row < rows; row++) {
-    const rowY = (row - midRow) * rowSpacing;
+    const rowY3D = (row - midRow) * rowSpacing;
     const twist = row * 0.12;
 
     letters.forEach((ch, j) => {
@@ -77,29 +42,121 @@ export function createTextCylinder({
       const x = Math.cos(a) * radius;
       const z = Math.sin(a) * radius;
 
-      const mesh = makeLetterMesh(ch, letterHeight, letterHScale);
-      mesh.position.set(x, rowY, z);
-      mesh.lookAt(x * 2, rowY, z * 2);
-      spin.add(mesh);
+      const rx = x * cosA - z * sinA;
+      const rz = x * sinA + z * cosA;
+      const ry = rowY3D * cosTilt - rz * sinTilt;
+      const rz2 = rowY3D * sinTilt + rz * cosTilt;
+
+      const depth = camZ - rz2;
+      const scale = camZ / depth;
+      const sx = cx + rx * scale * sc;
+      const sy = cy + ry * scale * sc;
+      const facing = rz > 0;
+      const foreshorten = Math.abs(rz) / (radius || 1);
+
+      drawn.push({ ch, sx, sy, scale, facing, rz2, foreshorten });
     });
   }
 
-  const hitH = rows * rowSpacing * 1.05;
+  drawn.sort((a, b) => a.rz2 - b.rz2);
+
+  const fontSize = baseFontSize * sc;
+  for (const { ch, sx, sy, scale, facing, foreshorten } of drawn) {
+    ctx.font = `${fontSize}px ${FONT}`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.globalAlpha = facing ? 1 : 0.5;
+    ctx.fillStyle = facing ? "#ffffff" : "#aaaaaa";
+    ctx.save();
+    ctx.translate(sx, sy);
+    const hScale = LETTER_HSCALE * foreshorten;
+    if (!facing) ctx.scale(-hScale * scale, scale);
+    else ctx.scale(hScale * scale, scale);
+    ctx.fillText(ch, 0, 0);
+    ctx.restore();
+  }
+
+  ctx.globalAlpha = 1;
+}
+
+/**
+ * text11 word cylinder in world space — canvas illusion on crossed 3D planes.
+ * @returns {{ group: THREE.Group, linkMeshes: THREE.Object3D[], update: (dt: number) => void }}
+ */
+export function createTextCylinder({
+  phrase = "ME - I WILL NOT BECOME THEIR NARRATIVE ",
+  rows = 8,
+  radius = 320,
+  rowSpacing = 88,
+  baseFontSize = 64,
+  tiltAngle = 0.14,
+  rotSpeed = 0.55,
+  planeSize = 8.5,
+  position = { x: 0, y: 4.15, z: 0 },
+  link = null,
+} = {}) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext("2d");
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+
+  const faceMat = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+  });
+
+  const group = new THREE.Group();
+  group.name = "text_cylinder";
+  group.position.set(position.x, position.y, position.z);
+
+  // Crossed planes so the cylinder reads from more viewpoints in the room.
+  for (const rotY of [0, Math.PI / 2]) {
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(planeSize, planeSize), faceMat);
+    plane.rotation.y = rotY;
+    plane.renderOrder = 6;
+    group.add(plane);
+  }
+
   const hitMesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(radius * 1.12, radius * 1.12, hitH, 20, 1, true),
-    new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide })
+    new THREE.BoxGeometry(planeSize * 0.75, planeSize * 0.75, planeSize * 0.75),
+    new THREE.MeshBasicMaterial({ visible: false })
   );
   hitMesh.name = "text_cylinder_hit";
   hitMesh.userData.link = link;
   group.add(hitMesh);
 
   let angle = 0;
+  drawTextCylinderFrame(ctx, canvas.width, canvas.height, {
+    phrase,
+    rows,
+    baseFontSize,
+    rowSpacing,
+    radius,
+    tiltAngle,
+    angle,
+  });
+  texture.needsUpdate = true;
+
   return {
     group,
     linkMeshes: [hitMesh],
     update(dt) {
       angle += rotSpeed * dt;
-      spin.rotation.y = angle;
+      drawTextCylinderFrame(ctx, canvas.width, canvas.height, {
+        phrase,
+        rows,
+        baseFontSize,
+        rowSpacing,
+        radius,
+        tiltAngle,
+        angle,
+      });
+      texture.needsUpdate = true;
     },
   };
 }
