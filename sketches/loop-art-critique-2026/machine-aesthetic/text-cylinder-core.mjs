@@ -150,7 +150,7 @@ export function createTextCylinder({
     focus,
     linkMeshes: [hitMesh],
     update(dt, camera) {
-      angle -= rotSpeed * dt;
+      angle += rotSpeed * dt;
       drawTextCylinderFrame(ctx, canvas.width, canvas.height, {
         phrase,
         rows,
