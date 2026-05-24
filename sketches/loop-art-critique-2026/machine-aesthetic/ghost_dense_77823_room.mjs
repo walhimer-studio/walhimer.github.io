@@ -19,9 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-walkmoon-panel";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-wallsize";
 
-const BUILD = "20260524-walkmoon-panel";
+const BUILD = "20260524-wallsize";
 
 globalThis.THREE = THREE;
 
@@ -67,15 +67,11 @@ scene.add(world);
 await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
 const { builder } = buildGhostMachine(world);
 
-/** Walk moon — your artwork on full left-hand wall; click opens walk_moon_audio_standalone.html */
+/** Walk moon — your PNG sized to full north (left-hand) wall face */
 const WALK_MOON_URL = new URL("../walk_moon_audio_standalone.html", import.meta.url).href;
 const WALK_MOON_PANEL_TEX = new URL("walk-moon-wall-panel.png", import.meta.url).href;
 const WALL_T = 0.15;
 const wallFace = WALL_T / 2 + 0.002;
-const panelEdgeMat = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-const walkMoonWallW = ROOM.width - 0.35;
-const walkMoonWallH = ROOM.height - 0.45;
 
 const walkMoonTex = await new Promise((resolve, reject) => {
   new THREE.TextureLoader().load(WALK_MOON_PANEL_TEX, resolve, undefined, reject);
@@ -83,61 +79,22 @@ const walkMoonTex = await new Promise((resolve, reject) => {
 walkMoonTex.colorSpace = THREE.SRGBColorSpace;
 walkMoonTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-const imgAspect = walkMoonTex.image.width / walkMoonTex.image.height;
-const wallAspect = walkMoonWallW / walkMoonWallH;
-if (imgAspect > wallAspect) {
-  const sx = wallAspect / imgAspect;
-  walkMoonTex.repeat.set(sx, 1);
-  walkMoonTex.offset.set((1 - sx) / 2, 0);
-} else {
-  const sy = imgAspect / wallAspect;
-  walkMoonTex.repeat.set(1, sy);
-  walkMoonTex.offset.set(0, (1 - sy) / 2);
-}
-
-const walkMoonZFace = -RD + wallFace + 0.03;
-const walkMoonGroup = new THREE.Group();
-walkMoonGroup.name = "walk_moon_panel_link";
-world.add(walkMoonGroup);
-
 const walkMoonPlane = new THREE.Mesh(
-  new THREE.PlaneGeometry(walkMoonWallW, walkMoonWallH),
+  new THREE.PlaneGeometry(ROOM.width, ROOM.height),
   new THREE.MeshBasicMaterial({
     map: walkMoonTex,
     depthWrite: false,
     polygonOffset: true,
-    polygonOffsetFactor: -2,
-    polygonOffsetUnits: -2,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
   })
 );
 walkMoonPlane.name = "walk_moon_panel";
-walkMoonPlane.position.set(ROOM_A_X, ROOM.height * 0.5, walkMoonZFace);
+walkMoonPlane.position.set(ROOM_A_X, ROOM.height * 0.5, -RD + wallFace);
 walkMoonPlane.rotation.y = 0;
 walkMoonPlane.userData.link = WALK_MOON_URL;
 walkMoonPlane.renderOrder = 10;
-walkMoonGroup.add(walkMoonPlane);
-
-function panelEdge(ax, ay, az, bx, by, bz) {
-  const line = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(ax, ay, az),
-      new THREE.Vector3(bx, by, bz),
-    ]),
-    panelEdgeMat
-  );
-  line.renderOrder = 3;
-  walkMoonGroup.add(line);
-}
-
-const pz = walkMoonZFace + 0.002;
-const py0 = ROOM.height * 0.5 - walkMoonWallH / 2;
-const py1 = ROOM.height * 0.5 + walkMoonWallH / 2;
-const px0 = ROOM_A_X - walkMoonWallW / 2;
-const px1 = ROOM_A_X + walkMoonWallW / 2;
-panelEdge(px0, py0, pz, px1, py0, pz);
-panelEdge(px0, py1, pz, px1, py1, pz);
-panelEdge(px0, py0, pz, px0, py1, pz);
-panelEdge(px1, py0, pz, px1, py1, pz);
+world.add(walkMoonPlane);
 
 const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
 const textCylinder = createTextCylinder({
