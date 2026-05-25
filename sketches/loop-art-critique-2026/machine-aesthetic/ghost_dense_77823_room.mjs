@@ -19,9 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-wall-fix";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-same-tab";
 
-const BUILD = "20260524-wall-fix";
+const BUILD = "20260524-same-tab";
 
 globalThis.THREE = THREE;
 
@@ -177,7 +177,7 @@ renderer.domElement.addEventListener("click", (event) => {
   const hit = pickLinkMesh(event);
   if (hit?.userData.link) {
     event.preventDefault();
-    window.open(hit.userData.link, "_blank", "noopener");
+    window.location.assign(hit.userData.link);
   }
 });
 
