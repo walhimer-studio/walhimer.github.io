@@ -19,9 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-no-text-panel";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
 
-const BUILD = "20260524-no-text-panel";
+const BUILD = "20260524-pdf-link";
 
 globalThis.THREE = THREE;
 
@@ -123,6 +123,21 @@ buildingOutlinePlane.userData.link = BUILDING_OUTLINE_URL;
 buildingOutlinePlane.renderOrder = 10;
 world.add(buildingOutlinePlane);
 
+/** Invisible link — east wall, right of door → surrender-machine-ibm-mono.pdf */
+const halfDoor = LAYOUT.doorwayWidth / 2;
+const segD = RD - halfDoor;
+const SURRENDER_PDF_URL = new URL("surrender-machine-ibm-mono.pdf", import.meta.url).href;
+
+const doorPdfLink = new THREE.Mesh(
+  new THREE.PlaneGeometry(segD, ROOM.height),
+  new THREE.MeshBasicMaterial({ visible: false })
+);
+doorPdfLink.name = "door_pdf_link";
+doorPdfLink.position.set(ROOM_A_X + RW - wallFace, ROOM.height * 0.5, halfDoor + segD / 2);
+doorPdfLink.rotation.y = -Math.PI / 2;
+doorPdfLink.userData.link = SURRENDER_PDF_URL;
+world.add(doorPdfLink);
+
 const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
 const textCylinder = createTextCylinder({
   position: TEXT_CYLINDER_POS,
@@ -130,7 +145,7 @@ const textCylinder = createTextCylinder({
 });
 world.add(textCylinder.group);
 
-const linkMeshes = [walkMoonPlane, buildingOutlinePlane, ...textCylinder.linkMeshes];
+const linkMeshes = [walkMoonPlane, buildingOutlinePlane, doorPdfLink, ...textCylinder.linkMeshes];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
