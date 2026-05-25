@@ -19,9 +19,9 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-may24-panel";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-wall-fix";
 
-const BUILD = "20260524-may24-panel";
+const BUILD = "20260524-wall-fix";
 
 globalThis.THREE = THREE;
 
@@ -96,8 +96,40 @@ walkMoonPlane.userData.link = WALK_MOON_URL;
 walkMoonPlane.renderOrder = 10;
 world.add(walkMoonPlane);
 
-/** Surrender Machine text panel — full south (right-hand) wall face (may-24-2026.pdf) */
+/** Building outline — full south wall face */
+const BUILDING_OUTLINE_URL = new URL("building-outline-only.html", import.meta.url).href;
+const BUILDING_OUTLINE_TEX = new URL("building-outline-wall-panel.png", import.meta.url).href;
+
+const buildingOutlineTex = await new Promise((resolve, reject) => {
+  new THREE.TextureLoader().load(BUILDING_OUTLINE_TEX, resolve, undefined, reject);
+});
+buildingOutlineTex.colorSpace = THREE.SRGBColorSpace;
+buildingOutlineTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+const buildingOutlinePlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(ROOM.width, ROOM.height),
+  new THREE.MeshBasicMaterial({
+    map: buildingOutlineTex,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: -1,
+  })
+);
+buildingOutlinePlane.name = "building_outline_panel";
+buildingOutlinePlane.position.set(ROOM_A_X, ROOM.height * 0.5, RD - wallFace);
+buildingOutlinePlane.rotation.y = Math.PI;
+buildingOutlinePlane.userData.link = BUILDING_OUTLINE_URL;
+buildingOutlinePlane.renderOrder = 10;
+world.add(buildingOutlinePlane);
+
+/** Surrender Machine text panel — east wall, right of door (may-24-2026.pdf) */
+const halfDoor = LAYOUT.doorwayWidth / 2;
+const segD = RD - halfDoor;
 const SURRENDER_PANEL_TEX = new URL("may-24-2026-wall-panel.png", import.meta.url).href;
+const surrenderPanelAspect = 1700 / 2200;
+const surrenderPanelH = ROOM.height;
+const surrenderPanelW = surrenderPanelH * surrenderPanelAspect;
 
 const surrenderPanelTex = await new Promise((resolve, reject) => {
   new THREE.TextureLoader().load(SURRENDER_PANEL_TEX, resolve, undefined, reject);
@@ -106,7 +138,7 @@ surrenderPanelTex.colorSpace = THREE.SRGBColorSpace;
 surrenderPanelTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 const surrenderPanelPlane = new THREE.Mesh(
-  new THREE.PlaneGeometry(ROOM.width, ROOM.height),
+  new THREE.PlaneGeometry(surrenderPanelW, surrenderPanelH),
   new THREE.MeshBasicMaterial({
     map: surrenderPanelTex,
     depthWrite: false,
@@ -116,9 +148,9 @@ const surrenderPanelPlane = new THREE.Mesh(
   })
 );
 surrenderPanelPlane.name = "surrender_text_panel";
-surrenderPanelPlane.position.set(ROOM_A_X, ROOM.height * 0.5, RD - wallFace);
-surrenderPanelPlane.rotation.y = Math.PI;
-surrenderPanelPlane.renderOrder = 10;
+surrenderPanelPlane.position.set(ROOM_A_X + RW - wallFace, ROOM.height * 0.5, halfDoor + segD / 2);
+surrenderPanelPlane.rotation.y = -Math.PI / 2;
+surrenderPanelPlane.renderOrder = 11;
 world.add(surrenderPanelPlane);
 
 const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
@@ -128,7 +160,7 @@ const textCylinder = createTextCylinder({
 });
 world.add(textCylinder.group);
 
-const linkMeshes = [walkMoonPlane, ...textCylinder.linkMeshes];
+const linkMeshes = [walkMoonPlane, buildingOutlinePlane, ...textCylinder.linkMeshes];
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
