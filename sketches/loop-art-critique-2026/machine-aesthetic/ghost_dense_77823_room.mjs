@@ -19,9 +19,10 @@ import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
-import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-building-shot2";
+import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-museum-panel";
+import { createMuseumTextPanel } from "./museum-text-panel-core.mjs?v=20260524-museum-panel";
 
-const BUILD = "20260524-building-shot2";
+const BUILD = "20260524-museum-panel";
 
 globalThis.THREE = THREE;
 
@@ -122,6 +123,14 @@ buildingOutlinePlane.rotation.y = Math.PI;
 buildingOutlinePlane.userData.link = BUILDING_OUTLINE_URL;
 buildingOutlinePlane.renderOrder = 10;
 world.add(buildingOutlinePlane);
+
+/** Museum text panel — east wall, right of door (south segment) */
+const halfDoor = LAYOUT.doorwayWidth / 2;
+const segD = RD - halfDoor;
+const { mesh: museumTextPanel } = createMuseumTextPanel();
+museumTextPanel.position.set(ROOM_A_X + RW - wallFace, ROOM.height * 0.5, halfDoor + segD / 2);
+museumTextPanel.rotation.y = -Math.PI / 2;
+world.add(museumTextPanel);
 
 const TEXT_CYLINDER_URL = new URL("../../text11.html", import.meta.url).href;
 const textCylinder = createTextCylinder({
