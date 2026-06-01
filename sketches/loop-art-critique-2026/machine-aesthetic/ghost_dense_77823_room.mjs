@@ -14,25 +14,13 @@ import {
   buildGhostMachine,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import {
-  surrenderScaleForRoom,
-  SURRENDER_DEFAULT_SLIDERS,
-} from "./surrender-machine-core.mjs";
+import { createSurrenderMachinesRoomEmbed } from "./surrender-machines-room-embed.mjs?v=20260601-p5-room";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
 
-const BUILD = "20260601-room-c-floor";
+const BUILD = "20260601-room-c-p5-artwork";
 const SURRENDER_MACHINE_SEED = 653057;
-const SURRENDER_FADE_DURATION = 14;
 
 globalThis.THREE = THREE;
-
-await new Promise((resolve, reject) => {
-  const script = document.createElement("script");
-  script.src = "surrender-machines-three-core.js?v=20260601-three-ref";
-  script.onload = resolve;
-  script.onerror = reject;
-  document.head.appendChild(script);
-});
 
 const prompt = document.getElementById("prompt");
 const modeEl = document.getElementById("mode");
@@ -108,21 +96,22 @@ scene.add(world);
 await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
 const { builder } = buildGhostMachine(world);
 
-/** Room C — surrender machine on the floor, center of the room */
+/** Room C — user's p5 surrender-machines.html on the floor, center of the room */
 let surrenderEmbed = null;
 
-if (typeof globalThis.createSurrenderMachineEmbed === "function") {
-  surrenderEmbed = globalThis.createSurrenderMachineEmbed({
+try {
+  surrenderEmbed = await createSurrenderMachinesRoomEmbed({
+    THREE,
     parent: world,
     x: ROOM_C_X,
     y: 0.04,
     z: 0,
-    scale: surrenderScaleForRoom(ROOM.height),
-    flat: true,
+    roomHeight: ROOM.height,
     seed: SURRENDER_MACHINE_SEED,
-    sliders: SURRENDER_DEFAULT_SLIDERS,
+    getSliders: getSliderValues,
   });
-  surrenderEmbed.lights.forEach((l) => scene.add(l));
+} catch (err) {
+  console.error("Room C surrender machine failed to load:", err);
 }
 
 /** Walk moon — your PNG sized to full north (left-hand) wall face */
@@ -235,7 +224,6 @@ renderer.domElement.addEventListener("mousemove", (event) => {
 function onSliderInput() {
   syncSliderLabels();
   syncZeroHint();
-  if (surrenderEmbed) surrenderEmbed.updateTargets(getSliderValues());
 }
 
 [slAnger, slEgo, slAttachment].forEach((el) => {
@@ -248,7 +236,7 @@ surrenderBtn.addEventListener("click", () => {
   if (!surrenderEmbed) return;
   const st = surrenderEmbed.state;
   if (st.surrendered || st.surrenderStart != null) return;
-  st.surrenderStart = sceneTime;
+  surrenderEmbed.triggerSurrender();
   surrenderBtn.textContent = "Surrendering…";
   surrenderBtn.disabled = true;
   surrenderBtn.classList.add("surrendered");
@@ -366,16 +354,7 @@ function tick() {
   }
 
   if (surrenderEmbed) {
-    const st = surrenderEmbed.state;
-    if (st.surrenderStart != null) {
-      st.shadowAmount = Math.min((sceneTime - st.surrenderStart) / SURRENDER_FADE_DURATION, 1);
-      if (st.shadowAmount >= 1) st.surrendered = true;
-    }
-    surrenderEmbed.applySliders(getSliderValues());
-    surrenderEmbed.setStaticOverlayVisible(
-      surrenderActive && prompt.classList.contains("hidden") && st.shadowAmount < 1
-    );
-    surrenderEmbed.update(dt, true);
+    surrenderEmbed.update();
   }
 
   const moving = keys.KeyW || keys.KeyS || keys.KeyA || keys.KeyD ||
