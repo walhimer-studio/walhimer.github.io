@@ -32,22 +32,117 @@
       font-family: "IBM Plex Mono", ui-monospace, monospace;
       font-size: 10px; color: #aaa; pointer-events: none;
     }
-    #room-c-installation {
+    #room-c-controls {
+      --sm-offwhite: #f0ede6;
+      --sm-dim: #888880;
+      --sm-rule: #2a2a2a;
+      --sm-accent: #c8a882;
       position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      z-index: 25;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(900px, 94vw);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      z-index: 20;
+      align-items: stretch;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
       transition: opacity 0.25s ease, visibility 0.25s ease;
     }
-    #room-c-installation.is-visible {
+    #room-c-controls.is-visible {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
+    }
+    #room-c-controls .ctrl {
+      background: rgba(10, 10, 10, 0.82);
+      border: 1px solid var(--sm-rule);
+      padding: 12px 14px;
+      backdrop-filter: blur(6px);
+    }
+    #room-c-controls .ctrl-label {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--sm-dim);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #room-c-controls .ctrl-label span.val {
+      color: var(--sm-offwhite);
+      font-size: 11px;
+    }
+    #room-c-controls .ctrl input[type="range"] {
+      display: block;
+      width: 100%;
+      height: 3px;
+      appearance: none;
+      background: var(--sm-rule);
+      outline: none;
+      cursor: pointer;
+    }
+    #room-c-controls .ctrl input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--sm-offwhite);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #room-c-controls .ctrl input[type="range"]::-webkit-slider-thumb:hover {
+      background: var(--sm-accent);
+    }
+    #room-c-controls .ctrl-desc {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 9.5px;
+      color: #555;
+      margin-top: 6px;
+      letter-spacing: 0.06em;
+    }
+    #room-c-controls #surrender-btn {
+      background: rgba(200, 168, 130, 0.12);
+      border: 1px solid var(--sm-accent);
+      color: var(--sm-accent);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 12px 14px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    #room-c-controls #surrender-btn:hover {
+      background: rgba(200, 168, 130, 0.25);
+    }
+    #room-c-controls #surrender-btn:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    #room-c-controls #surrender-btn.surrendered {
+      border-color: rgba(200, 168, 130, 0.2);
+      color: rgba(200, 168, 130, 0.3);
+    }
+    @media (max-width: 620px) {
+      #room-c-controls {
+        grid-template-columns: 1fr 1fr;
+        top: 12px;
+        gap: 8px;
+      }
+      #room-c-controls #surrender-btn { grid-column: 2 / 3; }
     }
   </style>
   <script type="importmap">
@@ -73,13 +168,25 @@
     <span class="seed" id="hud-seed">walk moon · text cylinder · room A</span>
   </div>
 
-  <iframe
-    id="room-c-installation"
-    title="Surrender Machines"
-    loading="lazy"
-    allow="autoplay"
-  ></iframe>
+  <div id="room-c-controls" role="group" aria-label="Surrender machine controls">
+    <div class="ctrl" id="ctrl-anger">
+      <div class="ctrl-label">Anger <span class="val" id="val-anger">50</span></div>
+      <input type="range" id="sl-anger" min="0" max="100" value="50" aria-label="Anger" />
+      <div class="ctrl-desc">gears break</div>
+    </div>
+    <div class="ctrl" id="ctrl-ego">
+      <div class="ctrl-label">Ego <span class="val" id="val-ego">50</span></div>
+      <input type="range" id="sl-ego" min="0" max="100" value="50" aria-label="Ego" />
+      <div class="ctrl-desc">static interference</div>
+    </div>
+    <div class="ctrl" id="ctrl-attachment">
+      <div class="ctrl-label">Attachment <span class="val" id="val-attachment">50</span></div>
+      <input type="range" id="sl-attachment" min="0" max="100" value="50" aria-label="Attachment" />
+      <div class="ctrl-desc">static residue</div>
+    </div>
+    <button type="button" id="surrender-btn">Surrender</button>
+  </div>
 
-  <script type="module" src="ghost_dense_77823_room.mjs?v=20260601-installation-embed"></script>
+  <script type="module" src="ghost_dense_77823_room.mjs?v=20260601-room-c-in-room"></script>
 </body>
 </html>
