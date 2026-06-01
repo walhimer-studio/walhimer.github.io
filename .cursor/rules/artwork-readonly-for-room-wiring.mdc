@@ -34,6 +34,24 @@ Before editing or committing:
 - [ ] Am I using **their** file, not a repo convenience port?
 - [ ] If any box is no → **stop and ask.**
 
+## Incident record — Surrender Machines / Room C (2026-05-31)
+
+**Do not repeat this session.** One task (“put `sketches/…/surrender-machines.html` on Room C floor, don’t change my art”) produced:
+
+| Metric | Count |
+|--------|------:|
+| User corrections required | **14** |
+| Distinct wrong approaches after they pointed at their file | **12** |
+| Bad pushes (substitute / iframe / port / split artwork) | **6** |
+| Tool edits on artwork-related paths in one session | **137** |
+| Hours the user spent fighting | **~3** |
+
+The 12 wrong approaches included: `surrender-machines-three-core.js` instead of their p5 file; installation page instead of their sketch path; iframe; color/lighting tweaks on a port; removing the machine from Room C; three-core floor embed; splitting `surrender-machines.html` into `surrender-machines-core.js` with embed hooks.
+
+**One authorized artwork edit** in that window: user asked to remove room / fullscreen / collapse (`b9ef5dd`). Everything else that touched their sketch for “wiring” was unauthorized.
+
+If you are about to do any of the above again → **stop. The count does not get higher.**
+
 ## Example (Surrender Machines)
 
 | User said | Forbidden | Allowed |
