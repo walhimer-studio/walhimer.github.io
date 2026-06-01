@@ -21,7 +21,8 @@ import {
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
 
-const BUILD = "20260524-pdf-link";
+const BUILD = "20260601-room-c-controls";
+const SURRENDER_FADE_DURATION = 14;
 
 globalThis.THREE = THREE;
 
@@ -49,7 +50,29 @@ const prompt = document.getElementById("prompt");
 const modeEl = document.getElementById("mode");
 const hudRoom = document.getElementById("hud-room");
 const hudSeed = document.getElementById("hud-seed");
+const roomCControls = document.getElementById("room-c-controls");
+const slAnger = document.getElementById("sl-anger");
+const slEgo = document.getElementById("sl-ego");
+const slAttachment = document.getElementById("sl-attachment");
+const valAnger = document.getElementById("val-anger");
+const valEgo = document.getElementById("val-ego");
+const valAttachment = document.getElementById("val-attachment");
+const surrenderBtn = document.getElementById("surrender-btn");
 modeEl.textContent = `build · ${BUILD}`;
+
+function getSliderValues() {
+  return {
+    anger: Number(slAnger.value),
+    ego: Number(slEgo.value),
+    attachment: Number(slAttachment.value),
+  };
+}
+
+function syncSliderLabels() {
+  valAnger.textContent = slAnger.value;
+  valEgo.textContent = slEgo.value;
+  valAttachment.textContent = slAttachment.value;
+}
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -193,6 +216,27 @@ if (typeof globalThis.createSurrenderMachineEmbed === "function") {
   surrenderEmbed.lights.forEach((l) => scene.add(l));
 }
 
+function onSliderInput() {
+  syncSliderLabels();
+  if (surrenderEmbed) {
+    surrenderEmbed.updateTargets(getSliderValues());
+  }
+}
+
+[slAnger, slEgo, slAttachment].forEach((el) => {
+  el.addEventListener("input", onSliderInput);
+});
+
+surrenderBtn.addEventListener("click", () => {
+  if (!surrenderEmbed) return;
+  const st = surrenderEmbed.state;
+  if (st.surrendered || st.surrenderStart != null) return;
+  st.surrenderStart = sceneTime;
+  surrenderBtn.textContent = "Surrendering…";
+  surrenderBtn.disabled = true;
+  surrenderBtn.classList.add("surrendered");
+});
+
 const GHOST_SPIN_X0 = HALL_AB.x0 - 2;
 const GHOST_SPIN_X1 = HALL_BC.x0;
 let ghostSpinActive = false;
@@ -235,6 +279,12 @@ function updateHud(pos) {
       : "surrender machine missing";
   }
   surrenderActive = pos.x >= ROOM_C_ZONE_X0 && pos.x <= ROOM_C_ZONE_X1;
+  if (roomCControls) {
+    roomCControls.classList.toggle(
+      "is-visible",
+      surrenderActive && prompt.classList.contains("hidden")
+    );
+  }
 }
 
 const orbit = new OrbitControls(camera, renderer.domElement);
@@ -279,9 +329,12 @@ window.addEventListener("keydown", (e) => { keys[e.code] = true; });
 window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
 const clock = new THREE.Clock();
+let sceneTime = 0;
+
 function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock.getDelta(), 0.05);
+  sceneTime += dt;
 
   textCylinder.update(dt, camera);
 
@@ -295,6 +348,11 @@ function tick() {
   }
 
   if (surrenderEmbed) {
+    const st = surrenderEmbed.state;
+    if (st.surrenderStart != null) {
+      st.shadowAmount = Math.min((sceneTime - st.surrenderStart) / SURRENDER_FADE_DURATION, 1);
+      if (st.shadowAmount >= 1) st.surrendered = true;
+    }
     surrenderEmbed.update(dt, surrenderActive);
   }
 
