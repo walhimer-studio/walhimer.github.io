@@ -90,38 +90,8 @@
 
     const spinners = [];
     const animatedMats = [];
-    const shakeGroups = [];
     let rng = makeRng(state.seed);
     let builtSig = "";
-    let prevStressSig = "0|0|0";
-
-    function liveStress(stressKind) {
-      if (stressKind === "ego") return state.egoStress;
-      if (stressKind === "attachment") return state.attachmentStress;
-      return state.angerStress;
-    }
-
-    function stressSig() {
-      return [state.angerStress, state.egoStress, state.attachmentStress]
-        .map((s) => Math.floor(s * 20))
-        .join("|");
-    }
-
-    function registerShake(group, x, y, z, stressKind) {
-      shakeGroups.push({
-        group,
-        base: new THREE.Vector3(x, y, z),
-        stressKind,
-      });
-    }
-
-    function applyShakeGroups() {
-      for (let i = 0; i < shakeGroups.length; i++) {
-        const item = shakeGroups[i];
-        const j = jitter(liveStress(item.stressKind));
-        item.group.position.set(item.base.x + j.x, item.base.y + j.y, item.base.z + j.z);
-      }
-    }
 
     const root = new THREE.Group();
     root.name = "surrender_machine_embed";
@@ -249,21 +219,20 @@
       return mat;
     }
 
-    function matFrom(x, y, z, baseHue, hueSpread, maxAlpha, t, stressKind) {
-      const stress = liveStress(stressKind);
-      return makeMat(machineFill(x, y, z, baseHue, hueSpread, maxAlpha, t, stress),
-        { x, y, z, baseHue, hueSpread, maxAlpha, stressKind });
+    function matFrom(x, y, z, baseHue, hueSpread, maxAlpha, t, stress) {
+      const fill = machineFill(x, y, z, baseHue, hueSpread, maxAlpha, t, stress);
+      return makeMat(fill, { x, y, z, baseHue, hueSpread, maxAlpha, stress });
     }
 
     function updateMaterials(t) {
       for (let i = 0; i < animatedMats.length; i++) {
         const mat = animatedMats[i];
         const m = mat.userData.fillMeta;
-        const stress = liveStress(m.stressKind || "anger");
-        const fill = machineFill(m.x, m.y, m.z, m.baseHue, m.hueSpread, m.maxAlpha, t, stress);
+        const fill = machineFill(m.x, m.y, m.z, m.baseHue, m.hueSpread, m.maxAlpha, t, m.stress);
         mat.color.copy(hsbColor(THREE, fill.h, fill.s, fill.b));
         mat.opacity = fill.a;
         mat.depthWrite = fill.a > 0.9;
+        mat.needsUpdate = true;
       }
     }
 
@@ -285,11 +254,11 @@
       return (1 + stress * stress * 7) * lerp(1, 0.04, state.shadowAmount);
     }
 
-    function buildGearTeeth(parentG, radius, thickness, teeth, x, y, z, toothHue, maxAlpha, stressKind, t, axis) {
+    function buildGearTeeth(parentG, radius, thickness, teeth, x, y, z, toothHue, maxAlpha, stress, t, axis) {
       const tD = thickness * 1.1;
       const tW = (TAU * radius) / (teeth * 4);
       const tH = radius * 0.12;
-      const toothMat = matFrom(x, y, z, toothHue, 130, maxAlpha, t, stressKind);
+      const toothMat = matFrom(x, y, z, toothHue, 130, maxAlpha, t, stress);
       for (let i = 0; i < teeth; i++) {
         const a = (TAU * i) / teeth;
         const g = new THREE.Group();
@@ -316,7 +285,6 @@
       }
       spinners.length = 0;
       animatedMats.length = 0;
-      shakeGroups.length = 0;
     }
 
     function signature() {
@@ -340,17 +308,23 @@
       const bW = 600 * sf, bD = 600 * sf, bT = 25 * sf;
 
       function plate(x, y, z, w, h, d) {
+        const j = jitter(state.egoStress);
         const g = new THREE.Group();
-        const by = y + h / 2;
-        registerShake(g, x, by, z, "ego");
-        addBox(g, w, h, d, matFrom(x, y, z, 305, 110, 80, t, "ego"));
+        g.position.set(x + j.x, y + h / 2 + j.y, z + j.z);
+        addBox(g, w, h, d, matFrom(x, y, z, 305, 110, 80, t, state.egoStress));
         machineRoot.add(g);
       }
 
       plate(0, 0, 0, bW, bT, bD);
       for (let i = 0; i < state.gPlatformExtras; i++) {
-        plate(rng.uniform(-60, 60) * sf, -rng.uniform(80, 220) * sf, rng.uniform(-60, 60) * sf,
-          bW * rng.uniform(0.5, 1), bT * rng.uniform(0.6, 1.4), bD * rng.uniform(0.5, 1));
+        plate(
+          rng.uniform(-60, 60) * sf,
+          -rng.uniform(80, 220) * sf,
+          rng.uniform(-60, 60) * sf,
+          bW * rng.uniform(0.5, 1),
+          bT * rng.uniform(0.6, 1.4),
+          bD * rng.uniform(0.5, 1)
+        );
       }
 
       const colPositions = [];
@@ -360,10 +334,11 @@
         const x = rng.uniform(-bW * 0.35, bW * 0.35);
         const z = rng.uniform(-bD * 0.35, bD * 0.35);
         const y = -colH / 2 - bT / 2;
+        const j = jitter(state.egoStress);
         const g = new THREE.Group();
-        registerShake(g, x, y, z, "ego");
+        g.position.set(x + j.x, y + j.y, z + j.z);
         g.rotation.x = Math.PI / 2;
-        addCyl(g, colR, colH, matFrom(x, y, z, 320, 90, 78, t, "ego"));
+        addCyl(g, colR, colH, matFrom(x, y, z, 320, 90, 78, t, state.egoStress));
         machineRoot.add(g);
         colPositions.push(new THREE.Vector3(x, -colH, z));
       }
@@ -374,39 +349,45 @@
         const thick = rng.uniform(14, 26) * sf;
         const teeth = rng.randint(8, 18);
         const horizontal = rng.random() < 0.5;
-        const px = anch.x + rng.uniform(-80, 20);
-        const py = anch.y + rng.uniform(-200, 200);
-        const pz = anch.z + rng.uniform(-20, 20);
+        const j = jitter(state.angerStress);
         const g = new THREE.Group();
-        registerShake(g, px, py, pz, "anger");
+        g.position.set(
+          anch.x + rng.uniform(-80, 20) + j.x,
+          anch.y + rng.uniform(-200, 200) + j.y,
+          anch.z + rng.uniform(-20, 20) + j.z
+        );
         g.rotation.y = rng.uniform(0, TAU);
-        addCyl(g, r, thick, matFrom(px, py, pz, horizontal ? 15 : 25, horizontal ? 140 : 160, 80, t, "anger"));
-        buildGearTeeth(g, r, thick, teeth, px, py, pz, horizontal ? 30 : 40, 82, "anger", t, horizontal ? "y" : "x");
+        const px = g.position.x, py = g.position.y, pz = g.position.z;
+        const s = state.angerStress;
+        addCyl(g, r, thick, matFrom(px, py, pz, horizontal ? 15 : 25, horizontal ? 140 : 160, 80, t, s));
+        buildGearTeeth(g, r, thick, teeth, px, py, pz, horizontal ? 30 : 40, 82, s, t, horizontal ? "y" : "x");
         addSpinner(g, horizontal ? "y" : "x", rng.choice([-1, 1]) * rng.uniform(0.2, 0.8), "anger");
         machineRoot.add(g);
       }
 
       for (let i = 0; i < state.gPulleyCount; i++) {
-        const a = rng.choice(colPositions), b = rng.choice(colPositions);
+        const a = rng.choice(colPositions);
+        const b = rng.choice(colPositions);
         if (a === b) continue;
         const mid = a.clone().add(b).multiplyScalar(0.5);
         const r = rng.uniform(25, 55) * sf;
         const th = rng.uniform(10, 18) * sf;
-        const px = mid.x;
-        const py = mid.y + rng.uniform(-40, 40);
-        const pz = mid.z;
+        const j = jitter(state.attachmentStress);
         const g = new THREE.Group();
-        registerShake(g, px, py, pz, "attachment");
-        addCyl(g, r, th * 0.5, matFrom(px, py, pz, 80, 130, 75, t, "attachment"));
+        g.position.set(mid.x + j.x, mid.y + rng.uniform(-40, 40) + j.y, mid.z + j.z);
+        const px = g.position.x, py = g.position.y, pz = g.position.z;
+        const s = state.attachmentStress;
+        addCyl(g, r, th * 0.5, matFrom(px, py, pz, 80, 130, 75, t, s));
         const inner = new THREE.Group();
-        addCyl(inner, r * 0.7, th * 1.2, matFrom(px, py, pz, 200, 90, 60, t, "attachment"));
+        addCyl(inner, r * 0.7, th * 1.2, matFrom(px, py, pz, 200, 90, 60, t, s));
         g.add(inner);
         addSpinner(g, "y", rng.choice([-1, 1]) * rng.uniform(0.4, 1), "attachment");
         machineRoot.add(g);
       }
 
       for (let i = 0; i < state.gRodCount; i++) {
-        const a = rng.choice(colPositions), b = rng.choice(colPositions);
+        const a = rng.choice(colPositions);
+        const b = rng.choice(colPositions);
         if (a === b) continue;
         const dir = b.clone().sub(a);
         const len = dir.length();
@@ -415,10 +396,11 @@
         const rotY = Math.atan2(dir.x, dir.z);
         const rotX = Math.atan2(-dir.y, Math.sqrt(dir.z * dir.z + dir.x * dir.x));
         const radius = rng.uniform(5, 9) * sf;
+        const jR = jitter(state.egoStress);
         const g = new THREE.Group();
-        registerShake(g, mid.x, mid.y, mid.z, "ego");
+        g.position.set(mid.x + jR.x, mid.y + jR.y, mid.z + jR.z);
         g.rotation.set(rotX, rotY, 0);
-        addCyl(g, radius, len, matFrom(mid.x, mid.y, mid.z, 210, 160, 70, t, "ego"));
+        addCyl(g, radius, len, matFrom(mid.x, mid.y, mid.z, 210, 160, 70, t, state.egoStress));
         const rAng = richness(state.angerVal);
         const rAtt = richness(state.attachmentVal);
         const eff = rAtt <= 0 ? 0 : rAng;
@@ -430,22 +412,26 @@
           let kind;
           if (gc < nG && pc < nP) kind = rng.random() * (nG - gc + nP - pc) < (nG - gc) ? "gear" : "pulley";
           else kind = gc < nG ? "gear" : "pulley";
-          const isG = kind === "gear";
-          const stressKind = isG ? "anger" : "attachment";
           const attG = new THREE.Group();
           attG.position.y = ((idx + 1) / (total + 1) - 0.5) * len;
+          const isG = kind === "gear";
+          const aS = isG ? state.angerStress : state.attachmentStress;
+          const jA = jitter(aS);
+          attG.position.x += jA.x;
+          attG.position.y += jA.y;
+          attG.position.z += jA.z;
           const attR = radius * rng.uniform(1.4, 2.2);
           const attT = radius * rng.uniform(0.6, 1.3);
           const horiz = rng.random() < 0.5;
           attG.rotation[horiz ? "y" : "x"] = rng.uniform(0, TAU);
           if (isG) {
-            addCyl(attG, attR, attT, matFrom(0, 0, 0, horiz ? 15 : 25, 150, 80, t, stressKind));
-            buildGearTeeth(attG, attR, attT, rng.randint(6, 14), 0, 0, 0, 30, 82, stressKind, t, horiz ? "y" : "x");
+            addCyl(attG, attR, attT, matFrom(0, 0, 0, horiz ? 15 : 25, 150, 80, t, aS));
+            buildGearTeeth(attG, attR, attT, rng.randint(6, 14), 0, 0, 0, 30, 82, aS, t, horiz ? "y" : "x");
             addSpinner(attG, horiz ? "y" : "x", rng.choice([-1, 1]) * rng.uniform(0.3, 1), "anger");
           } else {
-            addCyl(attG, attR, attT * 0.5, matFrom(0, 0, 0, 80, 130, 75, t, stressKind));
+            addCyl(attG, attR, attT * 0.5, matFrom(0, 0, 0, 80, 130, 75, t, aS));
             const in2 = new THREE.Group();
-            addCyl(in2, attR * 0.7, attT * 1.1, matFrom(0, 0, 0, 200, 90, 60, t, stressKind));
+            addCyl(in2, attR * 0.7, attT * 1.1, matFrom(0, 0, 0, 200, 90, 60, t, aS));
             attG.add(in2);
             addSpinner(attG, "y", rng.choice([-1, 1]) * rng.uniform(0.3, 1), "attachment");
           }
@@ -486,8 +472,7 @@
         state.gGearCount !== state.prevGearCount ||
         state.gPulleyCount !== state.prevPulleyCount ||
         state.gRodCount !== state.prevRodCount ||
-        signature() !== builtSig ||
-        stressSig() !== prevStressSig;
+        signature() !== builtSig;
     }
 
     function syncRebuildFlags() {
@@ -496,7 +481,6 @@
       state.prevGearCount = state.gGearCount;
       state.prevPulleyCount = state.gPulleyCount;
       state.prevRodCount = state.gRodCount;
-      prevStressSig = stressSig();
     }
 
     function applySliders(sliders) {
@@ -535,7 +519,6 @@
       }
 
       updateMaterials(t);
-      applyShakeGroups();
       drawStatic(t);
 
       const lightBright = lerp(0.65, 0.4, state.shadowAmount);

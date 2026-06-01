@@ -136,6 +136,29 @@
       border-color: rgba(200, 168, 130, 0.2);
       color: rgba(200, 168, 130, 0.3);
     }
+    #zero-hint {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+      z-index: 12;
+    }
+    #zero-hint.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    #zero-hint p {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: clamp(16px, 2.5vw, 24px);
+      color: #333;
+      letter-spacing: 0.06em;
+    }
     @media (max-width: 620px) {
       #room-c-controls {
         grid-template-columns: 1fr 1fr;
@@ -187,6 +210,10 @@
     <button type="button" id="surrender-btn">Surrender</button>
   </div>
 
-  <script type="module" src="ghost_dense_77823_room.mjs?v=20260601-room-c-in-room"></script>
+  <div id="zero-hint" aria-hidden="true">
+    <p>The circuit is open.</p>
+  </div>
+
+  <script type="module" src="ghost_dense_77823_room.mjs?v=20260601-room-c-floor"></script>
 </body>
 </html>
