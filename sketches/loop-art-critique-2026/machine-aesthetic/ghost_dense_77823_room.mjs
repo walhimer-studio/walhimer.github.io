@@ -14,10 +14,10 @@ import {
   buildGhostMachine,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createSurrenderMachinesRoomEmbed } from "./surrender-machines-room-embed.mjs?v=20260601-p5-room";
+import { createSurrenderMachinesRoomEmbed } from "./surrender-machines-room-embed.mjs?v=20260601-room-c-canvas-fix";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
 
-const BUILD = "20260601-room-c-p5-artwork";
+const BUILD = "20260601-room-c-canvas-fix";
 const SURRENDER_MACHINE_SEED = 653057;
 
 globalThis.THREE = THREE;

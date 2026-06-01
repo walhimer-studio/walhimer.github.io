@@ -7,6 +7,11 @@ import { surrenderScaleForRoom } from "./surrender-machine-core.mjs";
 const P5_URL = "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js";
 const CORE_URL = "surrender-machines-core.js?v=20260601-p5-room";
 
+function p5CanvasElement(p5api) {
+  const c = p5api?.canvas;
+  return c?.elt ?? c;
+}
+
 function loadScript(src) {
   return new Promise((resolve, reject) => {
     const el = document.createElement("script");
@@ -28,7 +33,7 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
   const host = document.createElement("div");
   host.setAttribute("aria-hidden", "true");
   host.style.cssText =
-    "position:fixed;left:-10000px;top:0;width:1px;height:1px;overflow:hidden;pointer-events:none";
+    `position:fixed;left:-10000px;top:0;width:${pixelSize}px;height:${pixelSize}px;overflow:hidden;pointer-events:none;opacity:0`;
   document.body.appendChild(host);
 
   await loadScript(P5_URL);
@@ -45,7 +50,10 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
   }
 
   const p5api = window.createSurrenderMachinesP5(window.__SURRENDER_ROOM_OPTS);
-  const canvas = p5api.canvas.elt;
+  const canvas = p5CanvasElement(p5api);
+  if (!canvas || typeof canvas.getContext !== "function") {
+    throw new Error("p5 canvas missing after createSurrenderMachinesP5");
+  }
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
