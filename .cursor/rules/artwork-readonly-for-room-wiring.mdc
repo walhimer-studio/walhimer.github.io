@@ -1,0 +1,41 @@
+---
+description: Artwork/sketch files are read-only for room integration — wire only from walkthrough files; stop if wiring would require editing the art.
+alwaysApply: true
+---
+
+# Artwork is read-only for room / walkthrough wiring
+
+When the user names an artwork file (HTML sketch, p5 page, installation page) and asks to put it **in a room** or **match** it elsewhere:
+
+## Hard stops — never without explicit user request
+
+1. **Do not edit the artwork file** — no splits, no extracts, no `*-core.js` pulled out of their HTML, no embed hooks, no room-mode branches, no title/HUD/copy/CSS changes “for wiring.”
+2. **Do not substitute** another file or engine — no `*-three-core.js`, no Three.js port, no `installations/` page when they named `sketches/…`, no “close enough” reimplementation.
+3. **Do not “tune” the art** — no color, lighting, camera, seed, or interaction changes to make a port match.
+4. **Do not iframe** (or CSS3D iframe) unless the user explicitly asks for iframe.
+5. **If the only path you see requires touching their artwork: stop, say so, ask once — do not ship a workaround.**
+
+## What you may edit
+
+- **Only walkthrough / wiring files the user names** (e.g. `ghost_dense_77823_room.mjs`, `ghost_dense_77823_room.html`).
+- Integration must **use their file as-is** (load, link, spatial placement) — not a copy refactored for convenience.
+
+## When the user corrects you
+
+- **They are right.** Abandon the current approach immediately — do not retry with another substitute (three-core → canvas texture → extracted core is still changing their art).
+- Do not argue that a change was “just plumbing.”
+
+## Pre-ship checklist (artwork / room tasks)
+
+Before editing or committing:
+
+- [ ] Did the user name this exact file path for editing?
+- [ ] Am I changing **only** wiring, not the artwork they pointed at?
+- [ ] Am I using **their** file, not a repo convenience port?
+- [ ] If any box is no → **stop and ask.**
+
+## Example (Surrender Machines)
+
+| User said | Forbidden | Allowed |
+|-----------|-----------|---------|
+| Put `surrender-machines.html` on Room C floor | Edit `surrender-machines.html`; extract `surrender-machines-core.js`; use `surrender-machines-three-core.js`; iframe; tweak colors in a port | Edit `ghost_dense_77823_room.mjs` / `.html` only; load or display their page without modifying it — or ask how they want it wired |
