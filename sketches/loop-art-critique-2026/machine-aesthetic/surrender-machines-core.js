@@ -111,6 +111,7 @@ const sketch = function(p) {
     const ro = roomOpts();
     const w = ro?.pixelSize || window.innerWidth;
     const h = ro?.pixelSize || window.innerHeight;
+    if (ro) p.setAttributes("preserveDrawingBuffer", true);
     const cnv = p.createCanvas(w, h, p.WEBGL);
     if (ro?.parentElement) cnv.parent(ro.parentElement);
     else cnv.parent("machine-stage");

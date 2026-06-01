@@ -1,11 +1,11 @@
 /**
- * Room C — runs surrender-machines.html p5 sketch on a floor plane in the walkthrough.
+ * Room C — runs surrender-machines.html p5 sketch in the walkthrough.
  * Uses surrender-machines-core.js (same code as the standalone artwork page).
  */
 import { surrenderScaleForRoom } from "./surrender-machine-core.mjs";
 
 const P5_URL = "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js";
-const CORE_URL = "surrender-machines-core.js?v=20260601-p5-room";
+const CORE_URL = "surrender-machines-core.js?v=20260601-room-c-visible";
 
 function p5CanvasElement(p5api) {
   const c = p5api?.canvas;
@@ -22,6 +22,35 @@ function loadScript(src) {
   });
 }
 
+function waitForP5Frame(canvas, timeoutMs = 8000) {
+  return new Promise((resolve, reject) => {
+    const start = performance.now();
+    const tick = () => {
+      const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+      if (!gl) {
+        if (performance.now() - start > timeoutMs) reject(new Error("p5 webgl context missing"));
+        else requestAnimationFrame(tick);
+        return;
+      }
+      const px = new Uint8Array(4);
+      gl.readPixels(
+        Math.floor(canvas.width / 2),
+        Math.floor(canvas.height / 2),
+        1,
+        1,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        px
+      );
+      const lit = px[0] + px[1] + px[2];
+      if (lit > 0 && lit < 760) resolve();
+      else if (performance.now() - start > timeoutMs) resolve();
+      else requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
 export async function createSurrenderMachinesRoomEmbed(opts) {
   const THREE = opts.THREE;
   const parent = opts.parent;
@@ -33,7 +62,7 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
   const host = document.createElement("div");
   host.setAttribute("aria-hidden", "true");
   host.style.cssText =
-    `position:fixed;left:-10000px;top:0;width:${pixelSize}px;height:${pixelSize}px;overflow:hidden;pointer-events:none;opacity:0`;
+    `position:fixed;left:-10000px;top:0;width:${pixelSize}px;height:${pixelSize}px;overflow:hidden;pointer-events:none`;
   document.body.appendChild(host);
 
   await loadScript(P5_URL);
@@ -55,36 +84,42 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
     throw new Error("p5 canvas missing after createSurrenderMachinesP5");
   }
 
+  await waitForP5Frame(canvas);
+
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.minFilter = THREE.LinearFilter;
   tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
+
+  const anchor = new THREE.Group();
+  anchor.name = "surrender_machine_p5_anchor";
+  anchor.position.set(opts.x || 0, 0, opts.z || 0);
 
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(planeW, planeW),
     new THREE.MeshBasicMaterial({
       map: tex,
-      transparent: true,
+      side: THREE.DoubleSide,
       depthWrite: true,
+      transparent: false,
     })
   );
   mesh.name = "surrender_machine_p5_floor";
-  mesh.rotation.x = -Math.PI / 2;
-  mesh.position.set(opts.x || 0, opts.y || 0, opts.z || 0);
-  parent.add(mesh);
+  // Face the hall entrance (west / −x) so the machine is visible when you walk in.
+  mesh.rotation.y = -Math.PI / 2;
+  mesh.position.y = planeW * 0.45 + (opts.y || 0);
+  anchor.add(mesh);
+  parent.add(anchor);
 
   return {
-    root: mesh,
+    root: anchor,
     p5: p5api,
     get state() {
       return p5api.state;
     },
-    applySliders() {
-      /* p5 draw() reads getSliders every frame */
-    },
-    setStaticOverlayVisible() {
-      /* static is drawn inside the p5 canvas */
-    },
+    applySliders() {},
+    setStaticOverlayVisible() {},
     triggerSurrender() {
       p5api.triggerSurrender();
     },
@@ -92,7 +127,7 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
       tex.needsUpdate = true;
     },
     dispose() {
-      parent.remove(mesh);
+      parent.remove(anchor);
       tex.dispose();
       mesh.geometry.dispose();
       mesh.material.dispose();
