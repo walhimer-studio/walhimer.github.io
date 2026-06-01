@@ -21,7 +21,7 @@ import {
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
 
-const BUILD = "20260601-room-c-controls";
+const BUILD = "20260601-room-c-sliders-wired";
 const SURRENDER_FADE_DURATION = 14;
 
 globalThis.THREE = THREE;
@@ -218,9 +218,6 @@ if (typeof globalThis.createSurrenderMachineEmbed === "function") {
 
 function onSliderInput() {
   syncSliderLabels();
-  if (surrenderEmbed) {
-    surrenderEmbed.updateTargets(getSliderValues());
-  }
 }
 
 [slAnger, slEgo, slAttachment].forEach((el) => {
@@ -352,6 +349,12 @@ function tick() {
     if (st.surrenderStart != null) {
       st.shadowAmount = Math.min((sceneTime - st.surrenderStart) / SURRENDER_FADE_DURATION, 1);
       if (st.shadowAmount >= 1) st.surrendered = true;
+    }
+    if (surrenderActive) {
+      surrenderEmbed.applySliders(getSliderValues());
+      surrenderEmbed.setStaticOverlayVisible(true);
+    } else {
+      surrenderEmbed.setStaticOverlayVisible(false);
     }
     surrenderEmbed.update(dt, surrenderActive);
   }

@@ -123,6 +123,70 @@
     dir2.position.set(-300, 200, 1000);
     const lights = [ambient, dir1, dir2];
 
+    let staticOverlayVisible = false;
+    let staticCanvas = null;
+    let staticCtx = null;
+    let resizeStatic = () => {};
+
+    if (opts.staticOverlay !== false) {
+      staticCanvas = document.createElement("canvas");
+      staticCanvas.className = "surrender-static-overlay";
+      staticCanvas.style.cssText =
+        "position:fixed;inset:0;pointer-events:none;z-index:15;display:none;width:100%;height:100%;";
+      document.body.appendChild(staticCanvas);
+      staticCtx = staticCanvas.getContext("2d");
+      resizeStatic = () => {
+        staticCanvas.width = window.innerWidth;
+        staticCanvas.height = window.innerHeight;
+      };
+      resizeStatic();
+      window.addEventListener("resize", resizeStatic);
+    }
+
+    function drawStatic(t) {
+      if (!staticCtx) return;
+      if (!staticOverlayVisible || state.shadowAmount >= 1) {
+        staticCanvas.style.display = "none";
+        staticCtx.clearRect(0, 0, staticCanvas.width, staticCanvas.height);
+        return;
+      }
+      const W = staticCanvas.width;
+      const H = staticCanvas.height;
+      staticCanvas.style.display = "block";
+      staticCtx.clearRect(0, 0, W, H);
+      const staticLevel = Math.max(state.egoStress, state.attachmentStress);
+      if (staticLevel <= 0) return;
+
+      if (state.egoStress > 0) {
+        const egoCount = Math.floor(state.egoStress * state.egoStress * 1800);
+        for (let i = 0; i < egoCount; i++) {
+          const sx = rng.uniform(0, W);
+          const sy = rng.uniform(0, H);
+          const sw = rng.uniform(1, lerp(1, 5, state.egoStress));
+          const sh = rng.uniform(1, 2);
+          staticCtx.fillStyle = `hsla(${rng.random() < 0.6 ? 0 : rng.uniform(45, 60)}, ${rng.random() < 0.6 ? 0 : 80}%, ${rng.uniform(88, 100)}%, ${rng.uniform(0.4, 0.8) * state.egoStress})`;
+          staticCtx.fillRect(sx - sw / 2, sy - sh / 2, sw, sh);
+        }
+      }
+
+      if (state.attachmentStress > 0) {
+        const attCount = Math.floor(state.attachmentStress * state.attachmentStress * 2400);
+        const driftX = (Math.sin(t * 0.08) * 0.5 + 0.5) * 80 - 40;
+        const driftY = (Math.sin(t * 0.08 + 100) * 0.5 + 0.5) * 80 - 40;
+        for (let i = 0; i < attCount; i++) {
+          const sx = rng.uniform(0, W) + driftX;
+          const sy = rng.uniform(0, H) + driftY;
+          staticCtx.fillStyle = `hsla(${rng.uniform(20, 40)}, ${rng.uniform(10, 30)}%, ${rng.uniform(40, 72)}%, ${rng.uniform(0.15, 0.45) * state.attachmentStress})`;
+          staticCtx.fillRect(
+            sx - rng.uniform(0, 3),
+            sy - rng.uniform(0, lerp(1, 6, state.attachmentStress)),
+            rng.uniform(1, 3),
+            rng.uniform(1, 3)
+          );
+        }
+      }
+    }
+
     function machineFill(x, y, z, baseHue, hueSpread, maxAlpha, t, stress) {
       if (state.shadowAmount >= 1) {
         const nz = pseudoNoise(x * 0.002, y * 0.002, t * 0.05);
@@ -405,6 +469,14 @@
       state.prevRodCount = state.gRodCount;
     }
 
+    function applySliders(sliders) {
+      updateTargets(sliders);
+      if (!state.surrendered && needsRebuild()) {
+        buildMachine(elapsed);
+        syncRebuildFlags();
+      }
+    }
+
     updateTargets(sliders0);
     buildMachine(0);
     syncRebuildFlags();
@@ -420,9 +492,9 @@
         syncRebuildFlags();
       }
 
+      const smA = speedMult(state.angerStress);
+      const smAt = speedMult(state.attachmentStress);
       if (active) {
-        const smA = speedMult(state.angerStress);
-        const smAt = speedMult(state.attachmentStress);
         spinners.forEach((s) => {
           const sm = s.stressKind === "attachment" ? smAt : smA;
           const d = -s.baseSpeed * sm * dt;
@@ -433,17 +505,30 @@
       }
 
       updateMaterials(t);
+      drawStatic(t);
 
       const lightBright = lerp(0.65, 0.4, state.shadowAmount);
       ambient.intensity = lightBright;
       dir1.visible = dir2.visible = state.shadowAmount < 1;
     }
 
-    return { root, lights, state, update, updateTargets, buildMachine, setSeed(s) {
-      state.seed = s >>> 0;
-      state.machineBuilt = false;
-      state.prevPlatformExtras = -1;
-    }};
+    return {
+      root,
+      lights,
+      state,
+      update,
+      updateTargets,
+      applySliders,
+      buildMachine,
+      setStaticOverlayVisible(visible) {
+        staticOverlayVisible = visible;
+      },
+      setSeed(s) {
+        state.seed = s >>> 0;
+        state.machineBuilt = false;
+        state.prevPlatformExtras = -1;
+      },
+    };
   }
 
   global.createSurrenderMachineEmbed = createSurrenderMachineEmbed;

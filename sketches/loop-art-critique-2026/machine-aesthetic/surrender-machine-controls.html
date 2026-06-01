@@ -294,15 +294,13 @@
         sliders: getSliderValues(),
       });
       surrenderEmbed.lights.forEach((l) => scene.add(l));
+      surrenderEmbed.setStaticOverlayVisible(true);
     } else {
       console.error("createSurrenderMachineEmbed missing");
     }
 
     function onSliderInput() {
       syncSliderLabels();
-      if (surrenderEmbed) {
-        surrenderEmbed.updateTargets(getSliderValues());
-      }
     }
 
     [slAnger, slEgo, slAttachment].forEach((el) => {
@@ -333,13 +331,11 @@
           st.shadowAmount = Math.min((sceneTime - st.surrenderStart) / FADE_DURATION, 1);
           if (st.shadowAmount >= 1) st.surrendered = true;
         }
+        surrenderEmbed.applySliders(getSliderValues());
+        surrenderEmbed.update(dt, true);
       }
 
       orbit.update();
-
-      if (surrenderEmbed) {
-        surrenderEmbed.update(dt, true);
-      }
 
       renderer.render(scene, camera);
     }
