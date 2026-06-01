@@ -21,14 +21,14 @@ import {
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
 
-const BUILD = "20260601-room-c-sliders-wired";
+const BUILD = "20260601-live-stress";
 const SURRENDER_FADE_DURATION = 14;
 
 globalThis.THREE = THREE;
 
 await new Promise((resolve, reject) => {
   const script = document.createElement("script");
-  script.src = "surrender-machines-three-core.js";
+  script.src = "surrender-machines-three-core.js?v=20260601-live-stress";
   script.onload = resolve;
   script.onerror = reject;
   document.head.appendChild(script);
