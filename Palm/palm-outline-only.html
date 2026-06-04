@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palm outline — 3D</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #c4c4cc;
+      overflow: hidden;
+      transition: background-color 0.45s ease;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      touch-action: none;
+      cursor: grab;
+    }
+    canvas:active { cursor: grabbing; }
+    #bottom-hud {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+      user-select: none;
+    }
+    #lifeline-track {
+      width: min(44vw, 228px);
+      height: 1px;
+      background: rgba(44, 48, 52, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+    #lifeline-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: #5a788c;
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: background-color 0.45s ease;
+    }
+    #seed-hud {
+      margin: 0;
+      padding: 0;
+      font: 13px/1.35 "Courier New", Courier, ui-monospace, monospace;
+      color: rgba(44, 48, 52, 0.88);
+      letter-spacing: 0.14em;
+      transition: color 0.45s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="bottom-hud">
+    <div id="lifeline-track" aria-hidden="true"><span id="lifeline-fill"></span></div>
+    <p id="seed-hud" aria-live="polite"></p>
+  </div>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { LineSegments2 } from "three/addons/lines/LineSegments2.js";
+    import { LineSegmentsGeometry } from "three/addons/lines/LineSegmentsGeometry.js";
+    import { LineMaterial } from "three/addons/lines/LineMaterial.js";
+    import { PAL, hexToThree, pickTheme } from "./aycock-colors.js";
+
+    const FIT_MAX_DIM = 0.68;
+    const FRAME_PAD = 1.3;
+
+    function randomSeed6() {
+      return ("00000" + ((Math.random() * 0x1000000) | 0).toString(16)).slice(-6).toUpperCase();
+    }
+
+    function makeRng(seedStr) {
+      let h = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        h = ((h << 5) - h + seedStr.charCodeAt(i)) | 0;
+      }
+      return function () {
+        h |= 0;
+        h = (h + 0x6d2b79f5) | 0;
+        let t = Math.imul(h ^ (h >>> 15), 1 | h);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function seedFromUrlOrNull() {
+      try {
+        const p = new URLSearchParams(window.location.search || "");
+        const raw = (p.get("seed") || "").trim();
+        if (!raw) return null;
+        if (/^[0-9a-fA-F]{1,6}$/.test(raw)) {
+          return ("00000" + raw.toUpperCase()).slice(-6);
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    let currentSeed = seedFromUrlOrNull() || randomSeed6();
+    let rng = makeRng(currentSeed);
+
+    function v3(x, y, z) {
+      return [x, y, z];
+    }
+
+    function addLine(edges, a, b) {
+      edges.push(a[0], a[1], a[2], b[0], b[1], b[2]);
+    }
+
+    function bezier3(p0, p1, p2, t) {
+      const mt = 1 - t;
+      return v3(
+        mt * mt * p0[0] + 2 * mt * t * p1[0] + t * t * p2[0],
+        mt * mt * p0[1] + 2 * mt * t * p1[1] + t * t * p2[1],
+        mt * mt * p0[2] + 2 * mt * t * p1[2] + t * t * p2[2]
+      );
+    }
+
+    function boundsFromEdgeGroups(edgeGroups) {
+      let minX = Infinity, minY = Infinity, minZ = Infinity;
+      let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+      for (const group of edgeGroups) {
+        const e = group.edges;
+        for (let i = 0; i < e.length; i += 3) {
+          minX = Math.min(minX, e[i]);
+          maxX = Math.max(maxX, e[i]);
+          minY = Math.min(minY, e[i + 1]);
+          maxY = Math.max(maxY, e[i + 1]);
+          minZ = Math.min(minZ, e[i + 2]);
+          maxZ = Math.max(maxZ, e[i + 2]);
+        }
+      }
+      const cx = (minX + maxX) * 0.5;
+      const cy = (minY + maxY) * 0.5;
+      const cz = (minZ + maxZ) * 0.5;
+      const maxDim = Math.max(maxX - minX, maxY - minY, maxZ - minZ, 0.001);
+      return { center: v3(cx, cy, cz), maxDim };
+    }
+
+    function cubicBezier4(p0, p1, p2, p3, t) {
+      const mt = 1 - t;
+      const a = mt * mt * mt;
+      const b = 3 * mt * mt * t;
+      const c = 3 * mt * t * t;
+      const d = t * t * t;
+      return v3(
+        a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0],
+        a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1],
+        a * p0[2] + b * p1[2] + c * p2[2] + d * p3[2]
+      );
+    }
+
+    function addLeaflet(edges, base, perpX, perpZ, tanX, tanZ, len, side, jitter, arced) {
+      const px = (-perpZ * side) * len;
+      const pz = (perpX * side) * len;
+      const tip = v3(base[0] + px, base[1] + len * 0.1 + jitter * 0.5, base[2] + pz);
+      if (arced) {
+        const ctrl = v3(
+          base[0] + px * 0.58 + tanX * len * 0.1,
+          base[1] + len * 0.14 + jitter,
+          base[2] + pz * 0.58 + tanZ * len * 0.1
+        );
+        let prev = base;
+        const steps = 3;
+        for (let i = 1; i <= steps; i++) {
+          const pt = bezier3(base, ctrl, tip, i / steps);
+          addLine(edges, prev, pt);
+          prev = pt;
+        }
+      } else {
+        const mid = v3(
+          base[0] + px * 0.52,
+          base[1] + len * 0.06 + jitter,
+          base[2] + pz * 0.52
+        );
+        addLine(edges, base, mid);
+        addLine(edges, mid, tip);
+      }
+      const barb = v3(
+        tip[0] + tanX * len * 0.22 + px * 0.12,
+        tip[1] - len * 0.07,
+        tip[2] + tanZ * len * 0.22 + pz * 0.12
+      );
+      addLine(edges, tip, barb);
+    }
+
+    function pushTrunkSegment(trunkBands, tAlong, a, b) {
+      const band = tAlong < 0.28 ? 0 : tAlong < 0.58 ? 1 : tAlong < 0.82 ? 2 : 3;
+      if (!trunkBands[band]) trunkBands[band] = [];
+      addLine(trunkBands[band], a, b);
+    }
+
+    function buildPalm(r, theme) {
+      const trunkBands = [[], [], [], []];
+      const trunkAccentEdges = [];
+      const frondRachisEdges = [];
+      const frondLeafEdges = [];
+      const grassEdges = [];
+      const s = theme.sizeScale;
+
+      const trunkH = (0.52 + r() * 0.38) * s;
+      const leanX = (r() - 0.42) * 0.14 * s;
+      const leanZ = (r() - 0.5) * 0.07 * s;
+      const trunkSegs = 12 + ((r() * 6) | 0);
+      const trunkProfile = 0.55 + r() * 0.65;
+
+      const trunkPoints = [];
+      for (let i = 0; i <= trunkSegs; i++) {
+        const t = i / trunkSegs;
+        const bend = Math.pow(t, 1.08 + trunkProfile * 0.12);
+        const wobble = Math.sin(t * Math.PI * (1.4 + r())) * 0.014 * s * (0.35 + r());
+        const swell = Math.sin(t * Math.PI) * 0.008 * s;
+        trunkPoints.push(v3(
+          leanX * bend + wobble,
+          t * trunkH,
+          leanZ * bend + wobble * 0.35 + swell
+        ));
+        if (i > 0) {
+          const tMid = (i - 0.5) / trunkSegs;
+          pushTrunkSegment(trunkBands, tMid, trunkPoints[i - 1], trunkPoints[i]);
+        }
+      }
+
+      for (let i = 1; i < trunkPoints.length; i += 2) {
+        const t = i / trunkSegs;
+        if (t < 0.12 || t > 0.88) continue;
+        const a = trunkPoints[i - 1];
+        const b = trunkPoints[i];
+        const dx = b[0] - a[0];
+        const dy = b[1] - a[1];
+        const dz = b[2] - a[2];
+        const len = Math.hypot(dx, dy, dz) || 1;
+        const off = (0.006 + (1 - t) * 0.012) * s;
+        const nx = (-dz / len) * off;
+        const nz = (dx / len) * off;
+        const side = i % 4 === 0 ? 1 : -1;
+        addLine(trunkAccentEdges,
+          v3(a[0] + nx * side, a[1], a[2] + nz * side),
+          v3(b[0] + nx * side, b[1], b[2] + nz * side)
+        );
+      }
+
+      const trunkFlareEdges = [];
+      for (let i = 2; i <= Math.min(5, trunkPoints.length - 1); i++) {
+        const pt = trunkPoints[i];
+        const t = i / trunkSegs;
+        const flareLen = (0.022 + (1 - t) * 0.03) * s;
+        for (let k = 0; k < 3; k++) {
+          const ang = (k / 3) * Math.PI * 2 + r() * 0.6;
+          addLine(trunkFlareEdges, pt, v3(
+            pt[0] + Math.cos(ang) * flareLen,
+            pt[1] - flareLen * 0.15,
+            pt[2] + Math.sin(ang) * flareLen
+          ));
+        }
+      }
+
+      const trunkTop = trunkPoints[trunkPoints.length - 1];
+      const nFronds = 10 + ((r() * 5) | 0);
+      const spread = (0.38 + r() * 0.24) * s;
+      const phase = r() * Math.PI * 2;
+
+      for (let f = 0; f < nFronds; f++) {
+        const angle = phase + (f / nFronds) * Math.PI * 2 + (r() - 0.5) * 0.32;
+        const droop = 0.12 + r() * 0.78;
+        const len = spread * (0.58 + r() * 0.62);
+        const dirX = Math.cos(angle);
+        const dirZ = Math.sin(angle);
+        const dirY = 0.48 - droop * 0.98;
+        const curl = (r() - 0.5) * 0.18 * s;
+        const perpLen = Math.hypot(dirX, dirZ) || 1;
+        const perpX = -dirZ / perpLen;
+        const perpZ = dirX / perpLen;
+        const arcedFrond = r() < 0.48;
+        const arcStrength = arcedFrond
+          ? (0.07 + r() * 0.13) * s
+          : r() < 0.22 ? (0.025 + r() * 0.04) * s : 0;
+        const arcSide = r() > 0.5 ? 1 : -1;
+
+        const tip = v3(
+          trunkTop[0] + dirX * len + curl * -dirZ,
+          trunkTop[1] + dirY * len,
+          trunkTop[2] + dirZ * len + curl * dirX
+        );
+        const mid = v3(
+          trunkTop[0] + dirX * len * 0.44 + curl * -dirZ * 0.5,
+          trunkTop[1] + dirY * len * 0.5 + (0.05 + r() * 0.06) * s,
+          trunkTop[2] + dirZ * len * 0.44 + curl * dirX * 0.5
+        );
+        const lift = v3(
+          trunkTop[0] + dirX * len * 0.18,
+          trunkTop[1] + Math.max(dirY, 0.08) * len * 0.22 + 0.03 * s,
+          trunkTop[2] + dirZ * len * 0.18
+        );
+
+        const rachisSegs = 12 + ((r() * 5) | 0);
+        const rachisPts = [trunkTop];
+        if (arcStrength > 0) {
+          const cp1 = v3(
+            lift[0] + perpX * arcStrength * arcSide,
+            lift[1],
+            lift[2] + perpZ * arcStrength * arcSide
+          );
+          const cp2 = v3(
+            mid[0] + perpX * arcStrength * arcSide * 0.55,
+            mid[1],
+            mid[2] + perpZ * arcStrength * arcSide * 0.55
+          );
+          for (let seg = 1; seg <= rachisSegs; seg++) {
+            rachisPts.push(cubicBezier4(trunkTop, cp1, cp2, tip, seg / rachisSegs));
+          }
+        } else {
+          for (let seg = 1; seg <= rachisSegs; seg++) {
+            const t = seg / rachisSegs;
+            const mt = 1 - t;
+            rachisPts.push(v3(
+              mt * mt * trunkTop[0] + 2 * mt * t * lift[0] + t * t * tip[0] + 2 * mt * t * (mid[0] - lift[0]) * 0.35,
+              mt * mt * trunkTop[1] + 2 * mt * t * lift[1] + t * t * tip[1] + 2 * mt * t * (mid[1] - lift[1]) * 0.35,
+              mt * mt * trunkTop[2] + 2 * mt * t * lift[2] + t * t * tip[2] + 2 * mt * t * (mid[2] - lift[2]) * 0.35
+            ));
+          }
+        }
+
+        for (let seg = 1; seg < rachisPts.length; seg++) {
+          addLine(frondRachisEdges, rachisPts[seg - 1], rachisPts[seg]);
+          const pt = rachisPts[seg];
+          const prev = rachisPts[seg - 1];
+          const t = seg / (rachisPts.length - 1);
+          const tanX = pt[0] - prev[0];
+          const tanY = pt[1] - prev[1];
+          const tanZ = pt[2] - prev[2];
+          const tanLen = Math.hypot(tanX, tanY, tanZ) || 1;
+          const ntx = tanX / tanLen;
+          const nty = tanY / tanLen;
+          const ntz = tanZ / tanLen;
+
+          const leafScale = (1 - t * 0.82) * (0.55 + r() * 0.55) * s;
+          const pairs = 1 + (((1 - t) * 5) | 0);
+          for (let p = 0; p < pairs; p++) {
+            const side = p % 2 === 0 ? 1 : -1;
+            const pairT = (p + 1) / (pairs + 1);
+            const base = v3(
+              prev[0] + (pt[0] - prev[0]) * pairT,
+              prev[1] + (pt[1] - prev[1]) * pairT,
+              prev[2] + (pt[2] - prev[2]) * pairT
+            );
+            const leafLen = (0.028 + r() * 0.065) * leafScale;
+            const jitter = (r() - 0.5) * 0.012 * s;
+            const arcLeaf = arcedFrond || r() < 0.34;
+            addLeaflet(frondLeafEdges, base, perpX, perpZ, ntx, ntz, leafLen, side, jitter, arcLeaf);
+          }
+
+          if (t > 0.35 && t < 0.92 && r() > 0.42) {
+            const sproutLen = leafScale * (0.18 + r() * 0.22);
+            const sx = pt[0] + perpX * sproutLen * (r() > 0.7 ? 1 : -1);
+            const sy = pt[1] + sproutLen * 0.15;
+            const sz = pt[2] + perpZ * sproutLen * (r() > 0.7 ? 1 : -1);
+            if (arcedFrond) {
+              const sc = v3(
+                pt[0] + (sx - pt[0]) * 0.55,
+                pt[1] + sproutLen * 0.08,
+                pt[2] + (sz - pt[2]) * 0.55
+              );
+              addLine(frondLeafEdges, pt, sc);
+              addLine(frondLeafEdges, sc, v3(sx, sy, sz));
+            } else {
+              addLine(frondLeafEdges, pt, v3(sx, sy, sz));
+            }
+          }
+        }
+      }
+
+      const nGrass = 6 + ((r() * 5) | 0);
+      for (let g = 0; g < nGrass; g++) {
+        const gx = (r() - 0.5) * 0.14 * s;
+        const gz = (r() - 0.5) * 0.11 * s;
+        const gh = (0.028 + r() * 0.055) * s;
+        const tiltX = (r() - 0.5) * 0.025 * s;
+        const tiltZ = (r() - 0.5) * 0.025 * s;
+        addLine(grassEdges, v3(gx, 0, gz), v3(gx + tiltX, gh, gz + tiltZ));
+      }
+
+      const trunkLinewidths = [8.5, 6.2, 4.5, 2.8];
+      const edgeGroups = [];
+      for (let b = 0; b < trunkBands.length; b++) {
+        if (trunkBands[b].length) {
+          edgeGroups.push({
+            edges: trunkBands[b],
+            color: theme.trunk,
+            linewidth: trunkLinewidths[b],
+          });
+        }
+      }
+      if (trunkAccentEdges.length) {
+        edgeGroups.push({
+          edges: trunkAccentEdges,
+          color: theme.trunk,
+          linewidth: 2.2,
+          opacity: 0.5,
+        });
+      }
+      if (trunkFlareEdges.length) {
+        edgeGroups.push({
+          edges: trunkFlareEdges,
+          color: theme.trunk,
+          linewidth: 5,
+          opacity: 0.72,
+        });
+      }
+      edgeGroups.push(
+        { edges: frondRachisEdges, color: theme.fronds, linewidth: 2.6 },
+        { edges: frondLeafEdges, color: theme.fronds, linewidth: 1.75 },
+        { edges: grassEdges, color: theme.grass, linewidth: 2.8 }
+      );
+      const bounds = boundsFromEdgeGroups(edgeGroups);
+      return {
+        edgeGroups,
+        theme,
+        bounds,
+        normalizeScale: FIT_MAX_DIM / bounds.maxDim,
+      };
+    }
+
+    function makeLineSegments(edges, colorHex, resolution, linewidth, opacity) {
+      if (!edges.length) return null;
+      const edgePos = new Float32Array(edges.length);
+      for (let i = 0; i < edges.length; i++) edgePos[i] = edges[i];
+      const lineGeo = new LineSegmentsGeometry();
+      lineGeo.setPositions(edgePos);
+      const lineMat = new LineMaterial({
+        color: hexToThree(colorHex),
+        linewidth: linewidth || 3,
+        worldUnits: false,
+        depthTest: true,
+        depthWrite: true,
+        transparent: opacity != null && opacity < 1,
+        opacity: opacity != null ? opacity : 1,
+        resolution,
+      });
+      const lines = new LineSegments2(lineGeo, lineMat);
+      lines.renderOrder = 1;
+      lines.raycast = () => {};
+      return lines;
+    }
+
+    function dataToObject3D(data, resolution) {
+      const g = new THREE.Group();
+      for (const group of data.edgeGroups) {
+        const lines = makeLineSegments(
+          group.edges,
+          group.color,
+          resolution,
+          group.linewidth,
+          group.opacity
+        );
+        if (lines) g.add(lines);
+      }
+      const sc = data.normalizeScale;
+      const c = data.bounds.center;
+      g.scale.setScalar(sc);
+      g.position.set(-c[0] * sc, -c[1] * sc, -c[2] * sc);
+      return g;
+    }
+
+    function disposeObject3D(obj) {
+      obj.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+          else o.material.dispose();
+        }
+      });
+    }
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(hexToThree(PAL.bg));
+
+    const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 200);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 0.55;
+    controls.maxDistance = 8;
+    controls.autoRotate = true;
+    const ORBIT_SECONDS = 38;
+    controls.autoRotateSpeed = 60 / ORBIT_SECONDS;
+
+    const seedHud = document.getElementById("seed-hud");
+    const lifelineFill = document.getElementById("lifeline-fill");
+    const TAU = Math.PI * 2;
+    let lastAzimuth = 0;
+    let azimuthAccum = 0;
+
+    function updateSeedHud() {
+      if (seedHud) seedHud.textContent = currentSeed;
+    }
+
+    function updateLifeline() {
+      if (!lifelineFill) return;
+      const progress = Math.min(1, azimuthAccum / TAU);
+      lifelineFill.style.transform = "scaleX(" + progress + ")";
+    }
+
+    function resetAzimuthTracker() {
+      lastAzimuth = controls.getAzimuthalAngle();
+      azimuthAccum = 0;
+      updateLifeline();
+    }
+
+    function onFullRotation() {
+      currentSeed = randomSeed6();
+      rng = makeRng(currentSeed);
+      buildScene();
+    }
+
+    let palmGroup = null;
+    let frameParams = { az: 0, el: 0, dist: 1.2 };
+
+    function rgbaFromHex(hex, alpha) {
+      const c = hex.replace("#", "");
+      return "rgba(" +
+        parseInt(c.slice(0, 2), 16) + "," +
+        parseInt(c.slice(2, 4), 16) + "," +
+        parseInt(c.slice(4, 6), 16) + "," + alpha + ")";
+    }
+
+    function applyTheme(theme) {
+      scene.background.setHex(hexToThree(theme.background));
+      document.body.style.background = theme.background;
+      if (lifelineFill) lifelineFill.style.background = theme.lifeline;
+      const track = document.getElementById("lifeline-track");
+      if (track) track.style.background = rgbaFromHex(theme.hudInk, 0.22);
+      if (seedHud) seedHud.style.color = rgbaFromHex(theme.hudInk, 0.88);
+    }
+
+    function frameCameraToPalm(r, preserveAngle) {
+      const fitSize = FIT_MAX_DIM;
+      const vFov = (camera.fov * Math.PI) / 180;
+      const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
+      const distY = (fitSize * 0.5) / Math.tan(vFov / 2);
+      const distX = (fitSize * 0.5) / Math.tan(hFov / 2);
+      const dist = Math.max(distY, distX, 0.85) * FRAME_PAD;
+
+      if (!preserveAngle && r) {
+        frameParams.az = -0.35 + r() * 1.1;
+        frameParams.el = 0.18 + r() * 0.42;
+      }
+      frameParams.dist = dist;
+
+      const ce = Math.cos(frameParams.el);
+      const se = Math.sin(frameParams.el);
+      const c0 = Math.cos(frameParams.az);
+      const s0 = Math.sin(frameParams.az);
+
+      controls.target.set(0, 0, 0);
+      camera.position.set(
+        dist * s0 * ce,
+        dist * se,
+        dist * c0 * ce
+      );
+      controls.minDistance = dist * 0.62;
+      controls.maxDistance = dist * 1.85;
+      camera.near = 0.02;
+      camera.far = 200;
+      camera.updateProjectionMatrix();
+      controls.update();
+    }
+
+    function buildScene() {
+      if (palmGroup) {
+        scene.remove(palmGroup);
+        disposeObject3D(palmGroup);
+        palmGroup = null;
+      }
+      const theme = pickTheme(rng);
+      const data = buildPalm(rng, theme);
+      applyTheme(data.theme);
+      const resolution = new THREE.Vector2(window.innerWidth, window.innerHeight);
+      palmGroup = dataToObject3D(data, resolution);
+      scene.add(palmGroup);
+      frameCameraToPalm(rng);
+      updateSeedHud();
+      resetAzimuthTracker();
+    }
+
+    function newVariation() {
+      currentSeed = randomSeed6();
+      rng = makeRng(currentSeed);
+      buildScene();
+    }
+
+    function onResize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      if (palmGroup) {
+        palmGroup.traverse((o) => {
+          if (o.isLineSegments2 && o.material && o.material.resolution) {
+            o.material.resolution.set(w, h);
+          }
+        });
+        frameCameraToPalm(null, true);
+      }
+    }
+
+    function tick() {
+      requestAnimationFrame(tick);
+      const az = controls.getAzimuthalAngle();
+      let delta = az - lastAzimuth;
+      if (delta > Math.PI) delta -= Math.PI * 2;
+      if (delta < -Math.PI) delta += Math.PI * 2;
+      azimuthAccum += Math.abs(delta);
+      lastAzimuth = az;
+      updateLifeline();
+      if (azimuthAccum >= TAU) {
+        azimuthAccum = 0;
+        updateLifeline();
+        onFullRotation();
+      }
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    buildScene();
+    onResize();
+    window.addEventListener("resize", onResize);
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault();
+        newVariation();
+      }
+    });
+    tick();
+  </script>
+</body>
+</html>
