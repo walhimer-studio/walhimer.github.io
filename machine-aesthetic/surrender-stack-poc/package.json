@@ -1,0 +1,22 @@
+{
+  "name": "surrender-stack-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Surrender Machines stack POC — Machine DNA, Firebase, Supabase, OSC, Pd",
+  "scripts": {
+    "bridge": "node bridge/dna-bridge.mjs",
+    "serve": "node web/serve.mjs",
+    "start": "node bridge/dna-bridge.mjs",
+    "network-check": "node scripts/network-check.mjs",
+    "unpause": "node scripts/unpause.mjs",
+    "status": "node scripts/status.mjs",
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "firebase": "^10.14.1"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.35.1"
+  }
+}

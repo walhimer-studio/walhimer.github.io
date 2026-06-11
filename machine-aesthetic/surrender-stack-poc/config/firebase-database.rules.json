@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "surrender-stack-poc": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

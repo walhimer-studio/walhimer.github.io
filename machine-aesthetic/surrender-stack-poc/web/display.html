@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Surrender Stack</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #fff; overflow: hidden; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #hud {
+      position: fixed; inset: 0 auto auto 0; right: 0; padding: 10px 14px;
+      font: 11px/1.45 system-ui, sans-serif; color: #333;
+      pointer-events: none; z-index: 2;
+    }
+    #hud strong { color: #000; }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ccc; margin-right: 4px; vertical-align: middle; }
+    .dot.on { background: #22c55e; }
+    #controls {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 3;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, 0.94);
+      border-top: 1px solid #ddd;
+      font: 12px/1.4 system-ui, sans-serif; color: #111;
+    }
+    #controls h2 { margin: 0 0 8px; font-size: 11px; font-weight: 600; color: #444; }
+    #err { margin: 0 0 6px; color: #b91c1c; font-size: 11px; display: none; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+    label { display: block; font-size: 10px; color: #555; margin: 0 0 2px; }
+    input[type="range"] { width: 100%; accent-color: #111; }
+    .val { float: right; color: #000; font-variant-numeric: tabular-nums; }
+    .full { grid-column: 1 / -1; }
+    button#stopMotion {
+      width: 100%; padding: 12px; margin-top: 6px;
+      border: 1px solid #999; background: #f5f5f5; color: #111;
+      border-radius: 6px; font-size: 14px; font-weight: 600;
+    }
+    button#stopMotion.paused { background: #111; color: #fff; border-color: #111; }
+    button#stopMotion:active { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <strong>Surrender Stack POC</strong> · venue <span id="venue">mac-local</span><br />
+    seed <span id="seed">—</span> · gen <span id="gen">—</span> ·
+    stress <span id="stressHud">—</span> · scars <span id="scars">0</span> ·
+    <span id="motionState">playing</span> ·
+    <span class="dot" id="connDot"></span><span id="conn">connecting…</span>
+  </div>
+  <canvas id="c"></canvas>
+
+  <div id="controls">
+    <h2>Cube · <span id="venueLabel">mac-local</span></h2>
+    <p id="err"></p>
+    <div class="grid">
+      <div>
+        <label>Left / Right <span class="val" id="lrVal">0</span></label>
+        <input type="range" id="leftRight" min="-100" max="100" value="0" step="1" />
+      </div>
+      <div>
+        <label>Up / Down <span class="val" id="udVal">0</span></label>
+        <input type="range" id="upDown" min="-100" max="100" value="0" step="1" />
+      </div>
+      <div class="full">
+        <label>Speed <span class="val" id="speedVal">1.0×</span></label>
+        <input type="range" id="speed" min="0" max="200" value="100" step="1" />
+      </div>
+    </div>
+    <button type="button" id="stopMotion">⏸ Pause</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+    const params = new URLSearchParams(location.search);
+    const VENUE = params.get("venue") || "mac-local";
+    document.getElementById("venue").textContent = VENUE;
+    document.getElementById("venueLabel").textContent = VENUE;
+
+    async function loadCfg() {
+      try {
+        const r = await fetch("/api/firebase-config");
+        if (r.ok) return r.json();
+      } catch {}
+      try {
+        return await import("/config/firebase-config.local.mjs");
+      } catch {}
+      return import("/config/firebase-config.example.mjs");
+    }
+
+    const cfg = await loadCfg();
+    const { firebaseConfig, FIREBASE_GENOME_ROOT, FIREBASE_OPERATOR_ROOT } = cfg;
+
+    const app = initializeApp(firebaseConfig, `stack-${VENUE}`);
+    const db = getDatabase(app);
+    const genomeRef = ref(db, `${FIREBASE_GENOME_ROOT}/${VENUE}`);
+    const opRef = ref(db, `${FIREBASE_OPERATOR_ROOT}/${VENUE}`);
+
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d");
+    let genome = null;
+    let t = 0;
+    let lastFrame = performance.now();
+
+    /** @type {{ leftRight: number, upDown: number, speed: number, stopMotion: boolean }} */
+    let cube = { leftRight: 0, upDown: 0, speed: 100, stopMotion: false };
+
+    const els = {
+      leftRight: document.getElementById("leftRight"),
+      upDown: document.getElementById("upDown"),
+      speed: document.getElementById("speed"),
+      stopMotion: document.getElementById("stopMotion"),
+    };
+    const errEl = document.getElementById("err");
+    let pushing = false;
+
+    const verts = [
+      [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+      [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1],
+    ];
+    const edges = [
+      [0, 1], [1, 2], [2, 3], [3, 0],
+      [4, 5], [5, 6], [6, 7], [7, 4],
+      [0, 4], [1, 5], [2, 6], [3, 7],
+    ];
+
+    function rotY([x, y, z], a) {
+      const c = Math.cos(a), s = Math.sin(a);
+      return [x * c + z * s, y, -x * s + z * c];
+    }
+    function rotX([x, y, z], a) {
+      const c = Math.cos(a), s = Math.sin(a);
+      return [x, y * c - z * s, y * s + z * c];
+    }
+    function project([x, y, z], scale, cx, cy) {
+      const f = 2.8 / (2.8 + z * 0.35);
+      return [cx + x * scale * f, cy + y * scale * f];
+    }
+
+    function resize() {
+      const dpr = devicePixelRatio || 1;
+      canvas.width = innerWidth * dpr;
+      canvas.height = innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    addEventListener("resize", resize);
+    resize();
+
+    onValue(genomeRef, (snap) => {
+      const d = snap.val();
+      if (!d) return;
+      genome = d;
+      document.getElementById("seed").textContent = d.seed;
+      document.getElementById("gen").textContent = d.generation ?? 0;
+      document.getElementById("stressHud").textContent = (d.stress ?? 0).toFixed(2);
+      document.getElementById("scars").textContent = d.scars?.length ?? 0;
+      document.getElementById("conn").textContent = "genome live";
+      document.getElementById("connDot").classList.add("on");
+    }, () => {
+      document.getElementById("conn").textContent = "genome error";
+      document.getElementById("connDot").classList.remove("on");
+    });
+
+    function readOp() {
+      return {
+        leftRight: Number(els.leftRight.value),
+        upDown: Number(els.upDown.value),
+        speed: Number(els.speed.value),
+        stopMotion: els.stopMotion.classList.contains("paused"),
+        ts: Date.now(),
+      };
+    }
+
+    function applyCubeFromUi() {
+      cube = {
+        leftRight: Number(els.leftRight.value),
+        upDown: Number(els.upDown.value),
+        speed: Number(els.speed.value),
+        stopMotion: els.stopMotion.classList.contains("paused"),
+      };
+    }
+
+    function labels() {
+      const o = readOp();
+      const paused = o.stopMotion;
+      document.getElementById("lrVal").textContent = String(o.leftRight);
+      document.getElementById("udVal").textContent = String(o.upDown);
+      document.getElementById("speedVal").textContent = `${(o.speed / 100).toFixed(1)}×`;
+      els.stopMotion.textContent = paused ? "▶ Resume motion" : "⏸ Pause";
+      els.stopMotion.classList.toggle("paused", paused);
+      document.getElementById("motionState").textContent = paused ? "PAUSED" : "playing";
+    }
+
+    function showErr(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = msg ? "block" : "none";
+    }
+
+    async function pushOp() {
+      pushing = true;
+      applyCubeFromUi();
+      labels();
+      try {
+        await set(opRef, readOp());
+        showErr("");
+      } catch (e) {
+        showErr(`Firebase: ${e.message}`);
+      }
+      pushing = false;
+    }
+
+    onValue(
+      opRef,
+      (snap) => {
+        const d = snap.val();
+        if (!d || pushing) return;
+        if (d.leftRight != null) els.leftRight.value = d.leftRight;
+        if (d.upDown != null) els.upDown.value = d.upDown;
+        if (d.speed != null) els.speed.value = d.speed;
+        els.stopMotion.classList.toggle("paused", !!d.stopMotion);
+        applyCubeFromUi();
+        labels();
+      },
+      (e) => showErr(`Firebase listen: ${e.message}`)
+    );
+
+    for (const id of ["leftRight", "upDown", "speed"]) {
+      document.getElementById(id).addEventListener("input", () => {
+        applyCubeFromUi();
+        labels();
+        pushOp();
+      });
+    }
+    els.stopMotion.addEventListener("click", () => {
+      els.stopMotion.classList.toggle("paused");
+      applyCubeFromUi();
+      labels();
+      pushOp();
+    });
+
+    labels();
+    pushOp();
+
+    function draw(now) {
+      const dt = Math.min(0.05, (now - lastFrame) / 1000);
+      lastFrame = now;
+
+      if (!cube.stopMotion) {
+        t += dt * (cube.speed / 100);
+      }
+
+      const w = innerWidth;
+      const h = innerHeight;
+      const panelH = document.getElementById("controls").offsetHeight;
+      const seed = (genome?.seed ?? 77823) >>> 0;
+      const stress = genome?.stress ?? 0.2;
+      const vit = Math.max(0.15, genome?.vitality ?? 0.9);
+
+      const yawBase = t * (0.55 + (seed % 97) * 0.001);
+      const pitchBase = t * (0.35 + (seed % 50) * 0.002) + stress * 0.25;
+      const yawOff = (cube.leftRight / 100) * Math.PI * 0.85;
+      const pitchOff = (cube.upDown / 100) * Math.PI * 0.85;
+      const ay = yawBase + yawOff;
+      const ax = pitchBase + pitchOff;
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, w, h);
+
+      const scale = Math.min(w, h - panelH) * 0.22 * (0.75 + vit * 0.35);
+      const cx = w * 0.5;
+      const cy = (h - panelH) * 0.48;
+
+      const pts = verts.map((v) => project(rotX(rotY(v, ay), ax), scale, cx, cy));
+
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 1;
+      ctx.lineCap = "square";
+      for (const [a, b] of edges) {
+        ctx.beginPath();
+        ctx.moveTo(pts[a][0], pts[a][1]);
+        ctx.lineTo(pts[b][0], pts[b][1]);
+        ctx.stroke();
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  </script>
+</body>
+</html>
