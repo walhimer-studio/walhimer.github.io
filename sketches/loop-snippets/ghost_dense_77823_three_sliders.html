@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ghost Dense 77823 — Three.js · Sliders</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+    canvas { display: block; width: 100% !important; height: 100% !important; }
+    .hud {
+      position: fixed; left: 50%; bottom: 14px;
+      transform: translateX(-50%);
+      display: flex; justify-content: space-between; align-items: flex-end;
+      width: min(92vw, 92vh);
+      pointer-events: none;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #888;
+    }
+    .hud .seed { letter-spacing: 0.12em; text-transform: none; color: #aaa; }
+    .hint {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.06em; color: #bbb;
+      pointer-events: none;
+    }
+    .controls {
+      position: fixed; top: 42px; right: 14px; z-index: 10;
+      display: grid; gap: 10px;
+      width: min(240px, 42vw);
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #e8e8e8;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #888;
+    }
+    .controls label {
+      display: grid; gap: 6px;
+    }
+    .controls .ctrl-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .controls .ctrl-head span.val {
+      letter-spacing: 0.04em; text-transform: none; color: #aaa;
+    }
+    .controls input[type="range"] {
+      width: 100%; margin: 0; accent-color: #74b4dc;
+    }
+  </style>
+</head>
+<body>
+  <div class="hint">drag orbit · scroll zoom · rings &amp; gears spin on their axes</div>
+  <div class="controls" aria-label="Machine controls">
+    <label>
+      <span class="ctrl-head">Speed <span class="val" id="val-speed">1.0×</span></span>
+      <input type="range" id="sl-speed" min="10" max="300" value="100" aria-label="Speed">
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear size <span class="val" id="val-horizontal">1.00×</span></span>
+      <input type="range" id="sl-horizontal" min="25" max="200" value="100" aria-label="Horizontal gear size">
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear size <span class="val" id="val-vertical">1.00×</span></span>
+      <input type="range" id="sl-vertical" min="25" max="200" value="100" aria-label="Vertical gear size">
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear count <span class="val" id="val-h-count">0</span></span>
+      <input type="range" id="sl-h-count" min="0" max="1" value="1" aria-label="Horizontal gear count">
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">0</span></span>
+      <input type="range" id="sl-v-count" min="0" max="1" value="1" aria-label="Vertical gear count">
+    </label>
+  </div>
+  <div class="hud">
+    <span>Surrender Machines</span>
+    <span class="seed">seed 77823 · sliders</span>
+  </div>
+
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+(function () {
+  'use strict';
+
+  const SEED = 77823;
+  // Machine-drawing palette (machine-drawing-swatches.html) — ultra minimal on white
+  const PALETTE = {
+    ink: 0x2c3034,
+    lightBlue: 0x74b4dc,
+    skyBlue: 0x80b8e8,
+    navy: 0x5a788c,
+    gold: 0xeca018,
+    maroon: 0x662020,
+  };
+
+  function makeRng(seed) {
+    let s = seed >>> 0;
+    return {
+      random() {
+        s = (s + 0x6d2b79f5) >>> 0;
+        let t = s;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      },
+      uniform(a, b) { return a + this.random() * (b - a); },
+      randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+      choice(arr) { return arr[this.randint(0, arr.length - 1)]; },
+      chance(p) { return this.random() < p; }
+    };
+  }
+
+  const TAU = Math.PI * 2;
+  const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+
+  function cpts(cx, cy, cz, r, plane, n) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const a = TAU * i / n;
+      if (plane === 'xz') pts.push(v3(cx + r * Math.cos(a), cy, cz + r * Math.sin(a)));
+      else if (plane === 'xy') pts.push(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz));
+      else pts.push(v3(cx, cy + r * Math.sin(a), cz + r * Math.cos(a)));
+    }
+    return pts;
+  }
+
+  class WireBuilder {
+    constructor(scene) {
+      this.scene = scene;
+      this.staticRoot = new THREE.Group();
+      this.baseRoot = new THREE.Group();
+      this.machineRoot = new THREE.Group();
+      this.towerPosts = new THREE.Group();
+      this.horizontalDiscs = new THREE.Group();
+      this.verticalFace = new THREE.Group();
+      this.scene.add(this.staticRoot);
+      this.staticRoot.add(this.baseRoot);
+      this.staticRoot.add(this.machineRoot);
+      this.machineRoot.add(this.towerPosts);
+      this.machineRoot.add(this.horizontalDiscs);
+      this.machineRoot.add(this.verticalFace);
+      this.spinners = [];
+      this.horizontalGears = [];
+      this.verticalGears = [];
+      this.stack = [this.staticRoot];
+      this.current = this.staticRoot;
+      this.lineColor = PALETTE.ink;
+    }
+
+    pushTarget(group) {
+      this.stack.push(group);
+      this.current = group;
+    }
+
+    popTarget() {
+      if (this.stack.length <= 1) return;
+      this.stack.pop();
+      this.current = this.stack[this.stack.length - 1];
+    }
+
+    setColor(color) {
+      this.lineColor = color == null ? PALETTE.ink : color;
+    }
+
+    resetColor() {
+      this.lineColor = PALETTE.ink;
+    }
+
+    pushSpin(px, py, pz, axis, durationSec, reverse, gearKind, mount) {
+      const pivot = new THREE.Group();
+      pivot.position.set(px, py, pz);
+      const content = new THREE.Group();
+      pivot.add(content);
+      (mount || this.machineRoot).add(pivot);
+      const speed = (reverse ? -1 : 1) * (TAU / durationSec);
+      const spinner = { pivot, content, axis, speed, gearKind: gearKind || null };
+      this.spinners.push(spinner);
+      if (gearKind === 'horizontal') this.horizontalGears.push(spinner);
+      else if (gearKind === 'vertical') this.verticalGears.push(spinner);
+      this.stack.push(content);
+      this.current = content;
+    }
+
+    popSpin() {
+      if (this.stack.length <= 1) return;
+      this.stack.pop();
+      this.current = this.stack[this.stack.length - 1];
+    }
+
+    _lineGeo(a, b) {
+      const g = new THREE.BufferGeometry();
+      g.setFromPoints([a, b]);
+      return g;
+    }
+
+    seg(a, b, opacity) {
+      let op = opacity == null ? 1 : opacity;
+      const isAccent = this.lineColor !== PALETTE.ink;
+      if (isAccent) op = Math.min(op, 0.48);
+      const mat = new THREE.LineBasicMaterial({
+        color: this.lineColor,
+        transparent: op < 1,
+        opacity: op
+      });
+      this.current.add(new THREE.Line(this._lineGeo(a, b), mat));
+    }
+
+    spoly(pts, close, opacity) {
+      const n = pts.length;
+      for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        if (!close && i === n - 1) break;
+        this.seg(pts[i], pts[j], opacity);
+      }
+    }
+
+    disk(cx, cy, cz, r, plane, n) {
+      this.spoly(cpts(cx, cy, cz, r, plane, n), true);
+    }
+
+    box(x, y, z, bw, bh, bd) {
+      const c = [
+        v3(x, y, z), v3(x + bw, y, z), v3(x + bw, y, z + bd), v3(x, y, z + bd),
+        v3(x, y + bh, z), v3(x + bw, y + bh, z), v3(x + bw, y + bh, z + bd), v3(x, y + bh, z + bd)
+      ];
+      const solid = [[0,1],[0,3],[0,4],[1,5],[3,7],[4,5],[4,7],[5,6],[6,7]];
+      const hidden = [[1,2],[2,3],[2,6]];
+      for (const [a, b] of solid) this.seg(c[a], c[b]);
+      for (const [a, b] of hidden) this.seg(c[a], c[b], 0.45);
+    }
+
+    cyl(cx, cy, cz, r, h, n, ribs) {
+      const bot = cpts(cx, cy, cz, r, 'xz', n);
+      const top = cpts(cx, cy + h, cz, r, 'xz', n);
+      let li = 0, ri = 0;
+      for (let i = 1; i < n; i++) {
+        if (bot[i].x < bot[li].x) li = i;
+        if (bot[i].x > bot[ri].x) ri = i;
+      }
+      this.spoly(bot, true);
+      this.spoly(top, true);
+      this.seg(bot[li], top[li]);
+      this.seg(bot[ri], top[ri]);
+      if (ribs) {
+        const step = Math.max(1, Math.floor(n / ribs));
+        for (let i = 0; i < n; i += step) this.seg(bot[i], top[i], 0.35);
+      }
+    }
+
+    cylX(cx, cy, cz, r, length, n) {
+      const lpts = [], rpts = [];
+      for (let i = 0; i < n; i++) {
+        const a = TAU * i / n;
+        lpts.push(v3(cx - length / 2, cy + r * Math.sin(a), cz + r * Math.cos(a)));
+        rpts.push(v3(cx + length / 2, cy + r * Math.sin(a), cz + r * Math.cos(a)));
+      }
+      let ti = 0, bi = 0;
+      for (let i = 1; i < n; i++) {
+        if (lpts[i].y < lpts[ti].y) ti = i;
+        if (lpts[i].y > lpts[bi].y) bi = i;
+      }
+      this.spoly(lpts, true);
+      this.spoly(rpts, true);
+      this.seg(lpts[ti], rpts[ti]);
+      this.seg(lpts[bi], rpts[bi]);
+    }
+
+    cylZ(cx, cy, cz, r, length, n) {
+      const lpts = [], rpts = [];
+      for (let i = 0; i < n; i++) {
+        const a = TAU * i / n;
+        lpts.push(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz - length / 2));
+        rpts.push(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz + length / 2));
+      }
+      let ti = 0, bi = 0;
+      for (let i = 1; i < n; i++) {
+        if (lpts[i].y < lpts[ti].y) ti = i;
+        if (lpts[i].y > lpts[bi].y) bi = i;
+      }
+      this.spoly(lpts, true);
+      this.spoly(rpts, true);
+      this.seg(lpts[ti], rpts[ti]);
+      this.seg(lpts[bi], rpts[bi]);
+    }
+
+    ringXZ(cx, cy, cz, rOut, rIn, h, n) {
+      for (const yy of [cy, cy + h]) {
+        this.spoly(cpts(cx, yy, cz, rOut, 'xz', n), true);
+        this.spoly(cpts(cx, yy, cz, rIn, 'xz', n), true, 0.65);
+      }
+      const botO = cpts(cx, cy, cz, rOut, 'xz', n);
+      const topO = cpts(cx, cy + h, cz, rOut, 'xz', n);
+      let li = 0, ri = 0;
+      for (let i = 1; i < n; i++) {
+        if (botO[i].x < botO[li].x) li = i;
+        if (botO[i].x > botO[ri].x) ri = i;
+      }
+      this.seg(botO[li], topO[li]);
+      this.seg(botO[ri], topO[ri]);
+      const botI = cpts(cx, cy, cz, rIn, 'xz', n);
+      const topI = cpts(cx, cy + h, cz, rIn, 'xz', n);
+      this.seg(botI[li], topI[li], 0.65);
+      this.seg(botI[ri], topI[ri], 0.65);
+    }
+
+    gearRingXZ(cx, cy, cz, r, teeth, th) {
+      this.ringXZ(cx, cy, cz, r, r * 0.82, th, 64);
+      const thR = r * 0.078;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.4) / teeth;
+        const a2 = TAU * (i + 0.4) / teeth;
+        const tp = (a, rr, yy) => v3(cx + rr * Math.cos(a), yy, cz + rr * Math.sin(a));
+        this.spoly([tp(a1, r, cy + th), tp(a2, r, cy + th), tp(a2, r + thR, cy + th), tp(a1, r + thR, cy + th)], true, 0.75);
+        this.seg(tp(a1, r + thR, cy), tp(a1, r + thR, cy + th), 0.55);
+      }
+    }
+
+    gearRingXY(cx, cy, cz, r, teeth, th) {
+      const n = 64;
+      const ptsF = cpts(cx, cy, cz, r, 'xy', n);
+      const ptsB = cpts(cx, cy, cz + th, r, 'xy', n);
+      this.spoly(ptsF, true);
+      this.spoly(ptsB, true, 0.55);
+      this.spoly(cpts(cx, cy, cz, r * 0.82, 'xy', n), true, 0.52);
+      this.spoly(cpts(cx, cy, cz + th, r * 0.82, 'xy', n), true, 0.38);
+      const pick = (fn, ax) => {
+        let idx = 0;
+        for (let i = 1; i < n; i++) if (fn(ax(ptsF[i]), ax(ptsF[idx]))) idx = i;
+        return idx;
+      };
+      for (const [fn, ax] of [[Math.min, p => p.y], [Math.max, p => p.y], [Math.min, p => p.x], [Math.max, p => p.x]]) {
+        const idx = pick(fn, ax);
+        this.seg(ptsF[idx], ptsB[idx], 0.78);
+      }
+      const thR = r * 0.078;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.4) / teeth;
+        const a2 = TAU * (i + 0.4) / teeth;
+        const tp = (a, rr, dz) => v3(cx + rr * Math.cos(a), cy + rr * Math.sin(a), cz + dz);
+        this.spoly([tp(a1, r, 0), tp(a2, r, 0), tp(a2, r + thR, 0), tp(a1, r + thR, 0)], true, 0.55);
+        this.seg(tp(a1, r + thR, 0), tp(a1, r + thR, th), 0.32);
+      }
+    }
+
+    gearRingYZ(cx, cy, cz, r, teeth, th) {
+      const n = 72;
+      const yz = (dx, rr) => {
+        const out = [];
+        for (let i = 0; i < n; i++) {
+          const a = TAU * i / n;
+          out.push(v3(cx + dx, cy + rr * Math.sin(a), cz + rr * Math.cos(a)));
+        }
+        return out;
+      };
+      const ptsF = yz(0, r);
+      const ptsB = yz(th, r);
+      this.spoly(ptsF, true);
+      this.spoly(ptsB, true, 0.55);
+      this.spoly(yz(0, r * 0.82), true, 0.52);
+      this.spoly(yz(th, r * 0.82), true, 0.38);
+      const pick = (fn, ax) => {
+        let idx = 0;
+        for (let i = 1; i < n; i++) if (fn(ax(ptsF[i]), ax(ptsF[idx]))) idx = i;
+        return idx;
+      };
+      for (const [fn, ax] of [[Math.min, p => p.y], [Math.max, p => p.y], [Math.min, p => p.x], [Math.max, p => p.x]]) {
+        const idx = pick(fn, ax);
+        this.seg(ptsF[idx], ptsB[idx], 0.78);
+      }
+      const thR = r * 0.078;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.4) / teeth;
+        const a2 = TAU * (i + 0.4) / teeth;
+        const tp = (a, rr, dx) => v3(cx + dx, cy + rr * Math.sin(a), cz + rr * Math.cos(a));
+        this.spoly([tp(a1, r, 0), tp(a2, r, 0), tp(a2, r + thR, 0), tp(a1, r + thR, 0)], true, 0.55);
+        this.seg(tp(a1, r + thR, 0), tp(a1, r + thR, th), 0.32);
+      }
+    }
+
+    gearXZ(cx, cy, cz, r, teeth, th) {
+      const thR = r * 0.12;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.38) / teeth;
+        const a2 = TAU * (i + 0.38) / teeth;
+        const tp = (a, rr, yy) => v3(cx + rr * Math.cos(a), yy, cz + rr * Math.sin(a));
+        this.spoly([tp(a1, r, cy + th), tp(a2, r, cy + th), tp(a2, r + thR, cy + th), tp(a1, r + thR, cy + th)], true, 0.75);
+        this.seg(tp(a1, r + thR, cy), tp(a1, r + thR, cy + th), 0.5);
+      }
+      this.disk(cx, cy, cz, r, 'xz', 48);
+      this.disk(cx, cy + th, cz, r * 0.88, 'xz', 48);
+      this.disk(cx, cy + th, cz, r * 0.18, 'xz', 48);
+    }
+
+    spokes(cx, cy, cz, r, n, plane) {
+      for (let i = 0; i < n; i++) {
+        const a = Math.PI * i / n;
+        if (plane === 'xz') {
+          this.seg(v3(cx + r * Math.cos(a), cy, cz + r * Math.sin(a)),
+                  v3(cx - r * Math.cos(a), cy, cz - r * Math.sin(a)), 0.4);
+        } else if (plane === 'yz') {
+          this.seg(v3(cx, cy + r * Math.sin(a), cz + r * Math.cos(a)),
+                  v3(cx, cy - r * Math.sin(a), cz - r * Math.cos(a)), 0.4);
+        } else {
+          this.seg(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz),
+                  v3(cx - r * Math.cos(a), cy - r * Math.sin(a), cz), 0.4);
+        }
+      }
+    }
+
+    pipe(a, b) {
+      this.seg(a, b);
+    }
+  }
+
+  function spinDur(rng, lo, hi) {
+    return rng.uniform(lo, hi);
+  }
+
+  function drawMachine(w, rng) {
+    let baseTop = 0;
+    const nLayers = rng.randint(3, 6);
+    const baseW = rng.uniform(5.5, 7.5);
+    const baseD = rng.uniform(3.5, 5.0);
+    w.pushTarget(w.baseRoot);
+    for (let i = 0; i < nLayers; i++) {
+      const shrink = i * rng.uniform(0.12, 0.22);
+      let yOff = 0;
+      for (let j = 0; j < i; j++) yOff += rng.uniform(0.12, 0.26);
+      w.box(-baseW / 2 + shrink, yOff, -baseD / 2 + shrink,
+            baseW - shrink * 2, rng.uniform(0.12, 0.26), baseD - shrink * 2);
+    }
+    w.popTarget();
+    for (let i = 0; i < nLayers; i++) baseTop += rng.uniform(0.12, 0.26);
+
+    w.pushTarget(w.machineRoot);
+
+    const outerR = rng.uniform(2.2, 3.4);
+    const outerTeeth = rng.randint(36, 60);
+    const outerTh = rng.uniform(0.18, 0.32);
+    const outerY = rng.uniform(1.4, 2.2);
+    const outerOx = rng.uniform(-0.5, 0.5);
+    const outerOz = rng.uniform(-0.5, 0.5);
+
+    w.pushSpin(outerOx, outerY, outerOz, 'y', spinDur(rng, 18, 26), rng.chance(0.5), 'horizontal');
+    w.setColor(PALETTE.lightBlue);
+    w.gearRingXZ(0, 0, 0, outerR, outerTeeth, outerTh);
+    w.spokes(0, outerTh / 2, 0, outerR * 0.88, rng.randint(5, 10), 'xz');
+    w.resetColor();
+    w.popSpin();
+
+    const nRings = rng.randint(8, 14);
+    for (let i = 0; i < nRings; i++) {
+      const r = rng.uniform(0.4, outerR - 0.3);
+      const teeth = rng.randint(8, 44);
+      const y = rng.uniform(baseTop, outerY + 1.5);
+      const th = rng.uniform(0.08, 0.24);
+      const ox = rng.uniform(-0.6, 0.6);
+      const oz = rng.uniform(-0.6, 0.6);
+      const plane = rng.choice(['xz', 'xz', 'xy', 'xy', 'yz', 'yz']);
+      const axis = plane === 'xz' ? 'y' : plane === 'xy' ? 'z' : 'x';
+      const gearKind = plane === 'xz' ? 'horizontal' : 'vertical';
+      w.pushSpin(ox, y, oz, axis, spinDur(rng, 8, 18), rng.chance(0.5), gearKind);
+      if (i % 5 === 0) w.setColor(PALETTE.maroon);
+      if (plane === 'xz') w.gearRingXZ(0, 0, 0, r, teeth, th);
+      else if (plane === 'xy') w.gearRingXY(0, 0, 0, r, teeth, th);
+      else w.gearRingYZ(0, 0, 0, r, teeth, th);
+      w.resetColor();
+      w.popSpin();
+    }
+
+    const nBoxes = rng.randint(10, 20);
+    for (let i = 0; i < nBoxes; i++) {
+      w.box(rng.uniform(-2.8, 1.5), rng.uniform(baseTop, 3.0), rng.uniform(-1.5, 1.5),
+            rng.uniform(0.4, 2.5), rng.uniform(0.3, 2.0), rng.uniform(0.3, 2.0));
+    }
+
+    const nTowers = rng.randint(12, 20);
+    const towers = [];
+    for (let i = 0; i < nTowers; i++) {
+      towers.push([rng.uniform(-2.4, 2.2), baseTop, rng.uniform(-1.2, 1.2)]);
+    }
+    for (let ti = 0; ti < towers.length; ti++) {
+      const [tx, ty, tz] = towers[ti];
+      const th = rng.uniform(2.0, 4.5);
+      w.pushTarget(w.towerPosts);
+      w.setColor(PALETTE.navy);
+      w.cyl(tx, ty, tz, 0.1, th, 48, 0);
+      w.resetColor();
+      w.popTarget();
+      const nG = rng.randint(2, 6);
+      for (let j = 0; j < nG; j++) {
+        const gy = ty + th * (j + 1) / (nG + 1) + rng.uniform(-0.12, 0.12);
+        const gr = rng.uniform(0.28, 1.3);
+        const gt = rng.randint(6, 24);
+        const gth = rng.uniform(0.07, 0.22);
+        w.pushSpin(tx, gy, tz, 'y', spinDur(rng, 5, 11), rng.chance(0.5), 'horizontal');
+        if (ti === 0 && j === 0) w.setColor(PALETTE.gold);
+        w.gearXZ(0, 0, 0, gr, gt, gth);
+        w.resetColor();
+        w.popSpin();
+      }
+    }
+
+    const discStep = rng.uniform(0.16, 0.28);
+    const discShrink = rng.uniform(0.12, 0.22);
+    const nDiscs = rng.randint(10, 20);
+    for (let i = 0; i < nDiscs; i++) {
+      const yy = baseTop + i * discStep;
+      const r = outerR * 0.92 - i * discShrink;
+      if (r > 0.15) {
+        const dx = rng.uniform(-0.3, 0.3);
+        const dz = rng.uniform(-0.3, 0.3);
+        w.pushSpin(dx, yy, dz, 'y', spinDur(rng, 10, 20), rng.chance(0.5), null, w.horizontalDiscs);
+        w.disk(0, 0, 0, r, 'xz', 48);
+        w.popSpin();
+      }
+    }
+
+    const cylConfigs = [];
+    for (let i = 0; i < rng.randint(6, 10); i++) {
+      cylConfigs.push([rng.uniform(0.1, 2.8), rng.uniform(0.3, 4.2), rng.randint(2, 14)]);
+    }
+    cylConfigs.sort((a, b) => b[0] - a[0]);
+    for (let ci = 0; ci < cylConfigs.length; ci++) {
+      const [r, h, ribs] = cylConfigs[ci];
+      if (ci === 0) w.setColor(PALETTE.skyBlue);
+      w.cyl(rng.uniform(-0.4, 0.4), baseTop, rng.uniform(-0.4, 0.4), r, h, 48, ribs);
+      w.resetColor();
+    }
+    for (let i = 0; i < rng.randint(4, 8); i++) {
+      w.cyl(rng.uniform(-2.2, 2.2), baseTop, rng.uniform(-1.5, 1.5),
+            rng.uniform(0.3, 1.0), rng.uniform(0.8, 2.8), 48, rng.randint(2, 6));
+    }
+    for (let i = 0; i < rng.randint(4, 8); i++) {
+      w.cylX(rng.uniform(-0.5, 0.5), rng.uniform(baseTop + 0.3, 3.5), rng.uniform(-0.8, 0.8),
+             rng.uniform(0.18, 0.5), rng.uniform(2.5, 5.5), 32);
+    }
+    for (let i = 0; i < rng.randint(2, 5); i++) {
+      w.cylZ(rng.uniform(-0.5, 0.5), rng.uniform(baseTop + 0.3, 3.5), rng.uniform(-0.4, 0.4),
+             rng.uniform(0.2, 0.45), rng.uniform(2.5, 4.5), 32);
+    }
+
+    const nFace = rng.randint(8, 16);
+    for (let i = 0; i < nFace; i++) {
+      const plane = rng.choice(['yz', 'yz', 'xy', 'xy', 'yz']);
+      const cx = plane === 'yz' ? rng.choice([-2.2, -2.2, 2.2]) : rng.uniform(-1.5, 1.5);
+      const cy = rng.uniform(baseTop + 0.2, 3.0);
+      const cz = plane === 'yz' ? rng.uniform(-1.2, 1.2) : rng.choice([-1.2, -1.2, 1.2]);
+      const r = rng.uniform(0.3, 1.05);
+      const axis = plane === 'xy' ? 'z' : 'x';
+      w.pushSpin(cx, cy, cz, axis, spinDur(rng, 6, 12), rng.chance(0.5), null, w.verticalFace);
+      w.disk(0, 0, 0, r, plane, 48);
+      w.disk(0, 0, 0, r * 0.55, plane, 48);
+      w.spokes(0, 0, 0, r * 0.48, rng.randint(4, 8), plane);
+      w.popSpin();
+    }
+
+    const nPipes = rng.randint(14, 24);
+    const anchors = [];
+    for (let i = 0; i < nPipes * 2; i++) {
+      anchors.push(v3(rng.uniform(-2.5, 2.5), rng.uniform(baseTop + 0.5, 4.0), rng.uniform(-1.5, 1.5)));
+    }
+    for (let i = 0; i < nPipes; i++) w.pipe(anchors[i * 2], anchors[i * 2 + 1]);
+
+    for (let i = 0; i < rng.randint(16, 28); i++) {
+      w.box(rng.uniform(-2.6, 2.6), rng.uniform(baseTop, 3.8), rng.uniform(-1.6, 1.6),
+            rng.uniform(0.12, 0.6), rng.uniform(0.08, 0.42), rng.uniform(0.12, 0.48));
+    }
+
+    w.popTarget();
+  }
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0xffffff, 1);
+  document.body.insertBefore(renderer.domElement, document.body.firstChild);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.05, 200);
+  camera.position.set(5.8, 4.2, 6.4);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 2.05, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.minDistance = 3;
+  controls.maxDistance = 22;
+
+  const builder = new WireBuilder(scene);
+  const rng = makeRng(SEED);
+  drawMachine(builder, rng);
+
+  const slSpeed = document.getElementById('sl-speed');
+  const slHorizontal = document.getElementById('sl-horizontal');
+  const slVertical = document.getElementById('sl-vertical');
+  const slHCount = document.getElementById('sl-h-count');
+  const slVCount = document.getElementById('sl-v-count');
+  const valSpeed = document.getElementById('val-speed');
+  const valHorizontal = document.getElementById('val-horizontal');
+  const valVertical = document.getElementById('val-vertical');
+  const valHCount = document.getElementById('val-h-count');
+  const valVCount = document.getElementById('val-v-count');
+
+  slHCount.max = String(builder.horizontalGears.length);
+  slHCount.value = String(builder.horizontalGears.length);
+  slVCount.max = String(builder.verticalGears.length);
+  slVCount.value = String(builder.verticalGears.length);
+
+  let speedMult = 1;
+
+  function syncGearCounts() {
+    const hCount = Number(slHCount.value);
+    const vCount = Number(slVCount.value);
+    const showMachine = hCount > 0 || vCount > 0;
+    valHCount.textContent = String(hCount);
+    valVCount.textContent = String(vCount);
+    builder.machineRoot.visible = showMachine;
+    builder.towerPosts.visible = hCount > 0;
+    builder.horizontalDiscs.visible = hCount > 0;
+    builder.verticalFace.visible = vCount > 0;
+    builder.horizontalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < hCount; });
+    builder.verticalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < vCount; });
+  }
+
+  function syncControls() {
+    speedMult = Number(slSpeed.value) / 100;
+    valSpeed.textContent = speedMult.toFixed(1) + '×';
+    const hScale = Number(slHorizontal.value) / 100;
+    const vScale = Number(slVertical.value) / 100;
+    valHorizontal.textContent = hScale.toFixed(2) + '×';
+    valVertical.textContent = vScale.toFixed(2) + '×';
+    for (const s of builder.spinners) {
+      if (!s.content || !s.gearKind) continue;
+      const sc = s.gearKind === 'horizontal' ? hScale : vScale;
+      s.content.scale.set(sc, sc, sc);
+    }
+    syncGearCounts();
+  }
+
+  for (const el of [slSpeed, slHorizontal, slVertical, slHCount, slVCount]) {
+    el.addEventListener('input', syncControls);
+  }
+  syncControls();
+
+  const clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const dt = clock.getDelta();
+    for (const s of builder.spinners) {
+      const d = s.speed * speedMult * dt;
+      if (s.axis === 'x') s.pivot.rotation.x += d;
+      else if (s.axis === 'y') s.pivot.rotation.y += d;
+      else s.pivot.rotation.z += d;
+    }
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  function onResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+  window.addEventListener('resize', onResize);
+  onResize();
+})();
+  </script>
+</body>
+</html>
