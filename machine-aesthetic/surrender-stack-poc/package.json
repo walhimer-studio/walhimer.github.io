@@ -10,7 +10,8 @@
     "start": "node bridge/dna-bridge.mjs",
     "network-check": "node scripts/network-check.mjs",
     "unpause": "node scripts/unpause.mjs",
-    "status": "node scripts/status.mjs"
+    "status": "node scripts/status.mjs",
+    "deploy-controller": "node scripts/deploy-controller.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",

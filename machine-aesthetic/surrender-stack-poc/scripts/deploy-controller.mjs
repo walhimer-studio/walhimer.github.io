@@ -21,7 +21,23 @@ if (!fs.existsSync(cfgPath)) {
 const cfg = await import(pathToFileURL(cfgPath).href);
 const { firebaseConfig, FIREBASE_OPERATOR_ROOT, FIREBASE_GENOME_ROOT } = cfg;
 
+const REPO_ROOT = path.join(ROOT, "..", "..");
+const ARTWORK_SRC = path.join(
+  REPO_ROOT,
+  "sketches/loop-snippets/ghost_dense_77823_three_sliders.html"
+);
+
+if (!fs.existsSync(ARTWORK_SRC)) {
+  console.error("Missing artwork:", ARTWORK_SRC);
+  process.exit(1);
+}
+
 fs.mkdirSync(OUT, { recursive: true });
+
+/** Public face — user's ghost dense sliders sketch (verbatim copy, not edited). */
+const artworkHtml = fs.readFileSync(ARTWORK_SRC, "utf8");
+fs.writeFileSync(path.join(OUT, "index.html"), artworkHtml);
+fs.writeFileSync(path.join(OUT, "ghost_dense_77823_three_sliders.html"), artworkHtml);
 
 const controllerSrc = fs.readFileSync(path.join(ROOT, "web", "display.html"), "utf8");
 const hosted = controllerSrc.replace(
@@ -37,13 +53,13 @@ const hosted = controllerSrc.replace(
 );
 
 fs.writeFileSync(path.join(OUT, "display.html"), hosted);
-fs.writeFileSync(path.join(OUT, "index.html"), `<!doctype html><meta http-equiv="refresh" content="0;url=display.html?venue=mac-local">`);
 fs.writeFileSync(
   path.join(OUT, "controller.html"),
-  `<!doctype html><meta http-equiv="refresh" content="0;url=display.html${"?venue=mac-local"}">`
+  `<!doctype html><meta http-equiv="refresh" content="0;url=display.html?venue=mac-local">`
 );
 
-console.log("Deploying controller to Firebase Hosting…");
+console.log("Deploying to Firebase Hosting…");
+console.log("  artwork:", path.relative(REPO_ROOT, ARTWORK_SRC));
 
 function firebaseBin() {
   const local = path.join(ROOT, "node_modules", ".bin", "firebase");
@@ -71,9 +87,12 @@ Run these commands ONE AT A TIME (no # comments):
 }
 
 console.log(`
-Phone + display (one screen):
+Public artwork (ghost dense · sliders):
+  https://${firebaseConfig.projectId}.web.app/
+  https://${firebaseConfig.projectId}.web.app/ghost_dense_77823_three_sliders.html
+
+Stack POC display (cube + genome HUD):
   https://${firebaseConfig.projectId}.web.app/display.html?venue=mac-local
 
-Mac brain: node bridge/dna-bridge.mjs
-Local:     http://127.0.0.1:8791/display.html?venue=mac-local
+Cloud brain: Render worker (or local node bridge/dna-bridge.mjs)
 `);
