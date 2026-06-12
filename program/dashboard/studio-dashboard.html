@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>markwalhimer.com — Studio Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#ffffff;
+  --bg:#f5f5f3;
+  --ink:#111010;
+  --muted:#6b6860;
+  --rule:#e0ddd6;
+  --pale:#f0ede6;
+  --accent:#185FA5;
+  --green:#3B6D11;
+  --amber:#BA7517;
+  --red:#A32D2D;
+  --green-bg:#EAF3DE;
+  --amber-bg:#FAEEDA;
+  --red-bg:#FCEBEB;
+  --blue-bg:#E6F1FB;
+  --purple-bg:#EEEDFE;
+  --purple:#534AB7;
+  --radius-md:8px;
+  --radius-lg:12px;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:14px;font-weight:400;line-height:1.5;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:'Inter',sans-serif}
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:var(--paper);border-right:0.5px solid var(--rule);padding:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.main{padding:32px 40px;max-width:1100px}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:0.5px solid var(--rule)}
+.sidebar-logo h1{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.sidebar-logo p{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.sidebar-section{padding:16px 12px 8px;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;border-left:2px solid transparent}
+.sidebar-item:hover{color:var(--ink);background:var(--pale)}
+.sidebar-item.active{color:var(--ink);background:var(--pale);border-left-color:var(--ink);font-weight:500}
+.sidebar-item .icon{font-size:15px;width:18px;text-align:center}
+.sidebar-status{padding:16px 20px;border-top:0.5px solid var(--rule)}
+.pulse-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.top-bar h2{font-size:20px;font-weight:500;color:var(--ink)}
+.date-label{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.metric{background:var(--paper);border:0.5px solid var(--rule);border-radius:var(--radius-md);padding:14px 16px}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;letter-spacing:.04em}
+.metric-value{font-size:24px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.metric-sub{font-size:11px;color:var(--muted)}
+.metric-up{color:var(--green)}
+.metric-warn{color:var(--amber)}
+.panel{background:var(--paper);border:0.5px solid var(--rule);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px}
+.panel-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-family:'DM Mono',monospace}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:var(--radius-md);letter-spacing:.03em;white-space:nowrap}
+.badge-minted{background:var(--purple-bg);color:var(--purple)}
+.badge-available{background:var(--green-bg);color:var(--green)}
+.badge-draft{background:var(--amber-bg);color:var(--amber)}
+.badge-approved{background:var(--blue-bg);color:var(--accent)}
+.badge-sold{background:var(--pale);color:var(--muted)}
+.badge-high{background:var(--green-bg);color:var(--green)}
+.badge-medium{background:var(--amber-bg);color:var(--amber)}
+.badge-low{background:var(--pale);color:var(--muted)}
+.badge-tier1{background:var(--ink);color:var(--paper)}
+.badge-tier2{background:var(--pale);color:var(--ink)}
+.badge-tier3{background:transparent;border:0.5px solid var(--rule);color:var(--muted)}
+.btn{font-size:11px;padding:5px 12px;border-radius:var(--radius-md);border:0.5px solid var(--rule);background:transparent;color:var(--ink);cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--pale)}
+.btn-primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn-primary:hover{opacity:.85}
+.btn-green{background:var(--green);color:white;border-color:var(--green)}
+.btn-green:hover{opacity:.85}
+.btn-red{background:var(--red-bg);color:var(--red);border-color:var(--red)}
+.item{border-bottom:0.5px solid var(--rule);padding:14px 0}
+.item:first-child{padding-top:0}
+.item:last-child{border-bottom:none;padding-bottom:0}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.item-name{font-size:14px;font-weight:500;color:var(--ink)}
+.item-meta{font-size:11px;color:var(--muted);margin-bottom:5px;font-family:'DM Mono',monospace}
+.item-note{font-size:12px;color:var(--muted);font-style:italic;margin-bottom:8px;line-height:1.5}
+.item-actions{display:flex;gap:6px;flex-wrap:wrap}
+.pipe-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--rule);font-size:13px}
+.pipe-row:last-child{border-bottom:none}
+.pipe-stage{color:var(--muted)}
+.pipe-count{font-weight:500;color:var(--ink)}
+.pipe-value{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-row:last-child{margin-bottom:0}
+.bar-label{font-size:12px;color:var(--muted);width:160px;flex-shrink:0}
+.bar-track{flex:1;height:4px;background:var(--pale);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;background:var(--ink)}
+.bar-fill-green{background:var(--green)}
+.bar-fill-amber{background:var(--amber)}
+.bar-fill-red{background:var(--red)}
+.bar-fill-purple{background:var(--purple)}
+.bar-pct{font-size:11px;color:var(--muted);width:48px;text-align:right;font-family:'DM Mono',monospace}
+.bar-pct-up{color:var(--green);font-weight:500}
+.draft-thumb{width:72px;height:54px;background:var(--pale);border-radius:var(--radius-md);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+.platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border-radius:var(--radius-md);overflow:hidden;border:0.5px solid var(--rule)}
+.platform-col{background:var(--paper);padding:14px}
+.platform-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-family:'DM Mono',monospace}
+.cal-item{border-left:2px solid var(--rule);padding:10px 14px;margin-bottom:10px}
+.cal-item:last-child{margin-bottom:0}
+.cal-item.urgent{border-left-color:var(--red)}
+.cal-item.soon{border-left-color:var(--amber)}
+.cal-item.future{border-left-color:var(--rule)}
+.cal-item.active{border-left-color:var(--green)}
+.cal-event{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.cal-meta{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:3px}
+.cal-status{font-size:11px;font-weight:500}
+.cal-green{color:var(--green)}
+.cal-amber{color:var(--amber)}
+.cal-red{color:var(--red)}
+.cal-muted{color:var(--muted)}
+.social-caption{background:var(--pale);border-radius:var(--radius-md);padding:12px;margin-bottom:8px}
+.social-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace}
+.social-text{font-size:12px;color:var(--muted);line-height:1.7;font-style:italic}
+.series-tier{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:12px 0 6px;border-top:0.5px solid var(--pale);margin-top:4px}
+.series-tier:first-child{border-top:none;padding-top:0;margin-top:0}
+.series-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid var(--rule);font-size:13px}
+.series-row:last-child{border-bottom:none}
+.series-name{font-weight:500;color:var(--ink)}
+.series-meta{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.resonance-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--rule);font-size:13px}
+.resonance-row:last-child{border-bottom:none}
+.diag-card{border-radius:var(--radius-md);padding:14px;background:var(--pale)}
+.diag-title{font-size:11px;font-weight:500;margin-bottom:6px}
+.diag-body{font-size:11px;color:var(--muted);line-height:1.7}
+.diag-strong .diag-title{color:var(--green)}
+.diag-watch .diag-title{color:var(--amber)}
+.diag-action .diag-title{color:var(--red)}
+.nl-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--rule);font-size:12px}
+.nl-row:last-child{border-bottom:none}
+.nl-rate{font-size:11px;font-weight:500;color:var(--green);white-space:nowrap}
+.divider{border:none;border-top:0.5px solid var(--rule);margin:16px 0}
+.page{display:none}
+.page.active{display:block}
+textarea{width:100%;font-family:'Inter',sans-serif;font-size:12px;background:transparent;border:none;outline:none;color:var(--ink);resize:vertical;line-height:1.7;min-height:72px}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>markwalhimer.com</h1>
+    <p>Studio dashboard</p>
+  </div>
+  <div class="sidebar-section">Daily</div>
+  <div class="sidebar-item active" onclick="showPage('today',this)"><span class="icon">◈</span> Today</div>
+  <div class="sidebar-item" onclick="showPage('social',this)"><span class="icon">◎</span> Social queue</div>
+  <div class="sidebar-section">Catalog</div>
+  <div class="sidebar-item" onclick="showPage('approvals',this)"><span class="icon">◫</span> Approval queue</div>
+  <div class="sidebar-item" onclick="showPage('catalog',this)"><span class="icon">◧</span> Catalog</div>
+  <div class="sidebar-item" onclick="showPage('minting',this)"><span class="icon">◨</span> Minting log</div>
+  <div class="sidebar-section">Intelligence</div>
+  <div class="sidebar-item" onclick="showPage('analytics',this)"><span class="icon">◱</span> Analytics</div>
+  <div class="sidebar-item" onclick="showPage('newsletter',this)"><span class="icon">◰</span> Newsletter</div>
+  <div class="sidebar-section">Schedule</div>
+  <div class="sidebar-item" onclick="showPage('competitions',this)"><span class="icon">◲</span> Competitions</div>
+  <div class="sidebar-section">Project</div>
+  <a class="sidebar-item" href="../../machine-aesthetic/docs/overview/surrender-machines-project-overview.html"><span class="icon">◈</span> Surrender Machines overview</a>
+  <a class="sidebar-item" href="../../machine-aesthetic/docs/overview/surrender-machines-loop-art-critique-overview.html"><span class="icon">◉</span> Loop Art Critique</a>
+  <a class="sidebar-item" href="../../machine-aesthetic/docs/overview/surrender-machines-prototyping-board-layout.html"><span class="icon">◬</span> Board layout</a>
+  <a class="sidebar-item" href="../../machine-aesthetic/docs/SURRENDER-MACHINES-PROJECT.md"><span class="icon">◌</span> Project doc (md)</a>
+  <div class="sidebar-status">
+    <div class="pulse-row">
+      <div class="pulse"></div>
+      <span>Pipeline active · Jun 10, 2026</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- TODAY -->
+<div id="page-today" class="page active">
+  <div class="top-bar">
+    <h2>Today</h2>
+    <div class="date-label">Wednesday, June 10, 2026 · 87 works in catalog</div>
+  </div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Drafts awaiting approval</div><div class="metric-value">3</div><div class="metric-sub metric-warn">Review before minting</div></div>
+    <div class="metric"><div class="metric-label">Social posts queued</div><div class="metric-value">2</div><div class="metric-sub metric-warn">Approve before posting</div></div>
+    <div class="metric"><div class="metric-label">Last minted</div><div class="metric-value">Jun 10</div><div class="metric-sub metric-up">SM 013 — today</div></div>
+    <div class="metric"><div class="metric-label">Works available</div><div class="metric-value">14</div><div class="metric-sub">On Manifold</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Approval queue — top draft</div>
+      <div style="display:flex;gap:14px;margin-bottom:12px">
+        <div class="draft-thumb">preview</div>
+        <div>
+          <div class="item-name" style="margin-bottom:3px">Surrender Machines 014</div>
+          <div class="item-meta">Generated Jun 10 · Three.js · Series: Surrender Machines</div>
+          <div class="item-note">Rotating field with audio scape — 3-layer translucent gradient. Strongest in the series this month.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:16px">
+        <button class="btn btn-green">Approve → Mint</button>
+        <button class="btn">Preview live</button>
+        <button class="btn btn-red">Reject</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);border-top:0.5px solid var(--rule);padding-top:12px">2 more drafts waiting · <span style="color:var(--ink);cursor:pointer;font-weight:500" onclick="showPage('approvals',document.querySelector('[onclick*=approvals]'))">View all →</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Social post queue — top item</div>
+      <div class="item-name" style="margin-bottom:4px">Surrender Machines 013</div>
+      <div class="item-meta" style="margin-bottom:10px">Minted Jun 10 · Awaiting post approval</div>
+      <div class="social-caption">
+        <div class="social-label">Instagram</div>
+        <div class="social-text">"Surrender Machines 013 — built from the things we hold too tightly. Turn them up and watch it break. Turn them down and watch what remains. Available on Manifold. #generativeart #machineaesthetics"</div>
+      </div>
+      <div class="social-caption">
+        <div class="social-label">Twitter / X</div>
+        <div class="social-text">"Surrender Machines 013. The machine cannot surrender for you. That is the point. → markwalhimer.com"</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-primary">Post both</button>
+        <button class="btn">Instagram only</button>
+        <button class="btn">Twitter only</button>
+        <button class="btn">Edit captions</button>
+        <button class="btn">Skip</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Pipeline status at a glance</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);border-radius:var(--radius-md);overflow:hidden;border:0.5px solid var(--rule)">
+      <div style="background:var(--paper);padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:500;margin-bottom:4px">3</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em">Drafts</div>
+      </div>
+      <div style="background:var(--paper);padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:500;margin-bottom:4px;color:var(--accent)">1</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em">Approved</div>
+      </div>
+      <div style="background:var(--paper);padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:500;margin-bottom:4px;color:var(--purple)">87</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em">Minted</div>
+      </div>
+      <div style="background:var(--paper);padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:500;margin-bottom:4px;color:var(--green)">14</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em">Available</div>
+      </div>
+      <div style="background:var(--paper);padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:500;margin-bottom:4px">23</div>
+        <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em">Sold</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL QUEUE -->
+<div id="page-social" class="page">
+  <div class="top-bar"><h2>Social queue</h2><div class="date-label">2 posts awaiting approval</div></div>
+  <div class="panel">
+    <div class="panel-title">Auto-drafted on mint — approve before publishing</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.7">Each approved mint auto-drafts captions for Instagram and Twitter/X separately. Instagram gets a longer, atmospheric caption. Twitter/X gets shorter and more conceptual. Both are editable before posting.</div>
+
+    <div class="item">
+      <div class="item-top" style="margin-bottom:8px">
+        <div><div class="item-name">Surrender Machines 013</div><div class="item-meta">Minted Jun 10, 2026 · Three.js · Surrender Machines series</div></div>
+        <span class="badge badge-draft">Draft</span>
+      </div>
+      <div class="two-col" style="margin-bottom:12px">
+        <div class="social-caption" style="margin-bottom:0">
+          <div class="social-label">Instagram — visibility platform</div>
+          <textarea>"Surrender Machines 013 — built from the things we hold too tightly. Turn them up and watch it break. Turn them down and watch what remains.
+
+New work available on Manifold ↗ markwalhimer.com
+
+#generativeart #newmediaart #machineaesthetics #digitalart"</textarea>
+        </div>
+        <div class="social-caption" style="margin-bottom:0">
+          <div class="social-label">Twitter / X — working platform</div>
+          <textarea>"Surrender Machines 013.
+
+The machine cannot surrender for you. That is the point.
+
+Available on Manifold → markwalhimer.com"</textarea>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-primary">Post both</button>
+        <button class="btn">Instagram only</button>
+        <button class="btn">Twitter / X only</button>
+        <button class="btn">Save edits</button>
+        <button class="btn">Skip</button>
+      </div>
+    </div>
+
+    <div class="item" style="opacity:.6">
+      <div class="item-top" style="margin-bottom:8px">
+        <div><div class="item-name">Light Art 024</div><div class="item-meta">Minted Jun 10, 2026 · P5.js · Light Art series</div></div>
+        <span class="badge badge-draft">Draft</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);font-style:italic">Captions drafted — expand to review and edit before posting</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Recently posted — last 7 days</div>
+    <div class="nl-row"><span>Surrender Machines 012</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Jun 8</span><span style="font-size:11px;color:var(--green);font-weight:500">Both platforms ✓</span></div>
+    <div class="nl-row"><span>Bloom 009</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Jun 6</span><span style="font-size:11px;color:var(--green);font-weight:500">Both platforms ✓</span></div>
+    <div class="nl-row"><span>Traveling Landscape 016</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Jun 4</span><span style="font-size:11px;color:var(--muted)">Instagram only</span></div>
+    <div class="nl-row"><span>Light Art 023</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Jun 3</span><span style="font-size:11px;color:var(--green);font-weight:500">Both platforms ✓</span></div>
+  </div>
+</div>
+
+<!-- APPROVALS -->
+<div id="page-approvals" class="page">
+  <div class="top-bar"><h2>Approval queue</h2><div class="date-label">3 drafts · Generate → Approve → Mint</div></div>
+
+  <div class="panel">
+    <div class="panel-title">Drafts awaiting review</div>
+    <div class="item">
+      <div style="display:flex;gap:14px">
+        <div class="draft-thumb">preview</div>
+        <div style="flex:1">
+          <div class="item-top">
+            <div><div class="item-name">Surrender Machines 014</div><div class="item-meta">Generated Jun 10 · Three.js · P5.js · Series: Surrender Machines</div></div>
+            <span class="badge badge-draft">Draft</span>
+          </div>
+          <div class="item-note">Rotating gradient field with audio scape, 3-layer translucent gradient. Strongest in series this month.</div>
+          <div class="item-actions">
+            <button class="btn btn-green">Approve → Mint</button>
+            <button class="btn">Preview live</button>
+            <button class="btn btn-red">Reject</button>
+            <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+              <span style="font-size:11px;color:var(--muted)">Edition:</span>
+              <select style="font-size:11px;border:0.5px solid var(--rule);background:var(--paper);padding:4px 8px;border-radius:var(--radius-md);color:var(--ink)">
+                <option>1/1</option>
+                <option>Open edition</option>
+                <option>Limited 5</option>
+                <option>Limited 10</option>
+              </select>
+              <span style="font-size:11px;color:var(--muted)">Marketplace:</span>
+              <select style="font-size:11px;border:0.5px solid var(--rule);background:var(--paper);padding:4px 8px;border-radius:var(--radius-md);color:var(--ink)">
+                <option selected>Transient Labs</option>
+                <option>Manifold</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div style="display:flex;gap:14px">
+        <div class="draft-thumb">preview</div>
+        <div style="flex:1">
+          <div class="item-top">
+            <div><div class="item-name">Light Art 024</div><div class="item-meta">Generated Jun 10 · P5.js · Series: Light Art</div></div>
+            <span class="badge badge-draft">Draft</span>
+          </div>
+          <div class="item-note">Gradient orb with translucent layers — color field shifts on interaction.</div>
+          <div class="item-actions">
+            <button class="btn btn-green">Approve → Mint</button>
+            <button class="btn">Preview live</button>
+            <button class="btn btn-red">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="item">
+      <div style="display:flex;gap:14px">
+        <div class="draft-thumb">preview</div>
+        <div style="flex:1">
+          <div class="item-top">
+            <div><div class="item-name">Breathing Columns 009</div><div class="item-meta">Generated Jun 9 · Pure Data · DSP · Series: Breathing Columns</div></div>
+            <span class="badge badge-draft">Draft</span>
+          </div>
+          <div class="item-note">Audio-driven column grid — sound shapes geometry in real time.</div>
+          <div class="item-actions">
+            <button class="btn btn-green">Approve → Mint</button>
+            <button class="btn">Preview live</button>
+            <button class="btn btn-red">Reject</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATALOG -->
+<div id="page-catalog" class="page">
+  <div class="top-bar"><h2>Catalog</h2><div class="date-label">24 series · 87 works · Updated Jun 10, 2026</div></div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Total works</div><div class="metric-value">87</div><div class="metric-sub">Across 24 series</div></div>
+    <div class="metric"><div class="metric-label">Available</div><div class="metric-value">14</div><div class="metric-sub metric-up">On Manifold</div></div>
+    <div class="metric"><div class="metric-label">Sold</div><div class="metric-value">23</div><div class="metric-sub">All time</div></div>
+    <div class="metric"><div class="metric-label">Est. revenue</div><div class="metric-value">$18K</div><div class="metric-sub metric-up">↑ from last quarter</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Series — by priority</div>
+
+    <div class="series-tier">Tier 1 — Core series</div>
+    <div class="series-row"><div><span class="series-name">Surrender Machines</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">12 works · Updated Jun 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier1">Core</span></div></div>
+    <div class="series-row"><div><span class="series-name">Bloom / Four Walls</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">8 works · Updated May 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier1">Core</span></div></div>
+    <div class="series-row"><div><span class="series-name">Technical Drawing</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">6 works · Updated Apr 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier1">Core</span></div></div>
+    <div class="series-row"><div><span class="series-name">Emergent DNA</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">9 works · Updated Apr 2026</span><span class="badge badge-minted">Minted</span><span class="badge badge-tier1">Core</span></div></div>
+    <div class="series-row"><div><span class="series-name">Traveling Landscape</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">15 works · Updated Jun 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier1">Core</span></div></div>
+
+    <div class="series-tier">Tier 2 — Active series</div>
+    <div class="series-row"><div><span class="series-name">Moon & Walking</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">7 works · Updated Mar 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier2">Active</span></div></div>
+    <div class="series-row"><div><span class="series-name">Living Commons</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">6 works · Updated Feb 2026</span><span class="badge badge-minted">Minted</span><span class="badge badge-tier2">Active</span></div></div>
+    <div class="series-row"><div><span class="series-name">Light Art</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">11 works · Updated Jan 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier2">Active</span></div></div>
+    <div class="series-row"><div><span class="series-name">Breathing Columns</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">8 works · Updated Nov 2025</span><span class="badge badge-minted">Minted</span><span class="badge badge-tier2">Active</span></div></div>
+    <div class="series-row"><div><span class="series-name">Spatial Orchestration</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">5 works · Updated Dec 2025</span><span class="badge badge-minted">Minted</span><span class="badge badge-tier2">Active</span></div></div>
+    <div class="series-row"><div><span class="series-name">Shared Ground</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">4 works · Updated Mar 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier2">Active</span></div></div>
+    <div class="series-row"><div><span class="series-name">Emergent Discs</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">7 works · Updated Feb 2026</span><span class="badge badge-available">Available</span><span class="badge badge-tier2">Active</span></div></div>
+
+    <div class="series-tier">Tier 3 — Experiments & studies</div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Binary Partitions</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">4 works · Jan 2026</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Gradients & Color</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">14 works · Nov 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Word Art / Text</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">9 works · Oct 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Numbered Pieces</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">10 works · Oct 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Autoscape</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">4 works · Sep 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Reading the Sky</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">5 works · Sep 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Convergence Era</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">10 works · Aug 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Cubes</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">7 works · Aug 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Shelves</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">3 works · Jul 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Miradas Tangentes</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">4 works · Jul 2025</span><span class="badge badge-tier3">Study</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Three.js / LAB</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">18 works · Jun 2025</span><span class="badge badge-tier3">Study</span><span style="font-size:10px;color:var(--amber)">Review — rename?</span></div></div>
+    <div class="series-row"><div><span class="series-name" style="color:var(--muted)">Mint / NFT</span></div><div style="display:flex;align-items:center;gap:12px"><span class="series-meta">4 works · Jun 2025</span><span class="badge badge-tier3">Study</span><span style="font-size:10px;color:var(--amber)">Clarify — series or admin?</span></div></div>
+
+    <div style="border-top:0.5px solid var(--rule);padding-top:12px;margin-top:8px">
+      <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace">Hidden from public catalog</div>
+      <div style="font-size:12px;color:var(--muted);line-height:2">Lumen Prize 2026 — Machine Aesthetic · Prix Ars Electronica 2026 · April 25 · Loop Art Critique 2026 · Loop Snippets · Loop — Machine Aesthetic (workspace) · Miscellaneous (41 files) · Tezos / Objkt — archive</div>
+    </div>
+  </div>
+</div>
+
+<!-- MINTING LOG -->
+<div id="page-minting" class="page">
+  <div class="top-bar"><h2>Minting log</h2><div class="date-label">87 minted · 23 sold · $18K revenue</div></div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Recent mints</div>
+      <div class="pipe-row"><span>Surrender Machines 013</span><span class="badge badge-available">Available</span><span class="pipe-value">Jun 10, 2026 · Manifold · 1/1</span></div>
+      <div class="pipe-row"><span>Light Art 023</span><span class="badge badge-available">Available</span><span class="pipe-value">Jun 8, 2026 · Manifold · 1/1</span></div>
+      <div class="pipe-row"><span>Bloom 009</span><span class="badge badge-sold">Sold</span><span class="pipe-value">Jun 6, 2026 · Manifold · 1/1 · 0.08 ETH</span></div>
+      <div class="pipe-row"><span>Traveling Landscape 016</span><span class="badge badge-available">Available</span><span class="pipe-value">Jun 4, 2026 · Manifold · 1/1</span></div>
+      <div class="pipe-row"><span>Surrender Machines 012</span><span class="badge badge-sold">Sold</span><span class="pipe-value">Jun 3, 2026 · Manifold · 1/1 · 0.12 ETH</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Marketplace split</div>
+      <div class="bar-row"><span class="bar-label">Manifold</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><span class="bar-pct">78%</span></div>
+      <div class="bar-row"><span class="bar-label">Transient Labs</span><div class="bar-track"><div class="bar-fill bar-fill-purple" style="width:22%"></div></div><span class="bar-pct">22%</span></div>
+      <div class="divider"></div>
+      <div class="panel-title" style="margin-bottom:12px">Edition types</div>
+      <div class="bar-row"><span class="bar-label">1/1 unique</span><div class="bar-track"><div class="bar-fill" style="width:71%"></div></div><span class="bar-pct">71%</span></div>
+      <div class="bar-row"><span class="bar-label">Open edition</span><div class="bar-track"><div class="bar-fill bar-fill-green" style="width:18%"></div></div><span class="bar-pct">18%</span></div>
+      <div class="bar-row"><span class="bar-label">Limited edition</span><div class="bar-track"><div class="bar-fill bar-fill-amber" style="width:11%"></div></div><span class="bar-pct">11%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="page-analytics" class="page">
+  <div class="top-bar"><h2>Analytics</h2><div class="date-label">Instagram vs Twitter/X · 30-day rolling</div></div>
+
+  <div class="panel">
+    <div class="panel-title">Per-work resonance — recent mints</div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:0;border:0.5px solid var(--rule);border-radius:var(--radius-md);overflow:hidden">
+      <div style="background:var(--pale);padding:8px 12px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace">Work</div>
+      <div style="background:var(--pale);padding:8px 12px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;text-align:center">IG likes</div>
+      <div style="background:var(--pale);padding:8px 12px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;text-align:center">IG saves</div>
+      <div style="background:var(--pale);padding:8px 12px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;text-align:center">TW likes</div>
+      <div style="background:var(--pale);padding:8px 12px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;text-align:center">TW reposts</div>
+      <div style="background:var(--pale);padding:8px 12px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;text-align:center">Resonance</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);font-size:13px">Surrender Machines 012</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">847</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">312</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">203</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">89</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center"><span class="badge badge-high">High</span></div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);font-size:13px">Bloom 009</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">412</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">187</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">94</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">31</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center"><span class="badge badge-high">High</span></div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);font-size:13px">Traveling Landscape 015</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">203</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">44</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">31</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">8</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center"><span class="badge badge-medium">Medium</span></div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);font-size:13px">Light Art 022</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">88</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">12</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">14</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center;font-size:13px">3</div>
+      <div style="background:var(--paper);padding:10px 12px;border-top:0.5px solid var(--rule);text-align:center"><span class="badge badge-low">Low</span></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Platform comparison — Surrender Machines 012</div>
+      <div class="platform-grid">
+        <div class="platform-col">
+          <div class="platform-label">Instagram — visibility platform</div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Likes</span><span class="pipe-count">847</span></div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Saves</span><span class="pipe-count" style="color:var(--green)">312</span></div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Comments</span><span class="pipe-count">24</span></div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Reach</span><span class="pipe-count">14,200</span></div>
+          <div class="pipe-row" style="font-size:12px;border:none"><span class="pipe-stage">Read</span><span style="font-size:11px;color:var(--green);font-weight:500">Stopped scrolling</span></div>
+        </div>
+        <div class="platform-col">
+          <div class="platform-label">Twitter / X — working platform</div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Likes</span><span class="pipe-count">203</span></div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Reposts</span><span class="pipe-count" style="color:var(--green)">89</span></div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Replies</span><span class="pipe-count">31</span></div>
+          <div class="pipe-row" style="font-size:12px"><span class="pipe-stage">Impressions</span><span class="pipe-count">8,400</span></div>
+          <div class="pipe-row" style="font-size:12px;border:none"><span class="pipe-stage">Read</span><span style="font-size:11px;color:var(--green);font-weight:500">Peer recognition</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Action queue — flagged works</div>
+      <div class="resonance-row"><span>Surrender Machines 012</span><span class="badge badge-high">High</span><span style="font-size:11px;color:var(--green)">Submit competition</span></div>
+      <div class="resonance-row"><span>Bloom 009</span><span class="badge badge-high">High</span><span style="font-size:11px;color:var(--green)">Develop further</span></div>
+      <div class="resonance-row"><span>Light Art 023</span><span class="badge badge-medium">Medium</span><span style="font-size:11px;color:var(--amber)">Keep — watch</span></div>
+      <div class="resonance-row"><span>Traveling Landscape 015</span><span class="badge badge-medium">Medium</span><span style="font-size:11px;color:var(--muted)">Keep</span></div>
+      <div class="resonance-row"><span>Light Art 022</span><span class="badge badge-low">Low</span><span style="font-size:11px;color:var(--red)">Revise</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Series performance — resonance by series</div>
+    <div class="bar-row"><span class="bar-label">Surrender Machines</span><div class="bar-track"><div class="bar-fill bar-fill-green" style="width:88%"></div></div><span class="bar-pct bar-pct-up">High ↑</span></div>
+    <div class="bar-row"><span class="bar-label">Bloom / Four Walls</span><div class="bar-track"><div class="bar-fill bar-fill-green" style="width:80%"></div></div><span class="bar-pct bar-pct-up">High</span></div>
+    <div class="bar-row"><span class="bar-label">Technical Drawing</span><div class="bar-track"><div class="bar-fill" style="width:65%"></div></div><span class="bar-pct">Medium</span></div>
+    <div class="bar-row"><span class="bar-label">Moon & Walking</span><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div><span class="bar-pct">Medium</span></div>
+    <div class="bar-row"><span class="bar-label">Traveling Landscape</span><div class="bar-track"><div class="bar-fill bar-fill-amber" style="width:50%"></div></div><span class="bar-pct">Medium</span></div>
+    <div class="bar-row"><span class="bar-label">Light Art</span><div class="bar-track"><div class="bar-fill bar-fill-amber" style="width:40%"></div></div><span class="bar-pct">Mixed</span></div>
+    <div class="bar-row"><span class="bar-label">Breathing Columns</span><div class="bar-track"><div class="bar-fill" style="width:35%"></div></div><span class="bar-pct">Low</span></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Diagnostic — what the data is saying</div>
+    <div class="three-col">
+      <div class="diag-card diag-strong"><div class="diag-title">Strong</div><div class="diag-body">Surrender Machines and Bloom consistently high on both platforms — peer recognition on Twitter and institutional visibility on Instagram simultaneously. These are competition candidates. SM 012 is the strongest work in the catalog by resonance.</div></div>
+      <div class="diag-card diag-watch"><div class="diag-title">Watch</div><div class="diag-body">Technical Drawing landing on Instagram but not Twitter — reading as beautiful rather than rigorous. Caption framing may need to foreground the conceptual vocabulary (THRESHOLD, MEMBRANE, VOID) more explicitly. Test revised caption approach.</div></div>
+      <div class="diag-card diag-action"><div class="diag-title">Action needed</div><div class="diag-body">Light Art 022 low on both platforms — not translating on either axis. Revisit before minting next in series. Breathing Columns consistently low — the audio dimension may not be communicating in static image form. Consider video posts for this series.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<div id="page-newsletter" class="page">
+  <div class="top-bar"><h2>Newsletter</h2><div class="date-label">Direct channel · Not platform-dependent</div></div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Recent sends</div>
+      <div class="nl-row"><span>New works: Surrender Machines 010–012</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Jun 5 · 342 subs</span><span class="nl-rate">61%</span></div>
+      <div class="nl-row"><span>ARS Electronica submission update</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">May 28 · 342 subs</span><span class="nl-rate">58%</span></div>
+      <div class="nl-row"><span>Machine aesthetics — new direction in Light Art</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">May 12 · 328 subs</span><span class="nl-rate">64%</span></div>
+      <div class="nl-row"><span>Cloud chambers and the invisible made visible</span><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">Apr 30 · 321 subs</span><span class="nl-rate">57%</span></div>
+      <div class="divider"></div>
+      <div class="item-actions">
+        <button class="btn btn-primary">Draft next issue</button>
+        <button class="btn">View all sends</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Subscriber breakdown</div>
+      <div class="pipe-row"><span class="pipe-stage">Total subscribers</span><span class="pipe-count">342</span><span class="pipe-value">↑ 21 this month</span></div>
+      <div class="pipe-row"><span class="pipe-stage">Collectors / buyers</span><span class="pipe-count">87</span><span class="pipe-value">Highest value segment</span></div>
+      <div class="pipe-row"><span class="pipe-stage">Museum / curators</span><span class="pipe-count">124</span><span class="pipe-value">Institutional audience</span></div>
+      <div class="pipe-row"><span class="pipe-stage">Peer artists</span><span class="pipe-count">131</span><span class="pipe-value">Working platform audience</span></div>
+      <div class="pipe-row"><span class="pipe-stage">Avg open rate</span><span class="pipe-count">60%</span><span class="pipe-value metric-up">↑ vs 52% last quarter</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPETITIONS -->
+<div id="page-competitions" class="page">
+  <div class="top-bar"><h2>Competitions</h2><div class="date-label">June 2026 – June 2027</div></div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Upcoming deadlines</div><div class="metric-value">5</div><div class="metric-sub">June 2026–2027</div></div>
+    <div class="metric"><div class="metric-label">Works in preparation</div><div class="metric-value">3</div><div class="metric-sub">SM 012, Bloom 009, LA 023</div></div>
+    <div class="metric"><div class="metric-label">Submitted to date</div><div class="metric-value">2</div><div class="metric-sub">Lumen 2026 missed · Prix 2026 missed</div></div>
+    <div class="metric"><div class="metric-label">Next deadline</div><div class="metric-value">Sep 26</div><div class="metric-sub metric-warn">ARS Electronica festival</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Competition calendar</div>
+      <div class="cal-item active">
+        <div class="cal-event">ARS Electronica Festival</div>
+        <div class="cal-meta">Sep 9–13, 2026 · Linz, Austria</div>
+        <div class="cal-status cal-green">Attend — book travel now</div>
+      </div>
+      <div class="cal-item soon">
+        <div class="cal-event">SIGGRAPH 2026</div>
+        <div class="cal-meta">TBD · Los Angeles</div>
+        <div class="cal-status cal-amber">Confirm submission deadline</div>
+      </div>
+      <div class="cal-item soon">
+        <div class="cal-event">MTA Arts & Design Digital Art</div>
+        <div class="cal-meta">TBD · New York · Public installation</div>
+        <div class="cal-status cal-amber">Confirm open call deadline</div>
+      </div>
+      <div class="cal-item future">
+        <div class="cal-event">CERN Collide Residency</div>
+        <div class="cal-meta">Est. late 2026 · Geneva, Switzerland</div>
+        <div class="cal-status cal-muted">Monitor arts.cern · Cloud chamber work relevant</div>
+      </div>
+      <div class="cal-item future">
+        <div class="cal-event">Prix ARS Electronica 2027</div>
+        <div class="cal-meta">Opens Jan 2027 · Linz, Austria · Free entry</div>
+        <div class="cal-status cal-muted">Prepare works and documentation now</div>
+      </div>
+      <div class="cal-item future">
+        <div class="cal-event">Lumen Prize 2027</div>
+        <div class="cal-meta">Est. May 2027 · International · $30K prize pool</div>
+        <div class="cal-status cal-muted">Opens Jan 2027 — prepare now</div>
+      </div>
+      <div class="cal-item future">
+        <div class="cal-event">NFC Summit Lisbon 2027</div>
+        <div class="cal-meta">Est. Jun 2027 · Lisbon, Portugal</div>
+        <div class="cal-status cal-muted">Plan attendance</div>
+      </div>
+      <div class="cal-item future">
+        <div class="cal-event">Share Prize XIX</div>
+        <div class="cal-meta">Est. May 2027 · Turin, Italy</div>
+        <div class="cal-status cal-muted">Generative art eligible</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-title">Works being prepared — competition candidates</div>
+        <div class="item">
+          <div class="item-top">
+            <div><div class="item-name">Surrender Machines 012</div><div class="item-meta">High resonance · Both platforms · Tier 1 series</div></div>
+            <span class="badge badge-high">High</span>
+          </div>
+          <div class="item-note">Strongest competition candidate in catalog. Preparing for Prix ARS 2027 and Lumen Prize 2027.</div>
+          <div class="item-actions">
+            <button class="btn btn-primary">Add to submission</button>
+            <button class="btn">View analytics</button>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-top">
+            <div><div class="item-name">Bloom 009</div><div class="item-meta">High resonance · Both platforms · Tier 1 series</div></div>
+            <span class="badge badge-high">High</span>
+          </div>
+          <div class="item-note">Four-wall installation potential. Strong for CERN if cloud chamber framing developed.</div>
+          <div class="item-actions">
+            <button class="btn">Add to submission</button>
+            <button class="btn">View analytics</button>
+          </div>
+        </div>
+        <div class="item">
+          <div class="item-top">
+            <div><div class="item-name">Light Art 023</div><div class="item-meta">Medium resonance · Instagram strong · Tier 2 series</div></div>
+            <span class="badge badge-medium">Medium</span>
+          </div>
+          <div class="item-note">Instagram strong — visual stops. Twitter lower. May work for Lumen (visual prize) less for Prix ARS (conceptual).</div>
+          <div class="item-actions">
+            <button class="btn">Add to submission</button>
+            <button class="btn">View analytics</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Submission notes</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8">
+          <strong style="color:var(--ink);font-weight:500">Prix ARS 2027</strong> — Opens Jan 2027. Begin preparing artist statement, project documentation, and video documentation now. Categories TBD when call opens.<br/><br/>
+          <strong style="color:var(--ink);font-weight:500">CERN Collide</strong> — Cloud chamber series is the direct conceptual fit. The work on making invisible energy visible aligns exactly with CERN's mandate. Monitor arts.cern from Oct 2026.<br/><br/>
+          <strong style="color:var(--ink);font-weight:500">MTA Arts & Design</strong> — Public installation at scale. Bloom / Four Walls is the strongest candidate. Requires proposal for a specific location.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if(el) el.classList.add('active');
+}
+</script>
+</body>
+</html>

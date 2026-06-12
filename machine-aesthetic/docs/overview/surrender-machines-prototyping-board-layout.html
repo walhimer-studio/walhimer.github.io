@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Surrender Machines — Prototyping Board Layout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#ffffff;
+  --bg:#f5f5f3;
+  --ink:#111010;
+  --muted:#6b6860;
+  --rule:#e0ddd6;
+  --pale:#f0ede6;
+  --radius-lg:12px;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:40px 24px}
+.kicker{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#185FA5;margin-bottom:8px}
+h1{font-size:20px;font-weight:500;margin-bottom:6px}
+.sub{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:24px}
+.panel{background:var(--paper);border:0.5px solid var(--rule);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.panel-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-family:'DM Mono',monospace}
+svg{display:block;width:100%;height:auto}
+.t{font-family:'Inter',sans-serif;font-size:13px;fill:var(--ink)}
+.ts{font-family:'DM Mono',monospace;font-size:10px;fill:var(--muted)}
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink)}
+.swatch{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.body-copy{font-size:13px;color:var(--ink);line-height:1.85}
+.body-copy + .body-copy{margin-top:10px}
+.hub-nav{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:28px;padding-bottom:20px;border-bottom:0.5px solid var(--rule);font-size:12px}
+.hub-nav a{color:var(--muted);text-decoration:none;font-family:'DM Mono',monospace}
+.hub-nav a:hover{color:var(--ink)}
+.hub-nav .here{color:var(--ink);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="hub-nav" aria-label="Project hub">
+    <a href="surrender-machines-project-overview.html">Project overview</a>
+    <a href="surrender-machines-loop-art-critique-overview.html">Loop Art Critique</a>
+    <span class="here">Board layout</span>
+    <a href="../../../program/dashboard/studio-dashboard.html">Studio dashboard</a>
+    <a href="../../surrender-stack-poc/docs/STATUS.md">Stack POC</a>
+  </nav>
+
+  <div class="kicker">Surrender Machines · object prototype</div>
+  <h1>Prototyping board — rough layout</h1>
+  <div class="sub">24" x 24" x 1/2" maple plywood · top edge faces visitors</div>
+
+  <div class="panel">
+    <div class="panel-title">Brain &amp; network — connections</div>
+
+    <svg viewBox="0 0 680 530" role="img">
+      <title>Brain and network connections for the prototyping board</title>
+      <desc>Ethernet feeds into an AMD7 mini PC running Linux with openFrameworks, Pure Data, OSC and DSP. The AMD7 connects to a 6-port switch with all 6 ports used. The switch connects over WiFi to a noise machine used as a remote control, and fans out to six device nodes arranged in two rows: LCD, touch plus 5 buttons, LED panel with Novastar, speakers times 4 with DSP, projector with projection mapping, and fans for cooling and the presence relay. Each device node has its own Teensy or Raspberry Pi.</desc>
+
+      <text class="ts" x="50" y="72">ETHERNET IN</text>
+      <line x1="135" y1="72" x2="198" y2="72" stroke="var(--muted)" stroke-width="1"/>
+      <polygon points="198,72 190,68 190,76" fill="var(--muted)"/>
+
+      <rect x="200" y="40" width="280" height="64" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text class="t" x="340" y="68" text-anchor="middle" fill="#0C447C" font-weight="500">AMD7 mini PC (Linux)</text>
+      <text class="ts" x="340" y="92" text-anchor="middle">OPENFRAMEWORKS · PD · OSC · DSP</text>
+
+      <line x1="340" y1="104" x2="340" y2="144" stroke="var(--muted)" stroke-width="1"/>
+      <polygon points="340,144 336,136 344,136" fill="var(--muted)"/>
+
+      <rect x="250" y="144" width="180" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text class="t" x="340" y="170" text-anchor="middle" fill="#0C447C" font-weight="500">6-port switch</text>
+      <text class="ts" x="340" y="192" text-anchor="middle">6 OF 6 PORTS USED</text>
+
+      <line x1="432" y1="172" x2="490" y2="172" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
+      <polygon points="490,172 482,168 482,176" fill="var(--muted)"/>
+      <text class="ts" x="461" y="158" text-anchor="middle">WIFI</text>
+
+      <rect x="490" y="144" width="150" height="56" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+      <text class="t" x="565" y="170" text-anchor="middle" fill="#444441" font-weight="500">Noise machine</text>
+      <text class="ts" x="565" y="192" text-anchor="middle">REMOTE VIA WIFI</text>
+
+      <line x1="340" y1="200" x2="132.5" y2="240" stroke="var(--muted)" stroke-width="1"/>
+      <polygon points="132.5,240 127,231 138,231" fill="var(--muted)"/>
+      <line x1="340" y1="200" x2="337.5" y2="240" stroke="var(--muted)" stroke-width="1"/>
+      <polygon points="337.5,240 332,231 343,231" fill="var(--muted)"/>
+      <line x1="340" y1="200" x2="542.5" y2="240" stroke="var(--muted)" stroke-width="1"/>
+      <polygon points="542.5,240 537,231 548,231" fill="var(--muted)"/>
+
+      <rect x="40" y="240" width="185" height="110" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="t" x="132.5" y="284" text-anchor="middle" fill="#085041" font-weight="500">LCD</text>
+      <text class="ts" x="132.5" y="318" text-anchor="middle">OWN TEENSY/PI</text>
+
+      <rect x="245" y="240" width="185" height="110" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="t" x="337.5" y="272" text-anchor="middle" fill="#085041" font-weight="500">Touch +</text>
+      <text class="t" x="337.5" y="292" text-anchor="middle" fill="#085041" font-weight="500">5 buttons</text>
+      <text class="ts" x="337.5" y="322" text-anchor="middle">OWN TEENSY/PI</text>
+
+      <rect x="450" y="240" width="185" height="110" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="t" x="542.5" y="284" text-anchor="middle" fill="#085041" font-weight="500">LED panel</text>
+      <text class="ts" x="542.5" y="318" text-anchor="middle">NOVASTAR CONTROL</text>
+
+      <rect x="40" y="390" width="185" height="110" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="t" x="132.5" y="426" text-anchor="middle" fill="#085041" font-weight="500">Speakers x4</text>
+      <text class="ts" x="132.5" y="454" text-anchor="middle">DSP AUDIO OUT</text>
+      <text class="ts" x="132.5" y="478" text-anchor="middle">OWN TEENSY/PI</text>
+
+      <rect x="245" y="390" width="185" height="110" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="t" x="337.5" y="426" text-anchor="middle" fill="#085041" font-weight="500">Projector</text>
+      <text class="ts" x="337.5" y="454" text-anchor="middle">PROJECTION MAPPING</text>
+      <text class="ts" x="337.5" y="478" text-anchor="middle">OWN TEENSY/PI</text>
+
+      <rect x="450" y="390" width="185" height="110" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+      <text class="t" x="542.5" y="426" text-anchor="middle" fill="#444441" font-weight="500">Fans</text>
+      <text class="ts" x="542.5" y="454" text-anchor="middle">COOLS + PRESENCE RELAY</text>
+      <text class="ts" x="542.5" y="478" text-anchor="middle">OWN TEENSY/PI</text>
+    </svg>
+
+    <div class="body-copy" style="margin-top:14px">
+      <p>Ethernet feeds into the AMD7 mini PC (Linux), running openFrameworks, Pure Data, OSC, and DSP. The AMD7 connects to a 6-port switch (all 6 ports used). The switch links over WiFi to a noise machine used as a remote control, and fans out to six device nodes — LCD, touch + 5 buttons, LED panel (via its own Novastar), speakers x4 + DSP, projector (with projection mapping), and fans (cooling + presence relay) — each running on its own Teensy 4.1 or Raspberry Pi.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Zone layout</div>
+
+    <svg viewBox="0 0 680 600" role="img">
+      <title>Rough layout for the 24x24 inch prototyping board, with hand-holds</title>
+      <desc>A floor-plan style diagram of a 24 by 24 inch maple plywood board. A camera strip runs along the top edge. Below it, a left column stacks two zones: brain and network, and display and controls. A right-hand vertical strip holds power and cooling, including power strip, LED panel power supply, din rail, ultrasonic humidifier, and fans. Dashed cutouts on the left and right edges mark hand-holds for carrying, leaning, or shelving the board.</desc>
+
+      <rect x="92" y="56" width="496" height="496" rx="12" fill="var(--pale)" stroke="var(--rule)" stroke-width="1"/>
+
+      <!-- Camera -->
+      <rect x="108" y="72" width="464" height="48" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+      <text class="t" x="340" y="92" text-anchor="middle" fill="#712B13" font-weight="500">Camera</text>
+      <text class="ts" x="340" y="108" text-anchor="middle">USB CAM, TOP EDGE, FACES OUTWARD TOWARD VISITORS</text>
+      <circle cx="132" cy="96" r="6" fill="none" stroke="#993C1D" stroke-width="1"/>
+      <circle cx="132" cy="96" r="2.5" fill="none" stroke="#993C1D" stroke-width="1"/>
+
+      <!-- Brain & network -->
+      <rect x="108" y="136" width="268" height="192" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+      <text class="t" x="242" y="184" text-anchor="middle" fill="#0C447C" font-weight="500">Brain &amp; network</text>
+      <text class="ts" x="242" y="228" text-anchor="middle">AMD7 MINI PC · 6-PORT SWITCH</text>
+      <text class="ts" x="242" y="254" text-anchor="middle">NOVASTAR + TEENSY 4.1</text>
+
+      <!-- Display & controls -->
+      <rect x="108" y="344" width="268" height="192" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+      <text class="t" x="242" y="382" text-anchor="middle" fill="#085041" font-weight="500">Display &amp; controls</text>
+      <text class="ts" x="242" y="410" text-anchor="middle">LCD · TOUCH · 5 BUTTONS</text>
+      <text class="ts" x="242" y="434" text-anchor="middle">LED PANEL</text>
+      <text class="ts" x="242" y="458" text-anchor="middle">SPEAKERS X4 + DSP</text>
+      <text class="ts" x="242" y="482" text-anchor="middle">PROJECTOR + PROJECTION MAPPING</text>
+
+      <!-- Power & cooling -->
+      <rect x="392" y="136" width="180" height="400" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+      <text class="t" x="482" y="170" text-anchor="middle" fill="#444441" font-weight="500">Power &amp; cooling</text>
+      <text class="ts" x="482" y="214" text-anchor="middle">POWER STRIP</text>
+      <text class="ts" x="482" y="262" text-anchor="middle">LED PANEL PSU</text>
+      <text class="ts" x="482" y="310" text-anchor="middle">DIN RAIL</text>
+      <text class="ts" x="482" y="358" text-anchor="middle">ULTRASONIC HUMIDIFIER</text>
+      <text class="ts" x="482" y="406" text-anchor="middle">FANS</text>
+      <circle cx="442" cy="470" r="14" fill="none" stroke="#5F5E5A" stroke-width="1"/>
+      <line x1="442" y1="456" x2="442" y2="484" stroke="#5F5E5A" stroke-width="1"/>
+      <line x1="428" y1="470" x2="456" y2="470" stroke="#5F5E5A" stroke-width="1"/>
+      <circle cx="522" cy="470" r="14" fill="none" stroke="#5F5E5A" stroke-width="1"/>
+      <line x1="522" y1="456" x2="522" y2="484" stroke="#5F5E5A" stroke-width="1"/>
+      <line x1="508" y1="470" x2="536" y2="470" stroke="#5F5E5A" stroke-width="1"/>
+
+      <!-- Hand-hold cutouts -->
+      <rect x="76" y="264" width="40" height="80" rx="12" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
+      <rect x="564" y="264" width="40" height="80" rx="12" fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>
+
+      <text class="ts" x="340" y="576" text-anchor="middle">24" x 24" MAPLE PLYWOOD, 1/2" THICK · HAND-HOLD CUTOUTS BOTH EDGES</text>
+    </svg>
+
+    <div class="legend">
+      <div class="legend-item"><span class="swatch" style="background:#FAECE7;border:0.5px solid #993C1D"></span>Camera — vision sidecar</div>
+      <div class="legend-item"><span class="swatch" style="background:#E6F1FB;border:0.5px solid #185FA5"></span>Brain &amp; network — AMD7, 6-port switch, Novastar, Teensy 4.1</div>
+      <div class="legend-item"><span class="swatch" style="background:#E1F5EE;border:0.5px solid #0F6E56"></span>Display &amp; controls — LCD, touch, buttons, LED panel, speakers x4 + DSP, projector + projection mapping</div>
+      <div class="legend-item"><span class="swatch" style="background:#F1EFE8;border:0.5px solid #5F5E5A"></span>Power &amp; cooling — power strip, LED panel PSU, din rail, humidifier, fans</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Notes</div>
+    <div class="body-copy">
+      <p>Hand-hold cutouts on the left and right edges (dashed) let the board be carried, leaned against something, or set on a shelf — not just used flat on a tabletop.</p>
+      <p>Top edge is the camera-facing edge — whatever side the camera mounts on becomes "the front," so it gets its own strip and a separate cable run.</p>
+      <p>Right-hand column is power &amp; cooling, running the full height of the board — power strip, LED panel PSU, din rail, ultrasonic humidifier, and fans all sit on one edge so the noisiest, hottest, and wettest elements vent toward the back and stay clear of the signal/control side. The LED panel's own power supply is called out separately here so it doesn't get forgotten when wiring.</p>
+      <p>Left column is two zones — brain &amp; network (AMD7, 6-port switch, Novastar, Teensy 4.1), and a combined display &amp; controls zone covering everything the visitor experiences: LCD, touch, buttons, LED panel, speakers x4 + DSP, and projector + projection mapping.</p>
+      <p>The two diagrams above show how these connect: ethernet into the AMD7 (Linux, openFrameworks/Pd/OSC/DSP), down to the 6-port switch, with speakers wired directly off the AMD7 for audio, and a noise machine connected over WiFi as a remote control. The switch's other five ports each drive one device through its own Teensy 4.1 or Raspberry Pi — LCD, touch + buttons, LED panel (via Novastar), projector (with projection mapping), and fans (cooling + presence relay).</p>
+      <p style="color:var(--muted)">This is a starting arrangement — once you have real component footprints (AMD7 box dimensions, LCD size, etc.), the zones can become to-scale cutout outlines.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

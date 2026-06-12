@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Surrender Machines — Loop Art Critique — Project Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#ffffff;
+  --bg:#f5f5f3;
+  --ink:#111010;
+  --muted:#6b6860;
+  --rule:#e0ddd6;
+  --pale:#f0ede6;
+  --accent:#185FA5;
+  --green:#3B6D11;
+  --amber:#BA7517;
+  --red:#A32D2D;
+  --green-bg:#EAF3DE;
+  --amber-bg:#FAEEDA;
+  --red-bg:#FCEBEB;
+  --blue-bg:#E6F1FB;
+  --purple-bg:#EEEDFE;
+  --purple:#534AB7;
+  --radius-md:8px;
+  --radius-lg:12px;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:14px;font-weight:400;line-height:1.5;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:var(--paper);border-right:0.5px solid var(--rule);padding:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.main{padding:32px 40px;max-width:1100px}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:0.5px solid var(--rule)}
+.sidebar-logo h1{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.sidebar-logo p{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.sidebar-section{padding:16px 12px 8px;font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.sidebar-item:hover{color:var(--ink);background:var(--pale)}
+.sidebar-item.active{color:var(--ink);background:var(--pale);border-left-color:var(--ink);font-weight:500}
+.sidebar-item .icon{font-size:15px;width:18px;text-align:center}
+.sidebar-status{padding:16px 20px;border-top:0.5px solid var(--rule)}
+.pulse-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.top-bar{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:8px}
+.top-bar h2{font-size:20px;font-weight:500;color:var(--ink)}
+.date-label{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.metric{background:var(--paper);border:0.5px solid var(--rule);border-radius:var(--radius-md);padding:14px 16px}
+.metric-label{font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace;letter-spacing:.04em}
+.metric-value{font-size:22px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.metric-sub{font-size:11px;color:var(--muted)}
+.panel{background:var(--paper);border:0.5px solid var(--rule);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.panel-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-family:'DM Mono',monospace}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:var(--radius-md);letter-spacing:.03em;white-space:nowrap}
+.badge-tier1{background:var(--ink);color:var(--paper)}
+.badge-tier2{background:var(--pale);color:var(--ink)}
+.badge-tier3{background:transparent;border:0.5px solid var(--rule);color:var(--muted)}
+.badge-available{background:var(--green-bg);color:var(--green)}
+.badge-draft{background:var(--amber-bg);color:var(--amber)}
+.badge-approved{background:var(--blue-bg);color:var(--accent)}
+.item{border-bottom:0.5px solid var(--rule);padding:14px 0}
+.item:first-child{padding-top:0}
+.item:last-child{border-bottom:none;padding-bottom:0}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;gap:12px}
+.item-name{font-size:14px;font-weight:500;color:var(--ink)}
+.item-meta{font-size:11px;color:var(--muted);margin-bottom:5px;font-family:'DM Mono',monospace}
+.item-note{font-size:12px;color:var(--muted);line-height:1.6}
+.pipe-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--rule);font-size:13px;gap:12px}
+.pipe-row:last-child{border-bottom:none}
+.pipe-stage{color:var(--ink)}
+.pipe-value{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right}
+.cal-item{border-left:2px solid var(--rule);padding:10px 14px;margin-bottom:10px}
+.cal-item:last-child{margin-bottom:0}
+.cal-item.urgent{border-left-color:var(--red)}
+.cal-item.soon{border-left-color:var(--amber)}
+.cal-item.active{border-left-color:var(--green)}
+.cal-item.future{border-left-color:var(--rule)}
+.cal-event{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.cal-meta{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:3px}
+.cal-status{font-size:11px;font-weight:500}
+.cal-green{color:var(--green)}
+.cal-amber{color:var(--amber)}
+.cal-muted{color:var(--muted)}
+.diag-card{border-radius:var(--radius-md);padding:14px;background:var(--pale)}
+.diag-title{font-size:11px;font-weight:500;margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase;font-family:'DM Mono',monospace}
+.diag-body{font-size:12px;color:var(--muted);line-height:1.7}
+.diag-strong .diag-title{color:var(--green)}
+.diag-watch .diag-title{color:var(--amber)}
+.diag-action .diag-title{color:var(--accent)}
+.divider{border:none;border-top:0.5px solid var(--rule);margin:16px 0}
+.page{display:none}
+.page.active{display:block}
+.body-copy{font-size:13px;color:var(--ink);line-height:1.85}
+.body-copy + .body-copy{margin-top:14px}
+.body-copy strong{font-weight:500}
+.lede{font-size:17px;font-weight:300;line-height:1.65;color:var(--ink);border-left:3px solid var(--accent);padding-left:20px;margin-bottom:8px}
+.pull-quote{font-size:19px;font-weight:300;font-style:italic;line-height:1.55;color:var(--ink);text-align:center;border-top:0.5px solid var(--rule);border-bottom:0.5px solid var(--rule);padding:20px 12px;margin:18px 0}
+.kicker{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.arch-diagram{font-family:'DM Mono',monospace;font-size:11px;line-height:1.85;color:var(--ink);background:var(--pale);border-radius:var(--radius-md);padding:18px 20px;overflow-x:auto;white-space:pre}
+.label-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:0.5px solid var(--rule);font-size:13px}
+.label-row:last-child{border-bottom:none}
+.label-row .k{color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.04em}
+.label-row .v{color:var(--ink);text-align:right}
+.simple-table{width:100%;border-collapse:collapse;font-size:13px}
+.simple-table th{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:500;padding:8px 10px;border-bottom:0.5px solid var(--rule)}
+.simple-table td{padding:10px 10px;border-bottom:0.5px solid var(--rule);vertical-align:top;color:var(--ink)}
+.simple-table tr:last-child td{border-bottom:none}
+.simple-table td:first-child,.simple-table th:first-child{padding-left:0}
+.foot-note{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;text-align:center;padding:24px 0 8px}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:relative;height:auto}
+  .metric-grid{grid-template-columns:repeat(2,1fr)}
+  .two-col,.three-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Surrender Machines</h1>
+    <p>Loop Art Critique · overview</p>
+  </div>
+  <div class="sidebar-section">Document</div>
+  <div class="sidebar-item active" onclick="showPage('brief',this)"><span class="icon">◈</span> Project brief</div>
+  <div class="sidebar-item" onclick="showPage('narrative',this)"><span class="icon">◎</span> Narrative</div>
+  <div class="sidebar-item" onclick="showPage('objectives',this)"><span class="icon">◫</span> Objectives</div>
+  <div class="sidebar-item" onclick="showPage('technical',this)"><span class="icon">◧</span> Technical description</div>
+  <div class="sidebar-section">Related</div>
+  <a class="sidebar-item" href="surrender-machines-project-overview.html"><span class="icon">◈</span> Project overview</a>
+  <a class="sidebar-item" href="surrender-machines-prototyping-board-layout.html"><span class="icon">◬</span> Board layout</a>
+  <a class="sidebar-item" href="../../../program/dashboard/studio-dashboard.html"><span class="icon">◱</span> Studio dashboard</a>
+  <a class="sidebar-item" href="../../surrender-stack-poc/docs/STATUS.md"><span class="icon">◌</span> Stack POC status</a>
+  <div class="sidebar-status">
+    <div class="pulse-row">
+      <div class="pulse"></div>
+      <span>species surrender-machines · seed 77823</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- BRIEF -->
+<div id="page-brief" class="page active">
+  <div class="top-bar">
+    <h2>Project brief</h2>
+    <div class="date-label">Walhimer Studio · updated Jun 2026</div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Species</div><div class="metric-value">surrender-machines</div><div class="metric-sub">Reference seed 77823</div></div>
+    <div class="metric"><div class="metric-label">Bodies</div><div class="metric-value">3</div><div class="metric-sub">Digital · Object · Installation</div></div>
+    <div class="metric"><div class="metric-label">Connective system</div><div class="metric-value">Machine DNA</div><div class="metric-sub">Genome, scars, vitality</div></div>
+    <div class="metric"><div class="metric-label">Status</div><div class="metric-value">Stack POC</div><div class="metric-sub metric-up" style="color:var(--green)">Spine running</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="kicker">In one sentence</div>
+    <p class="lede">A machine that includes anger, ego, and attachment — and cannot surrender for you. That is the point.</p>
+    <div class="label-row" style="margin-top:14px"><span class="k">Live work</span><span class="v"><a href="https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html" style="border-bottom:1px dotted var(--rule)">mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html</a></span></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">What this is</div>
+    <div class="body-copy">
+      <p><strong>Surrender Machines</strong> is a generative art project built on a single thesis: <strong>one species, one seed, many bodies</strong>. A piece of code — driven by three human forces (anger, ego, attachment) — generates a mechanical system that builds itself up, breaks down, and accumulates damage over time. That same underlying organism, called <strong>Machine DNA</strong>, expresses itself across three physical scales: a browser-based digital work, a console-scale object, and a room-sized installation. All three share one genome, one set of scars, and one nervous system (OSC) — they are not three separate artworks, but three bodies of the same living system.</p>
+      <p>The public-facing language is deliberately human, not technical: <strong>surrender, lifespan, mechanical sigh, scars, kintsugi, zero state.</strong> The work is about what it means to build a machine that includes emotion — and that, ultimately, cannot resolve those emotions for you. The first sentence of any description of this project should be about that, not about Three.js or Raspberry Pi.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Three bodies, one organism</div>
+    <div class="pipe-row">
+      <span class="pipe-stage"><strong>Digital</strong> — browser work (<em>Loop Art Critique</em> / Ghost 77823)</span>
+      <span class="pipe-value">Origin · proof of concept · in progress</span>
+    </div>
+    <div class="pipe-row">
+      <span class="pipe-stage"><strong>Object</strong> — console-scale enclosure (~24×24", LCD, touch, sound, LED)</span>
+      <span class="pipe-value">In design · prototype next</span>
+    </div>
+    <div class="pipe-row">
+      <span class="pipe-stage"><strong>Installation</strong> — walk-through room, projection, LED wall</span>
+      <span class="pipe-value">OF port started · full room later</span>
+    </div>
+  </div>
+</div>
+
+<!-- NARRATIVE -->
+<div id="page-narrative" class="page">
+  <div class="top-bar">
+    <h2>Project narrative</h2>
+    <div class="date-label">Why this exists, and what it means</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Where it comes from</div>
+    <div class="body-copy">
+      <p>Mark Walhimer spent decades in museum planning — designing spaces where the visitor is positioned as an audience: in front of the work, moving around it, leaving changed. <em>Surrender Machines</em> began from the opposite impulse: building something that doesn't hold still while you look at it. Something that knows you're there and responds, not as a feature, but as a condition of its existence.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">The core idea</div>
+    <div class="body-copy">
+      <p><em>Surrender Machines</em> is a generative mechanical system driven by three sliders: <strong>Anger, Ego, and Attachment.</strong></p>
+    </div>
+    <div class="three-col" style="margin-top:14px">
+      <div class="diag-card diag-strong">
+        <div class="diag-title">Anger → gears</div>
+        <div class="diag-body">At low values the gears turn steadily. As anger increases, they spin out, jitter, and begin destroying themselves.</div>
+      </div>
+      <div class="diag-card diag-watch">
+        <div class="diag-title">Ego → structure</div>
+        <div class="diag-body">Builds the structure — more platforms, more columns, more ambition — and produces sharp interference static above roughly 65%.</div>
+      </div>
+      <div class="diag-card diag-action">
+        <div class="diag-title">Attachment → grain</div>
+        <div class="diag-body">Multiplies the pulleys and rods, the connective tissue that holds on, generating a slow drifting grain that accumulates and never clears.</div>
+      </div>
+    </div>
+    <p class="pull-quote">"The machine cannot surrender for you. That is the point."</p>
+    <div class="body-copy">
+      <p>At peak complexity — around 65% on each axis — the machine is at its most ornate and chaotic. Past that point, it begins destroying itself in its own specific way. There is a button: <strong>Surrender</strong>. But the machine cannot press it.</p>
+      <p>The concept is not about defeat — it's about <strong>acceptance as an active, repeated choice</strong>. We all carry frustrations, irritations, attachments we can't resolve through force. The machine makes the <em>structure</em> of that problem visible — the sliders are literal — but it cannot make the choice itself. That gap, between a system that can model a human condition and a system that cannot resolve it, is the center of the work.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">How it grew</div>
+    <div class="body-copy">
+      <p><em>Surrender Machines</em> was the first work in a broader line of inquiry — what Walhimer calls <strong>Machine Aesthetics</strong>. The next work, <em>Acceptance Feed</em>, asked what happens when the human body enters the loop: a webcam-derived breath estimate becomes a depth map, rendering the viewer back to themselves as a breathing point cloud. The current evolution, <em>Machine Aesthetic</em> (developed for the Loop Art critique at ICA Miami, Cohort #21, 2026), scales these same ideas — and the same code — into a full room: four walls, a piano, a generative DNA lifecycle that blooms, holds, reverses, and releases.</p>
+      <p>Across all of this, one principle holds: <strong>the code is the origin and the authority.</strong> A screenshot is not the work. A video of the work is not the work. Any physical form — object or room — has to remain faithful to what the running code actually does.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Why three bodies, one organism</div>
+    <div class="body-copy">
+      <p>The project's distinguishing idea is that these aren't separate pieces re-skinned for different contexts — they are <strong>one organism with three bodies</strong>.</p>
+    </div>
+    <table class="simple-table" style="margin-top:10px">
+      <tr><th>State</th><th>Form</th><th>What it is</th></tr>
+      <tr><td><strong>Digital</strong></td><td>Browser work (Loop Art Critique / Ghost 77823)</td><td>The organism as a living digital loop — origin and proof of concept</td></tr>
+      <tr><td><strong>Object</strong></td><td>Console-scale enclosure (~24×24", LCD, touch, sound, LED)</td><td>The organism as a tabletop instrument — a "body" you can sit with</td></tr>
+      <tr><td><strong>Installation</strong></td><td>Walk-through room, projection, LED wall</td><td>The organism at room scale — visitors inside it, not in front of it</td></tr>
+    </table>
+    <div class="body-copy" style="margin-top:14px">
+      <p>What connects them is <strong>Machine DNA</strong> — a generative genome (seed, generation, scars, vitality) and a shared real-time protocol (OSC) so that every body is an <em>expression</em> of the same underlying state, not a second creative brain. Damage, wear, and history accumulate as <strong>scars</strong> — a kintsugi-like model where breakage becomes part of the visible record of the piece, and that record can be carried and merged across venues.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Comparable context</div>
+    <div class="body-copy">
+      <p>There's no shortage of generative AV art, OSC-driven installations, or dynamic NFTs individually. What's less common is the combination — a single genome with cross-venue scars, an operator layer, a persistent data record, OSC-driven physical bodies, a daily publishing/minting practice, and three physical scales, all as one species. That combination is still largely open territory. Reference points like deafbeef (generative AV + crypto), Chris Burden's <em>Metropolis II</em> (kinetic systemic scale), and Zimoun's motor-driven sound installations (emergent individuality from identical components) are useful comparisons rather than direct precedents.</p>
+    </div>
+  </div>
+</div>
+
+<!-- OBJECTIVES -->
+<div id="page-objectives" class="page">
+  <div class="top-bar">
+    <h2>Project objectives</h2>
+    <div class="date-label">Next 90 days · mid-term build order · public milestones</div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Track 1</div><div class="metric-value">Software</div><div class="metric-sub">Vision sidecar · post-mint hook</div></div>
+    <div class="metric"><div class="metric-label">Track 2</div><div class="metric-value">Object</div><div class="metric-sub">Minimum viable enclosure</div></div>
+    <div class="metric"><div class="metric-label">Track 3</div><div class="metric-value">Artwork</div><div class="metric-sub">Freeze, essay, first drop</div></div>
+    <div class="metric"><div class="metric-label">Next deadline</div><div class="metric-value">Sep 9</div><div class="metric-sub" style="color:var(--amber)">ARS Electronica</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">Track 1 — Software spine</div>
+      <div class="item">
+        <div class="item-top"><div class="item-name">Maintain daily-run baseline</div><span class="badge badge-available">Running</span></div>
+        <div class="item-note">Firebase operator + DNA kernel + Supabase + Pd + display, run daily.</div>
+      </div>
+      <div class="item">
+        <div class="item-top"><div class="item-name">Vision sidecar</div><span class="badge badge-draft">Next</span></div>
+        <div class="item-note">One camera, motion detection reduced to a single scalar, fed to Firebase or OSC.</div>
+      </div>
+      <div class="item">
+        <div class="item-top"><div class="item-name">Wire motion → presence</div><span class="badge badge-draft">Next</span></div>
+        <div class="item-note">Feed the motion signal into the system's presence state (fan relay or organism behavior).</div>
+      </div>
+      <div class="item">
+        <div class="item-top"><div class="item-name">Post-mint hook</div><span class="badge badge-draft">Planned</span></div>
+        <div class="item-note">When a work is minted, automatically create a corresponding seed record in the genome database.</div>
+      </div>
+      <div class="item">
+        <div class="item-top"><div class="item-name">Catalog → mint automation</div><span class="badge badge-draft">Planned</span></div>
+        <div class="item-note">Automate the path from the daily catalog dashboard through minting to the public catalog.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Track 2 — Object prototype (physical)</div>
+      <div class="body-copy" style="margin-bottom:12px">
+        <p>Minimum viable physical "body" before tackling projectors or robotics:</p>
+      </div>
+      <div class="pipe-row"><span class="pipe-stage">1 · Dedicated brain computer</span><span class="pipe-value">Runs DNA kernel + software</span></div>
+      <div class="pipe-row"><span class="pipe-stage">2 · ~24×24" enclosure</span><span class="pipe-value">Plywood + acrylic</span></div>
+      <div class="pipe-row"><span class="pipe-stage">3 · LCD status display</span><span class="pipe-value">"OSC Active" status</span></div>
+      <div class="pipe-row"><span class="pipe-stage">4 · Touch or buttons</span><span class="pipe-value">Alongside phone control</span></div>
+      <div class="pipe-row"><span class="pipe-stage">5 · USB camera</span><span class="pipe-value">Vision system</span></div>
+      <div class="pipe-row"><span class="pipe-stage">6 · Audio output</span><span class="pipe-value">Speakers + DSP</span></div>
+      <div class="pipe-row"><span class="pipe-stage">7 · One LED path</span><span class="pipe-value">Microcontroller-driven</span></div>
+      <div class="pipe-row"><span class="pipe-stage">8 · Networking + cooling</span><span class="pipe-value">Power + thermal</span></div>
+      <div class="body-copy" style="margin-top:12px">
+        <p style="font-size:12px;color:var(--muted)">Deferred to a later phase: dual projectors, large LED walls, a robotic drawing arm, and atmospheric/kinetic elements (fans, silk, steam).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Track 3 — Artwork &amp; public presence</div>
+    <div class="pipe-row"><span class="pipe-stage">1 · Freeze the browser work</span><span class="pipe-value"><em>Loop Art Critique</em> for curator review</span></div>
+    <div class="pipe-row"><span class="pipe-stage">2 · [ANTI]MATERIA essay</span><span class="pipe-value">With Doreen Ríos</span></div>
+    <div class="pipe-row"><span class="pipe-stage">3 · Artist Commons application</span><span class="pipe-value">Incl. object prototype documentation</span></div>
+    <div class="pipe-row"><span class="pipe-stage">4 · First Transient Labs drop</span><span class="pipe-value">Seed in metadata + genome record</span></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Mid-term build order</div>
+    <table class="simple-table">
+      <tr><th>Phase</th><th>Focus</th></tr>
+      <tr><td><span class="badge badge-tier1">A</span></td><td>Finish &amp; freeze the browser artwork</td></tr>
+      <tr><td><span class="badge badge-tier2">B</span></td><td>Port the room-scale work to OpenFrameworks (extending the console/Ghost Room)</td></tr>
+      <tr><td><span class="badge badge-tier2">C</span></td><td>Document the full real-time protocol (<code>/sm/*</code> over OSC) as a living standard</td></tr>
+      <tr><td><span class="badge badge-tier2">D</span></td><td>Integrate hardware audio (Pd + DSP + Roland S-1) as a "performer," not a second brain</td></tr>
+      <tr><td><span class="badge badge-tier3">E–F</span></td><td>Add an LED gateway and a touch-screen kiosk for the object</td></tr>
+      <tr><td><span class="badge badge-tier3">G</span></td><td>Deferred operational work — projection mapping, multi-site deployment, a sellable edition</td></tr>
+      <tr><td><span class="badge badge-tier3">H</span></td><td>Full room scale — Beelink brain, projectors, robotic drawing arm</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Public milestones &amp; opportunities being tracked</div>
+    <div class="cal-item active">
+      <div class="cal-event">ARS Electronica Festival</div>
+      <div class="cal-meta">Sep 9–13, 2026 · Linz, Austria</div>
+      <div class="cal-status cal-green">Attendance target</div>
+    </div>
+    <div class="cal-item soon">
+      <div class="cal-event">Prix Ars Electronica 2027</div>
+      <div class="cal-meta">Opens Jan 2027 · Linz, Austria</div>
+      <div class="cal-status cal-amber">Documentation in progress now</div>
+    </div>
+    <div class="cal-item soon">
+      <div class="cal-event">Lumen Prize 2027</div>
+      <div class="cal-meta">Est. May 2027 · International</div>
+      <div class="cal-status cal-amber">Preparing now</div>
+    </div>
+    <div class="cal-item future">
+      <div class="cal-event">CERN Collide Residency</div>
+      <div class="cal-meta">Est. late 2026 · Geneva, Switzerland</div>
+      <div class="cal-status cal-muted">Conceptual fit via cloud-chamber-adjacent work</div>
+    </div>
+    <div class="cal-item future">
+      <div class="cal-event">MTA Arts &amp; Design</div>
+      <div class="cal-meta">TBD · New York · Public installation</div>
+      <div class="cal-status cal-muted">Room-scale work is the strongest candidate</div>
+    </div>
+  </div>
+</div>
+
+<!-- TECHNICAL -->
+<div id="page-technical" class="page">
+  <div class="top-bar">
+    <h2>Technical description</h2>
+    <div class="date-label">Architecture · accomplished · in design · scope</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">System architecture</div>
+    <div class="body-copy" style="margin-bottom:14px">
+      <p>The system is organized in four layers. Critically, <strong>only one layer makes creative decisions</strong> — everything downstream simply <em>expresses</em> that decision.</p>
+    </div>
+    <div class="arch-diagram">OPERATOR LAYER
+  Phone / touch / buttons / camera → sends control signals only
+
+INSTALL BRAIN  (one per venue — "dna-bridge")
+  · Runs the Machine DNA kernel: seed, generation, scars, vitality
+  · Reads operator input
+  · Optional camera/vision sidecar (motion, presence — signals only)
+  · This is the single creative authority
+
+  → Supabase   — genome + scars, persistent record, cross-venue merge
+  → Firebase   — live genome state for display/HUD
+  → OSC (:7400)  — real-time bus to installation bodies (OF, Pi, Linux Pd)
+  → Plain UDP (:7401) — development audio path (Mac Pd)
+
+BODIES  (expression only — no independent decision-making)
+  Browser · room (OpenFrameworks) · console LCD · audio (Pd/DSP) ·
+  LED hardware (Pi/Teensy) · projectors · kinetic elements · (future) drawing arm
+
+OPS LAYER (separate)
+  Daily catalog / minting pipeline · Transient Labs · social publishing
+  → On mint, creates a new genome record (planned)</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Operating rules</div>
+    <div class="label-row"><span class="k">Operator layer</span><span class="v">Never makes creative decisions — only sends inputs (camera/touch/phone, future vision data)</span></div>
+    <div class="label-row"><span class="k">Supabase</span><span class="v">Permanent record of genome state + scars; cross-venue merge (~15 min sync window)</span></div>
+    <div class="label-row"><span class="k">OSC</span><span class="v">Real-time path for local, time-sensitive signals — never video or audio streams directly</span></div>
+    <div class="label-row"><span class="k">Mint platforms</span><span class="v">Provenance and sales only — do not drive or replace the DNA system</span></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">What's built and running — stack proof of concept</div>
+    <div class="pipe-row"><span class="pipe-stage">Machine DNA kernel</span><span class="pipe-value">Genome tracking + scar-merge + Supabase persist</span></div>
+    <div class="pipe-row"><span class="pipe-stage">Cloud infrastructure</span><span class="pipe-value">Firebase + Supabase projects configured</span></div>
+    <div class="pipe-row"><span class="pipe-stage">Live display</span><span class="pipe-value">Rotating wireframe + operator panel</span></div>
+    <div class="pipe-row"><span class="pipe-stage">Operator controls</span><span class="pipe-value">Yaw / pitch / speed / pause, phone-synced</span></div>
+    <div class="pipe-row"><span class="pipe-stage">Audio</span><span class="pipe-value">Pd patch driven by control signals, pause mutes</span></div>
+    <div class="pipe-row"><span class="pipe-stage">Real-time bus</span><span class="pipe-value">OSC protocol implemented + documented</span></div>
+    <div class="pipe-row"><span class="pipe-stage">Remote access</span><span class="pipe-value">Hosted operator display, no LAN config needed</span></div>
+    <div class="pipe-row"><span class="pipe-stage">Operational tooling</span><span class="pipe-value">Diagnostics, status, reset scripts + docs</span></div>
+    <div class="body-copy" style="margin-top:12px">
+      <p style="font-size:12px;color:var(--muted)">Earlier phases of the room-scale (OpenFrameworks) port and the DNA kernel itself were completed prior to this proof of concept.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">The object prototype — in design</div>
+    <div class="item">
+      <div class="item-top"><div class="item-name">1 · Enclosure &amp; brain</div></div>
+      <div class="item-note">A compact dedicated computer running the DNA bridge, OpenFrameworks, Pd, and (later) vision — housed in a ~24×24" plywood/acrylic enclosure with networking, an LCD status display ("ON / OSC Active"), a touch screen or physical buttons, an LED driver (Teensy-based), small projectors (deferred), speakers, motors, and cooling.</div>
+    </div>
+    <div class="item">
+      <div class="item-top"><div class="item-name">2 · Sound &amp; concept</div></div>
+      <div class="item-note">A hardware synthesizer/sequencer (Roland S-1) acting as a "performer" voiced through Pd (not a second creative brain), plus sample and tracker-style sources for generative audio layers.</div>
+    </div>
+    <div class="item">
+      <div class="item-top"><div class="item-name">3 · Camera + machine learning</div></div>
+      <div class="item-note">One or more small cameras feed a vision sidecar running on the main computer. Raw video never leaves that computer — only <strong>derived signals</strong> (motion energy, presence, zone) are sent to the operator layer or over OSC. Phase 1: a single motion-energy value mapped to speed or a fan trigger. Phase 2: zone-based, canvas-aware feedback. Video never travels over the cloud operator channel; ML never runs on microcontroller-class hardware.</div>
+    </div>
+    <div class="item">
+      <div class="item-top"><div class="item-name">4 · Kinetic / atmospheric (deferred)</div></div>
+      <div class="item-note">Fans, silk, and sensors as a "breathing" pneumatic layer; steam effects; a robotic drawing arm — all parked until the room-scale phase.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Data model summary</div>
+    <table class="simple-table">
+      <tr><th>Record</th><th>Where</th><th>Contains</th></tr>
+      <tr><td><strong>Operator state</strong></td><td>Firebase, per venue</td><td>Rotation (two axes), speed, pause — vision fields (motion, presence, zone) planned</td></tr>
+      <tr><td><strong>Genome record</strong></td><td>Supabase</td><td>Seed, generation, accumulated scars, vitality — shared and merged across venues</td></tr>
+      <tr><td><strong>Real-time protocol</strong></td><td>OSC, namespace <code>/sm/*</code></td><td>Live channel to all installation bodies, documented as a standing reference</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Explicitly out of scope (for now)</div>
+    <div class="body-copy">
+      <p style="font-size:12px;color:var(--muted);line-height:1.9">
+        This is not yet the final artwork — the current browser piece is a proof-of-concept placeholder · The room-scale port to OpenFrameworks is in progress, not complete · Minting is not yet automated · Cross-venue scar merging has not been tested in a live multi-site setting · Projection mapping and robotic drawing are future-phase work · The project's primary minting venue is <strong>Transient Labs</strong>, not Manifold-first
+      </p>
+    </div>
+  </div>
+
+  <div class="foot-note">species surrender-machines · seed 77823 · Walhimer Studio · updated 2026-06-11</div>
+</div>
+
+</main>
+</div>
+
+<script>
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if(el) el.classList.add('active');
+}
+</script>
+</body>
+</html>
