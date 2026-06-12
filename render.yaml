@@ -1,0 +1,15 @@
+services:
+  - type: worker
+    name: surrender-dna-bridge
+    runtime: node
+    rootDir: machine-aesthetic
+    buildCommand: cd surrender-stack-poc && npm install
+    startCommand: cd surrender-stack-poc && node bridge/dna-bridge.mjs
+    plan: starter
+    envVars:
+      - key: SM_VENUE_ID
+        value: mac-local
+      - key: SM_SEED
+        value: "77823"
+      - key: NODE_VERSION
+        value: "20"
