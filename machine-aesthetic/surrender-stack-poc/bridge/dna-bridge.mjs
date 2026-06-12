@@ -11,6 +11,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
+import ws from "ws";
 import { initializeApp } from "firebase/app";
 import { getDatabase, onValue, ref, set } from "firebase/database";
 import { createOrganism } from "../../emergent-dna/kernel/index.mjs";
@@ -43,6 +44,7 @@ const genomeFbRef = ref(rtdb, `${FIREBASE_GENOME_ROOT}/${VENUE_ID}`);
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceRoleKey, {
   auth: { persistSession: false, autoRefreshToken: false },
+  realtime: { transport: ws },
 });
 
 const osc = createOscBus(OSC_HOST, OSC_PORT);
