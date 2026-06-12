@@ -1,7 +1,7 @@
 # Surrender Stack POC — Status (June 2026)
 
 Session summary: what was built, what works, what’s next.  
-Related: [STACK.md](./STACK.md) · [AUTOMATION.md](./AUTOMATION.md) · [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) · [program/README.md](../../../program/README.md)
+**Master doc:** [SURRENDER-MACHINES-PROJECT.md](../../docs/SURRENDER-MACHINES-PROJECT.md) · Related: [STACK.md](./STACK.md) · [AUTOMATION.md](./AUTOMATION.md) · [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) · [program/README.md](../../../program/README.md)
 
 ---
 
@@ -47,6 +47,7 @@ Transient Labs / Manifold — not wired yet (ops layer in `program/`)
 | **Docs** | ✅ Done | STACK, OSC, PD-SETUP, TROUBLESHOOTING, AUTOMATION |
 | **Scripts** | ✅ Done | diagnose, network-check, status, unpause, reset-venue, deploy-controller |
 | **Firebase Hosting deploy** | ✅ Script | `npm run deploy-controller` — phone HTTPS, no LAN |
+| **Cloud brain (Render)** | 📋 Guide | [CLOUD-BRAIN.md](./CLOUD-BRAIN.md) — 24/7 `dna-bridge` via GitHub |
 
 ### Cloud (user-configured)
 
