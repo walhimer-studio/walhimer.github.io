@@ -11,6 +11,11 @@ node_modules/
 # Local Firebase web config (copy from machine aesthetic/firebase-config.example.js)
 **/firebase-config.local.js
 
+# Private generative study (not published)
+machine-aesthetic/docs/asendorf-raster-spektrum-mockup.html
+
+# machine-aesthetic/docs/local/ — static studies (GitHub Pages OK)
+
 # Local GLB exports (build artifacts, not published)
 sketches/loop-machine-aesthetic/ghost_dense_77823_room.glb
 sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.glb

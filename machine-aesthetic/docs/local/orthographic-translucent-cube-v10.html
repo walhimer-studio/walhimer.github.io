@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>Cube stop motion v10 — vivid seeded cube + feedback</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #fff; }
+    #c { display: block; width: 100vw; height: 100vh; }
+    #ui {
+      position: fixed; left: 12px; bottom: 12px; z-index: 2;
+      font: 12px/1.4 ui-monospace, monospace;
+      color: #456;
+      background: rgba(255,255,255,0.9);
+      padding: 6px 8px;
+      max-width: 92vw;
+    }
+    #ui.err { color: #b00; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="ui">loading…</div>
+  <script>
+const ui = document.getElementById('ui');
+const BUILD = 'v10';
+
+if (!document.title.includes('v10')) {
+  ui.className = 'err';
+  ui.textContent = 'Wrong cache — Cmd+Shift+R';
+} else {
+  const canvas = document.getElementById('c');
+  const gl = canvas.getContext('webgl2', { antialias: true });
+
+  if (!gl) {
+    ui.className = 'err';
+    ui.textContent = 'WebGL2 missing — use Chrome or Safari';
+  } else {
+    const { floor, min, max, cos, sin } = Math;
+
+    /** Saturated anchor hues — yellow, lime, deep blue, pink, orange, magenta, cyan, violet */
+    const VIVID_ANCHORS = [
+      [1.00, 0.98, 0.04],  // lemon yellow
+      [0.42, 1.00, 0.08],  // lime green
+      [0.04, 0.12, 0.96],  // deep blue
+      [1.00, 0.14, 0.58],  // hot pink
+      [1.00, 0.42, 0.02],  // vivid orange
+      [0.96, 0.04, 0.88],  // magenta
+      [0.02, 0.94, 1.00],  // electric cyan
+      [0.58, 0.08, 0.98],  // violet
+      [1.00, 0.22, 0.18],  // red-orange
+      [0.12, 0.88, 0.38],  // emerald
+    ];
+
+    const CUBE_TEMPLATE = new Float32Array([
+      -1,-1, 1,   1,-1, 1,   1, 1, 1,
+      -1,-1, 1,   1, 1, 1,  -1, 1, 1,
+      -1,-1,-1,   1,-1,-1,   1, 1,-1,
+      -1,-1,-1,   1, 1,-1,  -1, 1,-1,
+      -1,-1,-1,  -1,-1, 1,  -1, 1, 1,
+      -1,-1,-1,  -1, 1, 1,  -1, 1,-1,
+       1,-1,-1,   1,-1, 1,   1, 1, 1,
+       1,-1,-1,   1, 1, 1,   1, 1,-1,
+      -1,-1,-1,   1,-1,-1,   1,-1, 1,
+      -1,-1,-1,   1,-1, 1,  -1,-1, 1,
+      -1, 1,-1,   1, 1,-1,   1, 1, 1,
+      -1, 1,-1,   1, 1, 1,  -1, 1, 1,
+    ]);
+
+    const makeRng = (seed) => {
+      let s = seed >>> 0;
+      return {
+        seed: s,
+        random() {
+          s = (s + 0x6d2b79f5) >>> 0;
+          let t = s;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        },
+        uniform(a, b) {
+          return a + this.random() * (b - a);
+        },
+        randint(a, b) {
+          return a + floor(this.random() * (b - a + 1));
+        },
+        shuffle(arr) {
+          const a = arr.slice();
+          for (let i = a.length - 1; i > 0; i--) {
+            const j = floor(this.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+          }
+          return a;
+        },
+      };
+    };
+
+    const birthSeed = () => {
+      if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+        const buf = new Uint32Array(1);
+        crypto.getRandomValues(buf);
+        return buf[0] >>> 0;
+      }
+      return ((Date.now() & 0xffffffff) >>> 0) ^ 0x77823;
+    };
+
+    const parseSeed = () => {
+      const q = new URLSearchParams(location.search).get('seed');
+      if (q == null) return null;
+      const n = Number(q) >>> 0;
+      return n || null;
+    };
+
+    const boostVivid = (rgb, gain) => {
+      const m = max(rgb[0], rgb[1], rgb[2]);
+      const s = gain / max(0.001, m);
+      return [
+        min(1, rgb[0] * s),
+        min(1, rgb[1] * s),
+        min(1, rgb[2] * s),
+      ];
+    };
+
+    const jitterVivid = (rgb, rng, amount) => {
+      const j = [
+        rgb[0] + rng.uniform(-amount, amount),
+        rgb[1] + rng.uniform(-amount, amount),
+        rgb[2] + rng.uniform(-amount, amount),
+      ];
+      return boostVivid([
+        max(0, j[0]),
+        max(0, j[1]),
+        max(0, j[2]),
+      ], 1.0);
+    };
+
+    const pickVividFaces = (rng) => {
+      const pool = rng.shuffle(VIVID_ANCHORS.map((c) => c.slice()));
+      const faces = [];
+      for (let i = 0; i < 6; i++) {
+        faces.push(jitterVivid(pool[i % pool.length], rng, 0.07));
+      }
+      return faces;
+    };
+
+    const rngPickPalette = (rng) => {
+      const names = ['yellow-lime-blue', 'pink-orange-cyan', 'magenta-violet-lime', 'orange-pink-blue'];
+      const picks = rng.shuffle(VIVID_ANCHORS.map((c) => c.slice()));
+      const name = names[rng.randint(0, names.length - 1)];
+      return [picks[0], picks[3], picks[6], name];
+    };
+
+    const deriveTraits = (seed) => {
+      const tr = makeRng(seed >>> 0);
+      const faceColors = pickVividFaces(tr);
+      const gridChoices = [8, 16, 32];
+      const speedChoices = [1, 2, 4].filter(() => tr.random() < 0.78);
+      const palette = rngPickPalette(tr);
+      return {
+        seed: seed >>> 0,
+        cubeScale: tr.uniform(0.55, 1.48),
+        zoom: tr.uniform(1.75, 2.65),
+        yaw: tr.uniform(0.38, 0.82),
+        pitch: tr.uniform(0.22, 0.56),
+        alpha: tr.uniform(0.38, 0.58),
+        gridPx: gridChoices[tr.randint(0, gridChoices.length - 1)],
+        stepMs: tr.randint(48, 190),
+        feedbackDecay: tr.uniform(0.986, 0.997),
+        keepDirChance: tr.uniform(0.22, 0.48),
+        legStepsMin: tr.randint(6, 18),
+        legStepsMax: tr.randint(20, 58),
+        bounceLegMin: tr.randint(3, 9),
+        bounceLegMax: tr.randint(8, 26),
+        holdChance: tr.uniform(0.02, 0.16),
+        doubleStampChance: tr.uniform(0, 0.12),
+        hueDrift: tr.uniform(0.04, 0.22),
+        speedChoices: speedChoices.length ? speedChoices : [1, 2, 4],
+        faceColors,
+        specA: palette[0],
+        specB: palette[1],
+        specC: palette[2],
+        paletteName: palette[3],
+      };
+    };
+
+    const buildCubeVerts = (scale, faceColors, alpha) => {
+      const out = new Float32Array(36 * 7);
+      for (let i = 0; i < 36; i++) {
+        const face = floor(i / 6);
+        const pi = i * 3;
+        const oi = i * 7;
+        const c = faceColors[face];
+        out[oi] = CUBE_TEMPLATE[pi] * scale;
+        out[oi + 1] = CUBE_TEMPLATE[pi + 1] * scale;
+        out[oi + 2] = CUBE_TEMPLATE[pi + 2] * scale;
+        out[oi + 3] = c[0];
+        out[oi + 4] = c[1];
+        out[oi + 5] = c[2];
+        out[oi + 6] = alpha;
+      }
+      return out;
+    };
+
+    const quadVerts = new Float32Array([
+      -1, -1,  1, -1,  -1, 1,
+      -1,  1,  1, -1,   1, 1,
+    ]);
+
+    const compile = (type, src) => {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        throw new Error(gl.getShaderInfoLog(s) || 'shader fail');
+      }
+      return s;
+    };
+
+    const link = (vsSrc, fsSrc) => {
+      const p = gl.createProgram();
+      gl.attachShader(p, compile(gl.VERTEX_SHADER, vsSrc));
+      gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fsSrc));
+      gl.linkProgram(p);
+      if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+        throw new Error(gl.getProgramInfoLog(p) || 'link fail');
+      }
+      return p;
+    };
+
+    const cubeVS = `#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec4 aCol;
+uniform float yaw, pitch, halfW, halfH, offX, offY, hueShift;
+out vec4 vCol;
+vec3 boostVivid(vec3 c) {
+  float m = max(max(c.r, c.g), c.b);
+  return m > 0.001 ? c * (1.0 / m) * min(1.0, m * 1.08) : c;
+}
+vec3 hueRotate(vec3 rgb, float a) {
+  float ca = cos(a), sa = sin(a);
+  vec3 k = vec3(0.57735026919);
+  return rgb * ca + cross(k, rgb) * sa + k * dot(k, rgb) * (1.0 - ca);
+}
+void main() {
+  float cy = cos(yaw), sy = sin(yaw);
+  float cx = cos(pitch), sx = sin(pitch);
+  float x = cy*aPos.x + sy*aPos.z;
+  float z = -sy*aPos.x + cy*aPos.z;
+  float y = cx*aPos.y - sx*z;
+  float z2 = sx*aPos.y + cx*z - 3.5;
+  vec3 col = hueRotate(aCol.rgb, hueShift);
+  vCol = vec4(boostVivid(col), aCol.a);
+  gl_Position = vec4(x/halfW + offX, y/halfH + offY, clamp(z2/20., -0.99, 0.99), 1.);
+}`;
+
+    const cubeFS = `#version 300 es
+precision highp float;
+in vec4 vCol;
+out vec4 o;
+void main() { o = vCol; }`;
+
+    const passVS = `#version 300 es
+in vec2 pos;
+out vec2 vUv;
+void main() {
+  vUv = 0.5 * (pos + 1.0);
+  gl_Position = vec4(pos, 0.0, 1.0);
+}`;
+
+    const feedbackFS = `#version 300 es
+precision highp float;
+uniform sampler2D uPrev;
+uniform vec2 uMotion;
+uniform vec2 uDims;
+uniform float uDecay;
+uniform float uTime;
+uniform vec3 uSpecA, uSpecB, uSpecC;
+in vec2 vUv;
+out vec4 o;
+
+vec3 vivid(float t) {
+  float w = 0.5 + 0.5 * sin(t * 0.22);
+  vec3 ab = mix(uSpecA, uSpecB, w);
+  return mix(ab, uSpecC, 0.5 + 0.5 * sin(t * 0.17 + 1.7));
+}
+
+void main() {
+  vec3 hold = texture(uPrev, vUv).rgb;
+  float dr = floor(abs(uMotion.x) * uDims.x + abs(uMotion.y) * uDims.y + 0.5);
+  vec2 shift = vec2(0.0);
+  if (mod(dr, 2.0) >= 1.0) shift += vec2(0.0, 1.0 / uDims.y);
+  if (mod(dr, 4.0) >= 2.0) shift += vec2(1.0 / uDims.x, 0.0);
+  if (mod(dr, 8.0) >= 4.0) shift -= vec2(0.0, 1.0 / uDims.y);
+  if (mod(dr, 16.0) >= 8.0) shift -= vec2(1.0 / uDims.x, 0.0);
+  if (mod(dr, 32.0) >= 16.0) shift += vec2(0.0, 2.0 / uDims.y);
+  if (mod(dr, 64.0) >= 32.0) shift += vec2(2.0 / uDims.x, 0.0);
+  vec3 raster = texture(uPrev, vUv + shift).rgb;
+  vec3 shifted = texture(uPrev, vUv - uMotion).rgb;
+  vec3 col = mix(hold, mix(shifted, raster, 0.65), 0.42);
+  float m = length(uMotion) * uDims.x;
+  if (m > 0.5) {
+    vec3 spec = vivid(uTime + vUv.x * 4.0 + vUv.y * 3.0);
+    col = mix(col, spec, min(0.32, m * 0.014));
+  }
+  col = mix(vec3(1.0), col, uDecay);
+  o = vec4(col, 1.0);
+}`;
+
+    const blitFS = `#version 300 es
+precision highp float;
+uniform sampler2D uTex;
+in vec2 vUv;
+out vec4 o;
+void main() { o = vec4(texture(uTex, vUv).rgb, 1.0); }`;
+
+    const cubeProg = link(cubeVS, cubeFS);
+    const feedbackProg = link(passVS, feedbackFS);
+    const blitProg = link(passVS, blitFS);
+
+    const uYaw = gl.getUniformLocation(cubeProg, 'yaw');
+    const uPitch = gl.getUniformLocation(cubeProg, 'pitch');
+    const uHalfW = gl.getUniformLocation(cubeProg, 'halfW');
+    const uHalfH = gl.getUniformLocation(cubeProg, 'halfH');
+    const uOffX = gl.getUniformLocation(cubeProg, 'offX');
+    const uOffY = gl.getUniformLocation(cubeProg, 'offY');
+    const uHueShift = gl.getUniformLocation(cubeProg, 'hueShift');
+
+    const uFbPrev = gl.getUniformLocation(feedbackProg, 'uPrev');
+    const uFbMotion = gl.getUniformLocation(feedbackProg, 'uMotion');
+    const uFbDims = gl.getUniformLocation(feedbackProg, 'uDims');
+    const uFbDecay = gl.getUniformLocation(feedbackProg, 'uDecay');
+    const uFbTime = gl.getUniformLocation(feedbackProg, 'uTime');
+    const uFbSpecA = gl.getUniformLocation(feedbackProg, 'uSpecA');
+    const uFbSpecB = gl.getUniformLocation(feedbackProg, 'uSpecB');
+    const uFbSpecC = gl.getUniformLocation(feedbackProg, 'uSpecC');
+    const uBlitTex = gl.getUniformLocation(blitProg, 'uTex');
+
+    const cubeVao = gl.createVertexArray();
+    gl.bindVertexArray(cubeVao);
+    const cubeBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuf);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 28, 0);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 28, 12);
+
+    const quadVao = gl.createVertexArray();
+    gl.bindVertexArray(quadVao);
+    const quadBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, quadVerts, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.disable(gl.DEPTH_TEST);
+
+    let traits = null;
+    let motionRng = null;
+    let ghostHue = 0;
+
+    let offX = 0;
+    let offY = 0;
+    let gridStep = 0.03;
+    let scannerDir = { dx: 1, dy: 0 };
+    let scannerSpeed = 1;
+    let legStepsLeft = 0;
+    let lastMotion = { x: 0, y: 0 };
+    const ghosts = [];
+    let frames = 0;
+    let fbW = 0;
+    let fbH = 0;
+    let ping = [null, null];
+    let readIdx = 0;
+    let stepAcc = 0;
+
+    const updateUrl = (seed) => {
+      const u = new URL(location.href);
+      u.searchParams.set('seed', String(seed));
+      history.replaceState(null, '', u);
+    };
+
+    const applySeed = (seed) => {
+      traits = deriveTraits(seed);
+      motionRng = makeRng((seed + 0x85ebca6b) >>> 0);
+      ghostHue = motionRng.uniform(0, 6.283);
+      gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuf);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        buildCubeVerts(traits.cubeScale, traits.faceColors, traits.alpha),
+        gl.STATIC_DRAW,
+      );
+      updateUrl(traits.seed);
+    };
+
+    const createFbo = (w, h) => {
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      const fbo = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+        throw new Error('FBO incomplete');
+      }
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      return { tex, fbo };
+    };
+
+    const ensureFbos = (w, h) => {
+      if (w === fbW && h === fbH && ping[0]) return;
+      fbW = w;
+      fbH = h;
+      if (ping[0]) {
+        gl.deleteFramebuffer(ping[0].fbo);
+        gl.deleteTexture(ping[0].tex);
+        gl.deleteFramebuffer(ping[1].fbo);
+        gl.deleteTexture(ping[1].tex);
+      }
+      ping[0] = createFbo(w, h);
+      ping[1] = createFbo(w, h);
+      readIdx = 0;
+      for (let i = 0; i < 2; i++) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, ping[i].fbo);
+        gl.viewport(0, 0, w, h);
+        gl.clearColor(1, 1, 1, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    };
+
+    const bounds = () => {
+      const a = canvas.clientWidth / max(1, canvas.clientHeight);
+      const hh = traits.zoom;
+      const hw = traits.zoom * a;
+      const cubeReach = 1.4 * traits.cubeScale;
+      return { x: max(0.04, 1.0 - cubeReach / hw), y: max(0.04, 1.0 - cubeReach / hh), hw, hh };
+    };
+
+    const clampPos = () => {
+      const { x: lx, y: ly } = bounds();
+      offX = max(-lx, min(lx, offX));
+      offY = max(-ly, min(ly, offY));
+    };
+
+    const gridStepFromViewport = (cw, ch, hw, hh) => {
+      const ndcPerPxX = (hw * 2) / cw;
+      const ndcPerPxY = (hh * 2) / ch;
+      return min(ndcPerPxX, ndcPerPxY) * traits.gridPx;
+    };
+
+    const snapGrid = () => {
+      if (gridStep > 0) {
+        offX = Math.round(offX / gridStep) * gridStep;
+        offY = Math.round(offY / gridStep) * gridStep;
+      }
+    };
+
+    const canStep = (d, spd) => {
+      const { x: lx, y: ly } = bounds();
+      const s = gridStep * spd;
+      const nx = offX + d.dx * s;
+      const ny = offY + d.dy * s;
+      return nx >= -lx && nx <= lx && ny >= -ly && ny <= ly;
+    };
+
+    const SCANNER_DIRS = [
+      { dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: 1 }, { dx: 0, dy: -1 },
+      { dx: 1, dy: 1 }, { dx: -1, dy: 1 }, { dx: 1, dy: -1 }, { dx: -1, dy: -1 },
+    ];
+
+    const pickRandomDir = (spd) => {
+      const ok = SCANNER_DIRS.filter((d) => canStep(d, spd));
+      if (!ok.length) return false;
+      scannerDir = ok[motionRng.randint(0, ok.length - 1)];
+      return true;
+    };
+
+    const pickScannerRun = () => {
+      const speeds = traits.speedChoices;
+
+      if (legStepsLeft > 0 && canStep(scannerDir, scannerSpeed)) return;
+
+      scannerSpeed = speeds[motionRng.randint(0, speeds.length - 1)];
+
+      if (
+        motionRng.random() < traits.keepDirChance
+        && canStep(scannerDir, scannerSpeed)
+      ) {
+        // keep scanner direction
+      } else {
+        pickRandomDir(scannerSpeed);
+      }
+      legStepsLeft = traits.legStepsMin + motionRng.randint(0, traits.legStepsMax - traits.legStepsMin);
+    };
+
+    const stampGhost = () => {
+      ghosts.push({ x: offX, y: offY, hue: ghostHue });
+      if (ghosts.length > 600) ghosts.shift();
+    };
+
+    const step = () => {
+      const dpr = min(devicePixelRatio || 1, 2);
+      const cw = max(1, floor(canvas.clientWidth * dpr));
+      const ch = max(1, floor(canvas.clientHeight * dpr));
+      const { hw, hh } = bounds();
+      gridStep = gridStepFromViewport(cw, ch, hw, hh);
+
+      if (motionRng.random() < traits.holdChance) {
+        lastMotion = { x: 0, y: 0 };
+        stampGhost();
+        return;
+      }
+
+      if (legStepsLeft <= 0) pickScannerRun();
+
+      const s = gridStep * scannerSpeed;
+      const px = offX;
+      const py = offY;
+      let nx = offX + scannerDir.dx * s;
+      let ny = offY + scannerDir.dy * s;
+      const { x: lx, y: ly } = bounds();
+
+      if (scannerDir.dx !== 0 && (nx < -lx || nx > lx)) {
+        nx = nx < -lx ? -lx : lx;
+        pickRandomDir(scannerSpeed);
+        legStepsLeft = min(
+          legStepsLeft,
+          traits.bounceLegMin + motionRng.randint(0, traits.bounceLegMax - traits.bounceLegMin),
+        );
+      }
+      if (scannerDir.dy !== 0 && (ny < -ly || ny > ly)) {
+        ny = ny < -ly ? -ly : ly;
+        pickRandomDir(scannerSpeed);
+        legStepsLeft = min(
+          legStepsLeft,
+          traits.bounceLegMin + motionRng.randint(0, traits.bounceLegMax - traits.bounceLegMin),
+        );
+      }
+
+      offX = nx;
+      offY = ny;
+      snapGrid();
+      clampPos();
+
+      legStepsLeft -= 1;
+      lastMotion = { x: offX - px, y: offY - py };
+      ghostHue += traits.hueDrift * (0.65 + motionRng.random() * 0.7);
+      stampGhost();
+
+      if (motionRng.random() < traits.doubleStampChance) {
+        lastMotion = { x: 0, y: 0 };
+        ghostHue += traits.hueDrift * 0.4;
+        stampGhost();
+      }
+    };
+
+    const drawCubeAt = (ox, oy, hw, hh, hue) => {
+      gl.uniform1f(uYaw, traits.yaw);
+      gl.uniform1f(uPitch, traits.pitch);
+      gl.uniform1f(uHalfW, hw);
+      gl.uniform1f(uHalfH, hh);
+      gl.uniform1f(uOffX, ox);
+      gl.uniform1f(uOffY, oy);
+      gl.uniform1f(uHueShift, hue);
+      gl.drawArrays(gl.TRIANGLES, 0, 36);
+    };
+
+    const drawFullscreen = (prog) => {
+      gl.bindVertexArray(quadVao);
+      gl.useProgram(prog);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    };
+
+    const paint = () => {
+      const dpr = min(devicePixelRatio || 1, 2);
+      const cw = max(1, floor(canvas.clientWidth * dpr));
+      const ch = max(1, floor(canvas.clientHeight * dpr));
+      if (canvas.width !== cw || canvas.height !== ch) {
+        canvas.width = cw;
+        canvas.height = ch;
+        clampPos();
+      }
+      ensureFbos(cw, ch);
+      gl.viewport(0, 0, cw, ch);
+
+      const { hw, hh } = bounds();
+      const read = ping[readIdx];
+      const write = ping[1 - readIdx];
+
+      const motionUv = {
+        x: lastMotion.x / max(0.001, hw * 2),
+        y: lastMotion.y / max(0.001, hh * 2),
+      };
+
+      gl.bindFramebuffer(gl.FRAMEBUFFER, write.fbo);
+      gl.useProgram(feedbackProg);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, read.tex);
+      gl.uniform1i(uFbPrev, 0);
+      gl.uniform2f(uFbMotion, motionUv.x, motionUv.y);
+      gl.uniform2f(uFbDims, cw, ch);
+      gl.uniform1f(uFbDecay, traits.feedbackDecay);
+      gl.uniform1f(uFbTime, frames * 0.01);
+      gl.uniform3f(uFbSpecA, traits.specA[0], traits.specA[1], traits.specA[2]);
+      gl.uniform3f(uFbSpecB, traits.specB[0], traits.specB[1], traits.specB[2]);
+      gl.uniform3f(uFbSpecC, traits.specC[0], traits.specC[1], traits.specC[2]);
+      drawFullscreen(feedbackProg);
+
+      gl.useProgram(cubeProg);
+      gl.bindVertexArray(cubeVao);
+      for (let i = 0; i < ghosts.length; i++) {
+        drawCubeAt(ghosts[i].x, ghosts[i].y, hw, hh, ghosts[i].hue);
+      }
+
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.useProgram(blitProg);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, write.tex);
+      gl.uniform1i(uBlitTex, 0);
+      drawFullscreen(blitProg);
+
+      readIdx = 1 - readIdx;
+    };
+
+    const syncUi = () => {
+      ui.className = '';
+      ui.textContent = [
+        `${BUILD} vivid · seed ${traits.seed}`,
+        traits.paletteName,
+        `scale ${traits.cubeScale.toFixed(2)}`,
+        `step ${traits.stepMs}ms`,
+        `${ghosts.length} ghosts`,
+        'R new seed',
+      ].join(' · ');
+    };
+
+    const reset = (newSeed) => {
+      const seed = newSeed !== undefined ? (newSeed >>> 0) : birthSeed();
+      applySeed(seed);
+      ghosts.length = 0;
+      offX = 0;
+      offY = 0;
+      lastMotion = { x: 0, y: 0 };
+      scannerSpeed = traits.speedChoices[0];
+      legStepsLeft = 0;
+      frames = 0;
+      readIdx = 0;
+      if (ping[0]) {
+        for (let i = 0; i < 2; i++) {
+          gl.bindFramebuffer(gl.FRAMEBUFFER, ping[i].fbo);
+          gl.viewport(0, 0, fbW, fbH);
+          gl.clearColor(1, 1, 1, 1);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+        }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      }
+      pickRandomDir(scannerSpeed);
+      pickScannerRun();
+      step();
+      paint();
+      syncUi();
+      stepAcc = 0;
+    };
+
+    reset(parseSeed() ?? birthSeed());
+
+    const frame = (t) => {
+      frames += 1;
+      if (!stepAcc) stepAcc = t;
+      while (t - stepAcc >= traits.stepMs) {
+        stepAcc += traits.stepMs;
+        step();
+        paint();
+        syncUi();
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+
+    window.addEventListener('resize', paint);
+    window.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'r') reset();
+    });
+  }
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>808 centered — translucent stack</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 1;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.55);
+      pointer-events: none;
+      max-width: 340px;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">
+    924 centered stack · embedded palette · static host OK · H · R · +/− density
+  </div>
+  <canvas id="c"></canvas>
+  <script src="centered-924-data.js"></script>
+  <script>
+/**
+ * Built-up translucence like 924_centered: overlapping veils on white.
+ * Colors sampled along the cross in 924_centered.png.
+ */
+const { floor, min, max, random } = Math;
+
+const CENTERED_REF = CENTERED_924_SRC;
+
+const PAL = {
+  pink: [248, 229, 231],
+  yellow: [255, 255, 226],
+  skyBlue: [199, 225, 250],
+  lavender: [163, 162, 230],
+  blend: [106, 93, 173],
+  peach: [174, 187, 222],
+  magenta: [105, 100, 180],
+  mint: [153, 165, 207],
+  violet: [105, 94, 173],
+};
+
+let COLORS = Object.values(PAL);
+
+const rebuildColors = () => {
+  COLORS = Object.values(PAL);
+};
+
+const applyCenteredSamples = (img) => {
+  const c = document.createElement('canvas');
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0);
+  const get = (x, y) => {
+    const d = ctx.getImageData(min(w - 1, max(0, floor(x))), min(h - 1, max(0, floor(y))), 1, 1).data;
+    return [d[0], d[1], d[2]];
+  };
+  const onCross = (r, g, b) => r + g + b < 742;
+  const cx = floor(w * 0.5);
+  const cy = floor(h * 0.5);
+  const spanH = [];
+  for (let x = 0; x < w; x++) {
+    const [r, g, b] = get(x, cy);
+    if (onCross(r, g, b)) spanH.push(x);
+  }
+  const spanV = [];
+  for (let y = 0; y < h; y++) {
+    const [r, g, b] = get(cx, y);
+    if (onCross(r, g, b)) spanV.push(y);
+  }
+  if (spanH.length > 8 && spanV.length > 8) {
+    const pickH = (t) => get(spanH[floor((spanH.length - 1) * t)], cy);
+    const pickV = (t) => get(cx, spanV[floor((spanV.length - 1) * t)]);
+    PAL.pink = pickH(0.03);
+    PAL.peach = pickH(0.2);
+    PAL.magenta = pickH(0.42);
+    PAL.blend = get(cx, cy);
+    PAL.violet = pickH(0.58);
+    PAL.yellow = pickH(0.97);
+    PAL.skyBlue = pickV(0.03);
+    PAL.mint = pickV(0.2);
+    PAL.lavender = pickV(0.97);
+    rebuildColors();
+  }
+};
+
+const loadCenteredArtwork = () => {
+  const img = new Image();
+  img.onload = () => applyCenteredSamples(img);
+  img.src = CENTERED_REF;
+};
+
+const pick = (arr) => arr[floor(random() * arr.length)];
+
+/** ~6%–48% per layer (808-style veils, not invisible on white) */
+const randAlpha = () => 0.06 + random() * 0.42;
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d', { alpha: false });
+
+let width = 0;
+let height = 0;
+let density = 5;
+let showHint = true;
+
+function setup() {
+  width = floor(window.innerWidth);
+  height = floor(window.innerHeight);
+  canvas.width = width;
+  canvas.height = height;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, width, height);
+}
+
+/** Bias spawns toward middle third (centered artwork) */
+function randCenteredRect() {
+  const cx = width * (0.28 + random() * 0.44);
+  const cy = height * (0.28 + random() * 0.44);
+  const rw = width * (0.12 + random() * 0.42);
+  const rh = height * (0.12 + random() * 0.42);
+  return {
+    x: floor(cx - rw * 0.5),
+    y: floor(cy - rh * 0.5),
+    w: floor(rw),
+    h: floor(rh),
+  };
+}
+
+function layRect(r, color, alpha) {
+  const [r8, g8, b8] = color;
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = `rgb(${r8},${g8},${b8})`;
+  ctx.fillRect(r.x, r.y, r.w, r.h);
+  ctx.restore();
+}
+
+function frame() {
+  ctx.fillStyle = 'rgba(255,255,255,0.018)';
+  ctx.fillRect(0, 0, width, height);
+
+  const n = floor(density * (0.7 + random() * 0.6));
+  for (let i = 0; i < n; i++) {
+    layRect(randCenteredRect(), pick(COLORS), randAlpha());
+  }
+
+  requestAnimationFrame(frame);
+}
+
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'h') {
+    showHint = !showHint;
+    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
+  }
+  if (k === 'r') setup();
+  if (k === '+' || k === '=') density = min(14, density + 1);
+  if (k === '-') density = max(1, density - 1);
+});
+
+setup();
+loadCenteredArtwork();
+window.addEventListener('resize', setup);
+requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
