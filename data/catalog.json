@@ -9220,12 +9220,12 @@
         "title": "Chutes — volume · dense machine · seed 77823",
         "creator": "Mark Walhimer",
         "date": "2026-06-15",
-        "description": "Raster+spektrum + XYZ open volume with invisible RGB motion map, GPU volume, RGB soundscape, seed 77823 lifeline, and Ghost dense 77823 wireframe machine with sliders inside the space.",
+        "description": "XYZ open volume with invisible RGB motion map, GPU volume, RGB soundscape, seed 77823 lifeline, and Ghost dense 77823 wireframe machine with sliders inside the space.",
         "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-webgl",
+        "relation": "",
         "catalog_number": "WS-000218"
       },
       "linked_art": {
@@ -9315,7 +9315,7 @@
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-webgl",
+        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
         "catalog_number": "WS-000220"
       },
       "linked_art": {
