@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-06-13",
+  "updated": "2026-06-15",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -9212,6 +9212,141 @@
           "sketches/loop-snippets/raster-spektrum-study-webgl.html"
         ],
         "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
+      "dublin_core": {
+        "title": "Chutes — volume · dense machine · seed 77823",
+        "creator": "Mark Walhimer",
+        "date": "2026-06-15",
+        "description": "Raster+spektrum + XYZ open volume with invisible RGB motion map, GPU volume, RGB soundscape, seed 77823 lifeline, and Ghost dense 77823 wireframe machine with sliders inside the space.",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-webgl",
+        "catalog_number": "WS-000218"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d-living-copy",
+        "type": "HumanMadeObject",
+        "_label": "Chutes — volume · dense machine · seed 77823",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living-copy.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living",
+      "dublin_core": {
+        "title": "Chutes — living organism · seed 77823 · lifeline",
+        "creator": "Mark Walhimer",
+        "date": "2026-06-15",
+        "description": "Open volume world driven by invisible RGB XYZ operators; seeded organism with lifeline and surrender rebirth; RGB soundscape.",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
+        "catalog_number": "WS-000219"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d-living",
+        "type": "HumanMadeObject",
+        "_label": "Chutes — living organism · seed 77823 · lifeline",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d",
+      "dublin_core": {
+        "title": "Chutes — open volume world · RGB sound",
+        "creator": "Mark Walhimer",
+        "date": "2026-06-15",
+        "description": "Traversable Three.js volume: invisible RGB instruction layer re-addresses XYZ; GPU raymarch and Web Audio read the same motion map.",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-webgl",
+        "catalog_number": "WS-000220"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d",
+        "type": "HumanMadeObject",
+        "_label": "Chutes — open volume world · RGB sound",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/raster-spektrum-study-combined-vol3d.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d.html"
+        ]
       }
     },
     {
