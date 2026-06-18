@@ -49,8 +49,8 @@
 </head>
 <body>
   <div id="hint">
-    RGB↔XYZ · seed 77823 · code art layer · lifeline · fluoro · RGB sound<br>
-    dense machine · ↑↓ forward/back · ←→ strafe · drag look · scroll zoom · M mute · R record · N rebirth
+    auto travel · T toggle · colors + code forward · white machine chamber behind<br>
+    ↑↓ forward/back · ←→ strafe · drag look · scroll zoom · M mute · R record · N rebirth
   </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
   <div id="seed-hud">seed 77823</div>
@@ -1276,7 +1276,7 @@ const GhostDenseMachine = () => {
   const mount = (parentScene) => {
     builder = new WireBuilder(parentScene);
     drawMachine(builder, machineRng);
-    builder.staticRoot.position.set(0, 15, 0);
+    builder.staticRoot.position.set(0, 4, 4);
     builder.staticRoot.scale.set(3.5, 3.5, 3.5);
     bindSliders();
     return builder.staticRoot;
@@ -1308,12 +1308,17 @@ const VolRoomGPU = () => {
   let volTex = [null, null], volId = 0;
   let imgTex, codeImgTex, motTex, motScratch;
   let codeWallMeshes = [];
+  let machineStage, artLayerGroup;
+  const MACHINE_STAGE_Z = -48;
+  const MACHINE_STAGE_Y = 12;
+  const ART_LAYER_Z = 20;
+  const TRAVEL_CYCLE = 40;
   let width, height, depth, aspect;
   let bx = 1, by = 1, bz = 1;
   let viewRot = { x: 0, y: 0, drag: false, px: 0, py: 0 };
   const camPos = new THREE.Vector3();
   let camPosReady = false;
-  let travelOn = false;
+  let travelOn = true;
   let travelPhase = 0;
   const TRAVEL_RATE = 0.11;
   const moveKeys = { forward: false, back: false, left: false, right: false };
@@ -1322,10 +1327,10 @@ const VolRoomGPU = () => {
   const right = new THREE.Vector3();
 
   const clampPos = () => {
-    const m = 0.9;
-    camPos.x = max(-bx * m, min(bx * m, camPos.x));
-    camPos.y = max(-by * m, min(by * m, camPos.y));
-    camPos.z = max(-bz * m, min(bz * m, camPos.z));
+    const m = 0.92;
+    camPos.x = max(-bx * m * 1.25, min(bx * m * 1.25, camPos.x));
+    camPos.y = max(-by * 0.25, min(by * m * 1.35, camPos.y));
+    camPos.z = max(-95, min(115, camPos.z));
   };
 
   const nudgeAlongView = (delta) => {
@@ -1349,18 +1354,48 @@ const VolRoomGPU = () => {
     travelPhase += dt * TRAVEL_RATE;
 
     const p = travelPhase;
-    const nx = sin(p * 0.95) * bx * 0.62 + sin(p * 2.1) * bx * 0.12;
-    const ny = sin(p * 0.55) * by * 0.22 + cos(p * 1.35) * by * 0.08;
-    const nz = cos(p * 0.72) * bz * 0.72 + sin(p * 1.6) * bz * 0.14;
+    const u = (p % TRAVEL_CYCLE) / TRAVEL_CYCLE;
+    const artEnd = 0.66;
+
+    let nx;
+    let ny;
+    let nz;
+
+    if (u < artEnd) {
+      nx = sin(p * 0.95) * bx * 0.62 + sin(p * 2.1) * bx * 0.12;
+      ny = sin(p * 0.55) * by * 0.28 + cos(p * 1.35) * by * 0.1 + 4;
+      nz = ART_LAYER_Z + cos(p * 0.72) * bz * 1.05 + sin(p * 1.6) * bz * 0.28;
+    } else {
+      const k = (u - artEnd) / (1 - artEnd);
+      const ease = k * k * (3 - 2 * k);
+      const ax = sin(p * 0.95) * bx * 0.42;
+      const ay = sin(p * 0.55) * by * 0.22 + 8;
+      const az = ART_LAYER_Z - bz * 0.35;
+      const mx = sin(p * 0.41) * 5;
+      const my = MACHINE_STAGE_Y + sin(p * 0.31) * 3 + 11;
+      const mz = MACHINE_STAGE_Z + 30;
+      nx = ax + (mx - ax) * ease;
+      ny = ay + (my - ay) * ease;
+      nz = az + (mz - az) * ease;
+    }
 
     camPos.set(nx, ny, nz);
-    clampPos();
 
     if (dragging) return;
 
-    const lookX = nx + sin(p * 0.95 + 0.35) * 8;
-    const lookY = ny + sin(p * 0.55 + 0.25) * 4;
-    const lookZ = nz + cos(p * 0.72 + 0.4) * 6;
+    let lookX;
+    let lookY;
+    let lookZ;
+    if (u >= artEnd + 0.08) {
+      const lk = min(1, (u - artEnd - 0.08) / (1 - artEnd - 0.08));
+      lookX = nx * (1 - lk) + 0 * lk;
+      lookY = ny * (1 - lk) + (MACHINE_STAGE_Y + 8) * lk;
+      lookZ = nz * (1 - lk) + (MACHINE_STAGE_Z + 8) * lk;
+    } else {
+      lookX = nx + sin(p * 0.95 + 0.35) * 10;
+      lookY = ny + sin(p * 0.55 + 0.25) * 4;
+      lookZ = nz + cos(p * 0.72 + 0.4) * 8;
+    }
 
     viewRot.x = atan2(lookX - nx, lookZ - nz);
     viewRot.y = atan2(lookY - ny, sqrt(pow(lookX - nx, 2) + pow(lookZ - nz, 2)));
@@ -1511,15 +1546,63 @@ const VolRoomGPU = () => {
     return travelOn;
   };
 
+  const buildMachineWhiteStage = () => {
+    if (machineStage) scene.remove(machineStage);
+    machineStage = new THREE.Group();
+    machineStage.position.set(0, MACHINE_STAGE_Y, MACHINE_STAGE_Z);
+
+    const whiteMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      depthWrite: true,
+    });
+    const sw = 44;
+    const sh = 32;
+    const sd = 28;
+
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(sw, sd), whiteMat);
+    floor.rotation.x = -Math.PI / 2;
+    machineStage.add(floor);
+
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), whiteMat);
+    back.position.set(0, sh * 0.5, -sd * 0.5);
+    machineStage.add(back);
+
+    const left = new THREE.Mesh(new THREE.PlaneGeometry(sd, sh), whiteMat);
+    left.rotation.y = Math.PI / 2;
+    left.position.set(-sw * 0.5, sh * 0.5, 0);
+    machineStage.add(left);
+
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(sd, sh), whiteMat);
+    rightWall.rotation.y = -Math.PI / 2;
+    rightWall.position.set(sw * 0.5, sh * 0.5, 0);
+    machineStage.add(rightWall);
+
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(sw, sd), whiteMat);
+    ceiling.rotation.x = Math.PI / 2;
+    ceiling.position.set(0, sh, 0);
+    machineStage.add(ceiling);
+
+    // White approach corridor linking art layer to machine chamber
+    const corridor = new THREE.Mesh(new THREE.PlaneGeometry(sw * 0.7, 90), whiteMat);
+    corridor.rotation.x = -Math.PI / 2;
+    corridor.position.set(0, 0.02, sd * 0.5 + 45);
+    machineStage.add(corridor);
+
+    scene.add(machineStage);
+    return machineStage;
+  };
+
   const syncCodeArtSurfaces = () => {
     if (codeImgTex) codeImgTex.dispose();
     codeImgTex = rasterizeCodeArtLayer(2048);
     if (sliceMat) sliceMat.uniforms.codeImg.value = codeImgTex;
 
-    codeWallMeshes.forEach((m) => scene.remove(m));
+    codeWallMeshes.forEach((m) => (artLayerGroup || scene).remove(m));
     codeWallMeshes.length = 0;
     if (!bx) return;
 
+    const parent = artLayerGroup || scene;
     const mat = new THREE.MeshBasicMaterial({
       map: codeImgTex,
       side: THREE.DoubleSide,
@@ -1537,7 +1620,8 @@ const VolRoomGPU = () => {
       const mesh = new THREE.Mesh(plane, mat);
       mesh.position.set(x, y, z);
       mesh.rotation.y = ry;
-      scene.add(mesh);
+      mesh.renderOrder = 2;
+      parent.add(mesh);
       codeWallMeshes.push(mesh);
     });
   };
@@ -1553,8 +1637,12 @@ const VolRoomGPU = () => {
     renderer.domElement.focus({ preventScroll: true });
 
     scene = new THREE.Scene();
+    buildMachineWhiteStage();
+    artLayerGroup = new THREE.Group();
+    artLayerGroup.position.set(0, 0, ART_LAYER_Z);
+    scene.add(artLayerGroup);
     denseMachine = GhostDenseMachine();
-    denseMachine.mount(scene);
+    denseMachine.mount(machineStage);
     camera = new THREE.PerspectiveCamera(72, 1, 0.01, ROOM_SIZE * 2.5);
     camera.position.set(0, 0, 0);
 
@@ -1646,10 +1734,11 @@ const VolRoomGPU = () => {
     cubeMat.uniforms.dims.value.set(width, height, depth);
     cubeMat.uniforms.boxSize.value.set(bx, by, bz);
 
-    if (innerVol) scene.remove(innerVol);
+    if (innerVol) artLayerGroup.remove(innerVol);
 
     innerVol = new THREE.Mesh(new THREE.BoxGeometry(bx * 2, by * 2, bz * 2), cubeMat);
-    scene.add(innerVol);
+    innerVol.renderOrder = 1;
+    artLayerGroup.add(innerVol);
     syncCodeArtSurfaces();
 
     if (!camPosReady) {
@@ -1718,7 +1807,8 @@ const VolRoomGPU = () => {
     innerVol.material.uniforms.vol.value = volTex[volCur];
 
     denseMachine.update(time);
-    applyManualMove(time);
+    const manual = applyManualMove(time);
+    if (!manual) updateTravel(time, viewRot.drag);
 
     camera.rotation.order = 'YXZ';
     camera.rotation.y = viewRot.x;
@@ -1771,6 +1861,7 @@ const rebirth = (t) => {
   surrenderAt = 0;
   lifebar.style.width = '0%';
   snd.setMasterGain(1);
+  gpu.setTravel(true);
 };
 
 const updateLife = (t) => {
@@ -1814,6 +1905,7 @@ document.addEventListener('keydown', async (e) => {
     document.getElementById('hint').style.opacity = showHint ? '1' : '0';
   }
   if (k === 'm') await snd.toggle();
+  if (k === 't') gpu.toggleTravel();
   if (k === 'r') { await snd.ensureOn(); await rec.toggle(); }
   if (k === 'n') rebirth(performance.now());
   if (k === 'a') options.auto = !options.auto;
