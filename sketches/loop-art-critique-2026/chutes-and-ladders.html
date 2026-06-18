@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chutes (and Ladders) · Loop Art Critique · Cohort #21 · Mark Walhimer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:    #111010;
+    --paper:  #f5f0e8;
+    --rule:   #c8b89a;
+    --accent: #8b2020;
+    --muted:  #7a7060;
+    --pale:   #ece6d8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--paper); color: var(--ink); }
+
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    background: var(--paper);
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 32px 120px;
+  }
+
+  header {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding: 40px 0 28px;
+    margin-bottom: 56px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: end;
+  }
+
+  .doc-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: -.01em;
+    color: var(--ink);
+  }
+
+  h1 em { font-style: italic; font-weight: 300; color: var(--accent); }
+
+  .header-meta {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    line-height: 1.9;
+    letter-spacing: .1em;
+    color: var(--muted);
+  }
+
+  .header-meta a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--rule); }
+
+  .artist-statement {
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    padding: 36px 0 32px;
+    margin-bottom: 48px;
+  }
+
+  .as-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+
+  .artist-statement p { font-size: 20px; font-weight: 300; line-height: 1.65; color: var(--ink); }
+
+  .intro {
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #2a2620;
+    border-left: 3px solid var(--accent);
+    padding-left: 24px;
+    margin-bottom: 56px;
+    font-style: italic;
+  }
+
+  /* ── LIVE WORK ── */
+  .live-work { margin-bottom: 64px; }
+
+  .live-work-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .live-work-label a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--rule);
+    font-size: 9px;
+    letter-spacing: .12em;
+  }
+
+  .live-work-label a:hover { color: var(--ink); }
+
+  .live-work iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 1px solid var(--rule);
+    background: #0f0f12;
+    display: block;
+  }
+
+  .live-work-caption {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: .12em;
+    color: var(--muted);
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .live-work-caption a { color: var(--muted); text-decoration: none; border-bottom: 1px dotted var(--rule); }
+  .live-work-caption a:hover { color: var(--ink); }
+
+  .live-work-desc {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-top: 14px;
+    letter-spacing: .01em;
+  }
+
+  /* ── SECTION ── */
+  section { margin-bottom: 72px; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 12px;
+  }
+
+  .section-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: .12em;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -.01em;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+
+  h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    font-style: italic;
+    margin: 32px 0 10px;
+    color: var(--ink);
+  }
+
+  p { margin-bottom: 18px; font-weight: 300; }
+
+  /* ── CHUTES / LADDERS GRID ── */
+  .split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    margin: 28px 0;
+  }
+
+  .split-col { background: var(--paper); padding: 22px 24px; }
+  .split-col.alt { background: var(--pale); }
+
+  .split-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .split-col ul { list-style: none; font-size: 15px; line-height: 1.7; color: #2a2620; }
+  .split-col li { margin-bottom: 10px; padding-left: 14px; border-left: 2px solid var(--rule); }
+
+  /* ── DIFF LIST ── */
+  .diff-list { margin: 24px 0 32px; border: 1px solid var(--rule); }
+
+  .diff-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 14px;
+    align-items: center;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--pale);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+
+  .diff-row:last-child { border-bottom: none; }
+  .diff-before { color: var(--muted); text-align: right; }
+  .diff-arrow { color: var(--accent); text-align: center; font-size: 11px; }
+  .diff-after { color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .diff-row { grid-template-columns: 1fr; text-align: left; gap: 2px; }
+    .diff-before { text-align: left; }
+    .diff-arrow { display: none; }
+  }
+
+  /* ── PULL QUOTE ── */
+  .pull {
+    font-size: 26px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--ink);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 0;
+    margin: 40px 0;
+    text-align: center;
+  }
+
+  .divider { width: 60px; height: 1px; background: var(--rule); margin: 48px auto; }
+
+  footer {
+    border-top: 3px solid var(--ink);
+    padding-top: 28px;
+    margin-top: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: var(--muted);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 0 20px 80px; }
+    header { grid-template-columns: 1fr; }
+    .header-meta { text-align: left; }
+    .split-grid { grid-template-columns: 1fr; }
+    .live-work-caption { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="doc-label">Surrender Machines &nbsp;·&nbsp; Loop Art Critique &nbsp;·&nbsp; Cohort #21</div>
+    <h1>Chutes <em>(and Ladders)</em></h1>
+  </div>
+  <div class="header-meta">
+    Mark Walhimer<br>
+    <a href="https://mark-walhimer.com">mark-walhimer.com</a><br>
+    June 17, 2026<br><br>
+    Loop Art Critique<br>
+    <a href="https://x.com/LoopArtCritique">@LoopArtCritique</a><br>
+    Cohort #21
+  </div>
+</header>
+
+<div class="artist-statement">
+  <div class="as-label">Working Note</div>
+  <p>Chutes and Ladders runs on one piece of board-game logic: land on a chute and you slide down, bypassing whatever's between you and where you're headed; land on a ladder and you climb up and over it instead. Most of the time the smarter move is the chute — bypass the issue rather than grind up and over it. This piece is built out of exactly that choice, made over and over, mostly by the code itself rather than by a visitor walking through anything.</p>
+</div>
+
+<p class="intro">
+  Not a metaphor sitting on top of the work — the actual decision logic running inside it. Every cycle, something gets bypassed and something gets climbed.
+</p>
+
+<!-- ── LIVE WORK ── -->
+<div class="live-work">
+  <div class="live-work-label">
+    <span>Live Work</span>
+    <a href="https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html" target="_blank">Open full screen ↗</a>
+  </div>
+  <iframe
+    src="https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
+    title="Chutes — living organism, seed 77823"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+  <div class="live-work-caption">
+    <span>Chutes — seed 77823 &nbsp;·&nbsp; Arrows move, drag looks, T toggles autopilot, N forces rebirth</span>
+    <a href="https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html" target="_blank">mark-walhimer.com/sketches/loop-snippets/…</a>
+  </div>
+  <p class="live-work-desc">A seed-driven Three.js volumetric piece where invisible canvas data, not a literal palette, drives geometry: red offsets raster position, green selects spectrum color, blue pushes depth. Raymarched through a GPU voxel atlas, it wanders, listens through Web Audio, runs approximately eight minutes, dies, then resurrects identically from the same fixed seed.</p>
+</div>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="how">
+  <div class="section-header">
+    <span class="section-number">00 —</span>
+    <h2>How It Works</h2>
+  </div>
+
+  <p>Strip the title away and the technique underneath is a hand-rolled G-buffer — the same trick deferred renderers use in games, where a layer of invisible data sits behind the visible color and a later pass reads it back to decide what actually gets drawn. A 2D canvas paints raster offsets into red, spectrum selection into green, and depth into blue. A fragment shader reads those three channels back and raymarches them into a volumetric field. Nothing about the color you see is the color the system is actually thinking in.</p>
+
+  <p>Seed 77823 governs all of it deterministically: an eight-minute life, a 4.2-second fade once the lifebar fills, then a rebirth that reseeds the same RNG and regenerates the identical field. It does not evolve from cycle to cycle and it does not stay dead — it bypasses both of those harder outcomes for the same clean reset, every time.</p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="diff">
+  <div class="section-header">
+    <span class="section-number">01 —</span>
+    <h2>From Draft to Deployed</h2>
+  </div>
+
+  <p>The version running live above isn't the same file as the earlier draft. Each change below is its own small chute-or-ladder decision, made directly in the code rather than argued about in an essay:</p>
+
+  <div class="diff-list">
+    <div class="diff-row">
+      <span class="diff-before">Gear-machine system bundled into the same file (WireBuilder, drawMachine, density sliders)</span>
+      <span class="diff-arrow">→</span>
+      <span class="diff-after">Removed entirely — chute, not a climb to keep maintaining two systems at once</span>
+    </div>
+    <div class="diff-row">
+      <span class="diff-before">Autopilot camera written but never wired into the render loop</span>
+      <span class="diff-arrow">→</span>
+      <span class="diff-after">Activated, on by default, rearmed on every rebirth</span>
+    </div>
+    <div class="diff-row">
+      <span class="diff-before">Fixed establishing shot, composed by hand</span>
+      <span class="diff-arrow">→</span>
+      <span class="diff-after">Room-relative start point — the field finds its own frame</span>
+    </div>
+    <div class="diff-row">
+      <span class="diff-before">No attribution in source</span>
+      <span class="diff-arrow">→</span>
+      <span class="diff-after">"After Asendorf" credited in the header comment</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────────────── -->
+<section id="chutes-ladders">
+  <div class="section-header">
+    <span class="section-number">02 —</span>
+    <h2>Where the Chutes Are</h2>
+  </div>
+
+  <p>The system defaults to bypass. A person sitting at the keyboard is the only thing in this piece that ever climbs.</p>
+
+  <div class="split-grid">
+    <div class="split-col">
+      <div class="split-label">Chutes — what the system bypasses</div>
+      <ul>
+        <li>Rebirth doesn't repair or evolve the field — it slides straight back to t=0 on the same seed.</li>
+        <li>Cutting the gear machine instead of continuing to maintain two systems in one file.</li>
+        <li>Autopilot on by default — the camera bypasses the effort of finding a good angle.</li>
+      </ul>
+    </div>
+    <div class="split-col alt">
+      <div class="split-label">Ladders — what a visitor climbs</div>
+      <ul>
+        <li>Arrow keys override the bypass and move the camera by hand.</li>
+        <li>"T" turns the autopilot off — choosing to take the harder route back.</li>
+        <li>"N" forces rebirth early, climbing in to decide when the bypass happens.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="pull">
+  Most of the time, the smart move is the chute.<br>
+  <span style="font-size:18px;color:var(--muted);">The code agrees. It built rebirth as one.</span>
+</div>
+
+<div class="divider"></div>
+
+<footer>
+  <span>Chutes (and Ladders) · Surrender Machines · Loop Art Critique</span>
+  <span>Cohort #21 · Mark Walhimer · June 17, 2026</span>
+</footer>
+
+</body>
+</html>
