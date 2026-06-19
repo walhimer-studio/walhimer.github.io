@@ -299,10 +299,10 @@
     {
       "id": "urn:walhimer:work:surrender-machine-77823",
       "dublin_core": {
-        "title": "Chutes — living · dense machine · code art layer · seed 77823",
+        "title": "Surrender Machine 77823",
         "creator": "Mark Walhimer",
-        "date": "2026-06-19",
-        "description": "Loop Art Critique 2026 (curated by Doreen Rios, Cohort #21). Installation entry for seed 77823: traversable Three.js volume with invisible RGB XYZ map, Ghost dense wireframe machine, code mural layer, RGB soundscape, and surrender lifeline rebirth.",
+        "date": "2026",
+        "description": "Surrender Machine 77823, Mark Walhimer, 2026. Loop Art Critique, Institute of Contemporary Art, Miami, Cohort #21 residency, curated by Doreen Rios. Traversable Three.js volume: invisible RGB XYZ map, Ghost dense wireframe machine, code mural layer, RGB soundscape, surrender lifeline rebirth.",
         "identifier": "urn:walhimer:work:surrender-machine-77823",
         "type": "InteractiveResource",
         "format": "text/html",
@@ -314,7 +314,7 @@
         "@context": "https://linked.art/ns/v1/linked-art.json",
         "id": "https://mark-walhimer.com/#work/surrender-machine-77823",
         "type": "HumanMadeObject",
-        "_label": "Chutes — living · dense machine · code art layer · seed 77823",
+        "_label": "Surrender Machine 77823",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -342,11 +342,15 @@
           "sketch"
         ],
         "event": {
-          "name": "Loop Art Critique 2026",
+          "name": "Loop Art Critique",
+          "year": "2026",
+          "venue": "Institute of Contemporary Art, Miami",
           "curator": "Doreen Rios",
           "cohort": "21",
+          "residency": "Cohort #21 residency",
           "curator_page": "sketches/loop-art-critique-2026/chutes-and-ladders.html",
-          "opens": "2026-07-03"
+          "opens": "2026-07-03",
+          "credit_line": "Surrender Machine 77823, Mark Walhimer, 2026 — Loop Art Critique, Institute of Contemporary Art, Miami, Cohort #21 residency, curated by Doreen Rios"
         }
       },
       "artifacts": {
@@ -9291,22 +9295,22 @@
     {
       "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy-code",
       "dublin_core": {
-        "title": "Chutes — living · dense machine · code art layer",
+        "title": "Surrender Machine 77823",
         "creator": "Mark Walhimer",
-        "date": "2026-06-19",
-        "description": "Loop Art Critique 2026 (curated by Doreen Rios). Living Chutes volume with Ghost dense 77823 wireframe machine, code art mural layer, invisible RGB XYZ motion map, GPU volume, RGB soundscape, and seed 77823 lifeline rebirth.",
+        "date": "2026",
+        "description": "Surrender Machine 77823 (Chutes — living · dense machine · code art layer). Mark Walhimer, 2026. Loop Art Critique, ICA Miami, Cohort #21 residency, curated by Doreen Rios.",
         "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy-code",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
+        "relation": "urn:walhimer:work:surrender-machine-77823",
         "catalog_number": "WS-000222"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
         "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d-living-copy-code",
         "type": "HumanMadeObject",
-        "_label": "Chutes — living · dense machine · code art layer",
+        "_label": "Surrender Machine 77823",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -9324,10 +9328,14 @@
           "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
         },
         "event": {
-          "name": "Loop Art Critique 2026",
+          "name": "Loop Art Critique",
+          "year": "2026",
+          "venue": "Institute of Contemporary Art, Miami",
           "curator": "Doreen Rios",
           "cohort": "21",
-          "curator_page": "sketches/loop-art-critique-2026/chutes-and-ladders.html"
+          "residency": "Cohort #21 residency",
+          "curator_page": "sketches/loop-art-critique-2026/chutes-and-ladders.html",
+          "credit_line": "Surrender Machine 77823, Mark Walhimer, 2026 — Loop Art Critique, Institute of Contemporary Art, Miami, Cohort #21 residency, curated by Doreen Rios"
         }
       },
       "artifacts": {
