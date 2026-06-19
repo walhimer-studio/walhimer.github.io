@@ -27,7 +27,6 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/css/cathedral-shell.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --page-bg: #ffffff;
@@ -57,7 +56,7 @@
       line-height: 1.0;
       letter-spacing: -0.025em;
       margin-bottom: 28px;
-      font-family: Georgia, 'Times New Roman', serif;
+      font-family: var(--serif);
     }
     .sw-home-header h2 em { font-style: italic; color: var(--accent); }
     .sw-home-header .header-body { max-width: 680px; }
@@ -75,8 +74,9 @@
       border-bottom: 1px solid var(--rule);
     }
     .grid-label {
-      font-size: 10px;
-      letter-spacing: 0.22em;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       color: var(--dim);
       margin-bottom: 32px;
@@ -175,7 +175,7 @@
       font-weight: 300;
       line-height: 1.2;
       color: var(--off);
-      font-family: Georgia, 'Times New Roman', serif;
+      font-family: var(--serif);
     }
     .card-title em { font-style: italic; }
     .card-desc {
@@ -219,18 +219,18 @@
 
     header { max-width: 1100px; margin: 0 auto; padding: 56px 48px 40px; border-bottom: 1px solid var(--rule); }
     .kicker { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); margin-bottom: 18px; }
-    h1 { font-family: Georgia, serif; font-size: clamp(40px,6vw,72px); font-weight: 300; line-height: 1; letter-spacing: -.02em; margin-bottom: 20px; }
+    h1 { font-family: var(--serif); font-size: clamp(40px,6vw,72px); font-weight: 300; line-height: 1; letter-spacing: -.02em; margin-bottom: 20px; }
     h1 em { font-style: italic; color: var(--accent); }
     .lede { font-size: 13px; color: rgba(58,56,52,.55); line-height: 1.8; max-width: 560px; }
 
     .controls { max-width: 1100px; margin: 0 auto; padding: 18px 48px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ctrl-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-right: 4px; }
-    .ctrl-btn { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: transparent; border: 1px solid var(--border); color: var(--dim); padding: 5px 13px; cursor: pointer; transition: all .15s; }
+    .ctrl-btn { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: transparent; border: 1px solid var(--border); color: var(--dim); padding: 5px 13px; cursor: pointer; transition: all .15s; }
     .ctrl-btn:hover { border-color: var(--dim); color: var(--ink); }
     .ctrl-btn.active { border-color: var(--accent); color: var(--accent); }
     .ctrl-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ctrl-group + .ctrl-group { padding-left: 16px; margin-left: 8px; border-left: 1px solid var(--rule); }
-    #search { font-family: 'IBM Plex Mono', monospace; font-size: 11px; background: var(--page-bg); border: 1px solid var(--border); color: var(--ink); padding: 5px 12px; outline: none; width: 200px; transition: border-color .15s; margin-left: auto; }
+    #search { font-family: var(--mono); font-size: 11px; background: var(--page-bg); border: 1px solid var(--border); color: var(--ink); padding: 5px 12px; outline: none; width: 200px; transition: border-color .15s; margin-left: auto; }
     #search::placeholder { color: var(--dim); }
     #search:focus { border-color: var(--accent); }
 

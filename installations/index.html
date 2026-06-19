@@ -25,7 +25,6 @@
   <link rel="stylesheet" href="/css/cathedral-shell.css" />
   <title>Selected Works — Mark Walhimer</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --page-bg: #ffffff;
@@ -49,7 +48,7 @@
       border-bottom: 1px solid var(--rule);
     }
     .kicker {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       font-weight: 300;
       letter-spacing: 0.22em;
@@ -83,7 +82,7 @@
     }
     .meta-row:first-child { border-top: 1px solid var(--rule); }
     .meta-key {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       font-weight: 300;
       letter-spacing: 0.14em;
@@ -91,7 +90,7 @@
       color: var(--dim);
     }
     .meta-val {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       font-weight: 300;
       letter-spacing: 0.06em;
@@ -106,7 +105,7 @@
       padding: 72px 48px;
     }
     .grid-label {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -171,7 +170,7 @@
       position: absolute;
       top: 14px;
       left: 16px;
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       font-weight: 300;
       letter-spacing: 0.14em;
@@ -203,7 +202,7 @@
       min-height: 165px;
     }
     .card-category {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 9px;
       font-weight: 300;
       letter-spacing: 0.18em;
@@ -237,7 +236,7 @@
       margin-top: 10px;
     }
     .tag {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 9px;
       font-weight: 300;
       letter-spacing: 0.1em;
@@ -260,7 +259,7 @@
     }
     @media (max-width: 700px) { .artist-section { grid-template-columns: 1fr; gap: 32px; } }
     .artist-left .label {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -269,7 +268,7 @@
     }
     .artist-left .name { font-size: 28px; font-weight: 300; line-height: 1.2; margin-bottom: 5px; }
     .artist-left .role {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       color: var(--dim);
       letter-spacing: 0.1em;
@@ -277,7 +276,7 @@
     }
     .social-links { display: flex; flex-direction: column; gap: 8px; }
     .social-links a {
-      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-family: var(--mono);
       font-size: 10px;
       letter-spacing: 0.12em;
       color: var(--dim);
@@ -300,7 +299,7 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-    footer span { font-family: 'SF Mono', 'Monaco', 'Consolas', monospace; font-size: 10px; color: var(--dim); letter-spacing: 0.08em; }
+    footer span { font-family: var(--mono); font-size: 10px; color: var(--dim); letter-spacing: 0.08em; }
   </style>
 </head>
 <body class="installations-page">

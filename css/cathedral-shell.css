@@ -1,78 +1,117 @@
-/* Cathedral shell — shared tokens, nav, and base layout (mark-walhimer.com) */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+/* Site shell — typography and nav aligned with mark-walhimer.com homepage */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=DM+Mono:wght@300;400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
 
 :root {
-  --page-bg: #ffffff;
-  --text: #3a3834;
-  --text-soft: #6b6760;
-  --dim: #6b6760;
-  --rule: rgba(58, 56, 52, 0.12);
+  --white: #ffffff;
+  --off: #f8f7f5;
+  --pale: #f0ede8;
+  --rule: #e0dbd4;
+  --ink: #141210;
+  --mid: #6a6460;
+  --muted: #9a9590;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
   --accent: #b8976a;
-  --border: rgba(58, 56, 52, 0.18);
-  --paper: #ffffff;
-  --ink: #3a3834;
-  --ink-soft: #6b6760;
-  --gold: #b8976a;
+
+  /* legacy aliases used on inner pages */
+  --page-bg: var(--white);
+  --paper: var(--white);
+  --text: var(--ink);
+  --text-soft: var(--mid);
+  --ink-soft: var(--mid);
+  --dim: var(--muted);
+  --line: var(--rule);
+  --border: var(--rule);
+  --gold: var(--accent);
   --gold-light: #d4c4a8;
-  --line: rgba(58, 56, 52, 0.12);
+  --surface: var(--off);
 }
 
 html { scroll-behavior: smooth; }
 
-body.shell-page {
+body.shell-page,
+body.catalog-page,
+body.installations-page {
   margin: 0;
-  background: var(--page-bg);
+  background: var(--white);
   color: var(--ink);
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-weight: 300;
+  font-family: var(--sans);
+  font-weight: 400;
   font-size: 15px;
-  line-height: 1.65;
+  line-height: 1.75;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
-
+/* NAV — matches homepage */
 nav {
-  display: flex;
-  align-items: stretch;
-  padding: 0 40px;
-  border-bottom: 1px solid var(--line);
-  background: var(--page-bg);
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 200;
-}
-
-.nav-logo {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink);
-  text-decoration: none;
-  padding: 22px 32px 22px 0;
-  margin-right: 8px;
-  border-right: 1px solid var(--line);
-}
-
-.nav-links { display: flex; align-items: stretch; gap: 0; }
-
-.nav-links a {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-  text-decoration: none;
-  padding: 22px 20px;
-  transition: color 0.15s;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 48px;
+  height: 56px;
   display: flex;
   align-items: center;
 }
 
+.nav-logo,
+.nav-name {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  flex-shrink: 0;
+  border-right: none;
+  margin-right: 0;
+  padding: 0;
+  text-transform: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  margin-left: auto;
+  align-items: center;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
 .nav-links a:hover { color: var(--ink); }
-.nav-links a.active { color: var(--accent); border-bottom: 1px solid var(--accent); margin-bottom: -1px; }
+
+.nav-links a.active {
+  color: var(--accent);
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 1px;
+}
+
+.nav-acquire {
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1px;
+}
 
 .nav-toggle {
   display: none;
@@ -80,8 +119,8 @@ nav {
   justify-content: center;
   margin-left: auto;
   padding: 10px 12px;
-  background: var(--page-bg);
-  border: 1px solid var(--line);
+  background: var(--white);
+  border: 1px solid var(--rule);
   color: var(--ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -90,44 +129,78 @@ nav {
 .nav-toggle svg { width: 20px; height: 14px; display: block; }
 .nav-toggle .line { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; fill: none; }
 
-@media (max-width: 800px) {
-  nav { flex-wrap: wrap; align-items: center; padding: 0 16px; }
-  .nav-toggle { display: flex; }
-  .nav-logo {
-    padding: 18px 16px 18px 0;
-    margin-right: 0;
-    border-right: none;
-    flex: 1;
-    min-width: 0;
+@media (max-width: 900px) {
+  nav {
+    padding: 0 24px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 56px;
   }
+  .nav-toggle { display: flex; }
   .nav-links {
     display: none;
     flex-basis: 100%;
     flex-direction: column;
     align-items: stretch;
-    border-top: 1px solid var(--line);
+    gap: 0;
+    margin-left: 0;
+    border-top: 1px solid var(--rule);
+    padding: 8px 0 12px;
   }
   nav.nav-open .nav-links { display: flex; }
   .nav-links a {
-    padding: 16px 0;
-    border-bottom: 1px solid var(--line);
-    border-left: 3px solid transparent;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--pale);
   }
+  .nav-links a:last-child { border-bottom: none; }
   .nav-links a.active {
-    border-bottom: 1px solid var(--line);
-    border-left-color: var(--accent);
-    margin-bottom: 0;
+    border-left: none;
+    border-bottom: 1px solid var(--pale);
+    color: var(--accent);
   }
 }
 
+/* Shared inner-page typography */
+.kicker {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.shell-page h1,
+.catalog-page h1,
+.installations-page h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.shell-page h2,
+.catalog-page h2,
+.installations-page h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.path,
+.shell-path {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .shell-footer {
-  border-top: 1px solid var(--line);
-  padding: 22px 40px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: var(--dim);
-  letter-spacing: 0.08em;
-  background: var(--page-bg);
+  border-top: 1px solid var(--rule);
+  padding: 22px 48px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: var(--white);
 }
 
 .shell-footer-fixed {
@@ -135,24 +208,4 @@ nav {
   bottom: 0;
   left: 0;
   right: 0;
-}
-
-/* Catalog / data-dense pages: monospace body, same nav */
-body.catalog-page {
-  margin: 0;
-  background: var(--page-bg);
-  color: var(--ink);
-  font-family: 'IBM Plex Mono', monospace;
-  font-weight: 300;
-  min-height: 100vh;
-}
-
-/* Installations index — serif body, same nav */
-body.installations-page {
-  margin: 0;
-  background: var(--page-bg);
-  color: var(--ink);
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 300;
-  min-height: 100vh;
 }
