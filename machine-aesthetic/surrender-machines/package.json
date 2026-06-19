@@ -1,0 +1,12 @@
+{
+  "name": "surrender-machines-spatial",
+  "version": "1.0.0",
+  "description": "Surrender Machines visitor-path spatial GLB for Loop / OnLand",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "three": "^0.160.0"
+  }
+}

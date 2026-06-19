@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>markwalhimer.com — Studio Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/dashboard.css"/>
+</head>
+<body>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>markwalhimer.com</h1>
+    <p>Studio dashboard · POC</p>
+  </div>
+  <div class="sidebar-section">Daily</div>
+  <div class="sidebar-item active" data-page="today" onclick="showPage('today',this)"><span class="icon">◈</span> Today</div>
+  <div class="sidebar-item" data-page="social" onclick="showPage('social',this)"><span class="icon">◎</span> Social queue</div>
+  <div class="sidebar-section">Catalog</div>
+  <div class="sidebar-item" data-page="approvals" onclick="showPage('approvals',this)"><span class="icon">◫</span> Approval queue</div>
+  <div class="sidebar-item" data-page="catalog" onclick="showPage('catalog',this)"><span class="icon">◧</span> Catalog</div>
+  <div class="sidebar-item" data-page="minting" onclick="showPage('minting',this)"><span class="icon">◨</span> Minting log</div>
+  <div class="sidebar-section">Intelligence</div>
+  <div class="sidebar-item" data-page="analytics" onclick="showPage('analytics',this)"><span class="icon">◱</span> Analytics</div>
+  <div class="sidebar-item" data-page="newsletter" onclick="showPage('newsletter',this)"><span class="icon">◰</span> Newsletter</div>
+  <div class="sidebar-section">Schedule</div>
+  <div class="sidebar-item" data-page="competitions" onclick="showPage('competitions',this)"><span class="icon">◲</span> Competitions</div>
+  <div class="sidebar-status">
+    <div class="pulse-row">
+      <div class="pulse"></div>
+      <span id="sidebar-status-label">Loading…</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main" id="main-pages">
+  <div id="page-today" class="page active"></div>
+  <div id="page-social" class="page"></div>
+  <div id="page-approvals" class="page"></div>
+  <div id="page-catalog" class="page"></div>
+  <div id="page-minting" class="page"></div>
+  <div id="page-analytics" class="page"></div>
+  <div id="page-newsletter" class="page"></div>
+  <div id="page-competitions" class="page"></div>
+</main>
+
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>

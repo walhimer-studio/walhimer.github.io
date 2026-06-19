@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>64×64 — Gysin constraint study</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0b0c; }
+    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 2;
+      font: 11px/1.45 ui-monospace, monospace;
+      color: rgba(255, 176, 0, 0.35);
+      pointer-events: none;
+      max-width: 340px;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">
+    Gysin constraint study · fixed 64×64 · 1px cells · no upscale blur<br>
+    click reseed · space pause · H hide · 1 mono · 2 red/green
+  </div>
+  <canvas id="c"></canvas>
+  <script>
+/**
+ * Study after Andreas Gysin — display-native constraint (64 Pixels / LCD lineage).
+ * Fixed grid, nearest-neighbor only, limited palette, recursive tile permutation.
+ * Original code — formal gesture, not a port.
+ */
+const { floor, min, max, sin, random } = Math;
+
+const GRID = 64;
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d', { alpha: false });
+
+const PALETTES = {
+  mono: [
+    [11, 11, 12],
+    [255, 176, 0],
+    [255, 210, 80],
+    [90, 62, 0],
+  ],
+  rg: [
+    [11, 11, 12],
+    [220, 48, 42],
+    [62, 210, 74],
+    [140, 140, 140],
+  ],
+};
+
+let paletteKey = 'mono';
+let seed = (Date.now() & 0xffffff) | 1;
+let showHint = true;
+let paused = false;
+let scale = 1;
+let ox = 0;
+let oy = 0;
+
+class Rand {
+  constructor(s) {
+    this.s = (s | 0) + 1;
+  }
+  next() {
+    const x = sin(this.s++ * 127.1) * 43758.5453;
+    return x - floor(x);
+  }
+  int(a, b) { return floor(a + this.next() * (b - a + 1)); }
+  pick(arr) { return arr[this.int(0, arr.length - 1)]; }
+}
+
+const off = document.createElement('canvas');
+off.width = GRID;
+off.height = GRID;
+const octx = off.getContext('2d', { alpha: false });
+const img = octx.createImageData(GRID, GRID);
+const px = img.data;
+
+const setPx = (x, y, idx) => {
+  if (x < 0 || y < 0 || x >= GRID || y >= GRID) return;
+  const i = (y * GRID + x) * 4;
+  const pal = PALETTES[paletteKey];
+  const c = pal[idx % pal.length];
+  px[i] = c[0];
+  px[i + 1] = c[1];
+  px[i + 2] = c[2];
+  px[i + 3] = 255;
+};
+
+const fillRect = (x, y, w, h, idx) => {
+  for (let j = 0; j < h; j++) {
+    for (let i = 0; i < w; i++) setPx(x + i, y + j, idx);
+  }
+};
+
+const drawHLine = (x0, x1, y, idx) => {
+  const a = min(x0, x1);
+  const b = max(x0, x1);
+  for (let x = a; x <= b; x++) setPx(x, y, idx);
+};
+
+const drawVLine = (x, y0, y1, idx) => {
+  const a = min(y0, y1);
+  const b = max(y0, y1);
+  for (let y = a; y <= b; y++) setPx(x, y, idx);
+};
+
+const RULES = [
+  // solid + corner tick
+  (rng, x, y, w, h, t) => {
+    fillRect(x, y, w, h, 0);
+    if (w > 2 && h > 2) {
+      setPx(x + 1, y + 1, 1);
+      setPx(x + w - 2, y + h - 2, 2);
+    }
+  },
+  // horizontal scan
+  (rng, x, y, w, h, t) => {
+    fillRect(x, y, w, h, 0);
+    const step = 1 + rng.int(1, 3);
+    for (let row = 0; row < h; row += step) {
+      const phase = floor(t * 0.04 + row * 0.7) & 1;
+      if (phase) drawHLine(x, x + w - 1, y + row, 1);
+    }
+  },
+  // vertical bars
+  (rng, x, y, w, h, t) => {
+    fillRect(x, y, w, h, 0);
+    const step = 1 + rng.int(1, 2);
+    for (let col = 0; col < w; col += step) {
+      const on = (floor(t * 0.03) + col) % 3 !== 0;
+      if (on) drawVLine(x + col, y, y + h - 1, rng.int(1, 2));
+    }
+  },
+  // checker
+  (rng, x, y, w, h, t) => {
+    for (let j = 0; j < h; j++) {
+      for (let i = 0; i < w; i++) {
+        const v = ((i + j + floor(t * 0.02)) & 1) ? 1 : 0;
+        setPx(x + i, y + j, v);
+      }
+    }
+  },
+  // frame
+  (rng, x, y, w, h) => {
+    fillRect(x, y, w, h, 0);
+    if (w < 2 || h < 2) return;
+    drawHLine(x, x + w - 1, y, 2);
+    drawHLine(x, x + w - 1, y + h - 1, 2);
+    drawVLine(x, y, y + h - 1, 2);
+    drawVLine(x + w - 1, y, y + h - 1, 2);
+  },
+  // crosshair
+  (rng, x, y, w, h) => {
+    fillRect(x, y, w, h, 0);
+    const cx = x + floor(w / 2);
+    const cy = y + floor(h / 2);
+    drawHLine(x, x + w - 1, cy, 1);
+    drawVLine(cx, y, y + h - 1, 1);
+  },
+  // drift dust
+  (rng, x, y, w, h, t) => {
+    fillRect(x, y, w, h, 0);
+    const n = max(1, floor((w * h) * 0.08));
+    for (let i = 0; i < n; i++) {
+      const px = x + rng.int(0, w - 1);
+      const py = y + rng.int(0, h - 1);
+      const flick = sin(t * 0.05 + px * 1.7 + py * 2.3) > 0.2;
+      if (flick) setPx(px, py, rng.int(1, 3));
+    }
+  },
+  // glyph block (six-letters-ish)
+  (rng, x, y, w, h, t) => {
+    fillRect(x, y, w, h, 0);
+    const glyphs = ['#', '+', '×', ':', '=', '%'];
+    const g = glyphs[rng.int(0, glyphs.length - 1)];
+    const map = {
+      '#': [[1,1,1],[1,0,1],[1,1,1],[0,1,0],[1,1,1]],
+      '+': [[0,1,0],[1,1,1],[0,1,0]],
+      '×': [[1,0,1],[0,1,0],[1,0,1]],
+      ':': [[0,1,0],[0,0,0],[0,1,0]],
+      '=': [[1,1,1],[0,0,0],[1,1,1]],
+      '%': [[1,0,1],[0,1,0],[1,0,1]],
+    };
+    const m = map[g];
+    const mw = m[0].length;
+    const mh = m.length;
+    const ox = x + floor((w - mw) / 2);
+    const oy = y + floor((h - mh) / 2);
+    for (let j = 0; j < mh; j++) {
+      for (let i = 0; i < mw; i++) {
+        if (m[j][i]) setPx(ox + i, oy + j, 1 + (floor(t * 0.01) & 1));
+      }
+    }
+  },
+];
+
+class Tile {
+  constructor(x, y, w, h, depth, rng) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.depth = depth;
+    this.rng = rng;
+    this.rule = rng.int(0, RULES.length - 1);
+    this.children = null;
+    this.age = 0;
+    this.splitAt = 40 + rng.int(0, 120);
+  }
+
+  tick(t) {
+    this.age++;
+    if (!this.children && this.w >= 4 && this.h >= 4 && this.age > this.splitAt && this.depth < 5) {
+      this.split();
+    }
+    if (this.children) {
+      for (const c of this.children) c.tick(t);
+      if (this.rng.next() < 0.002) this.merge();
+    }
+  }
+
+  split() {
+    const r = this.rng;
+    const vert = this.w >= this.h ? r.next() < 0.55 : r.next() < 0.35;
+    if (vert && this.w >= 4) {
+      const cut = 2 + r.int(0, this.w - 3);
+      this.children = [
+        new Tile(this.x, this.y, cut, this.h, this.depth + 1, new Rand(r.int(0, 1e6))),
+        new Tile(this.x + cut, this.y, this.w - cut, this.h, this.depth + 1, new Rand(r.int(0, 1e6))),
+      ];
+    } else if (this.h >= 4) {
+      const cut = 2 + r.int(0, this.h - 3);
+      this.children = [
+        new Tile(this.x, this.y, this.w, cut, this.depth + 1, new Rand(r.int(0, 1e6))),
+        new Tile(this.x, this.y + cut, this.w, this.h - cut, this.depth + 1, new Rand(r.int(0, 1e6))),
+      ];
+    }
+  }
+
+  merge() {
+    this.children = null;
+    this.age = 0;
+    this.rule = this.rng.int(0, RULES.length - 1);
+    this.splitAt = 60 + this.rng.int(0, 140);
+  }
+
+  draw(t) {
+    if (this.children) {
+      for (const c of this.children) c.draw(t);
+      return;
+    }
+    RULES[this.rule](this.rng, this.x, this.y, this.w, this.h, t);
+  }
+}
+
+let root = null;
+let frameN = 0;
+
+const reseed = () => {
+  seed = (Date.now() & 0xffffff) | 1;
+  const rng = new Rand(seed);
+  root = new Tile(0, 0, GRID, GRID, 0, rng);
+  frameN = 0;
+};
+
+const layout = () => {
+  const dpr = 1;
+  const sw = window.innerWidth;
+  const sh = window.innerHeight;
+  canvas.width = floor(sw * dpr);
+  canvas.height = floor(sh * dpr);
+  canvas.style.width = `${sw}px`;
+  canvas.style.height = `${sh}px`;
+  scale = max(4, floor(min(sw / GRID, sh / GRID)));
+  ox = floor((sw - GRID * scale) / 2);
+  oy = floor((sh - GRID * scale) / 2);
+  ctx.imageSmoothingEnabled = false;
+};
+
+const step = (t) => {
+  for (let i = 0; i < px.length; i += 4) {
+    px[i] = 11;
+    px[i + 1] = 11;
+    px[i + 2] = 12;
+    px[i + 3] = 255;
+  }
+
+  if (!paused) {
+    root.tick(t);
+    frameN++;
+    if (frameN % 90 === 0 && random() < 0.35) {
+      const r = new Rand(seed + frameN);
+      const leaf = pickLeaf(root, r);
+      if (leaf && !leaf.children) leaf.rule = r.int(0, RULES.length - 1);
+    }
+  }
+
+  root.draw(t);
+
+  // status row — LCD ticker
+  const tick = floor(t * 0.06) % 8;
+  const msg = `64 ${seed.toString(16)} ${frameN}`;
+  for (let i = 0; i < min(GRID, msg.length); i++) {
+    const ch = msg.charCodeAt((i + tick) % msg.length);
+    const on = (ch + i + tick) & 1;
+    if (on) setPx(i, GRID - 1, 3);
+  }
+
+  octx.putImageData(img, 0, 0);
+  ctx.fillStyle = '#0b0b0c';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(off, 0, 0, GRID, GRID, ox, oy, GRID * scale, GRID * scale);
+};
+
+const pickLeaf = (node, rng) => {
+  if (!node.children) return node;
+  return pickLeaf(rng.pick(node.children), rng);
+};
+
+const loop = (t) => {
+  step(t);
+  requestAnimationFrame(loop);
+};
+
+canvas.addEventListener('click', reseed);
+
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'h') {
+    showHint = !showHint;
+    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
+  }
+  if (k === ' ') {
+    e.preventDefault();
+    paused = !paused;
+  }
+  if (k === 'r') reseed();
+  if (k === '1') paletteKey = 'mono';
+  if (k === '2') paletteKey = 'rg';
+});
+
+layout();
+reseed();
+window.addEventListener('resize', layout);
+requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

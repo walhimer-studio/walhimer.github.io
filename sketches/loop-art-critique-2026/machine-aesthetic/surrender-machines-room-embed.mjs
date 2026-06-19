@@ -1,11 +1,10 @@
 /**
- * Room C — runs surrender-machines.html p5 sketch in the walkthrough.
- * Uses surrender-machines-core.js (same code as the standalone artwork page).
+ * Room C — fetch surrender-machines.html, run its scripts, show p5 canvas on a floor plane.
+ * Does not edit surrender-machines.html; no iframe; no three-core.
  */
 import { surrenderScaleForRoom } from "./surrender-machine-core.mjs";
 
-const P5_URL = "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js";
-const CORE_URL = "surrender-machines-core.js?v=20260601-room-c-visible";
+const SURRENDER_HTML = new URL("./surrender-machines.html", import.meta.url);
 
 function p5CanvasElement(p5api) {
   const c = p5api?.canvas;
@@ -20,6 +19,27 @@ function loadScript(src) {
     el.onerror = () => reject(new Error(`failed to load ${src}`));
     document.head.appendChild(el);
   });
+}
+
+async function fetchSurrenderHtmlDoc() {
+  const res = await fetch(SURRENDER_HTML, { cache: "no-cache" });
+  if (!res.ok) throw new Error(`fetch surrender-machines.html: ${res.status}`);
+  return new DOMParser().parseFromString(await res.text(), "text/html");
+}
+
+function resolveScriptUrls(doc) {
+  return [...doc.querySelectorAll("script[src]")].map((s) =>
+    new URL(s.getAttribute("src"), SURRENDER_HTML).href
+  );
+}
+
+function mountSoundButton(doc) {
+  const src = doc.getElementById("sound-btn");
+  if (!src || document.getElementById("sound-btn")) return null;
+  const btn = src.cloneNode(true);
+  btn.style.display = "none";
+  document.body.appendChild(btn);
+  return btn;
 }
 
 function waitForP5Frame(canvas, timeoutMs = 8000) {
@@ -54,6 +74,12 @@ function waitForP5Frame(canvas, timeoutMs = 8000) {
 export async function createSurrenderMachinesRoomEmbed(opts) {
   const THREE = opts.THREE;
   const parent = opts.parent;
+  if (!THREE || !parent) {
+    throw new Error("THREE and parent required");
+  }
+
+  const doc = await fetchSurrenderHtmlDoc();
+
   const pixelSize = opts.pixelSize || 768;
   const planeW = opts.planeWidth != null
     ? opts.planeWidth
@@ -65,17 +91,21 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
     `position:fixed;left:-10000px;top:0;width:${pixelSize}px;height:${pixelSize}px;overflow:hidden;pointer-events:none`;
   document.body.appendChild(host);
 
-  await loadScript(P5_URL);
+  const soundBtn = mountSoundButton(doc);
+
   window.__SURRENDER_ROOM_OPTS = {
     parentElement: host,
     pixelSize,
     getSliders: opts.getSliders,
     seed: opts.seed,
   };
-  await loadScript(CORE_URL);
+
+  for (const src of resolveScriptUrls(doc)) {
+    await loadScript(src);
+  }
 
   if (typeof window.createSurrenderMachinesP5 !== "function") {
-    throw new Error("createSurrenderMachinesP5 missing — surrender-machines-core.js not loaded");
+    throw new Error("createSurrenderMachinesP5 missing after surrender-machines.html scripts");
   }
 
   const p5api = window.createSurrenderMachinesP5(window.__SURRENDER_ROOM_OPTS);
@@ -106,7 +136,6 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
     })
   );
   mesh.name = "surrender_machine_p5_floor";
-  // Face the hall entrance (west / −x) so the machine is visible when you walk in.
   mesh.rotation.y = -Math.PI / 2;
   mesh.position.y = planeW * 0.45 + (opts.y || 0);
   anchor.add(mesh);
@@ -123,6 +152,10 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
     triggerSurrender() {
       p5api.triggerSurrender();
     },
+    setVisible(visible) {
+      anchor.visible = visible;
+      if (soundBtn) soundBtn.style.display = visible ? "" : "none";
+    },
     update() {
       tex.needsUpdate = true;
     },
@@ -132,6 +165,7 @@ export async function createSurrenderMachinesRoomEmbed(opts) {
       mesh.geometry.dispose();
       mesh.material.dispose();
       host.remove();
+      soundBtn?.remove();
       delete window.__SURRENDER_ROOM_OPTS;
     },
   };

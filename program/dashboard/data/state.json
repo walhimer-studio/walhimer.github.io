@@ -1,0 +1,676 @@
+{
+  "updatedAt": "2026-06-11T00:01:19.125Z",
+  "pipeline": {
+    "totalWorks": 87,
+    "totalSeries": 24,
+    "minted": 87,
+    "available": 14,
+    "sold": 23,
+    "approved": 1,
+    "revenueUsd": 18000,
+    "defaultPlatform": "transient_labs"
+  },
+  "drops": [
+    {
+      "id": "drop-2026-06-10-sm014",
+      "date": "2026-06-10",
+      "catalogNumber": "WS-000088",
+      "title": "Surrender Machines 014",
+      "series": "Surrender Machines",
+      "seriesTier": 1,
+      "status": "draft",
+      "skipped": false,
+      "generator": "three.js",
+      "medium": "Three.js · P5.js",
+      "notes": "Rotating field with audio scape — 3-layer translucent gradient. Strongest in the series this month.",
+      "previewUrl": null,
+      "edition": "1/1",
+      "mint": {
+        "platform": "transient_labs"
+      },
+      "post1": {
+        "instagram": "",
+        "x": "",
+        "skipped": false
+      }
+    },
+    {
+      "id": "drop-2026-06-10-la024",
+      "date": "2026-06-10",
+      "catalogNumber": "WS-000089",
+      "title": "Light Art 024",
+      "series": "Light Art",
+      "seriesTier": 2,
+      "status": "draft",
+      "skipped": false,
+      "generator": "p5",
+      "medium": "P5.js",
+      "notes": "Gradient orb with translucent layers — color field shifts on interaction.",
+      "previewUrl": null,
+      "edition": "1/1",
+      "mint": {
+        "platform": "transient_labs"
+      },
+      "post1": {
+        "instagram": "",
+        "x": "",
+        "skipped": false
+      }
+    },
+    {
+      "id": "drop-2026-06-09-bc009",
+      "date": "2026-06-09",
+      "catalogNumber": "WS-000090",
+      "title": "Breathing Columns 009",
+      "series": "Breathing Columns",
+      "seriesTier": 2,
+      "status": "draft",
+      "skipped": false,
+      "generator": "pure_data",
+      "medium": "Pure Data · DSP",
+      "notes": "Audio-driven column grid — sound shapes geometry in real time.",
+      "previewUrl": null,
+      "edition": "1/1",
+      "mint": {
+        "platform": "transient_labs"
+      },
+      "post1": {
+        "instagram": "",
+        "x": "",
+        "skipped": false
+      }
+    },
+    {
+      "id": "drop-2026-06-10-sm013",
+      "date": "2026-06-10",
+      "catalogNumber": "WS-000087",
+      "title": "Surrender Machines 013",
+      "series": "Surrender Machines",
+      "seriesTier": 1,
+      "status": "minted",
+      "skipped": false,
+      "generator": "three.js",
+      "medium": "Three.js",
+      "notes": "",
+      "edition": "1/1",
+      "mint": {
+        "platform": "transient_labs",
+        "mintedAt": "2026-06-10T12:00:00Z",
+        "priceEth": "0.01"
+      },
+      "post1": {
+        "instagram": "Surrender Machines 013 — built from the things we hold too tightly. Turn them up and watch it break. Turn them down and watch what remains.\n\nNew work available ↗ mark-walhimer.com\n\n#generativeart #newmediaart #machineaesthetics #digitalart",
+        "x": "Surrender Machines 013.\n\nThe machine cannot surrender for you. That is the point.\n\nAvailable → mark-walhimer.com",
+        "skipped": false,
+        "publishedAt": null
+      },
+      "social": {
+        "resonance": "",
+        "action": ""
+      }
+    },
+    {
+      "id": "drop-2026-06-10-la023",
+      "date": "2026-06-10",
+      "catalogNumber": "WS-000086",
+      "title": "Light Art 023",
+      "series": "Light Art",
+      "seriesTier": 2,
+      "status": "minted",
+      "skipped": false,
+      "generator": "p5",
+      "medium": "P5.js",
+      "edition": "1/1",
+      "mint": {
+        "platform": "transient_labs",
+        "mintedAt": "2026-06-10T12:05:00Z"
+      },
+      "post1": {
+        "instagram": "Light Art 023 — color field study.",
+        "x": "Light Art 023.",
+        "skipped": false,
+        "publishedAt": null
+      }
+    }
+  ],
+  "recentPosts": [
+    {
+      "title": "Surrender Machines 012",
+      "date": "2026-06-08",
+      "platforms": "both"
+    },
+    {
+      "title": "Bloom 009",
+      "date": "2026-06-06",
+      "platforms": "both"
+    },
+    {
+      "title": "Traveling Landscape 016",
+      "date": "2026-06-04",
+      "platforms": "instagram"
+    },
+    {
+      "title": "Light Art 023",
+      "date": "2026-06-03",
+      "platforms": "both"
+    }
+  ],
+  "mintingLog": [
+    {
+      "title": "Surrender Machines 013",
+      "status": "available",
+      "date": "2026-06-10",
+      "platform": "transient_labs",
+      "edition": "1/1"
+    },
+    {
+      "title": "Light Art 023",
+      "status": "available",
+      "date": "2026-06-08",
+      "platform": "transient_labs",
+      "edition": "1/1"
+    },
+    {
+      "title": "Bloom 009",
+      "status": "sold",
+      "date": "2026-06-06",
+      "platform": "manifold",
+      "edition": "1/1",
+      "priceEth": "0.08"
+    },
+    {
+      "title": "Traveling Landscape 016",
+      "status": "available",
+      "date": "2026-06-04",
+      "platform": "transient_labs",
+      "edition": "1/1"
+    },
+    {
+      "title": "Surrender Machines 012",
+      "status": "sold",
+      "date": "2026-06-03",
+      "platform": "manifold",
+      "edition": "1/1",
+      "priceEth": "0.12"
+    }
+  ],
+  "series": [
+    {
+      "name": "Surrender Machines",
+      "tier": 1,
+      "works": 12,
+      "updated": "Jun 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Bloom / Four Walls",
+      "tier": 1,
+      "works": 8,
+      "updated": "May 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Technical Drawing",
+      "tier": 1,
+      "works": 6,
+      "updated": "Apr 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Emergent DNA",
+      "tier": 1,
+      "works": 9,
+      "updated": "Apr 2026",
+      "badge": "minted"
+    },
+    {
+      "name": "Traveling Landscape",
+      "tier": 1,
+      "works": 15,
+      "updated": "Jun 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Moon & Walking",
+      "tier": 2,
+      "works": 7,
+      "updated": "Mar 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Living Commons",
+      "tier": 2,
+      "works": 6,
+      "updated": "Feb 2026",
+      "badge": "minted"
+    },
+    {
+      "name": "Light Art",
+      "tier": 2,
+      "works": 11,
+      "updated": "Jan 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Breathing Columns",
+      "tier": 2,
+      "works": 8,
+      "updated": "Nov 2025",
+      "badge": "minted"
+    },
+    {
+      "name": "Spatial Orchestration",
+      "tier": 2,
+      "works": 5,
+      "updated": "Dec 2025",
+      "badge": "minted"
+    },
+    {
+      "name": "Shared Ground",
+      "tier": 2,
+      "works": 4,
+      "updated": "Mar 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Emergent Discs",
+      "tier": 2,
+      "works": 7,
+      "updated": "Feb 2026",
+      "badge": "available"
+    },
+    {
+      "name": "Binary Partitions",
+      "tier": 3,
+      "works": 4,
+      "updated": "Jan 2026",
+      "badge": "study"
+    },
+    {
+      "name": "Gradients & Color",
+      "tier": 3,
+      "works": 14,
+      "updated": "Nov 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Word Art / Text",
+      "tier": 3,
+      "works": 9,
+      "updated": "Oct 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Numbered Pieces",
+      "tier": 3,
+      "works": 10,
+      "updated": "Oct 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Autoscape",
+      "tier": 3,
+      "works": 4,
+      "updated": "Sep 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Reading the Sky",
+      "tier": 3,
+      "works": 5,
+      "updated": "Sep 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Convergence Era",
+      "tier": 3,
+      "works": 10,
+      "updated": "Aug 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Cubes",
+      "tier": 3,
+      "works": 7,
+      "updated": "Aug 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Shelves",
+      "tier": 3,
+      "works": 3,
+      "updated": "Jul 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Miradas Tangentes",
+      "tier": 3,
+      "works": 4,
+      "updated": "Jul 2025",
+      "badge": "study"
+    },
+    {
+      "name": "Three.js / LAB",
+      "tier": 3,
+      "works": 18,
+      "updated": "Jun 2025",
+      "badge": "study",
+      "flag": "Review — rename?"
+    },
+    {
+      "name": "Mint / NFT",
+      "tier": 3,
+      "works": 4,
+      "updated": "Jun 2025",
+      "badge": "study",
+      "flag": "Clarify — series or admin?"
+    }
+  ],
+  "hiddenCatalog": [
+    "Lumen Prize 2026 — Machine Aesthetic",
+    "Prix Ars Electronica 2026",
+    "April 25",
+    "Loop Art Critique 2026",
+    "Loop Snippets",
+    "Loop — Machine Aesthetic (workspace)",
+    "Miscellaneous (41 files)",
+    "Tezos / Objkt — archive"
+  ],
+  "analytics": {
+    "works": [
+      {
+        "title": "Surrender Machines 012",
+        "igLikes": 847,
+        "igSaves": 312,
+        "twLikes": 203,
+        "twReposts": 89,
+        "resonance": "high"
+      },
+      {
+        "title": "Bloom 009",
+        "igLikes": 412,
+        "igSaves": 187,
+        "twLikes": 94,
+        "twReposts": 31,
+        "resonance": "high"
+      },
+      {
+        "title": "Traveling Landscape 015",
+        "igLikes": 203,
+        "igSaves": 44,
+        "twLikes": 31,
+        "twReposts": 8,
+        "resonance": "medium"
+      },
+      {
+        "title": "Light Art 022",
+        "igLikes": 88,
+        "igSaves": 12,
+        "twLikes": 14,
+        "twReposts": 3,
+        "resonance": "low"
+      }
+    ],
+    "featured": {
+      "title": "Surrender Machines 012",
+      "instagram": {
+        "likes": 847,
+        "saves": 312,
+        "comments": 24,
+        "reach": 14200,
+        "read": "Stopped scrolling"
+      },
+      "twitter": {
+        "likes": 203,
+        "reposts": 89,
+        "replies": 31,
+        "impressions": 8400,
+        "read": "Peer recognition"
+      }
+    },
+    "actions": [
+      {
+        "title": "Surrender Machines 012",
+        "resonance": "high",
+        "action": "Submit competition",
+        "tone": "green"
+      },
+      {
+        "title": "Bloom 009",
+        "resonance": "high",
+        "action": "Develop further",
+        "tone": "green"
+      },
+      {
+        "title": "Light Art 023",
+        "resonance": "medium",
+        "action": "Keep — watch",
+        "tone": "amber"
+      },
+      {
+        "title": "Traveling Landscape 015",
+        "resonance": "medium",
+        "action": "Keep",
+        "tone": "muted"
+      },
+      {
+        "title": "Light Art 022",
+        "resonance": "low",
+        "action": "Revise",
+        "tone": "red"
+      }
+    ],
+    "seriesPerformance": [
+      {
+        "name": "Surrender Machines",
+        "pct": 88,
+        "label": "High ↑",
+        "tone": "green"
+      },
+      {
+        "name": "Bloom / Four Walls",
+        "pct": 80,
+        "label": "High",
+        "tone": "green"
+      },
+      {
+        "name": "Technical Drawing",
+        "pct": 65,
+        "label": "Medium",
+        "tone": ""
+      },
+      {
+        "name": "Moon & Walking",
+        "pct": 60,
+        "label": "Medium",
+        "tone": ""
+      },
+      {
+        "name": "Traveling Landscape",
+        "pct": 50,
+        "label": "Medium",
+        "tone": "amber"
+      },
+      {
+        "name": "Light Art",
+        "pct": 40,
+        "label": "Mixed",
+        "tone": "amber"
+      },
+      {
+        "name": "Breathing Columns",
+        "pct": 35,
+        "label": "Low",
+        "tone": ""
+      }
+    ],
+    "diagnostics": [
+      {
+        "type": "strong",
+        "title": "Strong",
+        "body": "Surrender Machines and Bloom consistently high on both platforms — peer recognition on Twitter and institutional visibility on Instagram simultaneously. These are competition candidates. SM 012 is the strongest work in the catalog by resonance."
+      },
+      {
+        "type": "watch",
+        "title": "Watch",
+        "body": "Technical Drawing landing on Instagram but not Twitter — reading as beautiful rather than rigorous. Caption framing may need to foreground the conceptual vocabulary (THRESHOLD, MEMBRANE, VOID) more explicitly."
+      },
+      {
+        "type": "action",
+        "title": "Action needed",
+        "body": "Light Art 022 low on both platforms — not translating on either axis. Breathing Columns consistently low — the audio dimension may not be communicating in static image form. Consider video posts for this series."
+      }
+    ]
+  },
+  "newsletter": {
+    "subscribers": 342,
+    "avgOpenRate": 60,
+    "segments": [
+      {
+        "label": "Collectors / buyers",
+        "count": 87,
+        "note": "Highest value segment"
+      },
+      {
+        "label": "Museum / curators",
+        "count": 124,
+        "note": "Institutional audience"
+      },
+      {
+        "label": "Peer artists",
+        "count": 131,
+        "note": "Working platform audience"
+      }
+    ],
+    "recent": [
+      {
+        "subject": "New works: Surrender Machines 010–012",
+        "date": "Jun 5",
+        "subs": 342,
+        "openRate": 61
+      },
+      {
+        "subject": "ARS Electronica submission update",
+        "date": "May 28",
+        "subs": 342,
+        "openRate": 58
+      },
+      {
+        "subject": "Machine aesthetics — new direction in Light Art",
+        "date": "May 12",
+        "subs": 328,
+        "openRate": 64
+      },
+      {
+        "subject": "Cloud chambers and the invisible made visible",
+        "date": "Apr 30",
+        "subs": 321,
+        "openRate": 57
+      }
+    ]
+  },
+  "competitions": {
+    "upcoming": 5,
+    "preparing": 3,
+    "submitted": 2,
+    "nextDeadline": {
+      "label": "Sep 26",
+      "note": "ARS Electronica festival"
+    },
+    "calendar": [
+      {
+        "event": "ARS Electronica Festival",
+        "meta": "Sep 9–13, 2026 · Linz, Austria",
+        "status": "Attend — book travel now",
+        "tone": "active"
+      },
+      {
+        "event": "SIGGRAPH 2026",
+        "meta": "TBD · Los Angeles",
+        "status": "Confirm submission deadline",
+        "tone": "soon"
+      },
+      {
+        "event": "MTA Arts & Design Digital Art",
+        "meta": "TBD · New York · Public installation",
+        "status": "Confirm open call deadline",
+        "tone": "soon"
+      },
+      {
+        "event": "CERN Collide Residency",
+        "meta": "Est. late 2026 · Geneva, Switzerland",
+        "status": "Monitor arts.cern · Cloud chamber work relevant",
+        "tone": "future"
+      },
+      {
+        "event": "Prix ARS Electronica 2027",
+        "meta": "Opens Jan 2027 · Linz, Austria · Free entry",
+        "status": "Prepare works and documentation now",
+        "tone": "future"
+      },
+      {
+        "event": "Lumen Prize 2027",
+        "meta": "Est. May 2027 · International · $30K prize pool",
+        "status": "Opens Jan 2027 — prepare now",
+        "tone": "future"
+      },
+      {
+        "event": "NFC Summit Lisbon 2027",
+        "meta": "Est. Jun 2027 · Lisbon, Portugal",
+        "status": "Plan attendance",
+        "tone": "future"
+      },
+      {
+        "event": "Share Prize XIX",
+        "meta": "Est. May 2027 · Turin, Italy",
+        "status": "Generative art eligible",
+        "tone": "future"
+      }
+    ],
+    "candidates": [
+      {
+        "title": "Surrender Machines 012",
+        "meta": "High resonance · Both platforms · Tier 1 series",
+        "resonance": "high",
+        "note": "Strongest competition candidate in catalog. Preparing for Prix ARS 2027 and Lumen Prize 2027."
+      },
+      {
+        "title": "Bloom 009",
+        "meta": "High resonance · Both platforms · Tier 1 series",
+        "resonance": "high",
+        "note": "Four-wall installation potential. Strong for CERN if cloud chamber framing developed."
+      },
+      {
+        "title": "Light Art 023",
+        "meta": "Medium resonance · Instagram strong · Tier 2 series",
+        "resonance": "medium",
+        "note": "Instagram strong — visual stops. Twitter lower. May work for Lumen less for Prix ARS."
+      }
+    ],
+    "notes": "Prix ARS 2027 — Opens Jan 2027. Begin preparing artist statement, project documentation, and video documentation now.\n\nCERN Collide — Cloud chamber series is the direct conceptual fit. Monitor arts.cern from Oct 2026.\n\nMTA Arts & Design — Bloom / Four Walls is the strongest candidate. Requires proposal for a specific location."
+  },
+  "marketplaceSplit": [
+    {
+      "name": "Transient Labs",
+      "pct": 58
+    },
+    {
+      "name": "Manifold",
+      "pct": 42
+    }
+  ],
+  "editionSplit": [
+    {
+      "name": "1/1 unique",
+      "pct": 71
+    },
+    {
+      "name": "Open edition",
+      "pct": 18
+    },
+    {
+      "name": "Limited edition",
+      "pct": 11
+    }
+  ]
+}

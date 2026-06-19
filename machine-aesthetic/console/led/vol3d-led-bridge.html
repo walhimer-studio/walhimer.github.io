@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>vol3d → Matrix Portal LED bridge</title>
+  <style>
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: #0a0a0c;
+      color: #c8d4dc;
+      font: 12px/1.5 ui-monospace, monospace;
+    }
+    main {
+      max-width: 42rem;
+      padding: 1.25rem 1.5rem 2rem;
+    }
+    h1 { font-size: 14px; font-weight: 600; margin: 0 0 0.5rem; color: #fff; }
+    p { margin: 0 0 1rem; color: #8a9aa6; }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
+    button {
+      background: #141820;
+      border: 1px solid #2a3540;
+      color: #dce8f0;
+      padding: 8px 14px;
+      cursor: pointer;
+      font: inherit;
+    }
+    button:hover { border-color: #74b4dc; }
+    button[disabled] { opacity: 0.4; cursor: default; }
+    #status {
+      padding: 10px 12px;
+      background: #101418;
+      border: 1px solid #243040;
+      margin-bottom: 1rem;
+      min-height: 1.5em;
+    }
+    #status[data-live="1"] { border-color: #ff10f0; }
+    #status[data-err="1"] { border-color: #c04040; color: #f0b0b0; }
+    pre {
+      background: #101418;
+      border: 1px solid #243040;
+      padding: 12px;
+      overflow: auto;
+      font-size: 11px;
+      color: #9ab0c0;
+    }
+    a { color: #74b4dc; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>vol3d → Matrix Portal M4</h1>
+    <p>
+      Use <strong>Google Chrome</strong> at
+      <a id="self-url" href="#">127.0.0.1:8080/…/vol3d-led-bridge.html</a>
+      (not Safari, not <code>file://</code>). Plug Portal via USB first.
+    </p>
+
+    <div id="status">loading…</div>
+
+    <div class="row">
+      <button id="btn-connect" type="button">Connect serial</button>
+      <button id="btn-test" type="button" disabled>Run test pattern</button>
+      <button id="btn-stop" type="button" disabled>Stop</button>
+    </div>
+
+    <p>
+      After Connect, Chrome shows a <strong>serial port picker</strong> — it may open
+      <em>behind</em> this window. Choose <code>/dev/cu.usbmodem…</code> (Adafruit Matrix Portal).
+    </p>
+
+    <pre id="hook">// Live vol3d hook (sketch edit when authorized):
+import { createForwardSliceLedExport } from '../../machine-aesthetic/console/led/forward-slice-export.mjs';
+const led = createForwardSliceLedExport({ onStatus: (s) => … });
+// L → led.toggleStream(); each frame → led.maybeSend(renderer, sliceRT, w, h)</pre>
+  </main>
+
+  <script>
+    document.getElementById('self-url').textContent = location.href;
+    document.getElementById('self-url').href = location.href;
+    if (!('serial' in navigator)) {
+      document.getElementById('status').textContent =
+        'Web Serial missing — use Google Chrome at http://127.0.0.1:8080/… (Safari will not work)';
+      document.getElementById('status').dataset.err = '1';
+    }
+  </script>
+
+  <script type="module">
+    const statusEl = document.getElementById('status');
+    const btnConnect = document.getElementById('btn-connect');
+    const btnTest = document.getElementById('btn-test');
+    const btnStop = document.getElementById('btn-stop');
+
+    const setStatus = (msg, err = false) => {
+      statusEl.textContent = msg;
+      statusEl.dataset.live = msg.startsWith('test pattern') || msg.startsWith('streaming') ? '1' : '';
+      statusEl.dataset.err = err ? '1' : '';
+    };
+
+    let led;
+    let testRunning = false;
+
+    try {
+      const mod = await import('./forward-slice-export.mjs');
+      led = mod.createForwardSliceLedExport({
+        onStatus: (msg) => setStatus(msg, /failed|busy|cancel|unavailable|missing/i.test(msg)),
+      });
+
+      if ('serial' in navigator) {
+        setStatus('ready — click Connect serial');
+      }
+
+      btnConnect.addEventListener('click', async () => {
+        btnConnect.disabled = true;
+        try {
+          const ok = await led.connect();
+          btnTest.disabled = !ok;
+          btnStop.disabled = !ok;
+        } finally {
+          btnConnect.disabled = false;
+        }
+      });
+
+      btnStop.addEventListener('click', async () => {
+        testRunning = false;
+        await led.disconnect();
+        btnTest.disabled = true;
+        btnStop.disabled = true;
+        btnConnect.disabled = false;
+      });
+
+      btnTest.addEventListener('click', async () => {
+        if (testRunning) return;
+        testRunning = true;
+        btnTest.disabled = true;
+        setStatus('test pattern · sending frame 1…');
+        try {
+          await led.runTestPattern(
+            (n) => setStatus(`test pattern · ${n} frames`),
+            () => testRunning,
+          );
+        } catch (err) {
+          setStatus(`send failed: ${err.message}`, true);
+        } finally {
+          testRunning = false;
+          btnTest.disabled = !led.isConnected();
+          if (led.isConnected()) setStatus(`stopped · ${led.framesSent} frames sent`);
+        }
+      });
+    } catch (err) {
+      setStatus(`module load failed: ${err.message} — use http://127.0.0.1:8080/… not file://`, true);
+      btnConnect.disabled = true;
+    }
+  </script>
+</body>
+</html>

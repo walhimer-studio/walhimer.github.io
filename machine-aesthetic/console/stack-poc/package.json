@@ -1,0 +1,15 @@
+{
+  "name": "stack-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Firebase → OSC → Pure Data stack proof (not artwork)",
+  "scripts": {
+    "bridge": "node firebase-bridge.mjs",
+    "serve": "node serve.mjs",
+    "start": "node firebase-bridge.mjs & node serve.mjs"
+  },
+  "dependencies": {
+    "firebase": "^10.14.1"
+  }
+}

@@ -50,7 +50,7 @@
 <body>
   <div id="hint">
     auto travel · T toggle · colors + code forward · white machine chamber behind<br>
-    ↑↓ forward/back · ←→ strafe · drag look · scroll zoom · M mute · R record · N rebirth
+    ↑↓ forward/back · ←→ strafe · drag look · scroll zoom · M mute · R record · N rebirth · L LED
   </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
   <div id="seed-hud">seed 77823</div>
@@ -1840,7 +1840,15 @@ const VolRoomGPU = () => {
     setup();
   };
 
-  return { init, setup, render, refreshPalette, nudgeZoom, toggleTravel, setTravel, setMoveKey, resetPass, getCanvas: () => renderer?.domElement ?? null };
+  return {
+    init, setup, render, refreshPalette, nudgeZoom, toggleTravel, setTravel, setMoveKey, resetPass,
+    getCanvas: () => renderer?.domElement ?? null,
+    getRenderer: () => renderer,
+    getScene: () => scene,
+    getCamera: () => camera,
+    getSliceRT: () => sliceRT,
+    getVolSize: () => ({ w: width, h: height }),
+  };
 };
 
 const c2d = Canvas2d();
@@ -1851,6 +1859,31 @@ const rec = CanvasRecorder(() => gpu.getCanvas(), () => snd.getAudioStream());
 const lifebar = document.getElementById('lifebar');
 const seedHud = document.getElementById('seed-hud');
 seedHud.textContent = `seed ${SEED}`;
+
+const LED_MODULE_URL = '../../machine-aesthetic/console/led/forward-slice-export.mjs';
+let ledExport = null;
+
+const setLedHud = (extra) => {
+  seedHud.textContent = extra ? `seed ${SEED} · ${extra}` : `seed ${SEED}`;
+};
+
+const ensureLedExport = async () => {
+  if (ledExport) return ledExport;
+  if (location.protocol === 'file:') {
+    throw new Error('open via http://127.0.0.1:8080/… (not file://) for LED');
+  }
+  const mod = await import(LED_MODULE_URL);
+  ledExport = mod.createForwardSliceLedExport({
+    onStatus: setLedHud,
+    getCameraFrame: () => ({
+      renderer: gpu.getRenderer(),
+      scene: gpu.getScene(),
+      camera: gpu.getCamera(),
+      THREE,
+    }),
+  });
+  return ledExport;
+};
 
 const rebirth = (t) => {
   orgRng = makeRng(SEED);
@@ -1907,6 +1940,16 @@ document.addEventListener('keydown', async (e) => {
   if (k === 'm') await snd.toggle();
   if (k === 't') gpu.toggleTravel();
   if (k === 'r') { await snd.ensureOn(); await rec.toggle(); }
+  if (k === 'l') {
+    if (e.repeat) return;
+    e.preventDefault();
+    try {
+      const led = await ensureLedExport();
+      await led.toggleStream();
+    } catch (err) {
+      setLedHud(`LED err: ${err.message}`);
+    }
+  }
   if (k === 'n') rebirth(performance.now());
   if (k === 'a') options.auto = !options.auto;
   if (k === '1') { options.mode = 0; options.auto = false; }
@@ -1933,6 +1976,7 @@ function frame(t) {
   updateLife(t);
   const pixels = c2d.draw(t, options);
   gpu.render(t, pixels, options);
+  if (ledExport?.isStreaming?.()) ledExport.tickAfterRender();
   snd.update(pixels, t);
   requestAnimationFrame(frame);
 }

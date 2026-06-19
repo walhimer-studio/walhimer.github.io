@@ -1,0 +1,33 @@
+---
+description: Do exactly what the user asks; never substitute, port, or invent artwork integration.
+alwaysApply: true
+---
+
+# No substitute artwork — user instructions only
+
+You have **no authority** to make independent decisions about the user's artwork, layout, or implementation approach.
+
+## Do only what the user asked
+
+- Follow the user's **exact words**. Do not add rooms, destinations, UI patterns, or technology choices they did not name.
+- If the user says **"put this in a room"** with a file path, that means **their file in a room** — not Room C unless they said Room C, not an iframe unless they asked for one, not a Three.js port unless they asked for a port.
+- **Do not infer** from conversation summaries, prior assistant plans, or repo layout. If the user corrects you, they are right.
+
+## Never replace the user's work
+
+- **Do not rewrite**, reimplement, simplify, or "port" the user's sketch/installation into new files (`*-three.js`, cluster sculptors, etc.) unless they **explicitly** request a port or new file.
+- **Do not touch** artwork files the user did not name for editing (e.g. `surrender-machines.html` is theirs — wire it in or ask; do not rewrite it).
+- Embedding means **using their code**, not approximating it.
+
+## When blocked or unclear
+
+- **Ask once** which room, which file to edit, and which approach — then wait.
+- If you cannot do the exact task with their file as specified, **say so and stop**. Do not ship a substitute and call it done.
+
+## Examples
+
+| User said | Wrong | Right |
+|-----------|-------|-------|
+| Put `surrender-machines.html` in a room | Three.js rebuild in Room C | Use their p5 file; only edit walkthrough wiring they name |
+| Add sound | Invent new audio engine | Use sound from the file they pointed at |
+| (nothing about iframe) | iframe overlay | Spatial integration or ask |

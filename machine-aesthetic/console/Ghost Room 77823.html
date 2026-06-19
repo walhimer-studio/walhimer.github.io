@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ghost Room 77823 — open Console</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      max-width: 36rem;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+      line-height: 1.6;
+      color: #2c3034;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; }
+    .box {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      border: 1px solid #e8eaed;
+      background: #fafbfc;
+    }
+    a.button {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.75rem 1.25rem;
+      background: #2c3034;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    a.button:hover { background: #1a1d20; }
+    .muted { color: #6a7078; font-size: 0.9rem; }
+    #redirect { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Ghost Room 77823</h1>
+  <p class="muted">Console — openFrameworks · Pure Data · OSC · seed 77823</p>
+
+  <div id="redirect">
+    <p>Launcher is running. Opening control panel…</p>
+    <p><a class="button" href="http://127.0.0.1:8787/">Open Console</a></p>
+  </div>
+
+  <div id="start" class="box">
+    <p><strong>First time on this Mac?</strong></p>
+    <ol>
+      <li>Double-click <strong>Ghost Room 77823.command</strong> in the same folder as this file.</li>
+      <li>Your browser opens the Console control panel.</li>
+      <li>Click <strong>Launch native walkthrough</strong> (or browser room).</li>
+      <li>Turn <strong>DSP on</strong> in Pure Data.</li>
+    </ol>
+    <p class="muted">This HTML page reconnects automatically once the launcher is running.</p>
+  </div>
+
+  <script>
+    (async function () {
+      const url = "http://127.0.0.1:8787/";
+      for (let i = 0; i < 40; i++) {
+        try {
+          const r = await fetch(url + "api/status");
+          if (r.ok) {
+            document.getElementById("start").style.display = "none";
+            document.getElementById("redirect").style.display = "block";
+            location.replace(url);
+            return;
+          }
+        } catch (_) {}
+        await new Promise((r) => setTimeout(r, 500));
+      }
+    })();
+  </script>
+</body>
+</html>

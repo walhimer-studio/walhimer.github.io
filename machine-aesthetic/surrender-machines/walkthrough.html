@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Surrender Machines — walkthrough</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #hud {
+      position: fixed; inset: 0; pointer-events: none;
+      font-family: "Courier New", Courier, monospace; color: #c8a882;
+    }
+    #prompt {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      background: rgba(0,0,0,0.72); color: #f0ede6; text-align: center;
+      font-family: Georgia, "Times New Roman", serif; font-weight: 300;
+      pointer-events: auto; cursor: pointer; line-height: 1.7; padding: 2rem;
+    }
+    #prompt.hidden { display: none; }
+    #prompt em { color: #c8a882; font-style: italic; }
+    #zone {
+      position: absolute; left: 1rem; top: 1rem; font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85;
+    }
+    #help {
+      position: absolute; right: 1rem; bottom: 1rem; font-size: 10px;
+      color: #666; text-align: right; line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="hud">
+    <div id="prompt">
+      <div>
+        <p><em>Surrender Machines</em></p>
+        <p style="margin-top:1rem;font-size:14px;">Click to enter · WASD walk · mouse look</p>
+        <p style="margin-top:0.5rem;font-size:12px;color:#888;">Follow the brass path</p>
+      </div>
+    </div>
+    <div id="zone"></div>
+    <div id="help">Esc release · Shift run</div>
+  </div>
+  <script type="importmap">
+  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+    import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+
+    const ZONES = [
+      { z: 0, label: "Entry — threshold" },
+      { z: 6, label: "Hallway — approach" },
+      { z: 14, label: "Intake — what you accept" },
+      { z: 22, label: "Hallway — transition" },
+      { z: 30, label: "Surrender — ego release" },
+    ];
+
+    const prompt = document.getElementById("prompt");
+    const zoneEl = document.getElementById("zone");
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x020202);
+    scene.fog = new THREE.FogExp2(0x020202, 0.045);
+
+    const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.05, 80);
+    camera.position.set(0, 1.62, 0.6);
+
+    scene.add(new THREE.AmbientLight(0x221a12, 0.35));
+    const key = new THREE.DirectionalLight(0xffeedd, 0.25);
+    key.position.set(2, 6, 4);
+    scene.add(key);
+
+    const controls = new PointerLockControls(camera, document.body);
+    prompt.addEventListener("click", () => controls.lock());
+    controls.addEventListener("lock", () => prompt.classList.add("hidden"));
+    controls.addEventListener("unlock", () => prompt.classList.remove("hidden"));
+
+    const loader = new GLTFLoader();
+    loader.load("surrender-machines-complete.glb", (gltf) => {
+      scene.add(gltf.scene);
+    });
+
+    const keys = {};
+    addEventListener("keydown", (e) => { keys[e.code] = true; });
+    addEventListener("keyup", (e) => { keys[e.code] = false; });
+
+    const vel = new THREE.Vector3();
+    const dir = new THREE.Vector3();
+    let lastZone = "";
+
+    function updateZone(z) {
+      let label = ZONES[0].label;
+      for (const zd of ZONES) if (z >= zd.z - 1.5) label = zd.label;
+      if (label !== lastZone) {
+        lastZone = label;
+        zoneEl.textContent = label;
+      }
+    }
+
+    const clock = new THREE.Clock();
+    function tick() {
+      requestAnimationFrame(tick);
+      const dt = Math.min(clock.getDelta(), 0.05);
+      const speed = (keys.ShiftLeft || keys.ShiftRight) ? 4.2 : 2.2;
+
+      vel.x = vel.z = 0;
+      if (controls.isLocked) {
+        if (keys.KeyW || keys.ArrowUp) vel.z -= 1;
+        if (keys.KeyS || keys.ArrowDown) vel.z += 1;
+        if (keys.KeyA || keys.ArrowLeft) vel.x -= 1;
+        if (keys.KeyD || keys.ArrowRight) vel.x += 1;
+        vel.normalize().multiplyScalar(speed * dt);
+        controls.moveRight(vel.x);
+        controls.moveForward(-vel.z);
+        camera.position.y = 1.62;
+        updateZone(camera.position.z);
+      }
+      renderer.render(scene, camera);
+    }
+    tick();
+
+    addEventListener("resize", () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>

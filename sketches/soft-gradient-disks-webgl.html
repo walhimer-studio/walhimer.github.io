@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>p5.js WEBGL — soft gradient disks</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #f0f0f0;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+
+  <script>
+let time = 0;  // Time variable for smooth oscillation
+let baseSize = 800;  // Base size (diameter) of the largest disk
+let layers = 4;  // Number of overlapping layers
+let disks = [];  // Store the disks' properties (position, size, colors)
+
+function setup() {
+  createCanvas(1000, 1000, WEBGL);  // Switch to WEBGL for 3D rendering
+  frameRate(60);  // Set a stable frame rate for smooth animations
+
+  // Defining black, white, and gray color sets for gradients with transparency
+  colors = [
+    [color(0, 80), color(100, 80)],   // Black to Dark Gray with 80 transparency
+    [color(100, 80), color(200, 80)], // Dark Gray to Light Gray with 80 transparency
+    [color(200, 80), color(255, 80)]  // Light Gray to White with 80 transparency
+  ];
+
+  // Generate random positions and sizes for each layer
+  for (let i = 0; i < layers; i++) {
+    disks.push({
+      xOffset: random(-100, 100),  // Random x offset for asymmetry
+      yOffset: random(-100, 100),  // Random y offset for asymmetry
+      size: random(baseSize * 0.5, baseSize),  // Random size for each layer
+      colorSet: random(colors),  // Random color set for each layer
+      timeOffset: random(TWO_PI)  // Random time offset for oscillation
+    });
+  }
+}
+
+function draw() {
+  background(255);  // White background for contrast
+
+  // Increase the speed by adjusting the time increment
+  time += 0.002;  // Slow oscillation speed for subtle movement
+
+  // Draw overlapping, asymmetrical layers
+  for (let i = 0; i < disks.length; i++) {
+    let disk = disks[i];
+
+    // Subtle oscillation of size
+    let scaleFactor = 1 + sin(time + disk.timeOffset) * 0.2;  // Smooth oscillation
+
+    // Push/pop for isolated transformations per layer
+    push();
+
+    // Apply translation for random asymmetry and scaling for dynamic movement
+    translate(disk.xOffset, disk.yOffset, 0);
+    scale(scaleFactor);
+
+    // Draw the gradient disk for this layer
+    drawSoftGradientDisk(0, 0, disk.size, disk.colorSet[0], disk.colorSet[1]);
+
+    pop();
+  }
+}
+
+// Function to draw a soft gradient disk using WebGL
+function drawSoftGradientDisk(x, y, size, c1, c2) {
+  let detail = 50;  // Smoothness of the disk
+  beginShape(TRIANGLE_FAN);
+  noStroke();
+
+  // Center vertex with the first color
+  fill(c1);
+  vertex(0, 0, 0);
+
+  // Outer vertices with gradient transition
+  for (let angle = 0; angle <= TWO_PI + 0.01; angle += TWO_PI / detail) {
+    let vx = cos(angle) * size / 2;
+    let vy = sin(angle) * size / 2;
+    fill(lerpColor(c1, c2, map(angle, 0, TWO_PI, 0, 1)));  // Gradient color transition
+    vertex(vx, vy, 0);
+  }
+
+  endShape(CLOSE);
+}
+  </script>
+</body>
+</html>

@@ -14,10 +14,10 @@ import {
   buildGhostMachine,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createSurrenderMachinesRoomEmbed } from "./surrender-machines-room-embed.mjs?v=20260601-room-c-visible";
+import { createSurrenderMachinesRoomEmbed } from "./surrender-machines-room-embed.mjs?v=20260601-room-c-floor-g";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
 
-const BUILD = "20260601-room-c-visible";
+const BUILD = "20260601-room-c-floor-g";
 const SURRENDER_MACHINE_SEED = 653057;
 
 globalThis.THREE = THREE;
@@ -110,8 +110,10 @@ try {
     seed: SURRENDER_MACHINE_SEED,
     getSliders: getSliderValues,
   });
+  modeEl.textContent = `${BUILD} · room C surrender-machines.html on floor`;
 } catch (err) {
   console.error("Room C surrender machine failed to load:", err);
+  modeEl.textContent = `${BUILD} · room C failed: ${err.message}`;
 }
 
 /** Walk moon — your PNG sized to full north (left-hand) wall face */
@@ -289,6 +291,9 @@ function updateHud(pos) {
       "is-visible",
       surrenderActive && prompt.classList.contains("hidden")
     );
+  }
+  if (surrenderEmbed?.setVisible) {
+    surrenderEmbed.setVisible(surrenderActive && prompt.classList.contains("hidden"));
   }
   syncZeroHint();
 }

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Infinite Garden — study</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 2;
+      font: 11px/1.45 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.45);
+      pointer-events: none;
+      max-width: 360px;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">
+    Infinite Garden study · 3D 1px billboards · auto-spin<br>
+    drag orbit · click select · click ground plant · wheel zoom · H hide · R reseed
+  </div>
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script>
+/**
+ * Study after Leander Herzog — Infinite Garden (2025).
+ * 3D point sculpture: square 1px marks face camera, garden auto-spins, drag steers orbit.
+ */
+const { floor, min, max, sin, cos, PI, sqrt, abs } = Math;
+const THREE = window.THREE;
+const TAU = PI * 2;
+
+class Rand {
+  constructor(seed) {
+    this.s = (abs(seed) | 0) + 1;
+  }
+  next() {
+    const x = sin(this.s++ * 127.1) * 43758.5453;
+    return x - floor(x);
+  }
+  range(a, b) { return a + this.next() * (b - a); }
+  int(a, b) { return floor(this.range(a, b + 1)); }
+}
+
+const mix = (a, b, t) => a + (b - a) * t;
+const jitter = (rng, amp) => (rng.next() - 0.5) * amp;
+
+const seasonPalette = (t, season) => {
+  const day = 0.5 + 0.5 * sin(t * 0.00008);
+  const seas = 0.5 + 0.5 * sin(t * 0.000003 + season);
+  const warm = mix(248, 255, day);
+  const cool = mix(180, 220, seas);
+  return {
+    petalA: [mix(255, warm, 0.6), mix(210, 240, 0.5), mix(220, cool, 0.7)],
+    petalB: [mix(240, 255, 0.4), mix(180, 210, 0.6), mix(200, 255, 0.5)],
+    leaf: [mix(90, 120, seas), mix(150, 190, day), mix(80, 110, 0.4)],
+    stem: [mix(60, 90, 0.5), mix(100, 130, 0.6), mix(70, 95, 0.4)],
+    core: [mix(255, 255, day), mix(200, 240, 0.3), mix(120, 180, 0.2)],
+    pick: [90, 120, 150],
+  };
+};
+
+class Flower {
+  constructor(x, z, seed, born) {
+    this.x = x;
+    this.z = z;
+    this.seed = seed;
+    this.born = born;
+    this.rng = new Rand(seed);
+    this.stemH = 4 + this.rng.range(0, 9);
+    this.tilt = this.rng.range(-0.35, 0.35);
+    this.petals = 5 + this.rng.int(0, 5);
+    this.spread = 1 + this.rng.range(0, 2.2);
+    this.hueShift = this.rng.range(0, TAU);
+    this.branches = [];
+    const n = this.rng.int(1, 3);
+    for (let i = 0; i < n; i++) {
+      this.branches.push({
+        t: 0.25 + this.rng.range(0, 0.45),
+        side: this.rng.next() < 0.5 ? -1 : 1,
+        len: 1.2 + this.rng.range(0, 2.8),
+        angle: this.rng.range(0.4, 1.1),
+      });
+    }
+    this.markBudget = 0;
+    this.done = false;
+    this.growth = 0;
+    this.headX = x;
+    this.headY = 0;
+    this.headZ = z;
+    this.baseX = x;
+    this.baseZ = z;
+  }
+
+  age(now) { return max(0, now - this.born); }
+
+  layout(now) {
+    const growth = min(1, this.age(now) / 12000);
+    const sway = sin(now * 0.0012 + this.seed) * 0.25 * growth;
+    this.growth = growth;
+    this.baseX = this.x + sway;
+    this.baseZ = this.z;
+    this.headY = this.stemH * growth;
+    this.headX = this.baseX + sin(this.tilt) * this.headY * 0.12;
+    this.headZ = this.baseZ + cos(this.tilt) * this.headY * 0.08;
+    return growth;
+  }
+
+  pushMark(garden, x, y, z, c, a) {
+    garden.addPoint(x, y, z, c[0] / 255, c[1] / 255, c[2] / 255, a);
+  }
+
+  grow(now, pal, garden) {
+    const growth = this.layout(now);
+    if (growth >= 1) this.done = true;
+    this.markBudget += this.done ? 0.15 : 0.6 + growth * 1.4;
+
+    const bx = this.baseX;
+    const bz = this.baseZ;
+    const tx = this.headX;
+    const ty = this.headY;
+    const tz = this.headZ;
+
+    while (this.markBudget >= 1) {
+      this.markBudget -= 1;
+      const kind = this.rng.next();
+      if (kind < 0.42) this.stemMark(garden, bx, bz, tx, ty, tz, growth, pal);
+      else if (kind < 0.62) this.petalMark(garden, tx, ty, tz, growth, pal, now);
+      else if (kind < 0.78) this.branchMark(garden, bx, bz, tx, ty, tz, growth, pal);
+      else this.leafCloud(garden, bx, bz, tx, ty, tz, growth, pal);
+    }
+  }
+
+  stemMark(garden, bx, bz, tx, ty, tz, growth, pal) {
+    const t = this.rng.range(0, growth);
+    const x = mix(bx, tx, t) + jitter(this.rng, 0.12);
+    const y = mix(0, ty, t) + jitter(this.rng, 0.12);
+    const z = mix(bz, tz, t) + jitter(this.rng, 0.12);
+    const a = 0.35 + this.rng.range(0, 0.45);
+    this.pushMark(garden, x, y, z, pal.stem, a);
+  }
+
+  branchMark(garden, bx, bz, tx, ty, tz, growth, pal) {
+    const br = this.branches[this.rng.int(0, this.branches.length - 1)];
+    if (growth < br.t) return;
+    const sx = mix(bx, tx, br.t);
+    const sy = mix(0, ty, br.t);
+    const sz = mix(bz, tz, br.t);
+    const len = br.len * growth;
+    const ex = sx + cos(br.angle * br.side) * len;
+    const ey = sy + sin(br.angle) * len * 0.35;
+    const ez = sz + sin(br.angle * br.side) * len * 0.5;
+    const t = this.rng.range(0, 1);
+    this.pushMark(
+      garden,
+      mix(sx, ex, t) + jitter(this.rng, 0.1),
+      mix(sy, ey, t) + jitter(this.rng, 0.1),
+      mix(sz, ez, t) + jitter(this.rng, 0.1),
+      pal.stem,
+      0.4 + this.rng.range(0, 0.3)
+    );
+  }
+
+  petalMark(garden, cx, cy, cz, growth, pal, now) {
+    if (growth < 0.55) return;
+    const ring = this.rng.range(0.2, 1);
+    const ang = this.hueShift + (this.rng.next() * TAU) / this.petals * floor(this.rng.range(0, this.petals));
+    const rad = this.spread * ring * growth;
+    const x = cx + cos(ang) * rad + jitter(this.rng, 0.25);
+    const y = cy + jitter(this.rng, 0.35);
+    const z = cz + sin(ang) * rad * 0.72 + jitter(this.rng, 0.25);
+    const pulse = 0.5 + 0.5 * sin(now * 0.002 + ang * 3);
+    const c = this.rng.next() < 0.5 ? pal.petalA : pal.petalB;
+    this.pushMark(garden, x, y, z, c, 0.25 + pulse * 0.45);
+    if (ring < 0.35) {
+      this.pushMark(
+        garden,
+        cx + jitter(this.rng, 0.4),
+        cy + jitter(this.rng, 0.3),
+        cz + jitter(this.rng, 0.4),
+        pal.core,
+        0.5 + pulse * 0.3
+      );
+    }
+  }
+
+  leafCloud(garden, bx, bz, tx, ty, tz, growth, pal) {
+    const t = this.rng.range(0.15, growth * 0.9);
+    this.pushMark(
+      garden,
+      mix(bx, tx, t) + jitter(this.rng, 0.8),
+      mix(0, ty, t) + jitter(this.rng, 0.6),
+      mix(bz, tz, t) + jitter(this.rng, 0.8),
+      pal.leaf,
+      0.2 + this.rng.range(0, 0.35)
+    );
+  }
+
+  screenPick(nx, ny, camera, w, h) {
+    const v = new THREE.Vector3(this.headX, this.headY * 0.5, this.headZ);
+    v.project(camera);
+    const sx = (v.x * 0.5 + 0.5) * w;
+    const sy = (-v.y * 0.5 + 0.5) * h;
+    const head = new THREE.Vector3(this.headX, this.headY, this.headZ).project(camera);
+    const hx = (head.x * 0.5 + 0.5) * w;
+    const hy = (-head.y * 0.5 + 0.5) * h;
+    const px = (nx * 0.5 + 0.5) * w;
+    const py = (-ny * 0.5 + 0.5) * h;
+    const r = this.spread * this.growth * 28 + 22;
+    const dx = px - hx;
+    const dy = py - hy;
+    if (dx * dx + dy * dy < r * r) return dx * dx + dy * dy;
+    const dx2 = px - sx;
+    const dy2 = py - sy;
+    const stemR = 18;
+    if (this.growth > 0.08 && dx2 * dx2 + dy2 * dy2 < stemR * stemR) return dx2 * dx2 + dy2 * dy2;
+    if (this.growth < 0.12) {
+      const bx = new THREE.Vector3(this.baseX, 0, this.baseZ).project(camera);
+      const bpx = (bx.x * 0.5 + 0.5) * w;
+      const bpy = (-bx.y * 0.5 + 0.5) * h;
+      const ddx = px - bpx;
+      const ddy = py - bpy;
+      if (ddx * ddx + ddy * ddy < 20 * 20) return ddx * ddx + ddy * ddy;
+    }
+    return null;
+  }
+}
+
+class Bed {
+  constructor(cx, cz, seed) {
+    this.cx = cx;
+    this.cz = cz;
+    this.seed = seed;
+    this.flowers = [];
+    this.rng = new Rand(seed);
+    const n = 3 + this.rng.int(0, 5);
+    for (let i = 0; i < n; i++) {
+      const ang = (i / n) * TAU + this.rng.range(-0.4, 0.4);
+      const dist = this.rng.range(0, 4.2);
+      this.plant(
+        cx + cos(ang) * dist,
+        cz + sin(ang) * dist * 0.35,
+        (seed + i * 9973) | 0,
+        performance.now()
+      );
+    }
+  }
+
+  plant(x, z, seed, now) {
+    this.flowers.push(new Flower(x, z, seed, now - this.rng.range(0, 8000)));
+  }
+}
+
+class GardenGPU {
+  constructor() {
+    this.capacity = 65536;
+    this.count = 0;
+    this.positions = new Float32Array(this.capacity * 3);
+    this.colors = new Float32Array(this.capacity * 4);
+    this.dirty = false;
+
+    this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
+    this.renderer.setClearColor(0xffffff, 1);
+    this.renderer.setPixelRatio(min(window.devicePixelRatio || 1, 2));
+    document.body.appendChild(this.renderer.domElement);
+
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(42, 1, 0.1, 400);
+    this.lookAt = new THREE.Vector3(0, 3.5, 0);
+
+    const sq = document.createElement('canvas');
+    sq.width = sq.height = 2;
+    const sctx = sq.getContext('2d');
+    sctx.fillStyle = '#fff';
+    sctx.fillRect(0, 0, 2, 2);
+    const map = new THREE.CanvasTexture(sq);
+    map.magFilter = THREE.NearestFilter;
+    map.minFilter = THREE.NearestFilter;
+
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
+    geom.setAttribute('color', new THREE.BufferAttribute(this.colors, 4));
+    geom.setDrawRange(0, 0);
+
+    this.pointsMat = new THREE.PointsMaterial({
+      map,
+      size: 1,
+      sizeAttenuation: false,
+      vertexColors: true,
+      transparent: true,
+      opacity: 1,
+      alphaTest: 0.02,
+      depthWrite: true,
+    });
+    this.points = new THREE.Points(geom, this.pointsMat);
+    this.scene.add(this.points);
+
+    this.selCapacity = 64;
+    this.selPos = new Float32Array(this.selCapacity * 3);
+    this.selCol = new Float32Array(this.selCapacity * 4);
+    const selGeom = new THREE.BufferGeometry();
+    selGeom.setAttribute('position', new THREE.BufferAttribute(this.selPos, 3));
+    selGeom.setAttribute('color', new THREE.BufferAttribute(this.selCol, 4));
+    this.selPoints = new THREE.Points(selGeom, this.pointsMat.clone());
+    this.selPoints.material.color.setHex(0xffffff);
+    this.scene.add(this.selPoints);
+
+    this.groundCount = 0;
+    this.groundPos = new Float32Array(4096 * 3);
+    this.groundCol = new Float32Array(4096 * 4);
+    const gGeom = new THREE.BufferGeometry();
+    gGeom.setAttribute('position', new THREE.BufferAttribute(this.groundPos, 3));
+    gGeom.setAttribute('color', new THREE.BufferAttribute(this.groundCol, 4));
+    this.ground = new THREE.Points(gGeom, this.pointsMat.clone());
+    this.scene.add(this.ground);
+  }
+
+  reset() {
+    this.count = 0;
+    this.dirty = true;
+  }
+
+  addPoint(x, y, z, r, g, b, a) {
+    if (this.count >= this.capacity) {
+      this.capacity *= 2;
+      const np = new Float32Array(this.capacity * 3);
+      const nc = new Float32Array(this.capacity * 4);
+      np.set(this.positions);
+      nc.set(this.colors);
+      this.positions = np;
+      this.colors = nc;
+      this.points.geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
+      this.points.geometry.setAttribute('color', new THREE.BufferAttribute(this.colors, 4));
+    }
+    const i = this.count++;
+    this.positions[i * 3] = x;
+    this.positions[i * 3 + 1] = y;
+    this.positions[i * 3 + 2] = z;
+    this.colors[i * 4] = r;
+    this.colors[i * 4 + 1] = g;
+    this.colors[i * 4 + 2] = b;
+    this.colors[i * 4 + 3] = a;
+    this.dirty = true;
+  }
+
+  buildGround(t) {
+    let n = 0;
+    const rad = 34;
+    for (let x = -rad; x <= rad; x += 1) {
+      for (let z = -rad; z <= rad; z += 1) {
+        if (x * x + z * z > rad * rad) continue;
+        if (n >= 4096) break;
+        const w = sin(x * 0.35 + t * 0.0001) * 0.04;
+        this.groundPos[n * 3] = x;
+        this.groundPos[n * 3 + 1] = w;
+        this.groundPos[n * 3 + 2] = z;
+        this.groundCol[n * 4] = 210 / 255;
+        this.groundCol[n * 4 + 1] = 215 / 255;
+        this.groundCol[n * 4 + 2] = 205 / 255;
+        this.groundCol[n * 4 + 3] = 0.1;
+        n++;
+      }
+    }
+    this.groundCount = n;
+    this.ground.geometry.setDrawRange(0, n);
+    this.ground.geometry.attributes.position.needsUpdate = true;
+    this.ground.geometry.attributes.color.needsUpdate = true;
+  }
+
+  updateSelection(flower, pal) {
+    if (!flower) {
+      this.selPoints.geometry.setDrawRange(0, 0);
+      return;
+    }
+    const g = max(0.2, flower.growth);
+    const r = flower.spread * g + 2.2;
+    let n = 0;
+    const c = pal.pick;
+    for (let i = 0; i < 28 && n < this.selCapacity; i++) {
+      const a = (i / 28) * TAU;
+      this.selPos[n * 3] = flower.headX + cos(a) * r;
+      this.selPos[n * 3 + 1] = flower.headY + sin(a * 0.5) * 0.4;
+      this.selPos[n * 3 + 2] = flower.headZ + sin(a) * r * 0.72;
+      this.selCol[n * 4] = c[0] / 255;
+      this.selCol[n * 4 + 1] = c[1] / 255;
+      this.selCol[n * 4 + 2] = c[2] / 255;
+      this.selCol[n * 4 + 3] = 0.65;
+      n++;
+    }
+    if (n < this.selCapacity) {
+      this.selPos[n * 3] = flower.baseX;
+      this.selPos[n * 3 + 1] = 0.05;
+      this.selPos[n * 3 + 2] = flower.baseZ;
+      this.selCol[n * 4] = c[0] / 255;
+      this.selCol[n * 4 + 1] = c[1] / 255;
+      this.selCol[n * 4 + 2] = c[2] / 255;
+      this.selCol[n * 4 + 3] = 0.9;
+      n++;
+    }
+    this.selPoints.geometry.setDrawRange(0, n);
+    this.selPoints.geometry.attributes.position.needsUpdate = true;
+    this.selPoints.geometry.attributes.color.needsUpdate = true;
+  }
+
+  flush() {
+    if (!this.dirty) return;
+    this.points.geometry.setDrawRange(0, this.count);
+    this.points.geometry.attributes.position.needsUpdate = true;
+    this.points.geometry.attributes.color.needsUpdate = true;
+    this.dirty = false;
+  }
+
+  resize() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    this.renderer.setSize(w, h);
+    this.camera.aspect = w / max(h, 1);
+    this.camera.updateProjectionMatrix();
+    this.width = w;
+    this.height = h;
+  }
+
+  render() {
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  setCamera(yaw, pitch, dist) {
+    const cp = cos(pitch);
+    const sp = sin(pitch);
+    const cy = cos(yaw);
+    const sy = sin(yaw);
+    this.camera.position.set(cy * cp * dist, sp * dist + 2, sy * cp * dist);
+    this.camera.lookAt(this.lookAt);
+  }
+
+  rayToGround(clientX, clientY) {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    const nx = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const ny = -((clientY - rect.top) / rect.height) * 2 + 1;
+    const ray = new THREE.Raycaster();
+    ray.setFromCamera({ x: nx, y: ny }, this.camera);
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const hit = new THREE.Vector3();
+    if (!ray.ray.intersectPlane(plane, hit)) return null;
+    if (hit.x * hit.x + hit.z * hit.z > 34 * 34) return null;
+    return hit;
+  }
+}
+
+let beds = [];
+let garden = null;
+let selected = null;
+let showHint = true;
+let globalSeed = (Date.now() & 0xfffffff) | 1;
+let seasonPhase = 0;
+let lastT = 0;
+
+const orbit = {
+  autoYaw: 0,
+  userYaw: 0,
+  pitch: 0.32,
+  dist: 48,
+  autoSpeed: 0.14,
+};
+
+let drag = null;
+
+const seedBeds = () => {
+  beds = [];
+  garden.reset();
+  const rng = new Rand(globalSeed);
+  const n = 5 + rng.int(0, 3);
+  for (let i = 0; i < n; i++) {
+    const ang = (i / n) * TAU + rng.range(-0.5, 0.5);
+    const d = rng.range(6, 22);
+    beds.push(new Bed(cos(ang) * d, sin(ang) * d, (globalSeed + i * 7919) | 0));
+  }
+};
+
+const pointerNorm = (clientX, clientY) => {
+  const rect = garden.renderer.domElement.getBoundingClientRect();
+  return {
+    nx: ((clientX - rect.left) / rect.width) * 2 - 1,
+    ny: -((clientY - rect.top) / rect.height) * 2 + 1,
+  };
+};
+
+const pickFlower = (clientX, clientY, now) => {
+  const { nx, ny } = pointerNorm(clientX, clientY);
+  let best = null;
+  let bestD = Infinity;
+  for (const bed of beds) {
+    for (const flower of bed.flowers) {
+      flower.layout(now);
+      const d = flower.screenPick(nx, ny, garden.camera, garden.width, garden.height);
+      if (d !== null && d < bestD) {
+        bestD = d;
+        best = { flower, bed };
+      }
+    }
+  }
+  return best;
+};
+
+const nearestBed = (x, z) => {
+  let best = null;
+  let bestD = 10 * 10;
+  for (const bed of beds) {
+    const dx = bed.cx - x;
+    const dz = bed.cz - z;
+    const d2 = dx * dx + dz * dz;
+    if (d2 < bestD) { bestD = d2; best = bed; }
+  }
+  return best;
+};
+
+const frame = (now) => {
+  const dt = min(0.05, (now - lastT) / 1000);
+  lastT = now;
+
+  if (!drag || drag.mode !== 'orbit') {
+    orbit.autoYaw += orbit.autoSpeed * dt;
+  }
+
+  garden.setCamera(orbit.autoYaw + orbit.userYaw, orbit.pitch, orbit.dist);
+  garden.buildGround(now);
+
+  const pal = seasonPalette(now, seasonPhase);
+  for (const bed of beds) {
+    for (const flower of bed.flowers) {
+      flower.grow(now, pal, garden);
+    }
+  }
+
+  garden.flush();
+  garden.updateSelection(selected?.flower ?? null, pal);
+  garden.render();
+  requestAnimationFrame(frame);
+};
+
+const endDrag = (e) => {
+  if (!drag) return;
+  const now = performance.now();
+
+  if (drag.mode === 'orbit' && !drag.moved) {
+    const hit = pickFlower(e.clientX, e.clientY, now);
+    if (hit) {
+      selected = hit;
+    } else {
+      const ground = garden.rayToGround(e.clientX, e.clientY);
+      if (ground) {
+        const seed = ((ground.x * 73856093) ^ (ground.z * 19349663) ^ globalSeed) | 0;
+        const bed = nearestBed(ground.x, ground.z);
+        if (bed && (bed.cx - ground.x) ** 2 + (bed.cz - ground.z) ** 2 < 12 * 12) {
+          bed.plant(ground.x, ground.z, seed, now);
+          selected = { flower: bed.flowers[bed.flowers.length - 1], bed };
+        } else {
+          const nb = new Bed(ground.x, ground.z, seed);
+          beds.push(nb);
+          selected = { flower: nb.flowers[nb.flowers.length - 1], bed: nb };
+        }
+      }
+    }
+  } else if (drag.mode === 'flower' && drag.moved) {
+    const ground = garden.rayToGround(e.clientX, e.clientY);
+    if (ground) {
+      const target = nearestBed(ground.x, ground.z);
+      if (target && target !== drag.bed) {
+        target.plant(ground.x, ground.z, (drag.flower.seed ^ target.seed) | 0, now);
+        drag.bed.flowers = drag.bed.flowers.filter((f) => f !== drag.flower);
+        selected = { flower: target.flowers[target.flowers.length - 1], bed: target };
+      }
+    }
+  } else if (drag.mode === 'flower' && !drag.moved) {
+    selected = { flower: drag.flower, bed: drag.bed };
+  }
+
+  drag = null;
+};
+
+const onPointerDown = (e) => {
+  const now = performance.now();
+  const hit = pickFlower(e.clientX, e.clientY, now);
+  if (hit) {
+    drag = {
+      mode: 'flower',
+      x: e.clientX,
+      y: e.clientY,
+      moved: false,
+      flower: hit.flower,
+      bed: hit.bed,
+      ox: hit.flower.x,
+      oz: hit.flower.z,
+    };
+    selected = hit;
+  } else {
+    drag = {
+      mode: 'orbit',
+      x: e.clientX,
+      y: e.clientY,
+      moved: false,
+      userYaw0: orbit.userYaw,
+      pitch0: orbit.pitch,
+    };
+  }
+  garden.renderer.domElement.setPointerCapture(e.pointerId);
+  e.preventDefault();
+};
+
+const onPointerMove = (e) => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x;
+  const dy = e.clientY - drag.y;
+  if (abs(dx) + abs(dy) > 4) drag.moved = true;
+
+  if (drag.mode === 'orbit') {
+    orbit.userYaw = drag.userYaw0 + dx * 0.005;
+    orbit.pitch = max(-0.15, min(1.05, drag.pitch0 + dy * 0.004));
+  } else if (drag.mode === 'flower' && drag.moved) {
+    const ground = garden.rayToGround(e.clientX, e.clientY);
+    if (ground) {
+      drag.flower.x = ground.x;
+      drag.flower.z = ground.z;
+    }
+  }
+};
+
+const initInput = () => {
+  const el = garden.renderer.domElement;
+  el.addEventListener('pointerdown', onPointerDown);
+  el.addEventListener('pointermove', onPointerMove);
+  el.addEventListener('pointerup', endDrag);
+  el.addEventListener('pointercancel', endDrag);
+  el.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    orbit.dist = max(18, min(90, orbit.dist * (e.deltaY < 0 ? 0.94 : 1.06)));
+  }, { passive: false });
+};
+
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'h') {
+    showHint = !showHint;
+    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
+  }
+  if (k === 'r') {
+    globalSeed = (Date.now() & 0xfffffff) | 1;
+    orbit.autoYaw = 0;
+    orbit.userYaw = 0;
+    orbit.pitch = 0.32;
+    orbit.dist = 48;
+    selected = null;
+    seedBeds();
+  }
+});
+
+garden = new GardenGPU();
+garden.resize();
+seedBeds();
+initInput();
+window.addEventListener('resize', () => garden.resize());
+requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

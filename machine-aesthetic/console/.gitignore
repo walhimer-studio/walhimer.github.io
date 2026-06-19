@@ -1,0 +1,6 @@
+# Runtime PIDs and logs — created by Console launcher
+.console-run/
+
+# Local path overrides (copy from launch.env.example)
+launch.env
+openframeworks/GhostRoom77823/config.make.local

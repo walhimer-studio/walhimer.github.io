@@ -1,0 +1,36 @@
+---
+description: Mac/OpenFrameworks brain + embedded C++ LED receiver — never CircuitPython detours
+alwaysApply: true
+---
+
+# Mac brain, C++ receiver — not CircuitPython on the panel path
+
+When the user is building an **installation pipeline** (Mac / OpenFrameworks / generative brain, console LCD, LED as expression surface), follow this architecture unless they **explicitly** ask for a standalone fruit-object / CircuitPython appliance.
+
+## Default stack
+
+| Layer | Use | Do NOT use |
+|-------|-----|------------|
+| **Brain** | Mac — OpenFrameworks C++, Pure Data, Three.js prototype → same byte protocol | CircuitPython on Portal as brain |
+| **LED driver** | Matrix Portal M4 or Teensy — **minimal embedded C++** (Arduino + Protomatter) | CircuitPython, `code.py`, WebREPL, ampy |
+| **Deploy** | `arduino-cli compile` + `upload` | `CIRCUITPY` drag-drop, 18 Python iterations, `boot.py` / `usb_cdc` debugging |
+
+## Hard rules
+
+1. **If the user mentions C++, OpenFrameworks, or Mac as the brain — believe them on the first mention.** Do not redirect to “Python is easier on the Portal.”
+2. **Do not start or extend CircuitPython** (`code.py`, `boot.py`, Adafruit bundle, UF2 CircuitPython) for this pipeline unless the user explicitly requests a **separate** Gysin-style standalone object.
+3. **Portal is a dumb pixel receiver**, not where generative art lives. Same protocol the Mac sends: e.g. `0xAA 0x55` + 12288 RGB bytes.
+4. **One sketch, compile, upload, test.** No version churn (v7, v8, v13…). Fix the actual bug (e.g. missing `matrix.show()`).
+5. **Do not conflate two project types:**
+   - **Installation** (Mac mini + OF + LCD + LED) → Mac C++ + embedded receiver
+   - **Standalone object** (ESP32 / CircuitPython fruit project) → only when user names that goal
+
+## Before suggesting a different stack
+
+Ask once if unclear. If the user already chose Mac + OF + C++, **do not argue for Python**.
+
+## Proven path (Matrix Portal M4 + 64×64)
+
+- Sketch: `Adafruit_Protomatter`, `matrix.show()` after every draw
+- Flash: `arduino-cli upload -p /dev/cu.usbmodem* --fqbn adafruit:samd:adafruit_matrixportal_m4`
+- Sender: Chrome Web Serial or OF on Mac — **single USB serial port** (no dual `2101`/`2103` split)

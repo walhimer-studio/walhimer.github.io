@@ -116,10 +116,10 @@
     machinePivot.add(machineRoot);
     anchor.add(machinePivot);
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.65);
-    const dir1 = new THREE.DirectionalLight(0xffffff, 0.55);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+    const dir1 = new THREE.DirectionalLight(0xffffff, 1);
     dir1.position.set(350, -400, -1000);
-    const dir2 = new THREE.DirectionalLight(0xb4b4ff, 0.35);
+    const dir2 = new THREE.DirectionalLight(0xb4b4ff, 0.6);
     dir2.position.set(-300, 200, 1000);
     const lights = [ambient, dir1, dir2];
 
@@ -219,16 +219,24 @@
       return mat;
     }
 
-    function matFrom(x, y, z, baseHue, hueSpread, maxAlpha, t, stress) {
+    function liveStress(stressKind) {
+      if (stressKind === "ego") return state.egoStress;
+      if (stressKind === "attachment") return state.attachmentStress;
+      return state.angerStress;
+    }
+
+    function matFrom(x, y, z, baseHue, hueSpread, maxAlpha, t, stressKind) {
+      const stress = liveStress(stressKind);
       const fill = machineFill(x, y, z, baseHue, hueSpread, maxAlpha, t, stress);
-      return makeMat(fill, { x, y, z, baseHue, hueSpread, maxAlpha, stress });
+      return makeMat(fill, { x, y, z, baseHue, hueSpread, maxAlpha, stressKind });
     }
 
     function updateMaterials(t) {
       for (let i = 0; i < animatedMats.length; i++) {
         const mat = animatedMats[i];
         const m = mat.userData.fillMeta;
-        const fill = machineFill(m.x, m.y, m.z, m.baseHue, m.hueSpread, m.maxAlpha, t, m.stress);
+        const stress = liveStress(m.stressKind || "anger");
+        const fill = machineFill(m.x, m.y, m.z, m.baseHue, m.hueSpread, m.maxAlpha, t, stress);
         mat.color.copy(hsbColor(THREE, fill.h, fill.s, fill.b));
         mat.opacity = fill.a;
         mat.depthWrite = fill.a > 0.9;
@@ -254,11 +262,11 @@
       return (1 + stress * stress * 7) * lerp(1, 0.04, state.shadowAmount);
     }
 
-    function buildGearTeeth(parentG, radius, thickness, teeth, x, y, z, toothHue, maxAlpha, stress, t, axis) {
+    function buildGearTeeth(parentG, radius, thickness, teeth, x, y, z, toothHue, maxAlpha, stressKind, t, axis) {
       const tD = thickness * 1.1;
       const tW = (TAU * radius) / (teeth * 4);
       const tH = radius * 0.12;
-      const toothMat = matFrom(x, y, z, toothHue, 130, maxAlpha, t, stress);
+      const toothMat = matFrom(x, y, z, toothHue, 130, maxAlpha, t, stressKind);
       for (let i = 0; i < teeth; i++) {
         const a = (TAU * i) / teeth;
         const g = new THREE.Group();
@@ -293,7 +301,6 @@
     }
 
     function snapToFloor() {
-      if (!flat) return;
       anchor.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(anchor);
       if (box.isEmpty()) return;
@@ -311,7 +318,7 @@
         const j = jitter(state.egoStress);
         const g = new THREE.Group();
         g.position.set(x + j.x, y + h / 2 + j.y, z + j.z);
-        addBox(g, w, h, d, matFrom(x, y, z, 305, 110, 80, t, state.egoStress));
+        addBox(g, w, h, d, matFrom(x, y, z, 305, 110, 80, t, "ego"));
         machineRoot.add(g);
       }
 
@@ -338,7 +345,7 @@
         const g = new THREE.Group();
         g.position.set(x + j.x, y + j.y, z + j.z);
         g.rotation.x = Math.PI / 2;
-        addCyl(g, colR, colH, matFrom(x, y, z, 320, 90, 78, t, state.egoStress));
+        addCyl(g, colR, colH, matFrom(x, y, z, 320, 90, 78, t, "ego"));
         machineRoot.add(g);
         colPositions.push(new THREE.Vector3(x, -colH, z));
       }
@@ -358,9 +365,8 @@
         );
         g.rotation.y = rng.uniform(0, TAU);
         const px = g.position.x, py = g.position.y, pz = g.position.z;
-        const s = state.angerStress;
-        addCyl(g, r, thick, matFrom(px, py, pz, horizontal ? 15 : 25, horizontal ? 140 : 160, 80, t, s));
-        buildGearTeeth(g, r, thick, teeth, px, py, pz, horizontal ? 30 : 40, 82, s, t, horizontal ? "y" : "x");
+        addCyl(g, r, thick, matFrom(px, py, pz, horizontal ? 15 : 25, horizontal ? 140 : 160, 80, t, "anger"));
+        buildGearTeeth(g, r, thick, teeth, px, py, pz, horizontal ? 30 : 40, 82, "anger", t, horizontal ? "y" : "x");
         addSpinner(g, horizontal ? "y" : "x", rng.choice([-1, 1]) * rng.uniform(0.2, 0.8), "anger");
         machineRoot.add(g);
       }
@@ -376,10 +382,9 @@
         const g = new THREE.Group();
         g.position.set(mid.x + j.x, mid.y + rng.uniform(-40, 40) + j.y, mid.z + j.z);
         const px = g.position.x, py = g.position.y, pz = g.position.z;
-        const s = state.attachmentStress;
-        addCyl(g, r, th * 0.5, matFrom(px, py, pz, 80, 130, 75, t, s));
+        addCyl(g, r, th * 0.5, matFrom(px, py, pz, 80, 130, 75, t, "attachment"));
         const inner = new THREE.Group();
-        addCyl(inner, r * 0.7, th * 1.2, matFrom(px, py, pz, 200, 90, 60, t, s));
+        addCyl(inner, r * 0.7, th * 1.2, matFrom(px, py, pz, 200, 90, 60, t, "attachment"));
         g.add(inner);
         addSpinner(g, "y", rng.choice([-1, 1]) * rng.uniform(0.4, 1), "attachment");
         machineRoot.add(g);
@@ -400,7 +405,7 @@
         const g = new THREE.Group();
         g.position.set(mid.x + jR.x, mid.y + jR.y, mid.z + jR.z);
         g.rotation.set(rotX, rotY, 0);
-        addCyl(g, radius, len, matFrom(mid.x, mid.y, mid.z, 210, 160, 70, t, state.egoStress));
+        addCyl(g, radius, len, matFrom(mid.x, mid.y, mid.z, 210, 160, 70, t, "ego"));
         const rAng = richness(state.angerVal);
         const rAtt = richness(state.attachmentVal);
         const eff = rAtt <= 0 ? 0 : rAng;
@@ -415,8 +420,8 @@
           const attG = new THREE.Group();
           attG.position.y = ((idx + 1) / (total + 1) - 0.5) * len;
           const isG = kind === "gear";
-          const aS = isG ? state.angerStress : state.attachmentStress;
-          const jA = jitter(aS);
+          const stressKind = isG ? "anger" : "attachment";
+          const jA = jitter(liveStress(stressKind));
           attG.position.x += jA.x;
           attG.position.y += jA.y;
           attG.position.z += jA.z;
@@ -425,13 +430,13 @@
           const horiz = rng.random() < 0.5;
           attG.rotation[horiz ? "y" : "x"] = rng.uniform(0, TAU);
           if (isG) {
-            addCyl(attG, attR, attT, matFrom(0, 0, 0, horiz ? 15 : 25, 150, 80, t, aS));
-            buildGearTeeth(attG, attR, attT, rng.randint(6, 14), 0, 0, 0, 30, 82, aS, t, horiz ? "y" : "x");
+            addCyl(attG, attR, attT, matFrom(0, 0, 0, horiz ? 15 : 25, 150, 80, t, stressKind));
+            buildGearTeeth(attG, attR, attT, rng.randint(6, 14), 0, 0, 0, 30, 82, stressKind, t, horiz ? "y" : "x");
             addSpinner(attG, horiz ? "y" : "x", rng.choice([-1, 1]) * rng.uniform(0.3, 1), "anger");
           } else {
-            addCyl(attG, attR, attT * 0.5, matFrom(0, 0, 0, 80, 130, 75, t, aS));
+            addCyl(attG, attR, attT * 0.5, matFrom(0, 0, 0, 80, 130, 75, t, stressKind));
             const in2 = new THREE.Group();
-            addCyl(in2, attR * 0.7, attT * 1.1, matFrom(0, 0, 0, 200, 90, 60, t, aS));
+            addCyl(in2, attR * 0.7, attT * 1.1, matFrom(0, 0, 0, 200, 90, 60, t, stressKind));
             attG.add(in2);
             addSpinner(attG, "y", rng.choice([-1, 1]) * rng.uniform(0.3, 1), "attachment");
           }
@@ -521,7 +526,7 @@
       updateMaterials(t);
       drawStatic(t);
 
-      const lightBright = lerp(0.65, 0.4, state.shadowAmount);
+      const lightBright = lerp(0.8, 0.5, state.shadowAmount);
       ambient.intensity = lightBright;
       dir1.visible = dir2.visible = state.shadowAmount < 1;
     }

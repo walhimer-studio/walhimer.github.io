@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Stack POC · Controller</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: #eee;
+      padding: 1rem;
+      min-height: 100dvh;
+    }
+    h1 { font-size: 1.1rem; font-weight: 600; margin: 0 0 0.25rem; }
+    .sub { font-size: 0.8rem; color: #888; margin-bottom: 1.25rem; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #444; margin-right: 6px; vertical-align: middle; }
+    .dot.on { background: #4ade80; }
+    label { display: block; font-size: 0.75rem; color: #aaa; margin: 1rem 0 0.35rem; }
+    input[type="range"] { width: 100%; accent-color: #fff; }
+    .val { float: right; color: #fff; }
+    button {
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.85rem;
+      border: 1px solid #444;
+      background: #222;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button:active { background: #333; }
+  </style>
+</head>
+<body>
+  <h1>Stack POC</h1>
+  <p class="sub"><span class="dot" id="conn"></span>Firebase → OSC → Pd</p>
+
+  <label>Seed <span class="val" id="seedVal">77823</span></label>
+  <input type="range" id="seed" min="1000" max="99999" step="1" value="77823" />
+
+  <label>Energy <span class="val" id="energyVal">0.72</span></label>
+  <input type="range" id="energy" min="0" max="100" step="1" value="72" />
+
+  <label>Mood <span class="val" id="moodVal">0.45</span></label>
+  <input type="range" id="mood" min="0" max="100" step="1" value="45" />
+
+  <button type="button" id="reseed">New random seed</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+    let configMod;
+    try {
+      configMod = await import("./firebase-config.local.mjs");
+    } catch {
+      configMod = await import("./firebase-config.example.mjs");
+    }
+    const { firebaseConfig, RTDB_PATH } = configMod;
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const stateRef = ref(db, RTDB_PATH);
+
+    const seedEl = document.getElementById("seed");
+    const energyEl = document.getElementById("energy");
+    const moodEl = document.getElementById("mood");
+    const conn = document.getElementById("conn");
+
+    function readUi() {
+      return {
+        seed: Number(seedEl.value),
+        energy: Number(energyEl.value) / 100,
+        mood: Number(moodEl.value) / 100,
+        ts: Date.now(),
+      };
+    }
+
+    function syncLabels() {
+      document.getElementById("seedVal").textContent = seedEl.value;
+      document.getElementById("energyVal").textContent = (Number(energyEl.value) / 100).toFixed(2);
+      document.getElementById("moodVal").textContent = (Number(moodEl.value) / 100).toFixed(2);
+    }
+
+    let pushing = false;
+
+    async function push() {
+      pushing = true;
+      syncLabels();
+      try {
+        await set(stateRef, readUi());
+        conn.classList.add("on");
+      } catch (e) {
+        conn.classList.remove("on");
+        console.error(e);
+      }
+      pushing = false;
+    }
+
+    onValue(stateRef, (snap) => {
+      const d = snap.val();
+      if (!d || pushing) return;
+      if (d.seed != null) seedEl.value = d.seed;
+      if (d.energy != null) energyEl.value = Math.round(d.energy * 100);
+      if (d.mood != null) moodEl.value = Math.round(d.mood * 100);
+      syncLabels();
+      conn.classList.add("on");
+    });
+
+    for (const el of [seedEl, energyEl, moodEl]) {
+      el.addEventListener("input", () => { syncLabels(); push(); });
+    }
+
+    document.getElementById("reseed").addEventListener("click", () => {
+      seedEl.value = String(10000 + Math.floor(Math.random() * 89999));
+      push();
+    });
+
+    syncLabels();
+    push();
+  </script>
+</body>
+</html>

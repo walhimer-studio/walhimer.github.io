@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ghost Room 77823 — Console</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="panel">
+    <header>
+      <p class="eyebrow">Console · Emergent DNA</p>
+      <h1>Ghost Room 77823</h1>
+      <p class="lede">openFrameworks + Pure Data + OSC — seed <strong id="seed">77823</strong></p>
+    </header>
+
+    <section class="stack" aria-label="Launch">
+      <button type="button" class="primary" id="btn-native">
+        Launch native walkthrough
+      </button>
+      <p class="hint">Pure Data sound + openFrameworks Room A → B → C</p>
+
+      <button type="button" class="secondary" id="btn-browser">
+        Launch browser room (Phase 0)
+      </button>
+      <p class="hint">Chromium artwork + keyboard OSC bridge — same <code>/sm/*</code> addresses</p>
+
+      <button type="button" class="ghost" id="btn-stop">Stop Pd / OF / bridge</button>
+    </section>
+
+    <section class="status" aria-live="polite">
+      <h2>Status</h2>
+      <ul id="status-list">
+        <li>Loading…</li>
+      </ul>
+    </section>
+
+    <section class="osc">
+      <h2>OSC</h2>
+      <p>UDP <code id="osc-endpoint">127.0.0.1:7400</code></p>
+      <p class="small">Zones, branch, spin, surrender, gear hz, stress — see <code>machine-aesthetic/docs/OSC.md</code></p>
+    </section>
+
+    <footer>
+      <p class="small">Turn <strong>DSP on</strong> in Pure Data after launch. Walk: WASD · drag look · F fullscreen (native).</p>
+    </footer>
+  </main>
+  <div id="toast" role="status" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

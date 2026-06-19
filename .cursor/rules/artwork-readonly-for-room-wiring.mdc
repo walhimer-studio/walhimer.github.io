@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Artwork is read-only for room / walkthrough wiring
 
+**Enforcement:** `.cursor/rules/artwork-violation-enforcement.mdc` — violation lock, mandatory revert, incident log. Log: `.cursor/incidents/artwork-violations.md`.
+
 When the user names an artwork file (HTML sketch, p5 page, installation page) and asks to put it **in a room** or **match** it elsewhere:
 
 ## Hard stops — never without explicit user request

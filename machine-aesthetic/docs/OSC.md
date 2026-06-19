@@ -28,6 +28,28 @@ Prefix: **`/sm`** (Surrender Machines). Extend with role segments.
 | `/sm/seat/present` | `i` (0/1) | optional |
 | `/sm/seat/calm` | `f` 0–1 | derived metric |
 
+### Console (physical POC)
+
+| Address | Args | Notes |
+|---------|------|--------|
+| `/sm/console/ready` | `i` (1) | on boot |
+| `/sm/console/seed` | `i` | species seed (e.g. `77823`) |
+| `/sm/console/branch` | `s` | `room_a` · `ghost` · `surrender` |
+
+See [console/README.md](../console/README.md) for full Console POC map (`/sm/gear/hz`, etc.).
+
+### Ghost Room 77823 (Phase 0 port — console/bridge)
+
+| Address | Args | Notes |
+|---------|------|--------|
+| `/sm/ghost/ready` | `i` (1) | bridge or OF host boot |
+| `/sm/ghost/seed` | `i` | default `77823` |
+| `/sm/ghost/zone` | `s` | `approach_a` · `room_a` · `hall_ab` · `room_b` · `hall_bc` · `room_c` |
+| `/sm/ghost/spin_active` | `i` (0/1) | ghost wireframe spin band |
+| `/sm/ghost/surrender_active` | `i` (0/1) | Room C surrender zone |
+
+See [console/port/ROOM-MAP.md](../console/port/ROOM-MAP.md).
+
 ### DNA / parameters (slow — prefer Python or OF, not PD audio thread)
 
 | Address | Args | Notes |

@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mark-walhimer.com/program/drops.schema.json",
+  "title": "ProgramDrop",
+  "description": "One daily mint candidate — generate, approve, pin, mint, publish. See ADMIN.md, CATALOG.md.",
+  "type": "object",
+  "required": ["date", "series", "status", "skipped"],
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Drop date YYYY-MM-DD"
+    },
+    "series": {
+      "type": "string",
+      "description": "Program rotation or catalog series name",
+      "enum": [
+        "Letting Go",
+        "One by One",
+        "2x2",
+        "Pick Up Sticks",
+        "Surrender Machines",
+        "Bloom / Four Walls",
+        "Technical Drawing",
+        "Emergent DNA",
+        "Traveling Landscape",
+        "Moon & Walking",
+        "Living Commons",
+        "Light Art",
+        "Breathing Columns",
+        "Spatial Orchestration",
+        "Shared Ground",
+        "Emergent Discs"
+      ]
+    },
+    "seriesTier": {
+      "type": "integer",
+      "enum": [1, 2, 3],
+      "description": "Catalog tier — see SERIES.md"
+    },
+    "dayOfYear": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 366
+    },
+    "catalogNumber": {
+      "type": "string",
+      "pattern": "^WS-[0-9]{6}$"
+    },
+    "title": {
+      "type": "string",
+      "description": "e.g. Letting Go · WS-000087"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "workUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "availability": {
+      "type": "string",
+      "enum": ["available", "minted", "skipped"],
+      "description": "Public catalog badge"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "minted",
+        "published",
+        "skipped"
+      ]
+    },
+    "skipped": { "type": "boolean" },
+    "skipReason": { "type": "string" },
+    "anchor": { "type": "string" },
+    "theme": {
+      "type": "string",
+      "enum": [
+        "focus_perception",
+        "cloud_chamber",
+        "quantum_wave",
+        "singularity",
+        "surrender",
+        "machine",
+        ""
+      ]
+    },
+    "generator": {
+      "type": "string",
+      "enum": ["p5", "three.js", "openFrameworks", "pure_data", "other"]
+    },
+    "medium": {
+      "type": "string",
+      "description": "Display string e.g. Three.js · P5.js"
+    },
+    "seed": { "type": ["string", "number"] },
+    "assets": {
+      "type": "object",
+      "properties": {
+        "master": { "type": "string" },
+        "og": { "type": "string" },
+        "instagram": { "type": "string" },
+        "x": { "type": "string" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "tokenUri": { "type": "string", "format": "uri" },
+        "arweaveId": { "type": "string" },
+        "ipfsCid": { "type": "string" }
+      }
+    },
+    "post1": {
+      "type": "object",
+      "properties": {
+        "x": { "type": "string" },
+        "instagram": { "type": "string" },
+        "publishedAt": { "type": "string", "format": "date-time" },
+        "skipped": { "type": "boolean" }
+      }
+    },
+    "post2": {
+      "type": "object",
+      "properties": {
+        "x": { "type": "string" },
+        "instagram": { "type": "string" },
+        "newsletterBlurb": { "type": "string" },
+        "storyInscription": { "type": "string" }
+      }
+    },
+    "social": {
+      "type": "object",
+      "description": "Admin analytics — optional",
+      "properties": {
+        "resonance": {
+          "type": "string",
+          "enum": ["high", "medium", "low", ""]
+        },
+        "action": {
+          "type": "string",
+          "enum": ["submit_competition", "develop_further", "revise", ""]
+        }
+      }
+    },
+    "mint": {
+      "type": "object",
+      "properties": {
+        "platform": {
+          "type": "string",
+          "enum": ["transient_labs"],
+          "description": "Default; manifold deprecated unless explicitly used"
+        },
+        "contract": { "type": "string" },
+        "tokenId": { "type": ["integer", "null"] },
+        "txHash": { "type": "string" },
+        "priceEth": { "type": "string" },
+        "mintedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "approved": { "type": "boolean" },
+    "approvedAt": { "type": "string", "format": "date-time" }
+  }
+}

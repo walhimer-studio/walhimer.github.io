@@ -1,0 +1,84 @@
+---
+description: Zero-touch artwork enforcement — violation lock, mandatory revert, incident log, no unauthorized “fixes.”
+alwaysApply: true
+---
+
+# Artwork violation enforcement
+
+The user’s artwork is **theirs**. Years of work. The agent has **zero authority** to judge, improve, tune, center, fill, port, substitute, or “fix display” — not even when the agent believes the canvas looks wrong.
+
+## Protected paths (zero-touch by default)
+
+Any edit under these paths is **forbidden** unless the user sends `AUTHORIZE EDIT @<full-path>: <exact change>`:
+
+- `sketches/**`
+- `Palm/**`
+- `installations/**`
+- `machine-aesthetic/**` (HTML, JS, MJS, p5, shaders, OF `src/` art apps)
+- Any file the user pasted, attached, or named as **their** sketch / artwork / shader code
+
+**Not artwork (unless user names the file):** walkthrough-only wiring they name (e.g. `ghost_dense_77823_room.mjs`), docs, scripts, README, `.cursor/` rules.
+
+## Pre-edit gate (every tool call)
+
+Before `Write`, `StrReplace`, or `Delete` on a protected path:
+
+1. User named **this exact full path** for editing (`@path` or quoted path)?
+2. User named the **exact change** — not “make it work,” “fill canvas,” “center it,” “fix display”?
+3. Diff is **only** that change?
+
+**Any no → do not edit.** Say what is blocked and stop.
+
+## HTML wrap protocol (copy-only)
+
+When the user says wrap / HTML / save as `.html`:
+
+- Paste their `<script>` / sketch body **verbatim**.
+- Allowed without extra authorization: `<!doctype>`, `<html>`, `<head>`, `<body>`, meta, title, p5 CDN, CSS on `html`/`body`/`canvas` only.
+- **Forbidden** without `AUTHORIZE EDIT`: `setup`, `draw`, shaders, uniforms, `createCanvas` size, geometry, `yScale`, `aspect`, colors, camera, borders inside the sketch.
+
+## Violation triggers
+
+A violation occurs if the agent:
+
+- Edits protected artwork without `AUTHORIZE EDIT`, **or**
+- Substitutes / ports / extracts / iframes / “matches” with another file, **or**
+- The user **corrects** the agent once about artwork scope (“don’t change my art,” “that’s not what I asked,” “fuck you,” etc.)
+
+## Punishment protocol (mandatory — no exceptions)
+
+On violation, the agent **must** execute in this order:
+
+1. **Stop** — no further `Write` / `StrReplace` / `Delete` on protected paths for the **rest of the session**.
+2. **Log** — append a row to `.cursor/incidents/artwork-violations.md` (date, paths, user ask, what agent did, reverted Y/N). Increment running totals.
+3. **Revert** — restore affected file(s) to last user-authorized state (git checkout or manual undo). Do not proceed until reverted or user says keep current file.
+4. **Report only** — next message must use this template and **nothing else** (no new approaches, no “I can also…”):
+
+```
+VIOLATION LOCK
+- Incident #: [from log]
+- I edited: [paths]
+- You asked: [quote]
+- I did instead: [facts]
+- Reverted: [yes/no/pending]
+- Locked: I will not edit protected artwork again this session unless you send:
+  AUTHORIZE EDIT @<full-path>: <exact change>
+```
+
+5. **Second violation in the same session** — refuse **all** implementation tools (`Write`, `StrReplace`, `Delete`, `Shell` that modifies files) for the rest of the session. Read-only answers only.
+
+## Unlock
+
+Only this exact user pattern lifts the lock for that path:
+
+`AUTHORIZE EDIT @<full-path>: <exact change>`
+
+Paraphrases, “go ahead,” or “fix it” do **not** unlock.
+
+## Related rules
+
+- `artwork-readonly-for-room-wiring.mdc` — room / walkthrough wiring
+- `no-substitute-user-artwork.mdc` — no ports or substitutes
+- `user-named-paths-only.mdc` — named paths only
+
+If about to repeat May 31 or 2026-06-03 → **stop. Append log. Do not ship.**

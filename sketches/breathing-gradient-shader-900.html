@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>p5.js WEBGL — 900×900 breathing translucent gradient</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #ffffff;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      display: block;
+      outline: 1px solid #d0d0d0;
+    }
+  </style>
+</head>
+<body>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+
+  <script>
+// p5.js WEBGL — 900×900 breathing translucent gradient with white corners
+// Geometry-based fill with adjustable vertical scale (yScale)
+let gradShader;
+
+function setup() {
+  createCanvas(900, 900, WEBGL);
+  pixelDensity(2);
+  noStroke();
+  setAttributes('alpha', true);
+
+  const vert = `
+  precision mediump float;
+  attribute vec3 aPosition;
+  attribute vec2 aTexCoord;
+  varying vec2 vTexCoord;
+  void main() {
+    vTexCoord = aTexCoord;
+    gl_Position = vec4(aPosition, 1.0);
+  }`;
+
+  const frag = `
+  precision mediump float;
+  varying vec2 vTexCoord;
+  uniform vec2 uRes;
+  uniform float uTime;
+
+  vec3 vividColor(float t) {
+    float r = 0.5 + 0.5 * sin(t * 0.3 + 0.0);
+    float g = 0.5 + 0.5 * sin(t * 0.3 + 2.1);
+    float b = 0.5 + 0.5 * sin(t * 0.3 + 4.2);
+    return vec3(r, g, b);
+  }
+
+  void main() {
+    vec2 uv = vTexCoord * 2.0 - 1.0;
+    float T = uTime;
+
+    // Breathing radius
+    float breath = 0.5 + 0.5 * sin(T * 0.5);
+    float rBase = mix(1.2, 2.5, breath);
+
+    // Moving centers
+    vec2 p1 = vec2( sin(T * 0.2) * 0.6,  cos(T * 0.25) * 0.4 );
+    vec2 p2 = vec2( cos(T * 0.15) * 0.5, -sin(T * 0.1) * 0.5 );
+    vec2 p3 = vec2(-sin(T * 0.18) * 0.7,  cos(T * 0.22) * 0.3 );
+
+    // Duplicate pairs spread horizontally
+    float xSpread = 1.5;
+    vec2 p4 = p1 + vec2(xSpread, 0.0);
+    vec2 p5 = p2 - vec2(xSpread, 0.0);
+    vec2 p6 = p3 + vec2(-xSpread * 0.5, 0.0);
+
+    // Distance falloffs
+    float d1 = length(uv - p1) / rBase;
+    float d2 = length(uv - p2) / rBase;
+    float d3 = length(uv - p3) / rBase;
+    float d4 = length(uv - p4) / rBase;
+    float d5 = length(uv - p5) / rBase;
+    float d6 = length(uv - p6) / rBase;
+
+    float m1 = smoothstep(1.0, 0.0, d1);
+    float m2 = smoothstep(1.0, 0.0, d2);
+    float m3 = smoothstep(1.0, 0.0, d3);
+    float m4 = smoothstep(1.0, 0.0, d4);
+    float m5 = smoothstep(1.0, 0.0, d5);
+    float m6 = smoothstep(1.0, 0.0, d6);
+
+    // Color sets
+    vec3 col1 = vividColor(T + 0.0);
+    vec3 col2 = vividColor(T + 2.0);
+    vec3 col3 = vividColor(T + 4.0);
+    vec3 col4 = col1, col5 = col2, col6 = col3;
+
+    // Blend all six
+    vec3 col = (col1*m1 + col2*m2 + col3*m3 + col4*m4 + col5*m5 + col6*m6)
+             / (m1 + m2 + m3 + m4 + m5 + m6 + 0.001);
+
+    // Breathing brightness
+    float brightness = mix(0.7, 1.0, breath);
+    col *= brightness;
+
+    // White corners
+    vec2 corner = abs(uv);
+    float cornerBlend = smoothstep(0.3, 0.8, max(corner.x, corner.y));
+    col = mix(col, vec3(1.0), cornerBlend * 0.9);
+
+    // Translucency
+    float alpha = mix(0.4, 0.7, breath);
+    gl_FragColor = vec4(col, alpha);
+  }`;
+
+  gradShader = createShader(vert, frag);
+}
+
+function draw() {
+  clear();
+  shader(gradShader);
+  gradShader.setUniform('uRes', [width, height]);
+  gradShader.setUniform('uTime', millis() / 1000.0);
+
+  // --- geometry: full rectangular quad ---
+  const aspect = 1536 / 864;  // source artwork ratio (~1.78); square 900×900 canvas
+  const yScale = 1.8;           // increase for taller fill (1.0 = default)
+
+  beginShape(TRIANGLES);
+  vertex(-aspect, -yScale, 0, 0, 0);
+  vertex( aspect, -yScale, 0, 1, 0);
+  vertex( aspect,  yScale, 0, 1, 1);
+  vertex(-aspect, -yScale, 0, 0, 0);
+  vertex( aspect,  yScale, 0, 1, 1);
+  vertex(-aspect,  yScale, 0, 0, 1);
+  endShape();
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Raster / Spektrum — melt volume (Three.js)</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 2;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.5);
+      pointer-events: none;
+      max-width: 360px;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">
+    Three.js volume · 924 palette · R/G/B → X/Y/Z · melt spread in depth<br>
+    H hide · 1 RS · 2 R-only · 3 S-only · A auto · F front · drag = orbit
+  </div>
+  <script src="centered-924-data.js"></script>
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script>
+/**
+ * Three.js 3D volume (Chutes) + melt spread in the slice pass — not flat 2D feedback.
+ * Canvas2D motion map → volume atlas; neighbor smear + drip bleeds color through depth.
+ */
+const { floor, min, max, random, sqrt, pow } = Math;
+const THREE = window.THREE;
+
+const CENTERED_REF = CENTERED_924_SRC;
+
+const PAL = {
+  white: [255, 255, 255],
+  pink: [248, 229, 231],
+  yellow: [255, 255, 226],
+  skyBlue: [199, 225, 250],
+  lavender: [163, 162, 230],
+  blend: [106, 93, 173],
+  peach: [174, 187, 222],
+  magenta: [105, 100, 180],
+  mint: [153, 165, 207],
+  violet: [105, 94, 173],
+};
+
+const SPECTRUM = [];
+
+const rebuildSpectrum = () => {
+  SPECTRUM.length = 0;
+  SPECTRUM.push(
+    PAL.pink, PAL.yellow, PAL.skyBlue, PAL.lavender,
+    PAL.peach, PAL.magenta, PAL.mint, PAL.violet, PAL.blend
+  );
+};
+
+const applyCenteredSamples = (img) => {
+  const c = document.createElement('canvas');
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0);
+  const get = (x, y) => {
+    const d = ctx.getImageData(min(w - 1, max(0, floor(x))), min(h - 1, max(0, floor(y))), 1, 1).data;
+    return [d[0], d[1], d[2]];
+  };
+  const onCross = (r, g, b) => r + g + b < 742;
+  const cx = floor(w * 0.5);
+  const cy = floor(h * 0.5);
+  const spanH = [];
+  for (let x = 0; x < w; x++) {
+    const [r, g, b] = get(x, cy);
+    if (onCross(r, g, b)) spanH.push(x);
+  }
+  const spanV = [];
+  for (let y = 0; y < h; y++) {
+    const [r, g, b] = get(cx, y);
+    if (onCross(r, g, b)) spanV.push(y);
+  }
+  if (spanH.length > 8 && spanV.length > 8) {
+    const pickH = (t) => get(spanH[floor((spanH.length - 1) * t)], cy);
+    const pickV = (t) => get(cx, spanV[floor((spanV.length - 1) * t)]);
+    PAL.pink = pickH(0.03);
+    PAL.peach = pickH(0.2);
+    PAL.magenta = pickH(0.42);
+    PAL.blend = get(cx, cy);
+    PAL.violet = pickH(0.58);
+    PAL.yellow = pickH(0.97);
+    PAL.skyBlue = pickV(0.03);
+    PAL.mint = pickV(0.2);
+    PAL.lavender = pickV(0.97);
+    rebuildSpectrum();
+  }
+};
+
+rebuildSpectrum();
+
+const loadCenteredArtwork = (onReady) => {
+  const img = new Image();
+  img.onload = () => {
+    applyCenteredSamples(img);
+    onReady?.();
+  };
+  img.src = CENTERED_REF;
+};
+
+const rgb01 = (c) => [c[0] / 255, c[1] / 255, c[2] / 255];
+
+const Canvas2d = () => {
+  let ctx, width, height, scanners = [], layers = [], depthProbes = [];
+
+  const depthProbe = (x, y, size, life, b) => () => {
+    ctx.fillStyle = `rgba(0,0,${b},1)`;
+    ctx.fillRect(x, y, size, size);
+    return --life > 0;
+  };
+
+  const greenLevel = (time, opt) => {
+    if (!opt.auto) return [1, 2, 4][opt.mode] ?? 1;
+    return [1, 2, 4][floor(time / 90000) % 3];
+  };
+
+  const scanner = (x, y, size, dir, speed, life, g) => {
+    const d = [...dir];
+    return () => {
+      ctx.fillStyle = `rgba(0,${g},0,1)`;
+      ctx.fillRect(x, y, size, size);
+      x += d[0] * speed;
+      y += d[1] * speed;
+      if (d[0]) {
+        if (x < 0 || x > width - size) {
+          x = x < 0 ? 0 : width - size;
+          y += size * d[0];
+          d[0] *= -1;
+        }
+        if (y < -size || y >= height) life = 0;
+      }
+      if (d[1]) {
+        if (y < 0 || y > height - size) {
+          y = y < 0 ? 0 : height - size;
+          x += size * d[1];
+          d[1] *= -1;
+        }
+        if (x < -size || x >= width) life = 0;
+      }
+      return --life > 0;
+    };
+  };
+
+  const layer = (x, y, w, h, grid, life, c) => {
+    const pts = [[x, y]];
+    let yp = y;
+    let xp = x + w;
+    const edgeX = () => {
+      const s = 1 + floor(random() * 3);
+      const xs = Array.from({ length: s }, () => floor(random() * (w - grid) / grid) * grid).sort((a, b) => a - b);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += random() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    };
+    const edgeY = (reverse) => {
+      const s = 1 + floor(random() * 3);
+      const ys = Array.from({ length: s }, () => floor(random() * (h - grid) / grid) * grid)
+        .sort((a, b) => (reverse ? b - a : a - b));
+      for (let i = 0; i < s; i++) {
+        pts.push([xp, y + ys[i]]);
+        xp += random() < 0.5 ? grid : -grid;
+        pts.push([xp, y + ys[i]]);
+      }
+    };
+    if (y !== 0) edgeX();
+    pts.push([x + w, yp]);
+    xp = x + w;
+    if (x + w !== width) edgeY(false);
+    pts.push([xp, y + h]);
+    yp = y + h;
+    if (y + h !== height) {
+      const s = 1 + floor(random() * 3);
+      const xs = Array.from({ length: s }, () => floor(random() * (w - grid) / grid) * grid).sort((a, b) => b - a);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += random() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    }
+    pts.push([x, yp]);
+    xp = x;
+    if (x !== 0) {
+      edgeY(true);
+      pts[0] = [xp, y];
+    }
+    return () => {
+      ctx.fillStyle = `rgba(${c},0,0,1)`;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.closePath();
+      ctx.fill();
+      return --life > 0;
+    };
+  };
+
+  const init = () => {
+    ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  };
+
+  const setup = () => {
+    width = floor(window.innerWidth);
+    height = floor(window.innerHeight);
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+  };
+
+  const draw = (time, options) => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.globalCompositeOperation = 'source-over';
+    scanners = scanners.filter((fn) => fn());
+    ctx.globalCompositeOperation = 'lighter';
+    layers = layers.filter((fn) => fn());
+    depthProbes = depthProbes.filter((fn) => fn());
+
+    const cell = 16;
+    const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * 0.4);
+
+    if (depthProbes.length < cap * 0.35 && random() < 0.09) {
+      const x = floor(random() * floor((width - cell) / cell)) * cell;
+      const y = floor(random() * floor((height - cell) / cell)) * cell;
+      const b = pow(2, floor(random() * 4));
+      depthProbes.push(depthProbe(x, y, cell, (10 + floor(random() * 18)) * 32, b));
+    }
+
+    if (scanners.length < cap && random() < 0.14) {
+      const x = floor(random() * floor((width - cell) / cell)) * cell;
+      const y = floor(random() * floor((height - cell) / cell)) * cell;
+      const dir = random() < 0.5 ? [floor(random() * 2) * 2 - 1, 0] : [0, floor(random() * 2) * 2 - 1];
+      const speed = pow(2, floor(random() * 2));
+      const stride = pow(2, floor(random() * 2));
+      const g = greenLevel(time, options);
+      const n = dir[0]
+        ? 1 + floor(random() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
+        : 1 + floor(random() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
+      const life = (14 + floor(random() * 20)) * 32;
+      for (let i = 0; i < n; i++) {
+        scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+      }
+    }
+
+    const grid = 32;
+    if (layers.length < 4 && random() < 0.1) {
+      const cols = floor(width / grid);
+      const rows = floor(height / grid);
+      const vert = random() < 0.5;
+      const w = vert ? floor(cols * (0.2 + random() * 0.5)) * grid : width;
+      const h = vert ? height : floor(rows * (0.2 + random() * 0.5)) * grid;
+      let lx = random() < 0.5 ? 0 : width - w;
+      let ly = random() < 0.5 ? 0 : height - h;
+      if (random() < 0.3) {
+        lx = floor(random() * floor((width - w) / grid)) * grid;
+        ly = floor(random() * floor((height - h) / grid)) * grid;
+      }
+      layers.push(layer(lx, ly, w, h, grid, (8 + floor(random() * 16)) * 32, pow(2, floor(random() * 6))));
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+    return ctx.getImageData(0, 0, width, height);
+  };
+
+  return { init, setup, draw };
+};
+
+const SLICE_FRAG = [
+  'precision highp float;',
+  'uniform sampler2D buf, img, mot;',
+  'uniform float time;',
+  'uniform vec3 dims;',
+  'uniform float uSlice;',
+  'uniform int doRaster;',
+  'uniform int doSpectrum;',
+  'uniform vec3 specA, specB, specInk;',
+  'uniform float specAlphaAB, specAlphaInk, paletteVeil;',
+  'varying vec2 vUv;',
+  'vec2 atlasUV(vec2 uv, float z) { return vec2(uv.x, (z + uv.y) / dims.z); }',
+  'vec3 sampleVol(vec2 uv, float dz) { return texture2D(buf, atlasUV(uv, uSlice + dz)).rgb; }',
+  'float inkAmt(vec3 c) { return length(c - vec3(1.0)); }',
+  'vec3 meltSpread(vec2 uv) {',
+  '  vec2 px = vec2(1.0 / dims.x, 1.0 / dims.y);',
+  '  vec3 acc = vec3(0.0);',
+  '  float wsum = 0.0;',
+  '  for (int dy = -2; dy <= 2; dy++) {',
+  '    for (int dx = -2; dx <= 2; dx++) {',
+  '      for (int dz = -1; dz <= 1; dz++) {',
+  '        vec2 oxy = vec2(float(dx), float(dy)) * px;',
+  '        float oz = float(dz);',
+  '        vec3 s = sampleVol(uv + oxy, oz);',
+  '        float w = 1.0 + inkAmt(s) * 4.0;',
+  '        w *= exp(-0.25 * float(dx * dx + dy * dy + dz * dz));',
+  '        if (dy > 0) w *= 1.0 + float(dy) * 0.12;',
+  '        acc += s * w;',
+  '        wsum += w;',
+  '      }',
+  '    }',
+  '  }',
+  '  return acc / max(wsum, 1e-4);',
+  '}',
+  'void main() {',
+  '  vec2 uv = vec2(vUv.x, 1.0 - vUv.y);',
+  '  float t = time;',
+  '  vec2 drip = vec2(',
+  '    sin(t * 0.85 + uv.y * 18.0) / dims.x,',
+  '    cos(t * 0.62 + uv.x * 14.0) * 1.5 / dims.y',
+  '  );',
+  '  vec2 pos = floor(uv * dims.xy);',
+  '  vec3 col = sampleVol(uv + drip, 0.0);',
+  '  vec4 m = texture2D(mot, uv);',
+  '  float dr = floor(m.r * 255.0 + 0.5);',
+  '  float dg = floor(m.g * 255.0 + 0.5);',
+  '  float db = floor(m.b * 255.0 + 0.5);',
+  '  vec2 oxy = vec2(0.0);',
+  '  float oz = 0.0;',
+  '  if (doRaster == 1) {',
+  '    if (mod(dr, 2.0) >= 1.0) oxy.y += 1.0 / dims.y;',
+  '    if (mod(dr, 4.0) >= 2.0) oxy.x += 1.0 / dims.x;',
+  '    if (mod(dr, 8.0) >= 4.0) oxy.y -= 1.0 / dims.y;',
+  '    if (mod(dr, 16.0) >= 8.0) oxy.x -= 1.0 / dims.x;',
+  '    if (mod(dr, 32.0) >= 16.0) oxy.y += 2.0 / dims.y;',
+  '    if (mod(dr, 64.0) >= 32.0) oxy.x += 2.0 / dims.x;',
+  '    if (mod(dr, 128.0) >= 64.0) oxy.y -= 2.0 / dims.y;',
+  '    if (mod(dr, 256.0) >= 128.0) oxy.x -= 2.0 / dims.x;',
+  '    if (mod(db, 2.0) >= 1.0) oz += 1.0;',
+  '    if (mod(db, 4.0) >= 2.0) oz -= 1.0;',
+  '    if (mod(db, 8.0) >= 4.0) oz += 2.0;',
+  '    if (mod(db, 16.0) >= 8.0) oz -= 2.0;',
+  '    col = sampleVol(uv + drip + oxy, oz);',
+  '  }',
+  '  if (doSpectrum == 1) {',
+  '    if (mod(dg, 2.0) >= 1.0) {',
+  '      vec2 bUv = mod(pos, 16.0) / 16.0;',
+  '      vec4 tile = texture2D(img, bUv);',
+  '      col = mix(col, tile.rgb, tile.a * paletteVeil);',
+  '    }',
+  '    if (mod(dg, 4.0) >= 2.0) {',
+  '      vec3 spec = mix(specA, specB, fract(time * 0.14));',
+  '      col = mix(col, spec, specAlphaAB);',
+  '    }',
+  '    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk);',
+  '  }',
+  '  vec3 melted = meltSpread(uv + drip);',
+  '  float meltW = 0.14 + inkAmt(col) * 0.38;',
+  '  meltW += 0.05 * (0.5 + 0.5 * sin(t * 1.35 + uv.x * 24.0 + uv.y * 31.0));',
+  '  if (doRaster == 1) meltW += 0.07;',
+  '  if (doSpectrum == 1) meltW += 0.05;',
+  '  col = mix(col, melted, clamp(meltW, 0.0, 0.75));',
+  '  gl_FragColor = vec4(col, 1.0);',
+  '}',
+].join('\n');
+
+const CUBE_FRAG = [
+  'precision highp float;',
+  'uniform sampler2D vol;',
+  'uniform vec3 dims;',
+  'uniform vec3 boxSize;',
+  'varying vec3 vPos;',
+  'varying vec3 vRayDir;',
+  'vec2 atlasUV(vec2 uv, float z) { return vec2(uv.x, (z + uv.y) / dims.z); }',
+  'vec3 sampleVol(vec3 p) {',
+  '  vec3 q = clamp(p, 0.001, 0.999);',
+  '  float z = q.z * (dims.z - 1.0);',
+  '  return texture2D(vol, atlasUV(q.xy, z)).rgb;',
+  '}',
+  'void main() {',
+  '  vec3 ro = vPos;',
+  '  vec3 rd = normalize(vRayDir);',
+  '  vec3 inv = 1.0 / max(abs(rd), 1e-4);',
+  '  vec3 t0 = (-boxSize - ro) * inv;',
+  '  vec3 t1 = ( boxSize - ro) * inv;',
+  '  vec3 tmin = min(t0, t1);',
+  '  vec3 tmax = max(t0, t1);',
+  '  float ta = max(max(tmin.x, tmin.y), tmin.z);',
+  '  float tb = min(min(tmax.x, tmax.y), tmax.z);',
+  '  if (tb < max(ta, 0.0)) { gl_FragColor = vec4(1.0); return; }',
+  '  float tStart = max(ta, 0.0);',
+  '  vec3 col = vec3(1.0);',
+  '  for (float i = 0.0; i < 48.0; i++) {',
+  '    float t = tStart + (tb - tStart) * (i + 0.5) / 48.0;',
+  '    vec3 p = (ro + rd * t) / (boxSize * 2.0) + 0.5;',
+  '    if (any(lessThan(p, vec3(0.0))) || any(greaterThan(p, vec3(1.0)))) continue;',
+  '    vec3 s = sampleVol(p);',
+  '    float ink = length(s - vec3(1.0));',
+  '    float a = clamp(0.06 + ink * 0.55, 0.0, 0.92);',
+  '    col = mix(col, s, a);',
+  '  }',
+  '  gl_FragColor = vec4(col, 1.0);',
+  '}',
+].join('\n');
+
+const FRONT_FRAG = [
+  'precision highp float;',
+  'uniform sampler2D vol;',
+  'uniform vec3 dims;',
+  'varying vec2 vUv;',
+  'vec2 atlasUV(vec2 uv, float z) { return vec2(uv.x, (z + uv.y) / dims.z); }',
+  'void main() {',
+  '  vec2 uv = vec2(vUv.x, 1.0 - vUv.y);',
+  '  vec3 col = vec3(1.0);',
+  '  float steps = dims.z;',
+  '  for (float i = 0.0; i < 64.0; i++) {',
+  '    if (i >= steps) break;',
+  '    vec3 s = texture2D(vol, atlasUV(uv, i)).rgb;',
+  '    float ink = length(s - vec3(1.0));',
+  '    float a = clamp(0.05 + ink * 0.6, 0.0, 0.94);',
+  '    col = mix(col, s, a);',
+  '  }',
+  '  gl_FragColor = vec4(col, 1.0);',
+  '}',
+].join('\n');
+
+const VERT = [
+  'varying vec2 vUv;',
+  'void main() {',
+  '  vUv = uv;',
+  '  gl_Position = vec4(position.xy, 0.0, 1.0);',
+  '}',
+].join('\n');
+
+const CUBE_VERT = [
+  'varying vec3 vPos;',
+  'varying vec3 vRayDir;',
+  'void main() {',
+  '  vPos = position;',
+  '  vec4 mv = modelViewMatrix * vec4(position, 1.0);',
+  '  vRayDir = -mv.xyz;',
+  '  gl_Position = projectionMatrix * mv;',
+  '}',
+].join('\n');
+
+const ChutesGPU = () => {
+  const DEPTH = 24;
+  const MAX_ATLAS_H = 8192;
+
+  let renderer, scene, camera, cube, cubeMat;
+  let frontScene, frontCam, frontMat;
+  let sliceScene, sliceCam, sliceMat, sliceRT;
+  let volTex = [null, null], volId = 0;
+  let imgTex, motTex, motScratch;
+  let width, height, depth, aspect;
+  let viewRot = { x: 0, y: 0, drag: false, px: 0, py: 0, orbit: false };
+
+  const volSize = () => {
+    let w = floor(window.innerWidth);
+    let h = floor(window.innerHeight);
+    const maxH = floor(MAX_ATLAS_H / DEPTH);
+    if (h > maxH) {
+      const s = maxH / h;
+      h = maxH;
+      w = max(64, floor(w * s));
+    }
+    return { w: max(64, w), h: max(64, h) };
+  };
+
+  const palette16 = () => {
+    const a = new Uint8Array(16 * 16 * 4);
+    for (let i = 0; i < 256; i++) {
+      const x = i % 16;
+      const y = floor(i / 16);
+      const grid = x % 4 === 0 || y % 4 === 0;
+      const c = grid ? SPECTRUM[((x >> 2) + (y >> 2) * 2) % SPECTRUM.length] : PAL.white;
+      const veil = grid ? 0.12 + (((x >> 2) + (y >> 2)) % 5) * 0.07 : 0;
+      a[i * 4] = c[0];
+      a[i * 4 + 1] = c[1];
+      a[i * 4 + 2] = c[2];
+      a[i * 4 + 3] = floor(veil * 255);
+    }
+    return a;
+  };
+
+  const makeAtlas = (w, h, d) => {
+    const data = new Uint8Array(w * h * d * 4);
+    data.fill(255);
+    const tex = new THREE.DataTexture(data, w, h * d, THREE.RGBAFormat, THREE.UnsignedByteType);
+    tex.minFilter = THREE.NearestFilter;
+    tex.magFilter = THREE.NearestFilter;
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.needsUpdate = true;
+    return tex;
+  };
+
+  const makeDataTex = (w, h, data) => {
+    const tex = new THREE.DataTexture(data, w, h, THREE.RGBAFormat, THREE.UnsignedByteType);
+    tex.minFilter = THREE.NearestFilter;
+    tex.magFilter = THREE.NearestFilter;
+    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+    tex.needsUpdate = true;
+    return tex;
+  };
+
+  const modeFlags = (mode) => {
+    if (mode === 1) return { raster: 1, spectrum: 0 };
+    if (mode === 2) return { raster: 0, spectrum: 1 };
+    return { raster: 1, spectrum: 1 };
+  };
+
+  const setSliceUniforms = (time, options) => {
+    const { raster, spectrum } = modeFlags(options.mode);
+    const ci = floor(time * 0.00035) % SPECTRUM.length;
+    sliceMat.uniforms.time.value = time * 0.001;
+    sliceMat.uniforms.doRaster.value = raster;
+    sliceMat.uniforms.doSpectrum.value = spectrum;
+    sliceMat.uniforms.specA.value.set(...rgb01(SPECTRUM[ci]));
+    sliceMat.uniforms.specB.value.set(...rgb01(SPECTRUM[(ci + 3) % SPECTRUM.length]));
+    sliceMat.uniforms.specInk.value.set(...rgb01(PAL.blend));
+  };
+
+  const bindOrbit = () => {
+    const el = renderer.domElement;
+    el.addEventListener('pointerdown', (e) => {
+      viewRot.drag = true;
+      viewRot.px = e.clientX;
+      viewRot.py = e.clientY;
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', (e) => {
+      if (!viewRot.drag) return;
+      viewRot.orbit = true;
+      viewRot.x += (e.clientX - viewRot.px) * 0.005;
+      viewRot.y += (e.clientY - viewRot.py) * 0.005;
+      viewRot.y = max(-0.8, min(0.8, viewRot.y));
+      viewRot.px = e.clientX;
+      viewRot.py = e.clientY;
+    });
+    el.addEventListener('pointerup', () => { viewRot.drag = false; });
+    el.addEventListener('pointercancel', () => { viewRot.drag = false; });
+  };
+
+  const init = () => {
+    if (!THREE) throw new Error('Three.js required');
+
+    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
+    renderer.setClearColor(0xffffff, 1);
+    document.body.appendChild(renderer.domElement);
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(50, 1, 0.05, 100);
+    camera.position.z = 2;
+
+    cubeMat = new THREE.ShaderMaterial({
+      uniforms: {
+        vol: { value: null },
+        dims: { value: new THREE.Vector3(1, 1, DEPTH) },
+        boxSize: { value: new THREE.Vector3(1, 1, 0.4) },
+      },
+      vertexShader: CUBE_VERT,
+      fragmentShader: CUBE_FRAG,
+      side: THREE.BackSide,
+      depthWrite: false,
+    });
+
+    frontScene = new THREE.Scene();
+    frontCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    frontMat = new THREE.ShaderMaterial({
+      uniforms: {
+        vol: { value: null },
+        dims: { value: new THREE.Vector3(1, 1, DEPTH) },
+      },
+      vertexShader: VERT,
+      fragmentShader: FRONT_FRAG,
+      depthTest: false,
+      depthWrite: false,
+    });
+    frontScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), frontMat));
+
+    sliceScene = new THREE.Scene();
+    sliceCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    sliceMat = new THREE.ShaderMaterial({
+      uniforms: {
+        buf: { value: null },
+        img: { value: null },
+        mot: { value: null },
+        time: { value: 0 },
+        dims: { value: new THREE.Vector3(1, 1, DEPTH) },
+        uSlice: { value: 0 },
+        doRaster: { value: 1 },
+        doSpectrum: { value: 1 },
+        specA: { value: new THREE.Vector3() },
+        specB: { value: new THREE.Vector3() },
+        specInk: { value: new THREE.Vector3() },
+        specAlphaAB: { value: 0.24 },
+        specAlphaInk: { value: 0.36 },
+        paletteVeil: { value: 0.88 },
+      },
+      vertexShader: VERT,
+      fragmentShader: SLICE_FRAG,
+      depthTest: false,
+      depthWrite: false,
+    });
+    sliceScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), sliceMat));
+    bindOrbit();
+  };
+
+  const setup = () => {
+    aspect = window.innerWidth / max(window.innerHeight, 1);
+    renderer.setPixelRatio(min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = aspect;
+    camera.updateProjectionMatrix();
+
+    const dist = camera.position.z;
+    const fovRad = camera.fov * Math.PI / 180;
+    const viewH = 2 * Math.tan(fovRad / 2) * dist;
+    const viewW = viewH * aspect;
+    const bx = viewW * 0.5;
+    const by = viewH * 0.5;
+    const bz = by * 0.38;
+
+    ({ w: width, h: height } = volSize());
+    depth = DEPTH;
+
+    volTex.forEach((t) => t && t.dispose());
+    volTex = [makeAtlas(width, height, depth), makeAtlas(width, height, depth)];
+    volId = 0;
+
+    if (imgTex) imgTex.dispose();
+    if (motTex) motTex.dispose();
+    imgTex = makeDataTex(16, 16, palette16());
+    motTex = makeDataTex(width, height, new Uint8Array(width * height * 4));
+
+    if (sliceRT) sliceRT.dispose();
+    sliceRT = new THREE.WebGLRenderTarget(width, height, {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      depthBuffer: false,
+      stencilBuffer: false,
+    });
+
+    sliceMat.uniforms.dims.value.set(width, height, depth);
+    frontMat.uniforms.dims.value.set(width, height, depth);
+    cubeMat.uniforms.dims.value.set(width, height, depth);
+    cubeMat.uniforms.boxSize.value.set(bx, by, bz);
+
+    if (cube) scene.remove(cube);
+    cube = new THREE.Mesh(new THREE.BoxGeometry(bx * 2, by * 2, bz * 2), cubeMat);
+    scene.add(cube);
+  };
+
+  const uploadMot = (pixels) => {
+    if (!motScratch) {
+      motScratch = document.createElement('canvas');
+    }
+    if (motScratch.width !== width || motScratch.height !== height) {
+      motScratch.width = width;
+      motScratch.height = height;
+    }
+    const src = document.createElement('canvas');
+    src.width = pixels.width;
+    src.height = pixels.height;
+    src.getContext('2d').putImageData(pixels, 0, 0);
+    const ctx = motScratch.getContext('2d');
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(src, 0, 0, width, height);
+    const d = ctx.getImageData(0, 0, width, height);
+    motTex.image.data.set(d.data);
+    motTex.needsUpdate = true;
+  };
+
+  const copySliceToAtlas = (destTex, z) => {
+    const gl = renderer.getContext();
+    renderer.initTexture(destTex);
+    const destProps = renderer.properties.get(destTex);
+    const rtProps = renderer.properties.get(sliceRT);
+    gl.bindTexture(gl.TEXTURE_2D, destProps.__webglTexture);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, rtProps.__webglFramebuffer);
+    gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, z * height, 0, 0, width, height);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  };
+
+  const render = (time, pixels, options) => {
+    uploadMot(pixels);
+    const prev = volId;
+    const cur = volId ^= 1;
+
+    sliceMat.uniforms.buf.value = volTex[prev];
+    sliceMat.uniforms.img.value = imgTex;
+    sliceMat.uniforms.mot.value = motTex;
+    setSliceUniforms(time, options);
+
+    renderer.setRenderTarget(sliceRT);
+    for (let z = 0; z < depth; z++) {
+      sliceMat.uniforms.uSlice.value = z;
+      renderer.render(sliceScene, sliceCam);
+      copySliceToAtlas(volTex[cur], z);
+    }
+    renderer.setRenderTarget(null);
+
+    const vol = volTex[cur];
+    if (viewRot.orbit) {
+      cubeMat.uniforms.vol.value = vol;
+      camera.position.set(
+        Math.sin(viewRot.x) * 2,
+        viewRot.y * 2,
+        Math.cos(viewRot.x) * 2
+      );
+      camera.lookAt(0, 0, 0);
+      renderer.render(scene, camera);
+    } else {
+      frontMat.uniforms.vol.value = vol;
+      renderer.render(frontScene, frontCam);
+    }
+  };
+
+  const refreshPalette = () => {
+    if (!width) return;
+    if (imgTex) imgTex.dispose();
+    imgTex = makeDataTex(16, 16, palette16());
+  };
+
+  const resetFront = () => {
+    viewRot.orbit = false;
+    viewRot.x = 0;
+    viewRot.y = 0;
+  };
+
+  return { init, setup, render, refreshPalette, resetFront };
+};
+
+const c2d = Canvas2d();
+const gpu = ChutesGPU();
+const options = { auto: true, mode: 0 };
+let showHint = true;
+
+document.addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'h') {
+    showHint = !showHint;
+    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
+  }
+  if (k === 'a') options.auto = !options.auto;
+  if (k === '1') { options.mode = 0; options.auto = false; }
+  if (k === '2') { options.mode = 1; options.auto = false; }
+  if (k === '3') { options.mode = 2; options.auto = false; }
+  if (k === 'f') gpu.resetFront();
+});
+
+function setup() {
+  c2d.setup();
+  gpu.setup();
+}
+
+function frame(t) {
+  const pixels = c2d.draw(t, options);
+  gpu.render(t, pixels, options);
+  requestAnimationFrame(frame);
+}
+
+c2d.init();
+gpu.init();
+setup();
+loadCenteredArtwork(() => gpu.refreshPalette());
+window.addEventListener('resize', setup);
+requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

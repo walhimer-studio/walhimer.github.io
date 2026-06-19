@@ -11,7 +11,9 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
-import ws from "ws";
+import wsModule from "ws";
+
+const ws = wsModule.default ?? wsModule;
 import { initializeApp } from "firebase/app";
 import { getDatabase, onValue, ref, set } from "firebase/database";
 import { createOrganism } from "../../emergent-dna/kernel/index.mjs";
@@ -283,6 +285,10 @@ process.on("SIGINT", () => {
   osc.close();
   plainPd.close();
   process.exit(0);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("unhandledRejection:", err);
 });
 
 console.log("dna-bridge running — operator path:", `${FIREBASE_OPERATOR_ROOT}/${VENUE_ID}`);
