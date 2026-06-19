@@ -12,14 +12,22 @@ Target UX from rebrand mockup **`markwalhimer-catalog.html`**. Catalog-first sit
 |---------|-----|---------|
 | Header | — | Name, thesis, **pipeline status** (last minted, work count, pulse) |
 | Recent works | — | 6 or 12 most recent; Buy / Minted |
-| **Catalog** | Catalog | Series by tier; expand rows; filters |
+| **Available** | Available | 6–12 purchasable works; links to work pages |
+| **Catalog** | Catalog | Series archive; expand rows; filters |
 | **Practice** | Practice | Code→Objects→Installations→Monumental; themes; tools; references |
 | **Calendar** | Calendar | Public subset of [DEADLINES.md](DEADLINES.md) |
 | Books & consulting | Books | Museum practice; museumplanning.com |
 | Contact | Contact | Email, social, **newsletter** (weekly digest) |
 | Admin | Private | See [ADMIN.md](ADMIN.md) |
 
-**URL (proposed):** `/catalog/` as primary art home, or `/` if catalog replaces current homepage.
+**URLs (live):**
+
+- Available index: `/available/`
+- Work page: `/works/ws-NNNNNN/` (slug = lowercase catalog number)
+- Studio archive: `/sketches/index.html`
+- Installations (commissions): `/installations/`
+
+**Generate pages:** `node program/scripts/build-work-pages.mjs` after each published drop.
 
 ---
 

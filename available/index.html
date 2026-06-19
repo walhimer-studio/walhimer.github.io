@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVXX0YPGCN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TVXX0YPGCN');
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Available — Mark Walhimer</title>
+  <meta name="description" content="Available generative works by Mark Walhimer — numbered daily fragments (WS-NNNNNN), acquire on mark-walhimer.com." />
+  <link rel="canonical" href="https://mark-walhimer.com/available/" />
+  <meta property="og:title" content="Available — Mark Walhimer" />
+  <meta property="og:description" content="Numbered generative works available for acquisition on mark-walhimer.com." />
+  <meta property="og:url" content="https://mark-walhimer.com/available/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/cathedral-shell.css" />
+  <link rel="stylesheet" href="/css/work-pages.css" />
+</head>
+<body class="available-page">
+<nav>
+  <a class="nav-logo" href="/">Mark Walhimer</a>
+  <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
+    <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
+  </button>
+  <div class="nav-links" id="site-nav-links">
+    <a href="/">Selected Works</a>
+    <a href="/available/" class="active">Available</a>
+    <a href="/sketches/index.html">Catalog</a>
+    <a href="/practice/index.html">Practice</a>
+    <a href="/bio/index.html">Bio / CV</a>
+    <a href="/contact/index.html">Contact</a>
+  </div>
+</nav>
+
+<header>
+  <p class="kicker">Acquire on site</p>
+  <h1>Avail<em>able</em></h1>
+  <p class="lede">Numbered daily fragments — <code style="font-family:var(--mono);font-size:11px;">WS-NNNNNN</code> — published on Ethereum via Transient Labs. Purchase on mark-walhimer.com.</p>
+</header>
+
+<div class="pipeline-status" role="status">
+  <span class="pulse" aria-hidden="true"></span>
+  <span>Pipeline active · daily drops at 12:00 ET · 0 available now</span>
+</div>
+
+<div class="available-grid-wrap">
+  <div class="available-grid" id="available-grid">
+<div class="available-empty">
+  <p>No works listed yet. Daily mints will appear here after publish.</p>
+  <p>Studio archive remains in the <a href="/sketches/index.html">Catalog</a>. Installation commissions are listed under <a href="/installations/index.html">Selected Works</a>.</p>
+</div>
+  </div>
+</div>
+
+<footer>
+  <span>Mark Walhimer · Available</span>
+  <span>
+    <a href="/sketches/index.html">Full catalog</a>
+    &nbsp;·&nbsp;
+    <a href="/installations/index.html">Installations</a>
+    &nbsp;·&nbsp;
+    <a href="/contact/index.html">Commission</a>
+  </span>
+</footer>
+<script>
+(function () {
+  var nav = document.querySelector('nav');
+  var btn = document.querySelector('.nav-toggle');
+  var panel = document.getElementById('site-nav-links');
+  if (!nav || !btn || !panel) return;
+  btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('nav-open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  var here = location.pathname.replace(/\/index\.html$/, '/');
+  panel.querySelectorAll('a').forEach(function (a) {
+    var href = a.getAttribute('href');
+    if (!href || href[0] !== '/') return;
+    var norm = href.replace(/\/index\.html$/, '/');
+    if (norm === here || (here.startsWith('/works/') && norm === '/available/')) {
+      a.classList.add('active');
+    }
+  });
+})();
+</script>
+</body>
+</html>

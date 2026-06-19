@@ -57,7 +57,9 @@ Optional  Context post · TL Story Inscription
 
 | Channel | Cadence |
 |---------|---------|
-| **mark-walhimer.com/catalog** | Work page + buy on-site per mint |
+| **mark-walhimer.com/available/** | Purchasable works index (6–12 recent) |
+| **mark-walhimer.com/works/ws-NNNNNN/** | Work page + buy on-site per mint |
+| **mark-walhimer.com/sketches/** | Full studio archive |
 | **X / Instagram** | Daily Post 1 on mint days |
 | **Newsletter** | **Weekly** digest |
 | **Link in bio** | → catalog |
@@ -94,7 +96,7 @@ Refresh: `_scripts/refresh_catalog.py` — [docs/unified-catalog.md](../docs/uni
 3. Admin approve + post copy scripts
 4. Weekly newsletter aggregator
 5. TL mint script (viem)
-6. Catalog site from JSON ([CATALOG.md](CATALOG.md))
+6. Catalog site from JSON ([CATALOG.md](CATALOG.md)) — **`node program/scripts/build-work-pages.mjs`**
 7. Full generate → approve → pin → mint → publish → social
 
 ---

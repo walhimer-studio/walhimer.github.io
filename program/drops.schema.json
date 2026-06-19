@@ -58,6 +58,14 @@
       "type": "string",
       "format": "uri"
     },
+    "embedUrl": {
+      "type": "string",
+      "description": "Repo-relative path for work page preview iframe e.g. /sketches/foo.html"
+    },
+    "openUrl": {
+      "type": "string",
+      "description": "Full-screen open link; defaults to embedUrl"
+    },
     "availability": {
       "type": "string",
       "enum": ["available", "minted", "skipped"],
