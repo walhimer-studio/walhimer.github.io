@@ -291,6 +291,14 @@
       color: var(--muted);
       margin-bottom: 4px;
     }
+    .slide-caption-desc {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 52em;
+    }
     .carousel-bar {
       flex-shrink: 0;
       display: flex;
@@ -344,7 +352,7 @@
       background: #0a0a0a;
     }
     .bloom-slide-link:focus-visible { outline: 2px solid var(--white); outline-offset: -2px; }
-    .bloom-slide-img, .la023-slide-img, .carousel-still-img {
+    .bloom-slide-img, .la023-slide-img, .chutes77823-slide-img, .carousel-still-img {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -789,22 +797,13 @@
       position: absolute;
       inset: 0;
       z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #ffffff;
+      display: block;
       text-decoration: none;
+      color: inherit;
+      outline: none;
+      background: #ffffff;
     }
-    .chutes77823-slide-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: center;
-      padding: 24px;
-      line-height: 1.8;
-    }
+    .chutes77823-slide-link:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
     html.draft-bloom-live .chutes77823-static-fallback {
       display: none !important;
     }
@@ -1111,13 +1110,23 @@
                 href="/installation/surrender-machine-77823/"
                 aria-label="Open Surrender Machine 77823 (full page)"
               >
-                <span class="chutes77823-slide-label">Surrender Machine 77823<br>Mark Walhimer, 2026 · Loop Art Critique · ICA Miami · Cohort #21</span>
+                <img
+                  class="chutes77823-slide-img"
+                  src="/images/homepage-featured/008.png"
+                  width="1024"
+                  height="522"
+                  alt="Surrender Machine 77823 — Mark Walhimer, 2026"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                />
               </a>
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="chutes77823-caption-detail">Surrender Machine 77823 — Mark Walhimer, 2026 — live embed when you open this page on the site (HTTPS)</span>
+                <span>Loop Art Critique · ICA Miami · Cohort #21</span>
+                <span id="chutes77823-caption-detail">Surrender Machine 77823 — Mark Walhimer, 2026 — curated by Doreen Rios</span>
+                <span class="slide-caption-desc" id="chutes77823-caption-desc">A traversable Three.js volume driven by an invisible RGB map — spatial operators raymarched through a GPU voxel field. Dense Ghost wireframe machine, code mural layer, and RGB soundscape; an eight-minute life cycle ends in surrender rebirth from seed 77823.</span>
               </div>
             </div>
           </article>
@@ -1403,6 +1412,23 @@
   </div>
 
   <div class="works-grid">
+
+    <div class="work-card reveal">
+      <div class="work-card-image">
+        <img src="/images/homepage-featured/008.png" alt="Surrender Machine 77823 — Mark Walhimer" loading="lazy" decoding="async">
+      </div>
+      <div class="work-card-body">
+        <div>
+          <div class="work-card-title"><em>Surrender Machine</em> 77823</div>
+          <div class="work-card-meta">2026 &nbsp;·&nbsp; Browser-native installation · Loop Art Critique</div>
+          <p class="work-card-desc">A seed-driven Three.js volumetric work where invisible canvas data — not literal palette — drives geometry: red offsets raster position, green selects spectrum color, blue pushes depth. Raymarched through a GPU voxel atlas, the piece wanders a dense Ghost wireframe machine with a code mural layer and RGB soundscape. It runs approximately eight minutes, dies, then resurrects identically from the same fixed seed. Loop Art Critique residency, Institute of Contemporary Art, Miami — Cohort #21, curated by Doreen Rios.</p>
+        </div>
+        <div class="work-card-footer">
+          <span class="work-edition">ICA Miami · Opens July 3, 2026</span>
+          <a href="/installation/surrender-machine-77823/" class="work-inquire">View work</a>
+        </div>
+      </div>
+    </div>
 
     <div class="work-card reveal">
       <div class="work-card-image">
@@ -1708,8 +1734,12 @@
   var capChutes = document.getElementById('chutes77823-caption-detail');
   if (capChutes) {
     capChutes.textContent = live
-      ? 'Surrender Machine 77823 — Mark Walhimer, 2026 — live in carousel · Loop Art Critique · ICA Miami · curated by Doreen Rios'
+      ? 'Surrender Machine 77823 — Mark Walhimer, 2026 — live in carousel · curated by Doreen Rios'
       : 'Surrender Machine 77823 — Mark Walhimer, 2026 — open over HTTPS on the live site for full embed';
+  }
+  var capChutesDesc = document.getElementById('chutes77823-caption-desc');
+  if (capChutesDesc && !live) {
+    capChutesDesc.textContent = 'A traversable Three.js volume driven by an invisible RGB map — spatial operators raymarched through a GPU voxel field. Open over HTTPS for the live embed.';
   }
 
   var capBloom = document.getElementById('bloom-caption-detail');
