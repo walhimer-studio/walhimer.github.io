@@ -24,7 +24,7 @@ const NAV = `<nav>
     <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
   </button>
   <div class="nav-links" id="site-nav-links">
-    <a href="/">Selected Works</a>
+    <a href="/installations/">Installations</a>
     <a href="/available/" class="nav-active-placeholder">Available</a>
     <a href="/sketches/index.html">Catalog</a>
     <a href="/practice/index.html">Practice</a>
@@ -179,7 +179,7 @@ function renderAvailablePage(data) {
         .join('\n')
     : `<div class="available-empty">
   <p>No works listed yet. Daily mints will appear here after publish.</p>
-  <p>Studio archive remains in the <a href="/sketches/index.html">Catalog</a>. Installation commissions are listed under <a href="/installations/index.html">Selected Works</a>.</p>
+  <p>Studio archive remains in the <a href="/sketches/index.html">Catalog</a>. Installation commissions are listed under <a href="/installations/">Installations</a>.</p>
 </div>`;
 
   return `<!DOCTYPE html>
@@ -226,7 +226,7 @@ ${cards}
   <span>
     <a href="/sketches/index.html">Full catalog</a>
     &nbsp;·&nbsp;
-    <a href="/installations/index.html">Installations</a>
+    <a href="/installations/">Installations</a>
     &nbsp;·&nbsp;
     <a href="/contact/index.html">Commission</a>
   </span>
