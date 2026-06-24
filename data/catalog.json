@@ -1,9 +1,94 @@
 {
   "version": 2,
-  "updated": "2026-06-19",
+  "updated": "2026-06-23",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
+    {
+      "id": "urn:walhimer:work:index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "installation": {
+          "path": "installation/surrender-machine-77823/index.html",
+          "homepage": true
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "sketch": {
+          "series": "Tezos / Objkt — archive",
+          "file": "tezos-early-works/index.html"
+        },
+        "surfaces": [
+          "installation",
+          "sketch"
+        ]
+      },
+      "artifacts": {
+        "sketch_entry": {
+          "repo_paths": [
+            "sketches/tezos-early-works/assets/artifact-1.jpg",
+            "sketches/tezos-early-works/assets/artifact-1.png",
+            "sketches/tezos-early-works/assets/artifact-10.png",
+            "sketches/tezos-early-works/assets/artifact-11.png",
+            "sketches/tezos-early-works/assets/artifact-12.png",
+            "sketches/tezos-early-works/assets/artifact-13.png",
+            "sketches/tezos-early-works/assets/artifact-14.png",
+            "sketches/tezos-early-works/assets/artifact-15.png",
+            "sketches/tezos-early-works/assets/artifact-16.png",
+            "sketches/tezos-early-works/assets/artifact-17.png",
+            "sketches/tezos-early-works/assets/artifact-18.png",
+            "sketches/tezos-early-works/assets/artifact-19.png",
+            "sketches/tezos-early-works/assets/artifact-2.png",
+            "sketches/tezos-early-works/assets/artifact-20.png",
+            "sketches/tezos-early-works/assets/artifact-3.png",
+            "sketches/tezos-early-works/assets/artifact-4.png",
+            "sketches/tezos-early-works/assets/artifact-5.png",
+            "sketches/tezos-early-works/assets/artifact-6.png",
+            "sketches/tezos-early-works/assets/artifact-7.png",
+            "sketches/tezos-early-works/assets/artifact-8.png",
+            "sketches/tezos-early-works/assets/artifact-9.png",
+            "sketches/tezos-early-works/assets/artifact.gif",
+            "sketches/tezos-early-works/assets/artifact.jpg",
+            "sketches/tezos-early-works/assets/artifact.png",
+            "sketches/tezos-early-works/index.html"
+          ],
+          "external_urls": []
+        },
+        "installation_entry": {
+          "repo_paths": [
+            "installation/surrender-machine-77823/index.html"
+          ],
+          "external_urls": []
+        }
+      }
+    },
     {
       "id": "urn:walhimer:work:bloom-four-walls",
       "dublin_core": {
@@ -325,7 +410,7 @@
       },
       "site": {
         "installation": {
-          "path": "installation/surrender-machine-77823/index.html",
+          "path": "installations/surrender-machine-77823.html",
           "homepage": true
         },
         "tech": [
@@ -333,44 +418,17 @@
           "WebGL2",
           "Web Audio"
         ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
-        },
         "surfaces": [
-          "installation",
-          "sketch"
-        ],
-        "event": {
-          "name": "Loop Art Critique",
-          "year": "2026",
-          "venue": "Institute of Contemporary Art, Miami",
-          "curator": "Doreen Rios",
-          "cohort": "21",
-          "residency": "Cohort #21 residency",
-          "curator_page": "sketches/loop-art-critique-2026/chutes-and-ladders.html",
-          "opens": "2026-07-03",
-          "credit_line": "Surrender Machine 77823, Mark Walhimer, 2026 — Loop Art Critique, Institute of Contemporary Art, Miami, Cohort #21 residency, curated by Doreen Rios"
-        }
+          "installation"
+        ]
       },
       "artifacts": {
-        "sketch_entry": {
-          "repo_paths": [
-            "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
-          ],
-          "external_urls": [
-            "https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
-          ]
-        },
-        "installation_entry": {
-          "repo_paths": [
-            "installation/surrender-machine-77823/index.html",
-            "installations/surrender-machine-77823.html"
-          ],
-          "external_urls": [
-            "https://mark-walhimer.com/installation/surrender-machine-77823/"
-          ]
-        }
+        "repo_paths": [
+          "installations/surrender-machine-77823.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/installation/surrender-machine-77823/"
+        ]
       }
     },
     {
@@ -638,73 +696,6 @@
             "https://objkt.com"
           ]
         }
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Tezos / Objkt — archive",
-          "file": "tezos-early-works/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/tezos-early-works/assets/artifact-1.jpg",
-          "sketches/tezos-early-works/assets/artifact-1.png",
-          "sketches/tezos-early-works/assets/artifact-10.png",
-          "sketches/tezos-early-works/assets/artifact-11.png",
-          "sketches/tezos-early-works/assets/artifact-12.png",
-          "sketches/tezos-early-works/assets/artifact-13.png",
-          "sketches/tezos-early-works/assets/artifact-14.png",
-          "sketches/tezos-early-works/assets/artifact-15.png",
-          "sketches/tezos-early-works/assets/artifact-16.png",
-          "sketches/tezos-early-works/assets/artifact-17.png",
-          "sketches/tezos-early-works/assets/artifact-18.png",
-          "sketches/tezos-early-works/assets/artifact-19.png",
-          "sketches/tezos-early-works/assets/artifact-2.png",
-          "sketches/tezos-early-works/assets/artifact-20.png",
-          "sketches/tezos-early-works/assets/artifact-3.png",
-          "sketches/tezos-early-works/assets/artifact-4.png",
-          "sketches/tezos-early-works/assets/artifact-5.png",
-          "sketches/tezos-early-works/assets/artifact-6.png",
-          "sketches/tezos-early-works/assets/artifact-7.png",
-          "sketches/tezos-early-works/assets/artifact-8.png",
-          "sketches/tezos-early-works/assets/artifact-9.png",
-          "sketches/tezos-early-works/assets/artifact.gif",
-          "sketches/tezos-early-works/assets/artifact.jpg",
-          "sketches/tezos-early-works/assets/artifact.png",
-          "sketches/tezos-early-works/index.html"
-        ],
-        "external_urls": []
       }
     },
     {
@@ -9248,6 +9239,52 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Snippets:ghost_dense_77823_gravity_sliders",
+      "dublin_core": {
+        "title": "loop-snippets/ghost dense 77823 gravity sliders",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:ghost_dense_77823_gravity_sliders",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000223"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-ghost_dense_77823_gravity_sliders",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/ghost dense 77823 gravity sliders",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/ghost_dense_77823_gravity_sliders.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders.html"
+        ],
+        "external_urls": [
+          "https://unpkg.com/three@0.128.0/build/three.min.js",
+          "https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"
+        ]
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
       "dublin_core": {
         "title": "Chutes — volume · dense machine · seed 77823",
@@ -9293,6 +9330,51 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Snippets:rgb-xyz-vol3d-code",
+      "dublin_core": {
+        "title": "loop-snippets/rgb-xyz-vol3d-code",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:rgb-xyz-vol3d-code",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000224"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-rgb-xyz-vol3d-code",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/rgb-xyz-vol3d-code",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/rgb-xyz-vol3d-code.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/rgb-xyz-vol3d-code.html"
+        ],
+        "external_urls": [
+          "https://unpkg.com/three@0.128.0/build/three.min.js"
+        ]
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy-code",
       "dublin_core": {
         "title": "Surrender Machine 77823",
@@ -9326,16 +9408,6 @@
         "sketch": {
           "series": "Loop Snippets",
           "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
-        },
-        "event": {
-          "name": "Loop Art Critique",
-          "year": "2026",
-          "venue": "Institute of Contemporary Art, Miami",
-          "curator": "Doreen Rios",
-          "cohort": "21",
-          "residency": "Cohort #21 residency",
-          "curator_page": "sketches/loop-art-critique-2026/chutes-and-ladders.html",
-          "credit_line": "Surrender Machine 77823, Mark Walhimer, 2026 — Loop Art Critique, Institute of Contemporary Art, Miami, Cohort #21 residency, curated by Doreen Rios"
         }
       },
       "artifacts": {
@@ -9343,8 +9415,7 @@
           "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
         ],
         "external_urls": [
-          "https://mark-walhimer.com/sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html",
-          "https://mark-walhimer.com/installation/surrender-machine-77823/"
+          "https://unpkg.com/three@0.128.0/build/three.min.js"
         ]
       }
     },
