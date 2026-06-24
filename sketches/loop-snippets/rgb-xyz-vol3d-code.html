@@ -173,6 +173,31 @@ const buildSeedProfile = (seed) => {
         wz2: r.uniform(1.0, 2.8),
         look: r.uniform(0.25, 0.95),
       },
+      travel: {
+        orbitSign: r.chance(0.5) ? 1 : -1,
+        signX: r.chance(0.5) ? 1 : -1,
+        signY: r.chance(0.5) ? 1 : -1,
+        signZ: r.chance(0.5) ? 1 : -1,
+        yawSign: r.chance(0.5) ? 1 : -1,
+        modeFreq: r.uniform(0.07, 0.34),
+        phases: {
+          px: r.uniform(0, Math.PI * 2),
+          py: r.uniform(0, Math.PI * 2),
+          pz: r.uniform(0, Math.PI * 2),
+          pl: r.uniform(0, Math.PI * 2),
+          pOrbit: r.uniform(0, Math.PI * 2),
+          pVert: r.uniform(0, Math.PI * 2),
+          pDolly: r.uniform(0, Math.PI * 2),
+          pLat: r.uniform(0, Math.PI * 2),
+          pLook: r.uniform(0, Math.PI * 2),
+        },
+        weights: {
+          orbit: r.uniform(0.2, 1.0),
+          vertical: r.uniform(0.12, 0.95),
+          dolly: r.uniform(0.12, 0.95),
+          lateral: r.uniform(0.08, 0.88),
+        },
+      },
       artZ: r.uniform(6, 42),
       specAlphaAB: r.uniform(0.1, 0.46),
       specAlphaInk: r.uniform(0.18, 0.58),
@@ -898,6 +923,16 @@ const VolRoomGPU = () => {
   let travelPhase = 0;
   let TRAVEL_RATE = 0.11;
   let travelFreq = { wx: 0.95, wy: 0.55, wz: 0.72, wz2: 1.6, look: 0.35 };
+  let travelStyle = {
+    orbitSign: 1,
+    signX: 1,
+    signY: 1,
+    signZ: 1,
+    yawSign: 1,
+    modeFreq: 0.18,
+    phases: { px: 0, py: 0, pz: 0, pl: 0, pOrbit: 0, pVert: 0, pDolly: 0, pLat: 0, pLook: 0 },
+    weights: { orbit: 0.8, vertical: 0.5, dolly: 0.5, lateral: 0.4 },
+  };
   let seedGpu = null;
   let codeWallScale = 1.55;
   const moveKeys = { forward: false, back: false, left: false, right: false };
@@ -934,17 +969,38 @@ const VolRoomGPU = () => {
 
     const p = travelPhase;
     const f = travelFreq;
+    const t = travelStyle;
+    const dir = t.orbitSign;
 
-    const nx = sin(p * f.wx) * bx * 0.62 + sin(p * f.wz2) * bx * 0.12;
-    const ny = sin(p * f.wy) * by * 0.28 + cos(p * f.wz) * by * 0.1 + 4;
-    const nz = ART_LAYER_Z + cos(p * f.wz) * bz * 1.05 + sin(p * f.wz2) * bz * 0.28;
+    const wob = (base, phase, k) => base * (0.28 + 0.72 * (0.5 + 0.5 * sin(p * t.modeFreq * k + phase)));
+    const wOrbit = wob(t.weights.orbit, t.phases.pOrbit, 1.0);
+    const wVert = wob(t.weights.vertical, t.phases.pVert, 1.15);
+    const wDolly = wob(t.weights.dolly, t.phases.pDolly, 0.82);
+    const wLat = wob(t.weights.lateral, t.phases.pLat, 1.28);
+
+    const orbitX = dir * cos(p * f.wx + t.phases.px) * bx * 0.58 * wOrbit;
+    const orbitZ = dir * sin(p * f.wz + t.phases.pz) * bz * 0.92 * wOrbit;
+    const latX = t.signX * sin(p * f.wz2 * 0.75 + t.phases.pl) * bx * 0.42 * wLat;
+    const latSide = t.signX * cos(p * f.wx * 0.85 + t.phases.pl) * bx * 0.2 * wLat;
+    const vertY = t.signY * sin(p * f.wy * 1.2 + t.phases.py) * by * 0.36 * wVert
+      + t.signY * cos(p * f.wy * 0.48 + t.phases.py * 0.4) * by * 0.14 * wVert;
+    const dollyZ = t.signZ * sin(p * f.wz2 * 1.15 + t.phases.pDolly) * (bz * 0.62 + 14) * wDolly;
+    const dollyFwd = t.signZ * cos(p * f.wz2 * 0.55 + t.phases.pDolly) * 12 * wDolly;
+
+    const nx = orbitX + latX + latSide;
+    const ny = 4 + vertY;
+    const nz = ART_LAYER_Z + orbitZ + dollyZ + dollyFwd;
     camPos.set(nx, ny, nz);
 
     if (dragging) return;
 
-    const lookX = nx + sin(p * f.wx + f.look) * 10;
-    const lookY = ny + sin(p * f.wy + f.look * 0.7) * 4;
-    const lookZ = nz + cos(p * f.wz + f.look) * 8;
+    const lookX = nx + t.yawSign * (
+      dir * sin(p * f.wx + f.look + t.phases.pLook) * 10 * wOrbit
+      + t.signX * cos(p * f.wz2 + t.phases.pl) * 7 * wLat
+    );
+    const lookY = ny + t.signY * sin(p * f.wy + f.look * 0.7 + t.phases.py) * 4.5 * wVert;
+    const lookZ = nz + dir * cos(p * f.wz + f.look + t.phases.pLook) * 8 * wOrbit
+      + t.signZ * sin(p * f.wz2 + t.phases.pDolly) * 6 * wDolly;
 
     viewRot.x = atan2(lookX - nx, lookZ - nz);
     viewRot.y = atan2(lookY - ny, sqrt(pow(lookX - nx, 2) + pow(lookZ - nz, 2)));
@@ -1343,6 +1399,7 @@ const VolRoomGPU = () => {
     volDepth = g.depth;
     TRAVEL_RATE = g.travelRate;
     travelFreq = g.travelFreq;
+    if (g.travel) travelStyle = g.travel;
     ART_LAYER_Z = g.artZ;
     codeWallScale = g.codeScale;
     if (artLayerGroup) artLayerGroup.position.set(0, 0, ART_LAYER_Z);
