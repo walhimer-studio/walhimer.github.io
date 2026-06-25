@@ -33,6 +33,16 @@ for (const { src, dest } of copies) {
   console.log('→', path.relative(REPO, dest));
 }
 
+const jsDir = path.join(REPO, 'sketches/loop-snippets/js');
+const jsOut = path.join(OUT, 'js');
+if (fs.existsSync(jsDir)) {
+  fs.mkdirSync(jsOut, { recursive: true });
+  for (const name of fs.readdirSync(jsDir)) {
+    fs.copyFileSync(path.join(jsDir, name), path.join(jsOut, name));
+    console.log('→', path.relative(REPO, path.join(jsOut, name)));
+  }
+}
+
 const displayHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>

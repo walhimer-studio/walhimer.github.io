@@ -1,0 +1,43 @@
+---
+description: Published HTML must work offline — no required external CDNs (README § Self-contained)
+alwaysApply: true
+---
+
+# Self-contained published HTML (binding — full repo)
+
+**Source of truth:** `README.md` § Self-contained rule; `docs/archive-chronicle.md`.
+
+**Every** HTML file under `sketches/`, `installations/`, `machine-aesthetic/`, and root `index.html` must work offline. No required external CDN for core libraries (Three.js, p5, OrbitControls, etc.).
+
+There is **no incremental exception**. The full repo must pass:
+
+```bash
+python3 _scripts/check_self_contained.py
+```
+
+## Hard stops
+
+1. **Never add** unpkg, cdnjs, jsdelivr, esm.sh, or similar for core libraries.
+2. **Never commit or push** unless the full-repo check passes.
+3. **Never ship** a "fix later" CDN dependency — vendor locally first.
+
+## Before commit / push / publish
+
+```bash
+python3 _scripts/check_self_contained.py          # must exit 0
+```
+
+`_scripts/safe_publish.sh` and CI run this on **all** published HTML.
+
+## Correct fix pattern
+
+- Shared vendored libs: `sketches/js/` (p5, three, addons).
+- Per-folder copies where depth requires it (e.g. `sketches/loop-snippets/js/`).
+- Bulk repair: `python3 _scripts/vendor_cdn_libs.py`
+- Test with **Wi‑Fi off** before mint/show/post.
+
+## Pre-ship checklist
+
+- [ ] Full-repo `check_self_contained.py` passes (zero violations)
+- [ ] Page renders with network disabled
+- [ ] Artwork edits beyond CDN→local vendoring need explicit `AUTHORIZE EDIT`

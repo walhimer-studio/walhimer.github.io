@@ -34,7 +34,7 @@ Before `Write`, `StrReplace`, or `Delete` on a protected path:
 When the user says wrap / HTML / save as `.html`:
 
 - Paste their `<script>` / sketch body **verbatim**.
-- Allowed without extra authorization: `<!doctype>`, `<html>`, `<head>`, `<body>`, meta, title, p5 CDN, CSS on `html`/`body`/`canvas` only.
+- Allowed without extra authorization: `<!doctype>`, `<html>`, `<head>`, `<body>`, meta, title, CSS on `html`/`body`/`canvas` only. **No external CDN script tags** — see `self-contained-published-html.mdc` and README § Self-contained rule.
 - **Forbidden** without `AUTHORIZE EDIT`: `setup`, `draw`, shaders, uniforms, `createCanvas` size, geometry, `yScale`, `aspect`, colors, camera, borders inside the sketch.
 
 ## Violation triggers

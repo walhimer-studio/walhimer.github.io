@@ -83,6 +83,7 @@ cd ~/Documents/GitHub/walhimer.github.io
 2. Open `catalog-db.html` to browse/search/filter the collection as a mini database.
 3. If links or labels need adjustment, update `catalog-db.html` only (no manifest schema change required).
 4. Run `python3 _scripts/check_repo_layout.py` before commit to catch root-level folder drift.
+5. Run `python3 _scripts/check_self_contained.py` before commit — **all** published HTML must pass (or `_scripts/install_pre_commit_hook.sh` once).
 
 ---
 

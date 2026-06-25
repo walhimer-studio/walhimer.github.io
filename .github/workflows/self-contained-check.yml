@@ -1,0 +1,15 @@
+name: Self-contained HTML check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: All published HTML must be self-contained
+        run: python3 _scripts/check_self_contained.py

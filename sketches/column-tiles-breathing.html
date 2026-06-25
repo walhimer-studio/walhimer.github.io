@@ -59,9 +59,9 @@
     .hint { font-size: 12px; color: #666; max-width: 760px; text-align: center; }
     .seed-row { flex: 1 1 100%; justify-content: center; gap: 12px; }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
-  <script src="https://unpkg.com/gif.js@0.2.0/dist/gif.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="js/p5-1.11.3.min.js"></script>
+  <script src="js/gif-0.2.0.js"></script>
+  <script src="js/jszip-3.10.1.min.js"></script>
 </head>
 <body>
   <div id="toolbar">
@@ -474,7 +474,7 @@ async function exportGif() {
       quality: 12,
       width: w,
       height: h,
-      workerScript: 'https://unpkg.com/gif.js@0.2.0/dist/gif.worker.js'
+      workerScript: 'js/gif.worker-0.2.0.js'
     });
 
     gif.on('finished', function (blob) {

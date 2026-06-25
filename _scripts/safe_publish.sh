@@ -6,13 +6,16 @@ cd "$ROOT_DIR"
 
 MSG="${1:-Publish catalog updates}"
 
-echo "1/5 Layout guard..."
+echo "1/6 Layout guard..."
 python3 _scripts/check_repo_layout.py
 
-echo "2/5 Refresh catalog..."
+echo "2/6 Self-contained guard (all published HTML)..."
+python3 _scripts/check_self_contained.py
+
+echo "3/6 Refresh catalog..."
 python3 _scripts/refresh_catalog.py
 
-echo "3/5 Stage changes..."
+echo "4/6 Stage changes..."
 git add -A
 
 if git diff --cached --quiet; then
@@ -20,10 +23,10 @@ if git diff --cached --quiet; then
   exit 0
 fi
 
-echo "4/5 Commit..."
+echo "5/6 Commit..."
 git commit -m "$MSG"
 
-echo "5/5 Push..."
+echo "6/6 Push..."
 git push origin main
 
 echo "Done."
