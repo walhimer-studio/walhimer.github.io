@@ -9,12 +9,12 @@ import {
   PIVOT_X,
   PIVOT_Y,
   PIVOT_Z,
-} from './actz-wire-machine.mjs?v=20a6c60';
+} from './actz-wire-machine.mjs?v=life300';
 
 const THREE = globalThis.THREE;
 
 export const ACTZ_EDITION_SEED = 1909113409;
-const LIFESPAN_SECONDS = 480;
+const LIFESPAN_SECONDS = 300;
 const SURRENDER_SECONDS = 14;
 const GRAVITY_PULL = 2.8;
 const GRAVITY_RAMP = 0.022;
@@ -120,11 +120,11 @@ function boot() {
     if (el) el.textContent = 'Three.js failed to load — hard refresh (Cmd+Shift+R)';
     return;
   }
+
   const lifelineFill = document.getElementById('lifeline-fill');
   const dnaPanel = document.getElementById('dna-panel');
   const hint = document.getElementById('hint');
   const hudSeed = document.getElementById('hud-seed');
-  const controlsEl = document.querySelector('.controls');
 
   const slSpeed = document.getElementById('sl-speed');
   const slLoad = document.getElementById('sl-load');
@@ -189,12 +189,24 @@ function boot() {
   let gravityWasActive = true;
   const gravityAxis = { x: false, y: true, z: false };
   let speedMult = 1;
+  /** null | 'sigh' | 'dead' */
   let surrenderPhase = null;
   let surrenderElapsed = 0;
+  let lastAliveH = 0;
+  let lastAliveV = 0;
   const audio = createAudioHum();
 
-  function buildMachine() {
-    if (builder) builder.dispose();
+  function captureLineOpacities() {
+    if (!builder) return;
+    builder.staticRoot.traverse((child) => {
+      if (child.material?.isLineBasicMaterial && child.material.userData.baseOpacity == null) {
+        child.material.userData.baseOpacity = child.material.opacity;
+      }
+    });
+  }
+
+  function buildMachineOnce() {
+    if (builder) return;
     builder = new WireBuilder(machineStretch);
     drawMachine(builder, makeRng(ACTZ_EDITION_SEED), machineProfile(ACTZ_EDITION_SEED));
     builder.baseRoot.position.set(0, 0, 0);
@@ -205,27 +217,45 @@ function boot() {
     slHCount.value = String(DEFAULT_HORIZONTAL_GEAR_COUNT);
     slVCount.max = String(builder.verticalGears.length);
     slVCount.value = String(DEFAULT_VERTICAL_GEAR_COUNT);
-    syncControls();
+    captureLineOpacities();
+    syncGearScales();
   }
 
-  function syncGearCounts() {
-    const hCount = Number(slHCount.value);
-    const vCount = Number(slVCount.value);
-    const showMachine = hCount > 0 || vCount > 0;
-    valHCount.textContent = String(hCount);
-    valVCount.textContent = String(vCount);
+  function applyLifeToMachine(snap, lifeVitality) {
+    if (!builder) return { aliveH: 0, aliveV: 0, lifeVitality: 0 };
+
+    const maxH = Number(slHCount.value);
+    const maxV = Number(slVCount.value);
+    const aliveH = lifeVitality <= 0.02 ? 0 : Math.round(maxH * lifeVitality);
+    const aliveV = lifeVitality <= 0.02 ? 0 : Math.round(maxV * lifeVitality);
+    lastAliveH = aliveH;
+    lastAliveV = aliveV;
+
+    const showMachine = aliveH > 0 || aliveV > 0;
     builder.machineRoot.visible = showMachine;
-    builder.towerPosts.visible = hCount > 0;
-    builder.horizontalDiscs.visible = hCount > 0;
-    builder.verticalFace.visible = vCount > 0;
-    builder.horizontalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < hCount; });
-    builder.verticalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < vCount; });
+    builder.towerPosts.visible = aliveH > 0;
+    builder.horizontalDiscs.visible = aliveH > 0;
+    builder.verticalFace.visible = aliveV > 0;
+    builder.horizontalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < aliveH; });
+    builder.verticalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < aliveV; });
+
+    const ink = 0.15 + 0.85 * lifeVitality;
+    builder.staticRoot.traverse((child) => {
+      if (child.material?.isLineBasicMaterial) {
+        const base = child.material.userData.baseOpacity ?? 1;
+        child.material.opacity = base * ink;
+        child.material.transparent = child.material.opacity < 0.99;
+      }
+    });
+
+    const sag = (1 - lifeVitality) * 0.9;
+    machineStretch.position.y = -sag;
+
+    return { aliveH, aliveV, lifeVitality };
   }
 
-  function syncControls() {
-    speedMult = Number(slSpeed.value) / 100;
-    valSpeed.textContent = speedMult.toFixed(1) + '×';
-    valLoad.textContent = (Number(slLoad.value) / 100).toFixed(2);
+  function syncGearScales() {
+    if (!builder) return;
     const hScale = Number(slHorizontal.value) / 100;
     const vScale = Number(slVertical.value) / 100;
     valHorizontal.textContent = hScale.toFixed(2) + '×';
@@ -235,7 +265,15 @@ function boot() {
       const sc = s.gearKind === 'horizontal' ? hScale : vScale;
       s.content.scale.set(sc, sc, sc);
     }
-    syncGearCounts();
+  }
+
+  function syncControls() {
+    speedMult = Number(slSpeed.value) / 100;
+    valSpeed.textContent = speedMult.toFixed(1) + '×';
+    valLoad.textContent = (Number(slLoad.value) / 100).toFixed(2);
+    valHCount.textContent = String(lastAliveH);
+    valVCount.textContent = String(lastAliveV);
+    syncGearScales();
   }
 
   for (const el of [slSpeed, slLoad, slHorizontal, slVertical, slHCount, slVCount]) {
@@ -271,43 +309,32 @@ function boot() {
 
   renderer.domElement.addEventListener('pointerdown', () => audio.start(), { once: true });
 
-  function rebirth() {
-    organism = createOrganism({
-      seed: ACTZ_EDITION_SEED,
-      speciesId: 'surrender-machines',
-      label: 'Surrender Machine (seed 1909113409)',
-      lifespanSeconds: LIFESPAN_SECONDS,
-    });
-    surrenderPhase = null;
-    surrenderElapsed = 0;
-    document.body.classList.remove('surrender-phase');
-    cycleStart = clock.elapsedTime;
-    pausedCycleTime = 0;
-    hint.textContent = 'drag orbit · scroll zoom · H hide controls · Machine DNA · finite lifeline';
-    buildMachine();
-  }
-
-  function updateDnaHud(snap) {
+  function updateDnaHud(snap, lifeInfo) {
     const remain = Math.max(0, snap.lifespanSeconds - snap.age);
     const goldCls = snap.flags.recentGold ? ' gold' : '';
+    const v = lifeInfo.lifeVitality;
+    lifelineFill.style.transform = `scaleX(${Math.max(0, v)})`;
+    lifelineFill.style.opacity = String(0.35 + 0.65 * v);
+
     dnaPanel.innerHTML = [
       `<div>stage <span class="val">${snap.lifeStage}</span></div>`,
-      `<div>vitality <span class="val">${snap.vitality.toFixed(2)}</span></div>`,
+      `<div>vitality <span class="val">${v.toFixed(2)}</span></div>`,
       `<div>stress <span class="val">${snap.stress.toFixed(2)}</span></div>`,
       `<div>lifeline <span class="val">${formatTime(remain)}</span></div>`,
+      `<div>gears alive <span class="val">${lifeInfo.aliveH}h · ${lifeInfo.aliveV}v</span></div>`,
       `<div>scars <span class="val">${snap.scars.length}</span></div>`,
       snap.flags.recentGold ? `<div class="${goldCls.trim()}">kintsugi gold</div>` : '',
     ].join('');
-    lifelineFill.style.transform = `scaleX(${Math.max(0, 1 - snap.normalizedAge)})`;
-    hudSeed.textContent = `seed ${snap.seed} · DNA · lifeline`;
+
+    hudSeed.textContent = `seed ${snap.seed} · vitality ${v.toFixed(2)} · lifeline`;
   }
 
-  buildMachine();
+  buildMachineOnce();
   const clock = new THREE.Clock();
   cycleStart = clock.elapsedTime;
 
-  function gravityStrength(vitality, surrenderK) {
-    if (!anyGravityOn() || surrenderK > 0.5) return 0;
+  function gravityStrength(lifeVitality, surrenderK) {
+    if (!anyGravityOn() || surrenderK > 0.5 || lifeVitality < 0.05) return 0;
     const cycleTime = clock.elapsedTime - cycleStart;
     if (cycleTime >= GRAVITY_CYCLE) {
       cycleStart = clock.elapsedTime;
@@ -315,7 +342,7 @@ function boot() {
     }
     const t = cycleTime * GRAVITY_RAMP;
     const wave = 0.5 - 0.5 * Math.cos(t);
-    return wave * GRAVITY_MAX * vitality;
+    return wave * GRAVITY_MAX * lifeVitality;
   }
 
   function animate() {
@@ -326,8 +353,13 @@ function boot() {
     if (surrenderPhase === 'sigh') {
       surrenderElapsed += dt;
       surrenderK = Math.min(1, surrenderElapsed / SURRENDER_SECONDS);
-      if (surrenderElapsed >= SURRENDER_SECONDS) rebirth();
-    } else {
+      if (surrenderElapsed >= SURRENDER_SECONDS) {
+        surrenderPhase = 'dead';
+        surrenderK = 1;
+        document.body.classList.add('dead-phase');
+        hint.textContent = 'zero state · same machine · mechanical sigh complete';
+      }
+    } else if (!surrenderPhase) {
       const load = Number(slLoad.value) / 100;
       organism.update(dt, {
         presence: load,
@@ -335,16 +367,12 @@ function boot() {
         stressNudge: load * 0.08,
       });
       const snap = organism.express();
-      updateDnaHud(snap);
-
       if (snap.lifeStage === LIFE_STAGE.DEAD || snap.flags.dead) {
         surrenderPhase = 'sigh';
         surrenderElapsed = 0;
         document.body.classList.add('surrender-phase');
-        hint.textContent = 'mechanical sigh · surrender · seed holds';
-      }
-
-      if (snap.flags.breaking) {
+        hint.textContent = 'mechanical sigh · vitality draining · same body';
+      } else if (snap.flags.breaking) {
         machineStretch.rotation.z = Math.sin(clock.elapsedTime * 24) * 0.012 * snap.stress;
       } else {
         machineStretch.rotation.z *= 0.92;
@@ -352,10 +380,20 @@ function boot() {
     }
 
     const snap = organism.express();
-    const vitality = surrenderPhase ? Math.max(0, 1 - surrenderK) * snap.vitality : snap.vitality;
-    audio.setLevel(vitality, surrenderK);
+    let lifeVitality = snap.vitality;
+    if (surrenderPhase === 'sigh') {
+      lifeVitality = snap.vitality * (1 - surrenderK);
+    } else if (surrenderPhase === 'dead') {
+      lifeVitality = 0;
+    }
 
-    const g = gravityStrength(vitality, surrenderK);
+    const lifeInfo = applyLifeToMachine(snap, lifeVitality);
+    updateDnaHud(snap, lifeInfo);
+    syncControls();
+
+    audio.setLevel(lifeVitality, surrenderK);
+
+    const g = gravityStrength(lifeVitality, surrenderK);
     const gX = gravityAxis.x ? g : 0;
     const gY = gravityAxis.y ? g : 0;
     const gZ = gravityAxis.z ? g : 0;
@@ -365,15 +403,14 @@ function boot() {
     const stretchX = gX * (STRETCH_MAX - 1);
     const stretchY = gY * (STRETCH_MAX - 1);
     const stretchZ = gZ * (STRETCH_MAX - 1);
-    const tear = GRAVITY_PULL * TEAR_PULL * vitality;
+    const tear = GRAVITY_PULL * TEAR_PULL * lifeVitality;
 
-    const spinScale = vitality * (1 - surrenderK * 0.85);
+    const spinScale = lifeVitality * (1 - surrenderK * 0.9);
     machineStretch.scale.set(
-      (1 + stretchX) * (1 - surrenderK * 0.08),
-      (1 + stretchY) * (1 - surrenderK * 0.08),
-      (1 + stretchZ) * (1 - surrenderK * 0.08),
+      (1 + stretchX) * (0.92 + 0.08 * lifeVitality),
+      (1 + stretchY) * (0.92 + 0.08 * lifeVitality),
+      (1 + stretchZ) * (0.92 + 0.08 * lifeVitality),
     );
-    machineStretch.position.set(stretchX * PIVOT_X, stretchY * PIVOT_Y, stretchZ * PIVOT_Z);
 
     builder.baseRoot.position.set(
       gravityAxis.x ? -pullX * tear : 0,
@@ -387,14 +424,15 @@ function boot() {
     );
 
     for (const s of builder.spinners) {
+      if (!s.pivot.visible) continue;
       const d = s.speed * speedMult * spinScale * dt;
       if (s.axis === 'x') s.pivot.rotation.x += d;
       else if (s.axis === 'y') s.pivot.rotation.y += d;
       else s.pivot.rotation.z += d;
 
-      const lift = pullY * s.lift * GRAVITY_PULL * vitality;
-      const spreadX = pullX * s.spreadX * GRAVITY_PULL * vitality;
-      const spreadZ = pullZ * s.spreadZ * GRAVITY_PULL * vitality;
+      const lift = pullY * s.lift * GRAVITY_PULL * lifeVitality;
+      const spreadX = pullX * s.spreadX * GRAVITY_PULL * lifeVitality;
+      const spreadZ = pullZ * s.spreadZ * GRAVITY_PULL * lifeVitality;
       s.pivot.position.y = s.homeY + lift;
       s.pivot.position.x = s.homeX + spreadX;
       s.pivot.position.z = s.homeZ + spreadZ;
@@ -402,9 +440,9 @@ function boot() {
 
     controls.update();
 
-    postMaterial.uniforms.pullX.value = gX * SMEAR_MAX * vitality;
-    postMaterial.uniforms.pullY.value = gY * SMEAR_MAX * vitality;
-    postMaterial.uniforms.pullZ.value = gZ * SMEAR_MAX * 0.92 * vitality;
+    postMaterial.uniforms.pullX.value = gX * SMEAR_MAX * lifeVitality;
+    postMaterial.uniforms.pullY.value = gY * SMEAR_MAX * lifeVitality;
+    postMaterial.uniforms.pullZ.value = gZ * SMEAR_MAX * 0.92 * lifeVitality;
 
     renderer.setClearColor(
       surrenderK > 0 ? new THREE.Color(1, 1 - surrenderK * 0.04, 1 - surrenderK * 0.04) : 0xffffff,
