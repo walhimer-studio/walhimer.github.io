@@ -15,8 +15,8 @@ export const PIVOT_Z = 0.55;
 
 const PALETTE = ACTZ_PALETTE;
 
-export const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
-export const DEFAULT_VERTICAL_GEAR_COUNT = 40;
+export const DEFAULT_HORIZONTAL_GEAR_COUNT = 12;
+export const DEFAULT_VERTICAL_GEAR_COUNT = 4;
 export const MIN_HORIZONTAL_GEARS = 40;
 export const MIN_VERTICAL_GEARS = 40;
 
