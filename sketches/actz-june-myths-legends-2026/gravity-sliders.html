@@ -26,6 +26,14 @@
       color: #888;
     }
     .hud .seed { letter-spacing: 0.12em; text-transform: none; color: #aaa; }
+    #edition-seed {
+      position: fixed; top: 12px; left: 14px; z-index: 15;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: #666; pointer-events: none;
+      padding: 8px 10px; background: rgba(255,255,255,0.94); border: 1px solid #e8e8e8;
+    }
+    #edition-seed strong { color: #444; letter-spacing: 0.06em; }
     .hint {
       position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
       font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -113,7 +121,8 @@
   </style>
 </head>
 <body>
-  <div class="hint">drag orbit · scroll zoom · H hide controls · gravity cycles loop on one seed</div>
+  <div id="edition-seed">actz edition · seed <strong>1909113409</strong></div>
+  <div class="hint">drag orbit · scroll zoom · H hide controls · gravity cycles · seed locked</div>
   <div id="remote-hud">remote · <span id="remote-status">connecting…</span></div>
   <div class="controls" aria-label="Machine controls">
     <label>
@@ -129,17 +138,17 @@
       <input type="range" id="sl-vertical" min="25" max="200" value="100" aria-label="Vertical gear size">
     </label>
     <label>
-      <span class="ctrl-head">Horizontal gear count <span class="val" id="val-h-count">40</span></span>
-      <input type="range" id="sl-h-count" min="0" max="40" value="40" aria-label="Horizontal gear count">
+      <span class="ctrl-head">Horizontal gear count <span class="val" id="val-h-count">12</span></span>
+      <input type="range" id="sl-h-count" min="0" max="40" value="12" aria-label="Horizontal gear count">
     </label>
     <label>
-      <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">0</span></span>
-      <input type="range" id="sl-v-count" min="0" max="1" value="1" aria-label="Vertical gear count">
+      <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">4</span></span>
+      <input type="range" id="sl-v-count" min="0" max="40" value="4" aria-label="Vertical gear count">
     </label>
     <div class="gravity-btns" aria-label="Gravity axes">
-      <button type="button" id="btn-gravity-x" aria-pressed="true">Gravity X</button>
+      <button type="button" id="btn-gravity-x" aria-pressed="false">Gravity X</button>
       <button type="button" id="btn-gravity-y" aria-pressed="true">Gravity Y</button>
-      <button type="button" id="btn-gravity-z" aria-pressed="true">Gravity Z</button>
+      <button type="button" id="btn-gravity-z" aria-pressed="false">Gravity Z</button>
     </div>
   </div>
   <div class="hud">
@@ -156,8 +165,8 @@
   const URL_PARAMS = new URLSearchParams(location.search);
   const ACTZ_EDITION_SEED = 1909113409;
   const INITIAL_SEED = ACTZ_EDITION_SEED;
-  const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
-  const DEFAULT_VERTICAL_GEAR_COUNT = 40;
+  const DEFAULT_HORIZONTAL_GEAR_COUNT = 12;
+  const DEFAULT_VERTICAL_GEAR_COUNT = 4;
   const MIN_HORIZONTAL_GEARS = 40;
   const MIN_VERTICAL_GEARS = 40;
   const PIVOT_Y = 0.55;
@@ -863,7 +872,7 @@
   let cycleStart = 0;
   let pausedCycleTime = 0;
   let gravityWasActive = true;
-  const gravityAxis = { x: true, y: true, z: true };
+  const gravityAxis = { x: false, y: true, z: false };
   let speedMult = 1;
 
   const btnGravityX = document.getElementById('btn-gravity-x');

@@ -187,7 +187,7 @@ function boot() {
   let cycleStart = 0;
   let pausedCycleTime = 0;
   let gravityWasActive = true;
-  const gravityAxis = { x: true, y: true, z: true };
+  const gravityAxis = { x: false, y: true, z: false };
   let speedMult = 1;
   let surrenderPhase = null;
   let surrenderElapsed = 0;
