@@ -9,7 +9,7 @@ import {
   PIVOT_X,
   PIVOT_Y,
   PIVOT_Z,
-} from './actz-wire-machine.mjs';
+} from './actz-wire-machine.mjs?v=20a6c60';
 
 const THREE = globalThis.THREE;
 
@@ -115,6 +115,11 @@ function createAudioHum() {
 }
 
 function boot() {
+  if (!globalThis.THREE) {
+    const el = document.getElementById('hint');
+    if (el) el.textContent = 'Three.js failed to load — hard refresh (Cmd+Shift+R)';
+    return;
+  }
   const lifelineFill = document.getElementById('lifeline-fill');
   const dnaPanel = document.getElementById('dna-panel');
   const hint = document.getElementById('hint');
