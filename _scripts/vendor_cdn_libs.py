@@ -25,6 +25,7 @@ SCAN_ROOTS = (
     ROOT / "sketches",
     ROOT / "installations",
     ROOT / "machine-aesthetic",
+    ROOT / "drafts",
 )
 SCAN_FILES = (ROOT / "index.html",)
 
@@ -57,6 +58,15 @@ LIB_FETCH: dict[str, str] = {
     "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js": "ethers-5.7.2.umd.min.js",
     "https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js": "GLTFLoader-0.128.0.js",
     "https://cdn.jsdelivr.net/gh/walhimer-studio/EmergentDNA@v1.1.0/src/emergent-dna-core.js": "emergent-dna-core.js",
+    "https://unpkg.com/three@0.170.0/build/three.module.js": "three-0.170.0.module.js",
+    "https://unpkg.com/three@0.170.0/examples/jsm/": "three-0.170.0-jsm/",
+    "https://esm.sh/tone@14.8.49": "tone-14.8.49.module.js",
+    "https://unpkg.com/tone@14.8.49/build/Tone.js": "tone-14.8.49.module.js",
+    "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js": "p5-1.9.4.min.js",
+    "https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js": "p5-1.9.3.min.js",
+    "https://unpkg.com/three@0.132.2/examples/js/loaders/FontLoader.js": "FontLoader-0.132.2.js",
+    "https://unpkg.com/three@0.132.2/examples/js/geometries/TextGeometry.js": "TextGeometry-0.132.2.js",
+    "https://unpkg.com/three@0.132.2/examples/js/exporters/STLExporter.js": "STLExporter-0.132.2.js",
 }
 
 P5_RE = re.compile(
@@ -72,7 +82,15 @@ THREE160_RE = re.compile(
     re.I,
 )
 JSDELIVR_P5_RE = re.compile(
-    r"""https://cdn\.jsdelivr\.net/npm/p5@[^/"']+/lib/([^"']+)""",
+    r"""https://cdn\.jsdelivr\.net/npm/p5@([^/"']+)/lib/([^"']+)""",
+    re.I,
+)
+THREE170_RE = re.compile(
+    r"""https://unpkg\.com/three@0\.170\.0/([^"']+)""",
+    re.I,
+)
+ESM_TONE_RE = re.compile(
+    r"""https://esm\.sh/tone@[^"']+""",
     re.I,
 )
 JSDELIVR_THREE_RE = re.compile(
@@ -100,8 +118,11 @@ def iter_html_files() -> list[Path]:
 
 
 def rel_to_lib(html_path: Path, lib_name: str) -> str:
-    target = LIB_ROOT / lib_name
-    return Path(os.path.relpath(target, html_path.parent)).as_posix()
+    trailing = lib_name.endswith("/")
+    clean = lib_name.rstrip("/")
+    target = LIB_ROOT / clean
+    rel = Path(os.path.relpath(target, html_path.parent)).as_posix()
+    return f"{rel}/" if trailing else rel
 
 
 def local_name_for_three128(path_suffix: str) -> str:
@@ -119,8 +140,43 @@ def local_name_for_three160(path_suffix: str) -> str:
     return f"three160-{safe}"
 
 
+def fetch_three_jsm(version: str, dry_run: bool) -> None:
+    dest_dir = LIB_ROOT / f"three-{version}-jsm"
+    if dest_dir.is_dir() and any(dest_dir.iterdir()):
+        return
+    if dry_run:
+        print(f"Would extract three@{version} examples/jsm → {dest_dir.relative_to(ROOT)}")
+        return
+    import io
+    import tarfile
+
+    url = f"https://registry.npmjs.org/three/-/three-{version}.tgz"
+    print(f"Fetching {url} for examples/jsm …")
+    try:
+        with urllib.request.urlopen(url, timeout=120) as resp:
+            data = resp.read()
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as tar:
+            prefix = f"package/examples/jsm/"
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            count = 0
+            for member in tar.getmembers():
+                if not member.name.startswith(prefix) or member.isdir():
+                    continue
+                rel = member.name[len(prefix) :]
+                out = dest_dir / rel
+                out.parent.mkdir(parents=True, exist_ok=True)
+                extracted = tar.extractfile(member)
+                if extracted:
+                    out.write_bytes(extracted.read())
+                    count += 1
+            print(f"  extracted {count} jsm file(s)")
+    except Exception as exc:
+        print(f"  skip three jsm ({exc})")
+
+
 def ensure_libs(dry_run: bool) -> None:
     LIB_ROOT.mkdir(parents=True, exist_ok=True)
+    fetch_three_jsm("0.170.0", dry_run)
 
     # Reuse existing loop-snippets bundle if present.
     loop_three = ROOT / "sketches" / "loop-snippets" / "js" / "three.min.js"
@@ -202,13 +258,38 @@ def rewrite_content(html_path: Path, text: str) -> tuple[str, int]:
 
     text = THREE160_RE.sub(sub_three160, text)
 
-    # jsdelivr p5 → map to closest vendored p5-1.11.2.min.js
-    def sub_jsdelivr_p5(_: re.Match[str]) -> str:
+    def sub_jsdelivr_p5(match: re.Match[str]) -> str:
         nonlocal changes
+        version, rest = match.group(1), match.group(2)
+        lib = f"p5-{version}.min.js" if rest.endswith(".min.js") else f"p5-{version}-{rest.replace('/', '-')}"
+        url_key = match.group(0)
+        if url_key not in LIB_FETCH:
+            LIB_FETCH[url_key] = lib
         changes += 1
-        return rel_to_lib(html_path, "p5-1.11.2.min.js")
+        return rel_to_lib(html_path, lib)
 
     text = JSDELIVR_P5_RE.sub(sub_jsdelivr_p5, text)
+
+    def sub_three170(match: re.Match[str]) -> str:
+        nonlocal changes
+        suffix = match.group(1)
+        if suffix == "build/three.module.js":
+            lib = "three-0.170.0.module.js"
+        elif suffix == "examples/jsm/":
+            lib = "three-0.170.0-jsm/"
+        else:
+            lib = f"three-0.170.0-jsm/{suffix.replace('examples/jsm/', '')}"
+        changes += 1
+        return rel_to_lib(html_path, lib)
+
+    text = THREE170_RE.sub(sub_three170, text)
+
+    def sub_esm_tone(_: re.Match[str]) -> str:
+        nonlocal changes
+        changes += 1
+        return rel_to_lib(html_path, "tone-14.8.49.module.js")
+
+    text = ESM_TONE_RE.sub(sub_esm_tone, text)
 
     def sub_jsdelivr_three(match: re.Match[str]) -> str:
         nonlocal changes

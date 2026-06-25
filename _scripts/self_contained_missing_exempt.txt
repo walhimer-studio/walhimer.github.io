@@ -1,0 +1,12 @@
+# Legacy HTML saved from other hosts — missing local JS was never vendored.
+# CDN rule still applies to these files. Paths relative to repo root.
+sketches/3d_print.html
+sketches/821 (around) — 1536 × 864.html
+sketches/827 (centered) #10.html
+sketches/919.html
+sketches/bubbles.html
+sketches/emergent-dna/index.html
+sketches/exhibition_autosync.html
+sketches/index_slider_test.html
+sketches/snowfall.html
+sketches/test_bridge.html

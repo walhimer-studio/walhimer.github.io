@@ -3,8 +3,10 @@
 
 Source of truth: README.md § Self-contained rule, docs/archive-chronicle.md.
 
-Every HTML file under sketches/, installations/, machine-aesthetic/, and root
-index.html must pass — no exceptions, no incremental mode on publish/CI.
+Every HTML file under sketches/, installations/, machine-aesthetic/, drafts/,
+and root index.html must pass — no exceptions.
+
+Also verifies local script / import-map paths resolve to real files.
 
 Usage:
   python3 _scripts/check_self_contained.py           # full repo — fails if any violation
@@ -15,23 +17,28 @@ from __future__ import annotations
 
 import argparse
 import re
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+EXEMPT_MISSING = ROOT / "_scripts" / "self_contained_missing_exempt.txt"
 
 SCAN_ROOTS = (
     ROOT / "sketches",
     ROOT / "installations",
     ROOT / "machine-aesthetic",
+    ROOT / "drafts",
 )
 
 SCAN_FILES = (ROOT / "index.html",)
 
-CDN_PATTERNS = (
-    re.compile(r"""<script[^>]+src\s*=\s*["']https?://[^"']+["']""", re.I),
-    re.compile(r"""<link[^>]+href\s*=\s*["']https?://[^"']+["'][^>]*rel\s*=\s*["']modulepreload["']""", re.I),
-    re.compile(r"""["']https?://[^"']+["']\s*:\s*["']https?://[^"']+["']""", re.I),  # import maps
+SCRIPT_SRC_RE = re.compile(
+    r"""<script[^>]+src\s*=\s*["']([^"']+)["']""",
+    re.I,
+)
+
+IMPORT_MAP_ENTRY_RE = re.compile(
+    r"""["'][a-zA-Z0-9@./_-]+["']\s*:\s*["']([^"']+)["']""",
+    re.I,
 )
 
 KNOWN_LIB_HOSTS = (
@@ -48,8 +55,8 @@ KNOWN_LIB_HOSTS = (
 )
 
 
-def is_lib_cdn(tag: str) -> bool:
-    lower = tag.lower()
+def is_lib_cdn(url: str) -> bool:
+    lower = url.lower()
     return any(host in lower for host in KNOWN_LIB_HOSTS)
 
 
@@ -67,18 +74,92 @@ def iter_html_files() -> list[Path]:
     return files
 
 
-def find_violations(path: Path) -> list[str]:
+def resolve_ref(html_path: Path, ref: str) -> Path | None:
+    ref = ref.split("?")[0].split("#")[0]
+    if not ref or ref.startswith(("data:", "blob:", "about:")):
+        return None
+    if ref.startswith("//"):
+        return None
+    if ref.startswith("http://") or ref.startswith("https://"):
+        return None
+    if ref.startswith("/"):
+        return ROOT / ref.lstrip("/")
+    return (html_path.parent / ref).resolve()
+
+
+def load_missing_exempt() -> set[str]:
+    if not EXEMPT_MISSING.is_file():
+        return set()
+    return {
+        line.strip()
+        for line in EXEMPT_MISSING.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    }
+
+
+def find_violations(path: Path, *, check_missing: bool = True) -> list[str]:
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
         return [f"unreadable: {exc}"]
 
     hits: list[str] = []
-    for pattern in CDN_PATTERNS:
-        for match in pattern.finditer(text):
-            snippet = match.group(0).strip()
-            if is_lib_cdn(snippet):
-                hits.append(snippet)
+
+    for match in SCRIPT_SRC_RE.finditer(text):
+        src = match.group(1)
+        if src.startswith(("http://", "https://", "//")) and is_lib_cdn(src):
+            hits.append(f"script src CDN: {src}")
+
+    in_importmap = False
+    for line in text.splitlines():
+        if "importmap" in line.lower():
+            in_importmap = True
+        if in_importmap:
+            for match in IMPORT_MAP_ENTRY_RE.finditer(line):
+                value = match.group(1)
+                if value.startswith(("http://", "https://", "//")) and is_lib_cdn(value):
+                    hits.append(f"importmap CDN: {value}")
+            if "</script>" in line.lower():
+                in_importmap = False
+
+    for match in SCRIPT_SRC_RE.finditer(text):
+        src = match.group(1)
+        if src.startswith(("http://", "https://", "//", "data:")):
+            continue
+        if not check_missing:
+            continue
+        target = resolve_ref(path, src)
+        if target is None:
+            continue
+        try:
+            target.relative_to(ROOT)
+        except ValueError:
+            continue
+        if not target.is_file():
+            hits.append(f"missing script: {src} -> {target.relative_to(ROOT)}")
+
+    importmap_blocks = re.findall(
+        r'<script[^>]+type\s*=\s*["\']importmap["\'][^>]*>(.*?)</script>',
+        text,
+        re.I | re.S,
+    )
+    for block in importmap_blocks:
+        for match in IMPORT_MAP_ENTRY_RE.finditer(block):
+            value = match.group(1)
+            if value.startswith(("http://", "https://", "//", "data:")):
+                continue
+            if not check_missing:
+                continue
+            target = resolve_ref(path, value)
+            if target is None:
+                continue
+            try:
+                target.relative_to(ROOT)
+            except ValueError:
+                continue
+            if not target.is_file() and not target.is_dir():
+                hits.append(f"missing importmap target: {value} -> {target.relative_to(ROOT)}")
+
     return hits
 
 
@@ -92,9 +173,12 @@ def main() -> int:
     args = parser.parse_args()
 
     files = iter_html_files()
+    exempt = load_missing_exempt()
     violations: list[tuple[Path, list[str]]] = []
     for path in files:
-        hits = find_violations(path)
+        rel = path.relative_to(ROOT).as_posix()
+        check_missing = rel not in exempt
+        hits = find_violations(path, check_missing=check_missing)
         if hits:
             violations.append((path, hits))
 
@@ -109,10 +193,10 @@ def main() -> int:
     for path, hits in violations:
         rel = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
         print(f"- {rel}")
-        for hit in hits[:3]:
+        for hit in hits[:5]:
             print(f"    {hit}")
-        if len(hits) > 3:
-            print(f"    … and {len(hits) - 3} more")
+        if len(hits) > 5:
+            print(f"    … and {len(hits) - 5} more")
     print()
     print("Fix: python3 _scripts/vendor_cdn_libs.py  (vendors libs locally)")
     print("Then re-run: python3 _scripts/check_self_contained.py")

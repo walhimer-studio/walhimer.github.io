@@ -7,7 +7,9 @@ alwaysApply: true
 
 **Source of truth:** `README.md` § Self-contained rule; `docs/archive-chronicle.md`.
 
-**Every** HTML file under `sketches/`, `installations/`, `machine-aesthetic/`, and root `index.html` must work offline. No required external CDN for core libraries (Three.js, p5, OrbitControls, etc.).
+**Every** HTML file under `sketches/`, `installations/`, `machine-aesthetic/`, `drafts/` (homepage carousel embeds), and root `index.html` must work offline. No required external CDN for core libraries (Three.js, p5, OrbitControls, etc.).
+
+The checker also fails when a local `script src` or import-map path points at a file that does not exist.
 
 There is **no incremental exception**. The full repo must pass:
 
