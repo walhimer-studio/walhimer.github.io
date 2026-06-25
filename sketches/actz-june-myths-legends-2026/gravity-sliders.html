@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>actz — Ghost Dense · Gravity Sliders · Mark Walhimer</title>
+  <title>actz — Surrender Machine seed 1909113409 · Gravity Sliders · Mark Walhimer</title>
   <link rel="canonical" href="https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/gravity-sliders.html" />
   <script>
     (function () {
@@ -155,14 +155,7 @@
 
   const URL_PARAMS = new URLSearchParams(location.search);
   const ACTZ_EDITION_SEED = 1909113409;
-  const INITIAL_SEED = (() => {
-    const raw = URL_PARAMS.get('seed');
-    if (raw != null && raw !== '') {
-      const n = Number(raw);
-      if (Number.isFinite(n) && n >= 0) return n >>> 0;
-    }
-    return ACTZ_EDITION_SEED;
-  })();
+  const INITIAL_SEED = ACTZ_EDITION_SEED;
   const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
   const DEFAULT_VERTICAL_GEAR_COUNT = 40;
   const MIN_HORIZONTAL_GEARS = 40;
