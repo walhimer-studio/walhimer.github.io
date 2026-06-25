@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>actz — Ghost Dense · Gravity Sliders · Mark Walhimer</title>
-  <link rel="canonical" href="https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/gravity-sliders.html" />
-  <script>
+  <title>actz — Surrender Machines · Gravity Sliders</title>
+    <script>
     (function () {
       var p = new URLSearchParams(location.search);
       if (p.get('view') === 'display') document.documentElement.classList.add('view-display');
@@ -147,22 +146,15 @@
     <span class="seed" id="hud-seed">seed 1909113409 · gravity · sliders</span>
   </div>
 
-  <script src="../loop-snippets/js/three.min.js"></script>
-  <script src="../loop-snippets/js/OrbitControls.js"></script>
+  <script src="js/three.min.js"></script>
+  <script src="js/OrbitControls.js"></script>
   <script>
 (function () {
   'use strict';
 
   const URL_PARAMS = new URLSearchParams(location.search);
   const ACTZ_EDITION_SEED = 1909113409;
-  const INITIAL_SEED = (() => {
-    const raw = URL_PARAMS.get('seed');
-    if (raw != null && raw !== '') {
-      const n = Number(raw);
-      if (Number.isFinite(n) && n >= 0) return n >>> 0;
-    }
-    return ACTZ_EDITION_SEED;
-  })();
+  const INITIAL_SEED = 1909113409;
   const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
   const DEFAULT_VERTICAL_GEAR_COUNT = 40;
   const MIN_HORIZONTAL_GEARS = 40;
@@ -1094,18 +1086,6 @@
     VIEW
   };
 
-  if (VIEW === 'display') {
-    import('../loop-snippets/gravity-remote.mjs').then((m) => m.attachDisplay({
-      venue: VENUE,
-      onStatus: (t) => {
-        const el = document.getElementById('remote-status');
-        if (el) el.textContent = t;
-      }
-    })).catch(() => {
-      const el = document.getElementById('remote-status');
-      if (el) el.textContent = 'remote unavailable';
-    });
-  }
 })();
   </script>
 </body>

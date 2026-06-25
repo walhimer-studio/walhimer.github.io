@@ -1,187 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>actz — Ghost Dense · Gravity Sliders · Mark Walhimer</title>
-  <link rel="canonical" href="https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/gravity-sliders.html" />
-  <script>
-    (function () {
-      var p = new URLSearchParams(location.search);
-      if (p.get('view') === 'display') document.documentElement.classList.add('view-display');
-    })();
-  </script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
-    canvas { display: block; width: 100% !important; height: 100% !important; }
-    .hud {
-      position: fixed; left: 50%; bottom: 14px;
-      transform: translateX(-50%);
-      display: flex; justify-content: space-between; align-items: flex-end;
-      width: min(92vw, 92vh);
-      pointer-events: none;
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
-      color: #888;
-    }
-    .hud .seed { letter-spacing: 0.12em; text-transform: none; color: #aaa; }
-    .hint {
-      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 10px; letter-spacing: 0.06em; color: #bbb;
-      pointer-events: none; text-align: center; line-height: 1.5;
-    }
-    .controls {
-      position: fixed; top: 42px; right: 14px; z-index: 10;
-      display: grid; gap: 10px;
-      width: min(240px, 42vw);
-      padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.92);
-      border: 1px solid #e8e8e8;
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: #888;
-    }
-    .controls label {
-      display: grid; gap: 6px;
-    }
-    .controls .ctrl-head {
-      display: flex; justify-content: space-between; align-items: baseline;
-    }
-    .controls .ctrl-head span.val {
-      letter-spacing: 0.04em; text-transform: none; color: #aaa;
-    }
-    .controls input[type="range"] {
-      width: 100%; margin: 0; accent-color: #74b4dc;
-    }
-    .controls button {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #d8d8d8;
-      background: #fff;
-      font-family: inherit;
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #666;
-      cursor: pointer;
-    }
-    .controls button:hover { border-color: #74b4dc; color: #444; }
-    .controls button[aria-pressed="true"] {
-      background: #f4f8fb;
-      border-color: #74b4dc;
-      color: #444;
-    }
-    .controls .gravity-btns {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px;
-    }
-    .controls .gravity-btns button {
-      width: auto;
-      padding: 8px 4px;
-      font-size: 9px;
-      letter-spacing: 0.06em;
-    }
-    #remote-hud {
-      display: none;
-      position: fixed; top: 14px; left: 14px; z-index: 10;
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: #aaa; pointer-events: none;
-    }
-    html.view-display .controls,
-    html.view-display .hint { display: none !important; }
-    body.controls-hidden .controls { display: none !important; }
-    html.view-display #remote-hud { display: block; }
-    html.view-display .hud { bottom: calc(14px + env(safe-area-inset-bottom)); }
-    @media (max-width: 720px) {
-      .controls {
-        top: auto; left: 0; right: 0; bottom: 0;
-        width: 100%; max-width: none;
-        max-height: min(52vh, 420px);
-        overflow-y: auto;
-        padding-bottom: calc(12px + env(safe-area-inset-bottom));
-        border-top: 1px solid #e8e8e8;
-        border-left: none; border-right: none;
-      }
-      .controls input[type="range"] { height: 32px; }
-      .controls button { min-height: 44px; touch-action: manipulation; }
-      .hint { font-size: 9px; width: 92vw; }
-    }
-  </style>
-</head>
-<body>
-  <div class="hint">drag orbit · scroll zoom · H hide controls · gravity cycles loop on one seed</div>
-  <div id="remote-hud">remote · <span id="remote-status">connecting…</span></div>
-  <div class="controls" aria-label="Machine controls">
-    <label>
-      <span class="ctrl-head">Speed <span class="val" id="val-speed">1.0×</span></span>
-      <input type="range" id="sl-speed" min="10" max="300" value="100" aria-label="Speed">
-    </label>
-    <label>
-      <span class="ctrl-head">Horizontal gear size <span class="val" id="val-horizontal">1.00×</span></span>
-      <input type="range" id="sl-horizontal" min="25" max="200" value="100" aria-label="Horizontal gear size">
-    </label>
-    <label>
-      <span class="ctrl-head">Vertical gear size <span class="val" id="val-vertical">1.00×</span></span>
-      <input type="range" id="sl-vertical" min="25" max="200" value="100" aria-label="Vertical gear size">
-    </label>
-    <label>
-      <span class="ctrl-head">Horizontal gear count <span class="val" id="val-h-count">40</span></span>
-      <input type="range" id="sl-h-count" min="0" max="40" value="40" aria-label="Horizontal gear count">
-    </label>
-    <label>
-      <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">0</span></span>
-      <input type="range" id="sl-v-count" min="0" max="1" value="1" aria-label="Vertical gear count">
-    </label>
-    <div class="gravity-btns" aria-label="Gravity axes">
-      <button type="button" id="btn-gravity-x" aria-pressed="true">Gravity X</button>
-      <button type="button" id="btn-gravity-y" aria-pressed="true">Gravity Y</button>
-      <button type="button" id="btn-gravity-z" aria-pressed="true">Gravity Z</button>
-    </div>
-  </div>
-  <div class="hud">
-    <span>Surrender Machines</span>
-    <span class="seed" id="hud-seed">seed 1909113409 · gravity · sliders</span>
-  </div>
+const THREE = globalThis.THREE;
 
-  <script src="../loop-snippets/js/three.min.js"></script>
-  <script src="../loop-snippets/js/OrbitControls.js"></script>
-  <script>
-(function () {
-  'use strict';
+export const ACTZ_PALETTE = {
+  ink: 0x2c3034,
+  lightBlue: 0x74b4dc,
+  skyBlue: 0x80b8e8,
+  navy: 0x5a788c,
+  gold: 0xeca018,
+  maroon: 0x662020,
+};
 
-  const URL_PARAMS = new URLSearchParams(location.search);
-  const ACTZ_EDITION_SEED = 1909113409;
-  const INITIAL_SEED = (() => {
-    const raw = URL_PARAMS.get('seed');
-    if (raw != null && raw !== '') {
-      const n = Number(raw);
-      if (Number.isFinite(n) && n >= 0) return n >>> 0;
-    }
-    return ACTZ_EDITION_SEED;
-  })();
-  const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
-  const DEFAULT_VERTICAL_GEAR_COUNT = 40;
-  const MIN_HORIZONTAL_GEARS = 40;
-  const MIN_VERTICAL_GEARS = 40;
-  const PIVOT_Y = 0.55;
-  const PIVOT_X = 0.55;
-  const PIVOT_Z = 0.55;
-  const GRAVITY_PULL = 2.8;
-  const GRAVITY_RAMP = 0.022;
-  const GRAVITY_MAX = 1.0;
-  const GRAVITY_CYCLE = Math.PI / GRAVITY_RAMP;
-  const STRETCH_MAX = 1.55;
-  const SMEAR_MAX = 0.014;
-  const TEAR_PULL = 1.15;
+export const PIVOT_Y = 0.55;
+export const PIVOT_X = 0.55;
+export const PIVOT_Z = 0.55;
 
-  const VIEW = URL_PARAMS.get('view') || 'local';
-  const VENUE = URL_PARAMS.get('venue') || 'default';
+const PALETTE = ACTZ_PALETTE;
 
-  const PALETTE = {
+export const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
+export const DEFAULT_VERTICAL_GEAR_COUNT = 40;
+export const MIN_HORIZONTAL_GEARS = 40;
+export const MIN_VERTICAL_GEARS = 40;
+
+const VIEW = URL_PARAMS.get('view') || 'local';
+const VENUE = URL_PARAMS.get('venue') || 'default';
+
+const PALETTE = {
     ink: 0x2c3034,
     lightBlue: 0x74b4dc,
     skyBlue: 0x80b8e8,
@@ -190,7 +32,7 @@
     maroon: 0x662020,
   };
 
-  function makeRng(seed) {
+function makeRng(seed) {
     let s = seed >>> 0;
     return {
       random() {
@@ -207,10 +49,10 @@
     };
   }
 
-  const TAU = Math.PI * 2;
-  const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const TAU = Math.PI * 2;
+const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
 
-  function cpts(cx, cy, cz, r, plane, n) {
+function cpts(cx, cy, cz, r, plane, n) {
     const pts = [];
     for (let i = 0; i < n; i++) {
       const a = TAU * i / n;
@@ -221,7 +63,7 @@
     return pts;
   }
 
-  class WireBuilder {
+class WireBuilder {
     constructor(root) {
       this.root = root;
       this.staticRoot = new THREE.Group();
@@ -529,11 +371,11 @@
     }
   }
 
-  function spinDur(rng, lo, hi) {
+function spinDur(rng, lo, hi) {
     return rng.uniform(lo, hi);
   }
 
-  function addFillGears(w, rng, profile, gearKind, count) {
+function addFillGears(w, rng, profile, gearKind, count) {
     const yTop = profile.outerY[1] + 1.8;
     for (let i = 0; i < count; i++) {
       const y = rng.uniform(profile.outerY[0], yTop);
@@ -557,7 +399,7 @@
     }
   }
 
-  function trimGearList(w, list, maxCount) {
+function trimGearList(w, list, maxCount) {
     while (list.length > maxCount) {
       const s = list.pop();
       const si = w.spinners.indexOf(s);
@@ -566,11 +408,11 @@
     }
   }
 
-  function iterationSeed() {
+function iterationSeed() {
     return INITIAL_SEED;
   }
 
-  function machineProfile(seed) {
+function machineProfile(seed) {
     const r = makeRng(seed ^ 0xa3b19535);
     const density = r.random();
     const height = r.random();
@@ -600,7 +442,7 @@
     };
   }
 
-  function drawMachine(w, rng, profile) {
+function drawMachine(w, rng, profile) {
     let baseTop = 0;
     const nLayers = rng.randint(profile.nLayers[0], profile.nLayers[1]);
     const baseW = rng.uniform(profile.baseW[0], profile.baseW[1]);
@@ -762,351 +604,5 @@
     w.popTarget();
   }
 
-  const GRAVITY_SMEAR_SHADER = {
-    uniforms: {
-      tDiffuse: { value: null },
-      pullX: { value: 0.0 },
-      pullY: { value: 0.0 },
-      pullZ: { value: 0.0 }
-    },
-    vertexShader: [
-      'varying vec2 vUv;',
-      'void main() {',
-      '  vUv = uv;',
-      '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
-      '}'
-    ].join('\n'),
-    fragmentShader: [
-      'precision highp float;',
-      'uniform sampler2D tDiffuse;',
-      'uniform float pullX;',
-      'uniform float pullY;',
-      'uniform float pullZ;',
-      'varying vec2 vUv;',
-      'float ink(vec3 c) { return 1.0 - dot(c, vec3(0.299, 0.587, 0.114)); }',
-      'void main() {',
-      '  vec4 outCol = texture2D(tDiffuse, vUv);',
-      '  float best = ink(outCol.rgb);',
-      '  for (int i = 1; i < 56; i++) {',
-      '    float fi = float(i);',
-      '    if (pullY > 0.0) {',
-      '      vec2 srcY = vUv - vec2(0.0, fi * pullY);',
-      '      if (srcY.y >= 0.0) {',
-      '        vec4 s = texture2D(tDiffuse, srcY);',
-      '        float w = ink(s.rgb);',
-      '        if (w > best) { outCol = s; best = w; }',
-      '      }',
-      '    }',
-      '    if (pullX > 0.0) {',
-      '      vec2 srcX = vUv - vec2(fi * pullX, 0.0);',
-      '      if (srcX.x >= 0.0 && srcX.x <= 1.0) {',
-      '        vec4 s = texture2D(tDiffuse, srcX);',
-      '        float w = ink(s.rgb);',
-      '        if (w > best) { outCol = s; best = w; }',
-      '      }',
-      '    }',
-      '    if (pullZ > 0.0) {',
-      '      vec2 srcZ = vUv - vec2(fi * pullZ * 0.62, fi * pullZ * 0.38);',
-      '      if (srcZ.x >= 0.0 && srcZ.y >= 0.0) {',
-      '        vec4 s = texture2D(tDiffuse, srcZ);',
-      '        float w = ink(s.rgb);',
-      '        if (w > best) { outCol = s; best = w; }',
-      '      }',
-      '    }',
-      '  }',
-      '  gl_FragColor = outCol;',
-      '}'
-    ].join('\n')
-  };
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0xffffff, 1);
-  document.body.insertBefore(renderer.domElement, document.body.firstChild);
-
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.05, 200);
-  camera.position.set(5.8, 4.2, 6.4);
-
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.target.set(0, 2.05, 0);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.06;
-  controls.minDistance = 3;
-  controls.maxDistance = 22;
-
-  const machineStretch = new THREE.Group();
-  scene.add(machineStretch);
-
-  const hudSeed = document.getElementById('hud-seed');
-
-  const renderTarget = new THREE.WebGLRenderTarget(1, 1, {
-    minFilter: THREE.LinearFilter,
-    magFilter: THREE.LinearFilter,
-    depthBuffer: true
-  });
-
-  const postScene = new THREE.Scene();
-  const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  const postMaterial = new THREE.ShaderMaterial({
-    uniforms: THREE.UniformsUtils.clone(GRAVITY_SMEAR_SHADER.uniforms),
-    vertexShader: GRAVITY_SMEAR_SHADER.vertexShader,
-    fragmentShader: GRAVITY_SMEAR_SHADER.fragmentShader
-  });
-  postScene.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), postMaterial));
-
-  const slSpeed = document.getElementById('sl-speed');
-  const slHorizontal = document.getElementById('sl-horizontal');
-  const slVertical = document.getElementById('sl-vertical');
-  const slHCount = document.getElementById('sl-h-count');
-  const slVCount = document.getElementById('sl-v-count');
-  const valSpeed = document.getElementById('val-speed');
-  const valHorizontal = document.getElementById('val-horizontal');
-  const valVertical = document.getElementById('val-vertical');
-  const valHCount = document.getElementById('val-h-count');
-  const valVCount = document.getElementById('val-v-count');
-
-  let builder;
-  let cycleStart = 0;
-  let pausedCycleTime = 0;
-  let gravityWasActive = true;
-  const gravityAxis = { x: true, y: true, z: true };
-  let speedMult = 1;
-
-  const btnGravityX = document.getElementById('btn-gravity-x');
-  const btnGravityY = document.getElementById('btn-gravity-y');
-  const btnGravityZ = document.getElementById('btn-gravity-z');
-  const controlsEl = document.querySelector('.controls');
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key !== 'h' && e.key !== 'H') return;
-    if (VIEW === 'display' || !controlsEl) return;
-    document.body.classList.toggle('controls-hidden');
-  });
-
-  function refreshGearSliders() {
-    slHCount.max = String(builder.horizontalGears.length);
-    slHCount.value = String(DEFAULT_HORIZONTAL_GEAR_COUNT);
-    slVCount.max = String(builder.verticalGears.length);
-    slVCount.value = String(DEFAULT_VERTICAL_GEAR_COUNT);
-    syncControls();
-  }
-
-  function startIteration() {
-    if (builder) builder.dispose();
-    const seed = iterationSeed();
-    builder = new WireBuilder(machineStretch);
-    drawMachine(builder, makeRng(seed), machineProfile(seed));
-    builder.baseRoot.position.set(0, 0, 0);
-    builder.machineRoot.position.set(0, 0, 0);
-    machineStretch.scale.set(1, 1, 1);
-    machineStretch.position.set(0, 0, 0);
-    cycleStart = clock.elapsedTime;
-    pausedCycleTime = 0;
-    hudSeed.textContent = `seed ${seed} · gravity · sliders`;
-    refreshGearSliders();
-  }
-
-  function syncGearCounts() {
-    const hCount = Number(slHCount.value);
-    const vCount = Number(slVCount.value);
-    const showMachine = hCount > 0 || vCount > 0;
-    valHCount.textContent = String(hCount);
-    valVCount.textContent = String(vCount);
-    builder.machineRoot.visible = showMachine;
-    builder.towerPosts.visible = hCount > 0;
-    builder.horizontalDiscs.visible = hCount > 0;
-    builder.verticalFace.visible = vCount > 0;
-    builder.horizontalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < hCount; });
-    builder.verticalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < vCount; });
-  }
-
-  function syncControls() {
-    speedMult = Number(slSpeed.value) / 100;
-    valSpeed.textContent = speedMult.toFixed(1) + '×';
-    const hScale = Number(slHorizontal.value) / 100;
-    const vScale = Number(slVertical.value) / 100;
-    valHorizontal.textContent = hScale.toFixed(2) + '×';
-    valVertical.textContent = vScale.toFixed(2) + '×';
-    for (const s of builder.spinners) {
-      if (!s.content || !s.gearKind) continue;
-      const sc = s.gearKind === 'horizontal' ? hScale : vScale;
-      s.content.scale.set(sc, sc, sc);
-    }
-    syncGearCounts();
-  }
-
-  for (const el of [slSpeed, slHorizontal, slVertical, slHCount, slVCount]) {
-    el.addEventListener('input', syncControls);
-  }
-
-  function anyGravityOn() {
-    return gravityAxis.x || gravityAxis.y || gravityAxis.z;
-  }
-
-  function syncGravityPause() {
-    const on = anyGravityOn();
-    if (on && !gravityWasActive) {
-      cycleStart = clock.elapsedTime - pausedCycleTime;
-    } else if (!on && gravityWasActive) {
-      pausedCycleTime = clock.elapsedTime - cycleStart;
-    }
-    gravityWasActive = on;
-  }
-
-  function gravityBtn(axis) {
-    return axis === 'x' ? btnGravityX : axis === 'y' ? btnGravityY : btnGravityZ;
-  }
-
-  function setGravityAxis(axis, on) {
-    gravityAxis[axis] = !!on;
-    gravityBtn(axis).setAttribute('aria-pressed', gravityAxis[axis] ? 'true' : 'false');
-    syncGravityPause();
-  }
-
-  function toggleGravityAxis(axis) {
-    setGravityAxis(axis, !gravityAxis[axis]);
-  }
-
-  function applyRemoteState(s) {
-    if (!s || !builder) return;
-    if (s.speed != null) slSpeed.value = s.speed;
-    if (s.horizontal != null) slHorizontal.value = s.horizontal;
-    if (s.vertical != null) slVertical.value = s.vertical;
-    if (s.hCount != null) {
-      slHCount.value = Math.min(s.hCount, DEFAULT_HORIZONTAL_GEAR_COUNT, builder.horizontalGears.length);
-    }
-    if (s.vCount != null) slVCount.value = Math.min(s.vCount, builder.verticalGears.length);
-    syncControls();
-    if (s.gravityX != null) setGravityAxis('x', s.gravityX);
-    if (s.gravityY != null) setGravityAxis('y', s.gravityY);
-    if (s.gravityZ != null) setGravityAxis('z', s.gravityZ);
-  }
-
-  function readLocalState() {
-    return {
-      speed: Number(slSpeed.value),
-      horizontal: Number(slHorizontal.value),
-      vertical: Number(slVertical.value),
-      hCount: Number(slHCount.value),
-      vCount: Number(slVCount.value),
-      gravityX: gravityAxis.x,
-      gravityY: gravityAxis.y,
-      gravityZ: gravityAxis.z,
-      ts: Date.now()
-    };
-  }
-
-  btnGravityX.addEventListener('click', () => toggleGravityAxis('x'));
-  btnGravityY.addEventListener('click', () => toggleGravityAxis('y'));
-  btnGravityZ.addEventListener('click', () => toggleGravityAxis('z'));
-
-  const clock = new THREE.Clock();
-  startIteration();
-
-  function gravityStrength() {
-    if (!anyGravityOn()) return 0;
-    const cycleTime = clock.elapsedTime - cycleStart;
-    if (cycleTime >= GRAVITY_CYCLE) {
-      cycleStart = clock.elapsedTime;
-      return 0;
-    }
-    const t = cycleTime * GRAVITY_RAMP;
-    const wave = 0.5 - 0.5 * Math.cos(t);
-    return wave * GRAVITY_MAX;
-  }
-
-  function animate() {
-    requestAnimationFrame(animate);
-    const dt = clock.getDelta();
-    const g = gravityStrength();
-    const gX = gravityAxis.x ? g : 0;
-    const gY = gravityAxis.y ? g : 0;
-    const gZ = gravityAxis.z ? g : 0;
-    const pullX = gX * gX;
-    const pullY = gY * gY;
-    const pullZ = gZ * gZ;
-    const stretchX = gX * (STRETCH_MAX - 1);
-    const stretchY = gY * (STRETCH_MAX - 1);
-    const stretchZ = gZ * (STRETCH_MAX - 1);
-    const tear = GRAVITY_PULL * TEAR_PULL;
-
-    machineStretch.scale.set(1 + stretchX, 1 + stretchY, 1 + stretchZ);
-    machineStretch.position.set(stretchX * PIVOT_X, stretchY * PIVOT_Y, stretchZ * PIVOT_Z);
-
-    builder.baseRoot.position.set(
-      gravityAxis.x ? -pullX * tear : 0,
-      0,
-      gravityAxis.z ? -pullZ * tear : 0
-    );
-    builder.machineRoot.position.set(
-      gravityAxis.x ? pullX * tear : 0,
-      0,
-      gravityAxis.z ? pullZ * tear : 0
-    );
-
-    for (const s of builder.spinners) {
-      const d = s.speed * speedMult * dt;
-      if (s.axis === 'x') s.pivot.rotation.x += d;
-      else if (s.axis === 'y') s.pivot.rotation.y += d;
-      else s.pivot.rotation.z += d;
-
-      const lift = pullY * s.lift * GRAVITY_PULL;
-      const spreadX = pullX * s.spreadX * GRAVITY_PULL;
-      const spreadZ = pullZ * s.spreadZ * GRAVITY_PULL;
-      s.pivot.position.y = s.homeY + lift;
-      s.pivot.position.x = s.homeX + spreadX;
-      s.pivot.position.z = s.homeZ + spreadZ;
-    }
-
-    controls.update();
-
-    postMaterial.uniforms.pullX.value = gX * SMEAR_MAX;
-    postMaterial.uniforms.pullY.value = gY * SMEAR_MAX;
-    postMaterial.uniforms.pullZ.value = gZ * SMEAR_MAX * 0.92;
-
-    renderer.setRenderTarget(renderTarget);
-    renderer.clear();
-    renderer.render(scene, camera);
-    renderer.setRenderTarget(null);
-
-    postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
-    renderer.render(postScene, postCamera);
-  }
-  animate();
-
-  function onResize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-    renderTarget.setSize(w * renderer.getPixelRatio(), h * renderer.getPixelRatio());
-  }
-  window.addEventListener('resize', onResize);
-  onResize();
-
-  window.__gravityBridge = {
-    _lastRemoteTs: 0,
-    applyRemoteState,
-    readLocalState,
-    VENUE,
-    VIEW
-  };
-
-  if (VIEW === 'display') {
-    import('../loop-snippets/gravity-remote.mjs').then((m) => m.attachDisplay({
-      venue: VENUE,
-      onStatus: (t) => {
-        const el = document.getElementById('remote-status');
-        if (el) el.textContent = t;
-      }
-    })).catch(() => {
-      const el = document.getElementById('remote-status');
-      if (el) el.textContent = 'remote unavailable';
-    });
-  }
-})();
-  </script>
-</body>
-</html>
+export { WireBuilder, drawMachine, machineProfile, makeRng, spinDur, addFillGears };

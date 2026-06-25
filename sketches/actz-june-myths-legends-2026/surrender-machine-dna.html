@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surrender Machine (seed 1909113409) · Machine DNA · Mark Walhimer</title>
+  <link rel="canonical" href="https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/surrender-machine-dna.html" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+    canvas { display: block; width: 100% !important; height: 100% !important; }
+    #lifeline-track {
+      position: fixed; top: 0; left: 0; right: 0; height: 3px;
+      background: #ececec; z-index: 20; pointer-events: none;
+    }
+    #lifeline-fill {
+      display: block; height: 100%; width: 100%;
+      background: linear-gradient(90deg, #74b4dc, #eca018);
+      transform-origin: left center;
+      transform: scaleX(1);
+    }
+    .hud {
+      position: fixed; left: 50%; bottom: 14px;
+      transform: translateX(-50%);
+      display: flex; justify-content: space-between; align-items: flex-end;
+      width: min(92vw, 92vh);
+      pointer-events: none;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #888;
+    }
+    .hud .seed { letter-spacing: 0.12em; text-transform: none; color: #aaa; }
+    .hint {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.06em; color: #bbb;
+      pointer-events: none; text-align: center; line-height: 1.5;
+    }
+    .dna-panel {
+      position: fixed; top: 22px; left: 14px; z-index: 10;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #e8e8e8;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #888; line-height: 1.65; min-width: 148px;
+    }
+    .dna-panel .val { color: #555; text-transform: none; letter-spacing: 0.04em; }
+    .dna-panel .gold { color: #c9a227; }
+    .controls {
+      position: fixed; top: 42px; right: 14px; z-index: 10;
+      display: grid; gap: 10px;
+      width: min(240px, 42vw);
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #e8e8e8;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #888;
+    }
+    .controls label { display: grid; gap: 6px; }
+    .controls .ctrl-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .controls .ctrl-head span.val {
+      letter-spacing: 0.04em; text-transform: none; color: #aaa;
+    }
+    .controls input[type="range"] { width: 100%; margin: 0; accent-color: #74b4dc; }
+    .controls button {
+      width: 100%; padding: 8px 10px;
+      border: 1px solid #d8d8d8; background: #fff;
+      font-family: inherit; font-size: 10px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: #666; cursor: pointer;
+    }
+    .controls button:hover { border-color: #74b4dc; color: #444; }
+    .controls button[aria-pressed="true"] {
+      background: #f4f8fb; border-color: #74b4dc; color: #444;
+    }
+    .controls .gravity-btns {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;
+    }
+    .controls .gravity-btns button {
+      width: auto; padding: 8px 4px; font-size: 9px; letter-spacing: 0.06em;
+    }
+    body.controls-hidden .controls { display: none !important; }
+    body.surrender-phase .hint { color: #c9a227; }
+    @media (max-width: 720px) {
+      .controls {
+        top: auto; left: 0; right: 0; bottom: 0;
+        width: 100%; max-height: min(52vh, 420px);
+        overflow-y: auto;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      }
+      .dna-panel { top: auto; bottom: calc(52vh + 8px); left: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="lifeline-track" aria-hidden="true"><span id="lifeline-fill"></span></div>
+  <div class="hint" id="hint">drag orbit · scroll zoom · H hide controls · Machine DNA · finite lifeline</div>
+  <div class="dna-panel" id="dna-panel" aria-live="polite"></div>
+  <div class="controls" aria-label="Machine controls">
+    <label>
+      <span class="ctrl-head">Speed <span class="val" id="val-speed">1.0×</span></span>
+      <input type="range" id="sl-speed" min="10" max="300" value="100" aria-label="Speed">
+    </label>
+    <label>
+      <span class="ctrl-head">Load <span class="val" id="val-load">0.40</span></span>
+      <input type="range" id="sl-load" min="0" max="100" value="40" aria-label="Visitor load">
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear size <span class="val" id="val-horizontal">1.00×</span></span>
+      <input type="range" id="sl-horizontal" min="25" max="200" value="100" aria-label="Horizontal gear size">
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear size <span class="val" id="val-vertical">1.00×</span></span>
+      <input type="range" id="sl-vertical" min="25" max="200" value="100" aria-label="Vertical gear size">
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear count <span class="val" id="val-h-count">40</span></span>
+      <input type="range" id="sl-h-count" min="0" max="40" value="40" aria-label="Horizontal gear count">
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">40</span></span>
+      <input type="range" id="sl-v-count" min="0" max="40" value="40" aria-label="Vertical gear count">
+    </label>
+    <div class="gravity-btns" aria-label="Gravity axes">
+      <button type="button" id="btn-gravity-x" aria-pressed="true">Gravity X</button>
+      <button type="button" id="btn-gravity-y" aria-pressed="true">Gravity Y</button>
+      <button type="button" id="btn-gravity-z" aria-pressed="true">Gravity Z</button>
+    </div>
+  </div>
+  <div class="hud">
+    <span>Surrender Machines</span>
+    <span class="seed" id="hud-seed">seed 1909113409 · DNA · lifeline</span>
+  </div>
+
+  <script src="../loop-snippets/js/three.min.js"></script>
+  <script src="../loop-snippets/js/OrbitControls.js"></script>
+  <script type="module" src="surrender-machine-dna.mjs"></script>
+</body>
+</html>
