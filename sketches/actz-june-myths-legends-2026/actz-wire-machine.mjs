@@ -20,18 +20,6 @@ export const DEFAULT_VERTICAL_GEAR_COUNT = 40;
 export const MIN_HORIZONTAL_GEARS = 40;
 export const MIN_VERTICAL_GEARS = 40;
 
-const VIEW = URL_PARAMS.get('view') || 'local';
-const VENUE = URL_PARAMS.get('venue') || 'default';
-
-const PALETTE = {
-    ink: 0x2c3034,
-    lightBlue: 0x74b4dc,
-    skyBlue: 0x80b8e8,
-    navy: 0x5a788c,
-    gold: 0xeca018,
-    maroon: 0x662020,
-  };
-
 function makeRng(seed) {
     let s = seed >>> 0;
     return {
@@ -406,10 +394,6 @@ function trimGearList(w, list, maxCount) {
       if (si >= 0) w.spinners.splice(si, 1);
       if (s.pivot.parent) s.pivot.parent.remove(s.pivot);
     }
-  }
-
-function iterationSeed() {
-    return INITIAL_SEED;
   }
 
 function machineProfile(seed) {
