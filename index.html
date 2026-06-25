@@ -807,8 +807,21 @@
       background: #ffffff;
     }
     .chutes77823-slide-link:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-    html.draft-bloom-live .chutes77823-static-fallback {
-      display: none !important;
+    /* Live embeds: still preview stays on top until iframe load (see __mwCarouselActivateEmbeds). */
+    html.draft-bloom-live [class$="-slide-stack"] [class$="-embed-wrap"] {
+      z-index: 1;
+    }
+    html.draft-bloom-live [class$="-slide-stack"] [class$="-static-fallback"],
+    html.draft-bloom-live [class$="-slide-stack"] [class$="-slide-link"] {
+      z-index: 2;
+    }
+    html.draft-bloom-live [class$="-slide-stack"].embed-ready [class$="-embed-wrap"] {
+      z-index: 3;
+    }
+    html.draft-bloom-live [class$="-slide-stack"].embed-ready [class$="-static-fallback"],
+    html.draft-bloom-live [class$="-slide-stack"].embed-ready [class$="-slide-link"] {
+      visibility: hidden;
+      pointer-events: none;
     }
     .bloom-embed-wrap {
       display: none;
@@ -825,10 +838,6 @@
       border: 0;
       display: block;
     }
-    html.draft-bloom-live .bloom-static-fallback {
-      display: none !important;
-    }
-
     /* Slide 2 — Light Art 023 (same live vs static rules as Bloom) */
     .la023-slide-stack {
       position: absolute;
@@ -866,10 +875,6 @@
       object-position: center;
       display: block;
     }
-    html.draft-bloom-live .la023-static-fallback {
-      display: none !important;
-    }
-
     /* Slide 3 — technical drawing + elevation (p5 draft) */
     .art03-slide-stack {
       position: absolute;
@@ -921,14 +926,6 @@
     }
     .art06-static-fallback.carousel-still-wrap,
     .art07-static-fallback.carousel-still-wrap { background: #0a0a0a; }
-    html.draft-bloom-live .art03-static-fallback,
-    html.draft-bloom-live .art04-static-fallback,
-    html.draft-bloom-live .art05-static-fallback,
-    html.draft-bloom-live .art06-static-fallback,
-    html.draft-bloom-live .art07-static-fallback {
-      display: none !important;
-    }
-
     /* Slide 4 — technical drawing (sidebar / studio build) */
     .art04-slide-stack {
       position: absolute;
@@ -1669,16 +1666,40 @@
 
   /* One live WebGL/embed at a time — loading all eight iframes at once crashes mobile Safari ("A problem repeatedly occurred"). */
   var embedActiveIndex = -1;
+  var embedPaintTimer = null;
+  var embedFailTimer = null;
+  var stackSel = '[class$="-slide-stack"]';
+
+  function resetEmbedReady() {
+    if (embedPaintTimer) { clearTimeout(embedPaintTimer); embedPaintTimer = null; }
+    if (embedFailTimer) { clearTimeout(embedFailTimer); embedFailTimer = null; }
+    document.querySelectorAll(stackSel + '.embed-ready').forEach(function (stack) {
+      stack.classList.remove('embed-ready');
+    });
+  }
+
   window.__mwCarouselActivateEmbeds = function (slideIndex) {
     if (!live || document.documentElement.classList.contains('home-stills-only')) return;
     var i = slideIndex | 0;
     i = ((i % 8) + 8) % 8;
     if (i === embedActiveIndex) return;
     embedActiveIndex = i;
+    resetEmbedReady();
     for (var j = 0; j < 8; j++) {
       var el = document.getElementById(frameIds[j]);
       if (!el) continue;
+      el.onload = null;
+      el.onerror = null;
       if (j === i) {
+        var stack = el.closest(stackSel);
+        var markReady = function () {
+          if (embedPaintTimer) clearTimeout(embedPaintTimer);
+          embedPaintTimer = setTimeout(function () {
+            if (stack) stack.classList.add('embed-ready');
+          }, 700);
+        };
+        el.onload = markReady;
+        el.onerror = function () { /* keep still preview visible */ };
         el.setAttribute('src', urls[j]);
       } else {
         try {
