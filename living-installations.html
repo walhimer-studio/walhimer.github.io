@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<!--
+  living-installations.html — Mark Walhimer · Living Installations
+  https://mark-walhimer.com/living-installations.html
+  Bilingual EN/ES · cathedral shell · art pitch (not Museum Planning commercial).
+-->
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVXX0YPGCN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TVXX0YPGCN');
+  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<title>Living Installations — Generative New Media Art · Mark Walhimer</title>
+<meta name="description" content="Living generative new media installations by Mark Walhimer — real-time software as medium. p5.js, WebGL, co-presence.">
+<link rel="canonical" href="https://mark-walhimer.com/living-installations.html" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Living Installations — Mark Walhimer" />
+<meta property="og:description" content="Generative new media installations — real-time software as medium. p5.js, WebGL, co-presence." />
+<meta property="og:url" content="https://mark-walhimer.com/living-installations.html" />
+<meta property="og:site_name" content="Mark Walhimer" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@WalhimerArt" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --white: #ffffff;
+  --off: #f8f7f5;
+  --pale: #f0ede8;
+  --rule: #e0dbd4;
+  --ink: #141210;
+  --mid: #6a6460;
+  --muted: #9a9590;
+  --accent: #b8976a;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.75;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body.lang-es .en { display: none !important; }
+body.lang-en .es { display: none !important; }
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 48px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.nav-name {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.nav-name em { font-style: italic; }
+.nav-right { display: flex; align-items: center; gap: 28px; margin-left: auto; }
+.nav-links { display: flex; gap: 28px; list-style: none; align-items: center; }
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-acquire {
+  color: var(--ink) !important;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1px;
+}
+.lang-toggle { display: flex; flex-shrink: 0; }
+.lang-btn {
+  padding: 5px 12px;
+  cursor: pointer;
+  border: 1px solid var(--rule);
+  background: var(--white);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.lang-btn:first-child { border-right: none; }
+.lang-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+/* HERO */
+.page-header {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 96px 48px 80px;
+  border-bottom: 1px solid var(--rule);
+}
+.kicker {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+.page-h1 {
+  font-family: var(--serif);
+  font-size: clamp(44px, 6vw, 72px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 32px;
+}
+.page-h1 em { font-style: italic; }
+.lede {
+  font-family: var(--serif);
+  font-size: clamp(17px, 2vw, 21px);
+  font-weight: 300;
+  color: var(--mid);
+  line-height: 1.65;
+  max-width: 620px;
+  margin-bottom: 36px;
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+.text-link {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.text-link:hover { color: var(--mid); border-color: var(--mid); }
+.text-link-muted {
+  color: var(--muted);
+  border-color: var(--rule);
+}
+.text-link-muted:hover { color: var(--ink); border-color: var(--ink); }
+
+/* SECTIONS */
+.section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 88px 48px;
+}
+.section.alt { background: var(--off); max-width: none; }
+.section.alt .section-inner { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+.section-h {
+  font-family: var(--serif);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+.section-h em { font-style: italic; }
+.section-sub {
+  font-size: 15px;
+  color: var(--mid);
+  line-height: 1.85;
+  max-width: 640px;
+  margin-bottom: 48px;
+}
+
+/* WORKS GRID */
+.works-full {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+.works-head {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 48px 48px;
+}
+.works-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--rule);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.work-card { background: var(--white); display: flex; flex-direction: column; }
+.work-live {
+  aspect-ratio: 4/3;
+  background: var(--pale);
+  position: relative;
+  overflow: hidden;
+}
+.work-live iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.work-body {
+  padding: 32px 36px 36px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.work-meta {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.work-title {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2.5vw, 28px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.work-title em { font-style: italic; }
+.work-type {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.work-desc {
+  font-size: 14px;
+  color: var(--mid);
+  line-height: 1.8;
+  margin-bottom: 24px;
+  flex: 1;
+}
+.work-footer {
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+
+/* TWO COL */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.pull {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(18px, 2vw, 22px);
+  color: var(--ink);
+  line-height: 1.55;
+  border-left: 2px solid var(--rule);
+  padding-left: 24px;
+  margin: 32px 0;
+}
+.body-text { font-size: 15px; color: var(--mid); line-height: 1.9; }
+.body-text p { margin-bottom: 1.2em; }
+.body-text p:last-child { margin-bottom: 0; }
+
+.scope-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.scope-item {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 20px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.scope-item:last-child { border-bottom: none; }
+.scope-lbl {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 3px;
+}
+.scope-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.scope-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+/* LOOP */
+.loop-list { max-width: 520px; }
+.loop-step {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 20px;
+  padding-bottom: 28px;
+}
+.loop-n {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  padding-top: 4px;
+}
+.loop-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.loop-desc { font-size: 14px; color: var(--mid); line-height: 1.7; }
+
+/* PULSE MOCK — light, colorful */
+.pulse-wrap { max-width: 900px; }
+.mock {
+  border: 1px solid var(--rule);
+  background: var(--white);
+  margin-top: 8px;
+}
+.mock-hd {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--off);
+}
+.mock-hd-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.mock-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+.mock-body { padding: 24px; }
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.kpi-c {
+  padding: 18px 16px;
+  background: var(--off);
+  border: 1px solid var(--pale);
+}
+.kpi-c label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.kpi-val {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1;
+}
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.two-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel {
+  padding: 20px;
+  border: 1px solid var(--rule);
+  background: var(--white);
+}
+.panel-label {
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.zone-row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--mid);
+}
+.zone-bar { height: 6px; background: var(--pale); border-radius: 3px; overflow: hidden; }
+.zone-fill { height: 100%; border-radius: 3px; }
+.zone-fill.a { background: linear-gradient(90deg, #5ec4b8, #7ad4c8); }
+.zone-fill.b { background: linear-gradient(90deg, #e2c060, #f0d878); }
+.zone-fill.c { background: linear-gradient(90deg, #c878a0, #e098b8); }
+.zone-fill.d { background: linear-gradient(90deg, #8898d0, #a8b8e8); }
+.zone-pct { font-family: var(--mono); font-size: 9px; color: var(--muted); }
+.swatch-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--muted);
+}
+.swatch-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+}
+.panel-note { font-size: 12px; color: var(--mid); line-height: 1.65; margin-top: 14px; }
+.note-box {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: var(--pale);
+  border-left: 2px solid var(--accent);
+  font-size: 14px;
+  color: var(--mid);
+  line-height: 1.75;
+  max-width: 900px;
+}
+.note-box strong { color: var(--ink); font-weight: 400; }
+
+/* CONTEXTS */
+.ctx-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.ctx-card {
+  background: var(--white);
+  padding: 36px 32px;
+}
+.ctx-card.lead { background: var(--off); }
+.ctx-t {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+.ctx-b { font-size: 14px; color: var(--mid); line-height: 1.75; }
+
+/* PROCESS */
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+.proc-step {
+  background: var(--white);
+  padding: 28px 24px;
+}
+.proc-n {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.proc-t {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+.proc-d { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+/* BRIEF */
+.brief-list {
+  list-style: none;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 680px;
+}
+.brief-list li {
+  font-size: 14px;
+  color: var(--mid);
+  line-height: 1.65;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--pale);
+}
+.brief-list a { color: var(--ink); }
+
+/* COMMISSION / CONTACT */
+.commission {
+  max-width: none;
+  background: var(--off);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.commission-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 96px 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+}
+.commission h2 {
+  font-family: var(--serif);
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+.commission h2 em { font-style: italic; }
+.commission-body { font-size: 15px; color: var(--mid); line-height: 1.85; }
+.commission-body p { margin-bottom: 1.2em; }
+.contact-line {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 300;
+  margin-bottom: 8px;
+}
+.contact-line a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 2px;
+}
+.contact-line a:hover { border-color: var(--ink); }
+.contact-meta {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 20px;
+}
+
+footer {
+  padding: 36px 48px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  background: var(--white);
+}
+.footer-name {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--ink);
+}
+.footer-right { display: flex; gap: 28px; flex-wrap: wrap; }
+.footer-right a {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+}
+.footer-right a:hover { color: var(--ink); }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.vis { opacity: 1; transform: none; }
+
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .page-header, .section, .works-head, .commission-inner { padding-left: 24px; padding-right: 24px; }
+  .split, .commission-inner { grid-template-columns: 1fr; gap: 48px; }
+  .works-grid, .ctx-grid { grid-template-columns: 1fr; }
+  .process-grid { grid-template-columns: 1fr 1fr; }
+  .kpi-row, .two-panel { grid-template-columns: 1fr; }
+  footer { flex-direction: column; align-items: flex-start; padding: 28px 24px; }
+}
+@media (max-width: 600px) {
+  .process-grid, .kpi-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="lang-en">
+
+<nav>
+  <a href="/" class="nav-name">Mark Walhimer · <em>Living Installations</em></a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#works"><span class="en">Works</span><span class="es">Obras</span></a></li>
+      <li><a href="#approach"><span class="en">Approach</span><span class="es">Enfoque</span></a></li>
+      <li><a href="#pulse"><span class="en">Pulse</span><span class="es">Pulso</span></a></li>
+      <li><a href="#contact" class="nav-acquire"><span class="en">Contact</span><span class="es">Contacto</span></a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button type="button" class="lang-btn active" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
+    </div>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="kicker reveal">
+    <span class="en">New Media Art · Generative Installation</span>
+    <span class="es">Arte de Nuevos Medios · Instalación Generativa</span>
+  </div>
+  <h1 class="page-h1 reveal">
+    <span class="en">Generative art at the <em>edge</em><br>of the medium.</span>
+    <span class="es">Arte generativo en la <em>frontera</em><br>del medio.</span>
+  </h1>
+  <p class="lede reveal en">Generative software that runs live, responds to viewers, and never repeats. New media installations at the frontier of p5.js, WebGL, and co-presence — software as medium, not a display system or branded content loop.</p>
+  <p class="lede reveal es">Software generativo que corre en vivo, responde a quien la mira y nunca se repite. Instalaciones de nuevos medios en la frontera de p5.js, WebGL y copresencia — software como medio, no un sistema de pantalla ni un loop de marca.</p>
+  <div class="hero-actions reveal">
+    <a href="#works" class="text-link"><span class="en">See live works ↓</span><span class="es">Ver obras en vivo ↓</span></a>
+    <a href="#contact" class="text-link text-link-muted"><span class="en">Inquire about the work</span><span class="es">Consultar sobre la obra</span></a>
+  </div>
+</header>
+
+<section class="section works-full" id="works">
+  <div class="works-head">
+    <div class="section-label reveal en">Reference Works</div>
+    <div class="section-label reveal es">Obras de Referencia</div>
+    <h2 class="section-h reveal en">Four living installations — <em>running now.</em></h2>
+    <h2 class="section-h reveal es">Cuatro instalaciones vivas — <em>en funcionamiento.</em></h2>
+    <p class="section-sub reveal en">Click to interact. Four reference works from the studio — each a distinct generative system, running live in the browser.</p>
+    <p class="section-sub reveal es">Haz clic para interactuar. Cuatro obras de referencia del estudio — cada una un sistema generativo distinto, en vivo en el navegador.</p>
+  </div>
+
+  <div class="works-grid">
+    <article class="work-card reveal">
+      <div class="work-live">
+        <iframe src="sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html" title="Surrender Machine 77823" allow="fullscreen" loading="eager"></iframe>
+      </div>
+      <div class="work-body">
+        <div class="work-meta">Mark Walhimer · 2026</div>
+        <h3 class="work-title"><span class="en">Surrender Machine <em>77823</em></span><span class="es">Surrender Machine <em>77823</em></span></h3>
+        <div class="work-type en">Generative Machine · WebGL</div>
+        <div class="work-type es">Máquina Generativa · WebGL</div>
+        <p class="work-desc en">Three-zone generative machine — narrative field, dense state, surrender. A traversable volume driven by real-time code.</p>
+        <p class="work-desc es">Máquina generativa de tres zonas — campo narrativo, estado denso, entrega. Un volumen transitable impulsado por código en tiempo real.</p>
+        <div class="work-footer"><a href="installations/surrender-machine-77823.html" class="text-link"><span class="en">Open work</span><span class="es">Abrir obra</span></a></div>
+      </div>
+    </article>
+
+    <article class="work-card reveal">
+      <div class="work-live">
+        <iframe src="sketches/living-commons-artwork.html" title="Living Commons" allow="fullscreen" loading="eager"></iframe>
+      </div>
+      <div class="work-body">
+        <div class="work-meta">Mark Walhimer · 2026</div>
+        <h3 class="work-title"><span class="en">Living <em>Commons</em></span><span class="es">Living <em>Commons</em></span></h3>
+        <div class="work-type en">Co-presence · p5.js</div>
+        <div class="work-type es">Copresencia · p5.js</div>
+        <p class="work-desc en">Co-presence generative work — many inputs, one emergent commons. No fixed state; the piece never repeats.</p>
+        <p class="work-desc es">Obra generativa de copresencia — muchas entradas, un commons emergente. Sin estado fijo; la pieza nunca se repite.</p>
+        <div class="work-footer"><a href="installations/living-commons.html" class="text-link"><span class="en">Open work</span><span class="es">Abrir obra</span></a></div>
+      </div>
+    </article>
+
+    <article class="work-card reveal">
+      <div class="work-live">
+        <iframe src="installations/shared-ground.html?embed=1" title="Shared Ground" allow="fullscreen" loading="eager"></iframe>
+      </div>
+      <div class="work-body">
+        <div class="work-meta">Mark Walhimer · 2026</div>
+        <h3 class="work-title"><span class="en">Shared <em>Ground</em></span><span class="es">Shared <em>Ground</em></span></h3>
+        <div class="work-type en">Multi-user · Archival</div>
+        <div class="work-type es">Multiusuario · Archivo</div>
+        <p class="work-desc en">Multi-person generative environment — social geometry between bodies determines what surfaces in the work.</p>
+        <p class="work-desc es">Entorno generativo multipersona — la geometría social entre cuerpos determina qué emerge en la obra.</p>
+        <div class="work-footer"><a href="installations/shared-ground.html" class="text-link"><span class="en">Open work</span><span class="es">Abrir obra</span></a></div>
+      </div>
+    </article>
+
+    <article class="work-card reveal">
+      <div class="work-live">
+        <iframe src="https://interactive-sliders.netlify.app/poc" title="Scan to Control" allow="fullscreen" loading="lazy"></iframe>
+      </div>
+      <div class="work-body">
+        <div class="work-meta">Mark Walhimer · 2026</div>
+        <h3 class="work-title"><span class="en">Scan to <em>Control</em></span><span class="es">Scan to <em>Control</em></span></h3>
+        <div class="work-type en">Interactive Layer · Sync</div>
+        <div class="work-type es">Capa Interactiva · Sync</div>
+        <p class="work-desc en">QR on the surface; the viewer's phone becomes part of the work. Real-time sync — an extension of the generative system.</p>
+        <p class="work-desc es">QR en la superficie; el teléfono del espectador se convierte en parte de la obra. Sincronización en tiempo real — extensión del sistema generativo.</p>
+        <div class="work-footer"><a href="#sync-brief" class="text-link"><span class="en">Technical note</span><span class="es">Nota técnica</span></a></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="section alt" id="approach">
+  <div class="section-inner split">
+    <div>
+      <div class="section-label reveal en">The Work</div>
+      <div class="section-label reveal es">La Obra</div>
+      <h2 class="section-h reveal en">Generative, live, at the <em>frontier</em> of new media.</h2>
+      <h2 class="section-h reveal es">Generativa, en vivo, en la <em>frontera</em> de los nuevos medios.</h2>
+      <div class="body-text reveal">
+        <p class="en">Original generative artworks — built with the same real-time systems used in contemporary new media practice. Each piece runs live, generates in the moment, and changes with every viewing.</p>
+        <p class="es">Obras generativas originales — construidas con los mismos sistemas en tiempo real de la práctica contemporánea de nuevos medios. Cada pieza corre en vivo, genera en el momento y cambia en cada visionado.</p>
+      </div>
+      <blockquote class="pull reveal">
+        <span class="en">"The palette is the artist's. The work is not customized to match a corporate identity. If the piece speaks to you, inquire. If not, that is fine."</span>
+        <span class="es">"La paleta es del artista. La obra no se personaliza para coincidir con una identidad corporativa. Si la pieza te habla, consulta. Si no, está bien."</span>
+      </blockquote>
+      <div class="body-text reveal">
+        <p class="en">The practice sits at the intersection of machine aesthetics, acceptance, and agency — generative code as a way to think about control and surrender. Phone sync and work pulse are optional extensions of the generative system, not the artwork itself.</p>
+        <p class="es">La práctica está en la intersección de estética de máquina, aceptación y agencia — código generativo como forma de pensar control y entrega. La sync móvil y el pulso de obra son extensiones opcionales del sistema generativo, no la obra en sí.</p>
+      </div>
+    </div>
+    <ul class="scope-list reveal">
+      <li class="scope-item">
+        <span class="scope-lbl en">Medium</span><span class="scope-lbl es">Medio</span>
+        <div>
+          <div class="scope-title en">Generative software</div><div class="scope-title es">Software generativo</div>
+          <div class="scope-desc en">p5.js, WebGL, GLSL — real-time systems that generate in the browser or on installed hardware.</div>
+          <div class="scope-desc es">p5.js, WebGL, GLSL — sistemas en tiempo real que generan en el navegador o en hardware instalado.</div>
+        </div>
+      </li>
+      <li class="scope-item">
+        <span class="scope-lbl en">Also</span><span class="scope-lbl es">También</span>
+        <div>
+          <div class="scope-title en">Participation layer</div><div class="scope-title es">Capa de participación</div>
+          <div class="scope-desc en">QR sync — the viewer's phone becomes part of the generative system.</div>
+          <div class="scope-desc es">Sincronización QR — el teléfono del espectador forma parte del sistema generativo.</div>
+        </div>
+      </li>
+      <li class="scope-item">
+        <span class="scope-lbl en">Also</span><span class="scope-lbl es">También</span>
+        <div>
+          <div class="scope-title en">Work pulse</div><div class="scope-title es">Pulso de la obra</div>
+          <div class="scope-desc en">A record of how the piece behaved in exhibition — interactions, colors, segments.</div>
+          <div class="scope-desc es">Un registro de cómo se comportó la pieza en exposición — interacciones, colores, segmentos.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="loop">
+  <div class="section-label reveal en">How the Work Behaves</div>
+  <div class="section-label reveal es">Cómo se Comporta la Obra</div>
+  <h2 class="section-h reveal en">Encounter → interact → <em>aggregate → evolve.</em></h2>
+  <h2 class="section-h reveal es">Encuentro → interactuar → <em>agregar → evolucionar.</em></h2>
+  <p class="section-sub reveal en">Generative art that accumulates memory — the work changes because viewers change it.</p>
+  <p class="section-sub reveal es">Arte generativo que acumula memoria — la obra cambia porque quien la mira la cambia.</p>
+  <div class="loop-list">
+    <div class="loop-step reveal">
+      <div class="loop-n">01</div>
+      <div>
+        <div class="loop-title en">Encounter</div><div class="loop-title es">Encuentro</div>
+        <div class="loop-desc en">The viewer enters. The work is already running — generative, never idle, never a loop on repeat.</div>
+        <div class="loop-desc es">El espectador entra. La obra ya está en marcha — generativa, nunca inactiva, nunca un bucle repetido.</div>
+      </div>
+    </div>
+    <div class="loop-step reveal">
+      <div class="loop-n">02</div>
+      <div>
+        <div class="loop-title en">Interact</div><div class="loop-title es">Interactuar</div>
+        <div class="loop-desc en">Phone, proximity, co-presence — the generative system responds in real time.</div>
+        <div class="loop-desc es">Teléfono, proximidad, copresencia — el sistema generativo responde en tiempo real.</div>
+      </div>
+    </div>
+    <div class="loop-step reveal">
+      <div class="loop-n">03</div>
+      <div>
+        <div class="loop-title en">Aggregate</div><div class="loop-title es">Agregar</div>
+        <div class="loop-desc en">Sessions, colors chosen, zones touched — the work records its own exhibition history.</div>
+        <div class="loop-desc es">Sesiones, colores elegidos, zonas tocadas — la obra registra su propia historia de exposición.</div>
+      </div>
+    </div>
+    <div class="loop-step reveal">
+      <div class="loop-n">04</div>
+      <div>
+        <div class="loop-title en">Evolve</div><div class="loop-title es">Evolucionar</div>
+        <div class="loop-desc en">Parameters shift toward what viewers use most. The artwork learns — it is alive.</div>
+        <div class="loop-desc es">Los parámetros se inclinan hacia lo más usado. La obra aprende — está viva.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="pulse">
+  <div class="section-inner">
+    <div class="section-label reveal en">Optional Documentation</div>
+    <div class="section-label reveal es">Documentación Opcional</div>
+    <h2 class="section-h reveal en">Work <em>pulse</em> — how the piece lived in exhibition.</h2>
+    <h2 class="section-h reveal es">Pulso de la <em>obra</em> — cómo vivió la pieza en exposición.</h2>
+    <p class="section-sub reveal en">An optional record of how the generative system behaved over time — interactions, colors, segments, dwell.</p>
+    <p class="section-sub reveal es">Un registro opcional de cómo se comportó el sistema generativo — interacciones, colores, segmentos, permanencia.</p>
+
+    <div class="pulse-wrap">
+      <div class="mock reveal">
+        <div class="mock-hd">
+          <span class="mock-hd-title en">Work Pulse · Surrender Machine 77823 · Example Week</span>
+          <span class="mock-hd-title es">Pulso de Obra · Surrender Machine 77823 · Semana Ejemplo</span>
+          <span class="mock-tag en">Illustrative · Sample data</span>
+          <span class="mock-tag es">Ilustrativo · Datos de ejemplo</span>
+        </div>
+        <div class="mock-body">
+          <div class="kpi-row">
+            <div class="kpi-c">
+              <label class="en">Interactions</label><label class="es">Interacciones</label>
+              <div class="kpi-val">1,842</div>
+              <div class="kpi-sub en">This week</div><div class="kpi-sub es">Esta semana</div>
+            </div>
+            <div class="kpi-c">
+              <label class="en">Unique Sessions</label><label class="es">Sesiones Únicas</label>
+              <div class="kpi-val">312</div>
+              <div class="kpi-sub en">QR + floor</div><div class="kpi-sub es">QR + piso</div>
+            </div>
+            <div class="kpi-c">
+              <label class="en">Avg. Dwell</label><label class="es">Permanencia Prom.</label>
+              <div class="kpi-val">4.2m</div>
+              <div class="kpi-sub en">At the wall</div><div class="kpi-sub es">En el muro</div>
+            </div>
+            <div class="kpi-c">
+              <label class="en">Co-presence</label><label class="es">Copresencia</label>
+              <div class="kpi-val">89</div>
+              <div class="kpi-sub en">2+ people active</div><div class="kpi-sub es">2+ personas activas</div>
+            </div>
+          </div>
+          <div class="two-panel">
+            <div class="panel">
+              <div class="panel-label en">Favorite Segments</div>
+              <div class="panel-label es">Segmentos Favoritos</div>
+              <div class="zone-row"><span class="en">Center field</span><span class="es">Campo central</span><div class="zone-bar"><div class="zone-fill a" style="width:88%"></div></div><span class="zone-pct">88%</span></div>
+              <div class="zone-row"><span class="en">Left narrative</span><span class="es">Narrativa izquierda</span><div class="zone-bar"><div class="zone-fill b" style="width:64%"></div></div><span class="zone-pct">64%</span></div>
+              <div class="zone-row"><span class="en">Dense zone</span><span class="es">Zona densa</span><div class="zone-bar"><div class="zone-fill c" style="width:51%"></div></div><span class="zone-pct">51%</span></div>
+              <div class="zone-row"><span class="en">Surrender state</span><span class="es">Estado entrega</span><div class="zone-bar"><div class="zone-fill d" style="width:34%"></div></div><span class="zone-pct">34%</span></div>
+            </div>
+            <div class="panel">
+              <div class="panel-label en">Favorite Colors · Phone Controllers</div>
+              <div class="panel-label es">Colores Favoritos · Controladores</div>
+              <div class="swatch-row">
+                <div class="swatch"><div class="swatch-dot" style="background:#5ec4b8"></div><span class="en">Teal 34%</span><span class="es">Verde azulado 34%</span></div>
+                <div class="swatch"><div class="swatch-dot" style="background:#e2c060"></div><span class="en">Gold 28%</span><span class="es">Dorado 28%</span></div>
+                <div class="swatch"><div class="swatch-dot" style="background:#c878a0"></div><span class="en">Rose 22%</span><span class="es">Rosa 22%</span></div>
+                <div class="swatch"><div class="swatch-dot" style="background:#8898d0"></div><span class="en">Blue 16%</span><span class="es">Azul 16%</span></div>
+              </div>
+              <p class="panel-note en">Most-selected hues from QR sessions — feeds back into generative palette weighting.</p>
+              <p class="panel-note es">Tonos más elegidos en sesiones QR — retroalimentan el peso de paleta generativa.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note-box reveal">
+        <strong class="en">Illustrative example.</strong><strong class="es">Ejemplo ilustrativo.</strong>
+        <span class="en"> Example only — configured per work and edition.</span>
+        <span class="es"> Solo ejemplo — configurado por obra y edición.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contexts">
+  <div class="section-label reveal en">Exhibition Contexts</div>
+  <div class="section-label reveal es">Contextos de Exposición</div>
+  <h2 class="section-h reveal en">Where generative work <em>lives.</em></h2>
+  <h2 class="section-h reveal es">Dónde <em>vive</em> la obra generativa.</h2>
+  <div class="ctx-grid reveal">
+    <div class="ctx-card lead">
+      <div class="ctx-t en">Museum &amp; Gallery</div><div class="ctx-t es">Museo y Galería</div>
+      <p class="ctx-b en">Permanent and rotating exhibition. Software in the collection that never repeats.</p>
+      <p class="ctx-b es">Exposición permanente y rotativa. Software en la colección que nunca se repite.</p>
+    </div>
+    <div class="ctx-card">
+      <div class="ctx-t en">Private Collection</div><div class="ctx-t es">Colección Privada</div>
+      <p class="ctx-b en">Room-scale generative work. Limited editions with artist certificate.</p>
+      <p class="ctx-b es">Obra generativa a escala de sala. Ediciones limitadas con certificado del artista.</p>
+    </div>
+    <div class="ctx-card">
+      <div class="ctx-t en">Site-Specific Commission</div><div class="ctx-t es">Comisión Site-Specific</div>
+      <p class="ctx-b en">New work developed for a specific architectural context — an extension of a reference piece into an original commission.</p>
+      <p class="ctx-b es">Nueva obra desarrollada para un contexto arquitectónico específico — extensión de una pieza de referencia en comisión original.</p>
+    </div>
+    <div class="ctx-card">
+      <div class="ctx-t en">Biennial &amp; Festival</div><div class="ctx-t es">Bienal y Festival</div>
+      <p class="ctx-b en">Temporary installation for new media festivals and biennials — the work runs live for the duration of the exhibition.</p>
+      <p class="ctx-b es">Instalación temporal para festivales y bienales de nuevos medios — la obra corre en vivo durante la exposición.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="process">
+  <div class="section-inner">
+    <div class="section-label reveal en">Studio</div>
+    <div class="section-label reveal es">Estudio</div>
+    <h2 class="section-h reveal en">From code to <em>installation.</em></h2>
+    <h2 class="section-h reveal es">Del código a la <em>instalación.</em></h2>
+    <div class="process-grid reveal">
+      <div class="proc-step">
+        <div class="proc-n">01</div>
+        <div class="proc-t en">Conversation</div><div class="proc-t es">Conversación</div>
+        <div class="proc-d en">Which work, which context. The artist is involved in every installation.</div>
+        <div class="proc-d es">Qué obra, qué contexto. El artista participa en cada instalación.</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-n">02</div>
+        <div class="proc-t en">Work</div><div class="proc-t es">Obra</div>
+        <div class="proc-d en">A reference piece or a new commission. Generative system, documentation, certificate.</div>
+        <div class="proc-d es">Una pieza de referencia o una comisión nueva. Sistema generativo, documentación, certificado.</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-n">03</div>
+        <div class="proc-t en">Install</div><div class="proc-t es">Instalación</div>
+        <div class="proc-d en">Projection or display, optional participation layer. Room-scale works supervised by the artist.</div>
+        <div class="proc-d es">Proyección o pantalla, capa de participación opcional. Obras a escala de sala supervisadas por el artista.</div>
+      </div>
+      <div class="proc-step">
+        <div class="proc-n">04</div>
+        <div class="proc-t en">Live</div><div class="proc-t es">En Vivo</div>
+        <div class="proc-d en">The work runs. It generates. It evolves.</div>
+        <div class="proc-d es">La obra corre. Genera. Evoluciona.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sync-brief">
+  <div class="section-label reveal en">Scan to Control · Technical Note</div>
+  <div class="section-label reveal es">Scan to Control · Nota Técnica</div>
+  <h2 class="section-h reveal en">Phone ↔ wall <em>sync.</em></h2>
+  <h2 class="section-h reveal es">Sincronización <em>teléfono ↔ muro.</em></h2>
+  <p class="section-sub reveal en">An extension of the generative system — the viewer's phone becomes part of the artwork. No app store. Each edition gets its own session path.</p>
+  <p class="section-sub reveal es">Una extensión del sistema generativo — el teléfono del espectador forma parte de la obra. Sin tienda de apps. Cada edición tiene su propia ruta de sesión.</p>
+  <ul class="brief-list reveal">
+    <li class="en">Live POC: <a href="https://interactive-sliders.netlify.app/poc" target="_blank" rel="noopener">interactive-sliders.netlify.app/poc</a></li>
+    <li class="es">POC en vivo: <a href="https://interactive-sliders.netlify.app/poc" target="_blank" rel="noopener">interactive-sliders.netlify.app/poc</a></li>
+    <li class="en">Optional overhead sensing adds anonymous foot traffic and dwell — separate privacy review per country.</li>
+    <li class="es">Sensado superior opcional añade tráfico anónimo y permanencia — revisión de privacidad por país.</li>
+  </ul>
+</section>
+
+<section class="commission" id="contact">
+  <div class="commission-inner">
+    <div class="reveal">
+      <h2 class="en">Inquire about the work.</h2>
+      <h2 class="es">Consultar sobre la obra.</h2>
+      <div class="commission-body">
+        <p class="en">Available for institutional commission and private collection. Inquiries go directly to the studio.</p>
+        <p class="es">Disponible para comisión institucional y colección privada. Las consultas van directamente al estudio.</p>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="contact-line"><a href="mailto:mark@walhimer.com">mark@walhimer.com</a></div>
+      <p style="margin-top:28px"><a href="/" class="text-link">mark-walhimer.com</a></p>
+      <p style="margin-top:16px"><a href="https://instagram.com/markwalhimer" class="text-link text-link-muted" target="_blank" rel="noopener">@markwalhimer</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-name">Mark Walhimer</span>
+  <div class="footer-right">
+    <a href="/">mark-walhimer.com</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var buttons = document.querySelectorAll('.lang-btn[data-lang]');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var lang = btn.getAttribute('data-lang');
+      document.body.className = 'lang-' + lang;
+      document.documentElement.lang = lang;
+      buttons.forEach(function (b) {
+        var on = b.getAttribute('data-lang') === lang;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    });
+  });
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('vis'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) e.target.classList.add('vis');
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
+})();
+</script>
+</body>
+</html>
