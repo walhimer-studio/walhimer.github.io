@@ -239,5 +239,6 @@ export function createVoidScene({
       renderer = scene = camera = null;
     },
     isMachineDone: () => machineDone,
+    getCanvas: () => renderer?.domElement ?? null,
   };
 }

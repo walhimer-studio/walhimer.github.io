@@ -1500,5 +1500,5 @@ const VolRoomGPU = () => {
     snd.setMasterGain(0);
   };
 
-  return { mount, start, stop, dispose, getCanvas: () => gpu.getCanvas() };
+  return { mount, start, stop, dispose, getCanvas: () => gpu.getCanvas(), ensureAudio: () => snd.ensureOn(), getAudioStream: () => snd.getAudioStream() };
 }

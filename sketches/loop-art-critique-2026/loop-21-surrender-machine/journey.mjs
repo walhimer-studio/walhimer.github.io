@@ -4,6 +4,7 @@
 import * as THREE from "three";
 import { createVolTravel } from "./vol-travel-engine.mjs";
 import { createVoidScene } from "./void-scene.mjs";
+import { createCanvasRecorder } from "./canvas-recorder.mjs";
 
 globalThis.THREE = THREE;
 
@@ -44,6 +45,18 @@ let voidIndex = 0;
 let exploreShown = false;
 let volTravel = null;
 let voidScene = null;
+
+const getActiveCanvas = () => volTravel?.getCanvas?.() ?? voidScene?.getCanvas?.() ?? null;
+const getAudioStream = async () => {
+  if (volTravel?.getAudioStream) return volTravel.getAudioStream();
+  return new MediaStream();
+};
+
+const recorder = createCanvasRecorder(getActiveCanvas, getAudioStream);
+
+const stopRecordingIfActive = () => {
+  if (recorder.isActive()) recorder.stop();
+};
 
 const syncSliderLabels = () => {
   if (valAnger) valAnger.textContent = slAnger?.value ?? "50";
@@ -88,6 +101,7 @@ const showExploreUi = () => {
 };
 
 const disposeScenes = () => {
+  stopRecordingIfActive();
   volTravel?.dispose();
   volTravel = null;
   voidScene?.dispose();
@@ -96,6 +110,7 @@ const disposeScenes = () => {
 
 const enterVoid = async () => {
   hideContinueUi();
+  stopRecordingIfActive();
   volTravel?.dispose();
   volTravel = null;
 
@@ -154,6 +169,13 @@ continueBtn?.addEventListener("click", () => {
   }
 
   leaveVoid();
+});
+
+document.addEventListener("keydown", async (e) => {
+  if (e.key.toLowerCase() !== "r" || e.repeat) return;
+  e.preventDefault();
+  if (volTravel?.ensureAudio) await volTravel.ensureAudio();
+  await recorder.toggle();
 });
 
 startRgbTravel();

@@ -13,6 +13,10 @@
       color: rgba(90, 120, 140, 0.5);
       pointer-events: none; max-width: 360px;
     }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
     #seed-hud {
       position: fixed; left: 10px; bottom: 10px; z-index: 4;
       font: 11px/1.45 ui-monospace, monospace;
@@ -91,7 +95,7 @@
 <body>
   <div id="hint">
     Loop 21 Surrender Machine · RGB travel → void → explore · loop<br>
-    In void: Continue when ready · ↑↓←→ move · void 3: sliders + Surrender
+    In void: Continue when ready · ↑↓←→ move · void 3: sliders + Surrender · R record
   </div>
   <div id="seed-hud">Loop 21 Surrender Machine · 210021</div>
   <div id="phase-label">RGB travel</div>
