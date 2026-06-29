@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loop 21 Surrender Machine · 210021</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 4;
+      font: 11px/1.45 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.5);
+      pointer-events: none; max-width: 360px;
+    }
+    #seed-hud {
+      position: fixed; left: 10px; bottom: 10px; z-index: 4;
+      font: 11px/1.45 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.45);
+      pointer-events: none;
+    }
+    #phase-label {
+      position: fixed; right: 12px; top: 50%; transform: translateY(-50%);
+      z-index: 4; pointer-events: none;
+      font: 10px/1.5 ui-monospace, monospace;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(100, 100, 100, 0.42);
+      writing-mode: vertical-rl; text-orientation: mixed;
+    }
+    #continue-prompt {
+      position: fixed; inset: 0; z-index: 5;
+      display: none; place-items: center;
+      pointer-events: none;
+    }
+    #continue-prompt.visible { display: grid; }
+    #continue-prompt button {
+      pointer-events: auto;
+      font: 13px/1 ui-monospace, monospace;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      padding: 14px 28px;
+      border: 1px solid rgba(44, 48, 52, 0.35);
+      background: rgba(255, 255, 255, 0.92);
+      color: #2c3034;
+      cursor: pointer;
+    }
+    #continue-prompt button:hover { background: #fff; border-color: #2c3034; }
+    #move-hints {
+      position: fixed; left: 50%; bottom: 52px; transform: translateX(-50%);
+      z-index: 4; display: none; gap: 10px; align-items: center;
+      font: 10px/1 ui-monospace, monospace; letter-spacing: 0.12em;
+      color: rgba(80, 80, 80, 0.55); pointer-events: none;
+    }
+    #move-hints.visible { display: flex; }
+    .key-icon {
+      display: inline-grid; place-items: center;
+      min-width: 28px; height: 28px; padding: 0 6px;
+      border: 1px solid rgba(0,0,0,0.15); border-radius: 4px;
+      background: rgba(255,255,255,0.85); color: #444;
+      font-size: 14px;
+    }
+    #surrender-controls {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 6; display: none;
+      width: min(920px, 94vw);
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 10px; align-items: stretch;
+    }
+    #surrender-controls.visible { display: grid; }
+    #surrender-controls .ctrl {
+      border: 1px solid #2a2a2a; background: #f0ede6; padding: 10px 12px;
+      font: 11px/1.4 ui-monospace, monospace;
+    }
+    #surrender-controls .ctrl-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    #surrender-controls input[type=range] { width: 100%; }
+    #surrender-controls .ctrl-desc { margin-top: 4px; color: #888; font-size: 10px; }
+    #surrender-controls #surrender-btn {
+      border: 1px solid #2a2a2a; background: #f0ede6;
+      font: 11px/1 ui-monospace, monospace; letter-spacing: 0.2em;
+      text-transform: uppercase; cursor: pointer; padding: 10px 16px;
+    }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../../js/three-0.160.0.module.js",
+      "three/addons/": "../../js/three-0.160.0-jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="hint">
+    Loop 21 Surrender Machine · RGB travel → void → explore · loop<br>
+    In void: Continue when ready · ↑↓←→ move · void 3: sliders + Surrender
+  </div>
+  <div id="seed-hud">Loop 21 Surrender Machine · 210021</div>
+  <div id="phase-label">RGB travel</div>
+
+  <div id="continue-prompt" aria-hidden="true">
+    <button type="button" id="continue-btn">Continue</button>
+  </div>
+
+  <div id="move-hints" aria-hidden="true">
+    <span class="key-icon" aria-hidden="true">↑</span>
+    <span class="key-icon" aria-hidden="true">↓</span>
+    <span class="key-icon" aria-hidden="true">←</span>
+    <span class="key-icon" aria-hidden="true">→</span>
+    <span>forward · back · strafe</span>
+  </div>
+
+  <div id="surrender-controls" role="group" aria-label="Surrender machine controls">
+    <div class="ctrl">
+      <div class="ctrl-label">Anger <span id="val-anger">50</span></div>
+      <input type="range" id="sl-anger" min="0" max="100" value="50" aria-label="Anger" />
+      <div class="ctrl-desc">gears break</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">Ego <span id="val-ego">50</span></div>
+      <input type="range" id="sl-ego" min="0" max="100" value="50" aria-label="Ego" />
+      <div class="ctrl-desc">static interference</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-label">Attachment <span id="val-attachment">50</span></div>
+      <input type="range" id="sl-attachment" min="0" max="100" value="50" aria-label="Attachment" />
+      <div class="ctrl-desc">static residue</div>
+    </div>
+    <button type="button" id="surrender-btn">Surrender</button>
+  </div>
+
+  <script src="../machine-aesthetic/surrender-machines-three-core.js?v=20260601-loop21"></script>
+  <script type="module" src="journey.mjs"></script>
+</body>
+</html>
