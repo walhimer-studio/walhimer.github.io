@@ -2,9 +2,9 @@
 
 **Verse:** [Loop 21 | Loop Art Critique](https://verse.loop.onland.io/Ag5pK2U/loop-21)  
 **Artwork URL (Link Href target):**  
-`https://mark-walhimer.com/sketches/loop-snippets/rgb-xyz-vol3d-code.html`
+`https://mark-walhimer.com/sketches/loop-art-critique-2026/loop-21-surrender-machine/`
 
-Optional seed in query string, e.g. `?seed=77823`.
+Optional seed in query string, e.g. `?seed=210021`.
 
 ---
 
@@ -44,4 +44,4 @@ The HTML page title and on-canvas HUD update to **`Surrender Machines · {seed}`
 ## Next (not in this step)
 
 - Add **Surrender Machines** geometry inside the verse (machines on machines) — separate from the link-out wall.
-- Or deep-link from wall to a specific seed: `rgb-xyz-vol3d-code.html?seed=77823`.
+- Or deep-link from wall to a specific seed: `loop-21-surrender-machine/?seed=210021`.
