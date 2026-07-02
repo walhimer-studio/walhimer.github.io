@@ -13,23 +13,23 @@ import {
   buildWalkthroughRoomComplex,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260702-gravity-fix";
+import { createGhostGravityRoomEmbed, createGravitySmearPass } from "./ghost-gravity-room-embed.mjs?v=20260702-gravity-smear";
 import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
-import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260702-gravity-fix";
-import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260702-gravity-fix";
+import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260702-gravity-smear";
+import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260702-gravity-smear";
 
-const BUILD = "20260702-gravity-fix";
+const BUILD = "20260702-gravity-smear";
 const SEED = 77823;
 
 globalThis.THREE = THREE;
 
 await new Promise((resolve, reject) => {
   const script = document.createElement("script");
-  script.src = new URL("./surrender-machines-three-core.js?v=20260702-gravity-fix", import.meta.url).href;
+  script.src = new URL("./surrender-machines-three-core.js?v=20260702-gravity-smear", import.meta.url).href;
   script.onload = resolve;
   script.onerror = () => reject(new Error("surrender-machines-three-core.js failed to load"));
   document.head.appendChild(script);
@@ -148,6 +148,8 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setClearColor(0xffffff, 1);
 document.body.insertBefore(renderer.domElement, document.body.firstChild);
+
+const gravitySmear = createGravitySmearPass(THREE, renderer);
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
@@ -469,6 +471,7 @@ function updateHud(pos) {
 
   if (roomBActive && inWalkthrough && !prevRoomBActive) {
     gravityEmbed.onRoomEnter();
+    gravityEmbed.syncControls();
   }
   prevRoomBActive = roomBActive && inWalkthrough;
 
@@ -596,22 +599,6 @@ function tick() {
 
   textCylinder.update(dt, camera);
 
-  if (ghostSpinActive && !roomBActive && inWalkthrough && gravityEmbed.builder) {
-    gravityEmbed.builder.spinners.forEach((s) => {
-      const d = s.speed * dt;
-      if (s.axis === "x") s.pivot.rotation.x += d;
-      else if (s.axis === "y") s.pivot.rotation.y += d;
-      else s.pivot.rotation.z += d;
-    });
-  }
-
-  gravityEmbed.update(dt, roomBActive && inWalkthrough);
-
-  if (surrenderEmbed && inWalkthrough) {
-    surrenderEmbed.applySliders(getSliderValues());
-    surrenderEmbed.update(dt, true);
-  }
-
   const moving = wantFwd() || wantBack() || wantLeft() || wantRight();
 
   if (walk.isLocked) {
@@ -640,7 +627,29 @@ function tick() {
 
   clampWalk(camera.position);
   updateHud(camera.position);
-  renderer.render(scene, camera);
+
+  if (ghostSpinActive && !roomBActive && inWalkthrough && gravityEmbed.builder) {
+    gravityEmbed.builder.spinners.forEach((s) => {
+      const d = s.speed * dt;
+      if (s.axis === "x") s.pivot.rotation.x += d;
+      else if (s.axis === "y") s.pivot.rotation.y += d;
+      else s.pivot.rotation.z += d;
+    });
+  }
+
+  gravityEmbed.update(dt, roomBActive && inWalkthrough);
+
+  if (surrenderEmbed && inWalkthrough) {
+    surrenderEmbed.applySliders(getSliderValues());
+    surrenderEmbed.update(dt, true);
+  }
+
+  if (roomBActive && inWalkthrough) {
+    gravitySmear.setPull(gravityEmbed.getSmearPulls());
+    gravitySmear.render(scene, camera);
+  } else {
+    renderer.render(scene, camera);
+  }
 }
 tick();
 
@@ -648,7 +657,9 @@ window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  gravitySmear.resize(window.innerWidth, window.innerHeight);
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
+gravitySmear.resize(window.innerWidth, window.innerHeight);
 
 window.getWallpaperSource = getWallpaperSource;

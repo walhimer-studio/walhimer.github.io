@@ -1,6 +1,105 @@
 /**
  * Room B — extract from sketches/loop-snippets/ghost_dense_77823_gravity_sliders.html
  */
+const GRAVITY_SMEAR_SHADER = {
+  uniforms: {
+    tDiffuse: { value: null },
+    pullX: { value: 0.0 },
+    pullY: { value: 0.0 },
+    pullZ: { value: 0.0 },
+  },
+  vertexShader: [
+    "varying vec2 vUv;",
+    "void main() {",
+    "  vUv = uv;",
+    "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+    "}",
+  ].join("\n"),
+  fragmentShader: [
+    "precision highp float;",
+    "uniform sampler2D tDiffuse;",
+    "uniform float pullX;",
+    "uniform float pullY;",
+    "uniform float pullZ;",
+    "varying vec2 vUv;",
+    "float ink(vec3 c) { return 1.0 - dot(c, vec3(0.299, 0.587, 0.114)); }",
+    "void main() {",
+    "  vec4 outCol = texture2D(tDiffuse, vUv);",
+    "  float best = ink(outCol.rgb);",
+    "  for (int i = 1; i < 56; i++) {",
+    "    float fi = float(i);",
+    "    if (pullY > 0.0) {",
+    "      vec2 srcY = vUv - vec2(0.0, fi * pullY);",
+    "      if (srcY.y >= 0.0) {",
+    "        vec4 s = texture2D(tDiffuse, srcY);",
+    "        float w = ink(s.rgb);",
+    "        if (w > best) { outCol = s; best = w; }",
+    "      }",
+    "    }",
+    "    if (pullX > 0.0) {",
+    "      vec2 srcX = vUv - vec2(fi * pullX, 0.0);",
+    "      if (srcX.x >= 0.0 && srcX.x <= 1.0) {",
+    "        vec4 s = texture2D(tDiffuse, srcX);",
+    "        float w = ink(s.rgb);",
+    "        if (w > best) { outCol = s; best = w; }",
+    "      }",
+    "    }",
+    "    if (pullZ > 0.0) {",
+    "      vec2 srcZ = vUv - vec2(fi * pullZ * 0.62, fi * pullZ * 0.38);",
+    "      if (srcZ.x >= 0.0 && srcZ.y >= 0.0) {",
+    "        vec4 s = texture2D(tDiffuse, srcZ);",
+    "        float w = ink(s.rgb);",
+    "        if (w > best) { outCol = s; best = w; }",
+    "      }",
+    "    }",
+    "  }",
+    "  gl_FragColor = outCol;",
+    "}",
+  ].join("\n"),
+};
+
+export function createGravitySmearPass(THREE, renderer) {
+  const renderTarget = new THREE.WebGLRenderTarget(1, 1, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    depthBuffer: true,
+  });
+
+  const postScene = new THREE.Scene();
+  const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const postMaterial = new THREE.ShaderMaterial({
+    uniforms: THREE.UniformsUtils.clone(GRAVITY_SMEAR_SHADER.uniforms),
+    vertexShader: GRAVITY_SMEAR_SHADER.vertexShader,
+    fragmentShader: GRAVITY_SMEAR_SHADER.fragmentShader,
+  });
+  postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMaterial));
+
+  return {
+    setPull({ pullX = 0, pullY = 0, pullZ = 0 } = {}) {
+      postMaterial.uniforms.pullX.value = pullX;
+      postMaterial.uniforms.pullY.value = pullY;
+      postMaterial.uniforms.pullZ.value = pullZ;
+    },
+    render(scene, camera) {
+      renderer.setRenderTarget(renderTarget);
+      renderer.clear();
+      renderer.render(scene, camera);
+      renderer.setRenderTarget(null);
+      postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
+      renderer.render(postScene, postCamera);
+    },
+    resize(w, h) {
+      const pr = renderer.getPixelRatio();
+      renderTarget.setSize(Math.floor(w * pr), Math.floor(h * pr));
+    },
+    dispose() {
+      renderTarget.dispose();
+      postMaterial.dispose();
+      postScene.traverse((child) => child.geometry?.dispose());
+    },
+  };
+}
+
 export function createGhostGravityRoomEmbed(opts) {
   const THREE = opts.THREE;
   const parent = opts.parent;
@@ -611,63 +710,6 @@ export function createGhostGravityRoomEmbed(opts) {
       w.popTarget();
     }
 
-    const GRAVITY_SMEAR_SHADER = {
-      uniforms: {
-        tDiffuse: { value: null },
-        pullX: { value: 0.0 },
-        pullY: { value: 0.0 },
-        pullZ: { value: 0.0 }
-      },
-      vertexShader: [
-        'varying vec2 vUv;',
-        'void main() {',
-        '  vUv = uv;',
-        '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
-        '}'
-      ].join('\n'),
-      fragmentShader: [
-        'precision highp float;',
-        'uniform sampler2D tDiffuse;',
-        'uniform float pullX;',
-        'uniform float pullY;',
-        'uniform float pullZ;',
-        'varying vec2 vUv;',
-        'float ink(vec3 c) { return 1.0 - dot(c, vec3(0.299, 0.587, 0.114)); }',
-        'void main() {',
-        '  vec4 outCol = texture2D(tDiffuse, vUv);',
-        '  float best = ink(outCol.rgb);',
-        '  for (int i = 1; i < 56; i++) {',
-        '    float fi = float(i);',
-        '    if (pullY > 0.0) {',
-        '      vec2 srcY = vUv - vec2(0.0, fi * pullY);',
-        '      if (srcY.y >= 0.0) {',
-        '        vec4 s = texture2D(tDiffuse, srcY);',
-        '        float w = ink(s.rgb);',
-        '        if (w > best) { outCol = s; best = w; }',
-        '      }',
-        '    }',
-        '    if (pullX > 0.0) {',
-        '      vec2 srcX = vUv - vec2(fi * pullX, 0.0);',
-        '      if (srcX.x >= 0.0 && srcX.x <= 1.0) {',
-        '        vec4 s = texture2D(tDiffuse, srcX);',
-        '        float w = ink(s.rgb);',
-        '        if (w > best) { outCol = s; best = w; }',
-        '      }',
-        '    }',
-        '    if (pullZ > 0.0) {',
-        '      vec2 srcZ = vUv - vec2(fi * pullZ * 0.62, fi * pullZ * 0.38);',
-        '      if (srcZ.x >= 0.0 && srcZ.y >= 0.0) {',
-        '        vec4 s = texture2D(tDiffuse, srcZ);',
-        '        float w = ink(s.rgb);',
-        '        if (w > best) { outCol = s; best = w; }',
-        '      }',
-        '    }',
-        '  }',
-        '  gl_FragColor = outCol;',
-        '}'
-      ].join('\n')
-    };
-
   const machineStretch = new THREE.Group();
   machineStretch.name = "ghost_gravity_room_b";
   machineStretch.position.set(opts.x || 0, opts.y || 0, opts.z || 0);
@@ -680,6 +722,7 @@ export function createGhostGravityRoomEmbed(opts) {
   const gravityAxis = { x: true, y: true, z: true };
   let speedMult = 1;
   let elapsed = 0;
+  let lastSmear = { pullX: 0, pullY: 0, pullZ: 0 };
 
   function readControls() {
     const c = getControls();
@@ -793,17 +836,26 @@ export function createGhostGravityRoomEmbed(opts) {
     },
     syncControls,
     onRoomEnter,
+    getSmearPulls: () => lastSmear,
     setVisible(v) {
       visible = !!v;
       machineStretch.visible = visible;
     },
     update(dt, active = true) {
-      if (!visible || !active) return;
+      if (!active) {
+        lastSmear = { pullX: 0, pullY: 0, pullZ: 0 };
+        return;
+      }
       elapsed += dt;
       const g = gravityStrength();
       const gX = gravityAxis.x ? g : 0;
       const gY = gravityAxis.y ? g : 0;
       const gZ = gravityAxis.z ? g : 0;
+      lastSmear = {
+        pullX: gX * SMEAR_MAX,
+        pullY: gY * SMEAR_MAX,
+        pullZ: gZ * SMEAR_MAX * 0.92,
+      };
       const pullX = gX * gX;
       const pullY = gY * gY;
       const pullZ = gZ * gZ;
