@@ -13,23 +13,23 @@ import {
   buildWalkthroughRoomComplex,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260702-mobile-dpad";
+import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260702-gravity-fix";
 import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
-import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260702-mobile-dpad";
-import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260702-mobile-dpad";
+import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260702-gravity-fix";
+import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260702-gravity-fix";
 
-const BUILD = "20260702-mobile-dpad";
+const BUILD = "20260702-gravity-fix";
 const SEED = 77823;
 
 globalThis.THREE = THREE;
 
 await new Promise((resolve, reject) => {
   const script = document.createElement("script");
-  script.src = new URL("./surrender-machines-three-core.js?v=20260702-mobile-dpad", import.meta.url).href;
+  script.src = new URL("./surrender-machines-three-core.js?v=20260702-gravity-fix", import.meta.url).href;
   script.onload = resolve;
   script.onerror = () => reject(new Error("surrender-machines-three-core.js failed to load"));
   document.head.appendChild(script);
@@ -115,6 +115,7 @@ const ROOM_B_ZONE_X1 = RW - 0.5;
 const ROOM_C_ZONE_X0 = ROOM_C_X - RW + 0.5;
 const ROOM_C_ZONE_X1 = ROOM_C_X + RW - 0.5;
 let roomBActive = false;
+let prevRoomBActive = false;
 let surrenderActive = false;
 let inWalkthrough = false;
 
@@ -466,6 +467,11 @@ function updateHud(pos) {
   roomBActive = pos.x >= ROOM_B_ZONE_X0 && pos.x <= ROOM_B_ZONE_X1;
   surrenderActive = pos.x >= ROOM_C_ZONE_X0 && pos.x <= ROOM_C_ZONE_X1;
 
+  if (roomBActive && inWalkthrough && !prevRoomBActive) {
+    gravityEmbed.onRoomEnter();
+  }
+  prevRoomBActive = roomBActive && inWalkthrough;
+
   if (roomBControls) {
     roomBControls.classList.toggle("is-visible", roomBActive && inWalkthrough);
   }
@@ -590,7 +596,7 @@ function tick() {
 
   textCylinder.update(dt, camera);
 
-  if (ghostSpinActive && gravityEmbed.builder) {
+  if (ghostSpinActive && !roomBActive && inWalkthrough && gravityEmbed.builder) {
     gravityEmbed.builder.spinners.forEach((s) => {
       const d = s.speed * dt;
       if (s.axis === "x") s.pivot.rotation.x += d;

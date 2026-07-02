@@ -763,6 +763,11 @@ export function createGhostGravityRoomEmbed(opts) {
     pausedCycleTime = 0;
   }
 
+  function onRoomEnter() {
+    resetCyclePose();
+    syncGravityPause();
+  }
+
   function gravityStrength() {
     if (!anyGravityOn()) return 0;
     const cycleTime = elapsed - cycleStart;
@@ -787,14 +792,14 @@ export function createGhostGravityRoomEmbed(opts) {
       syncGravityPause();
     },
     syncControls,
+    onRoomEnter,
     setVisible(v) {
       visible = !!v;
       machineStretch.visible = visible;
     },
     update(dt, active = true) {
-      elapsed += dt;
-      syncControls();
       if (!visible || !active) return;
+      elapsed += dt;
       const g = gravityStrength();
       const gX = gravityAxis.x ? g : 0;
       const gY = gravityAxis.y ? g : 0;
