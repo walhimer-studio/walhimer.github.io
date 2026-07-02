@@ -7,6 +7,7 @@
 
   const TAU = Math.PI * 2;
   const CYL_SEG = 16;
+  const FADE_DURATION = 14;
 
   function makeRng(seed) {
     let s = seed >>> 0;
@@ -506,6 +507,11 @@
       elapsed += dt;
       const t = elapsed;
 
+      if (state.surrenderStart != null) {
+        state.shadowAmount = Math.min((t - state.surrenderStart) / FADE_DURATION, 1);
+        if (state.shadowAmount >= 1) state.surrendered = true;
+      }
+
       if (!state.surrendered && needsRebuild()) {
         buildMachine(t);
         syncRebuildFlags();
@@ -531,6 +537,12 @@
       dir1.visible = dir2.visible = state.shadowAmount < 1;
     }
 
+    function triggerSurrender() {
+      if (state.surrendered || state.surrenderStart != null) return false;
+      state.surrenderStart = elapsed;
+      return true;
+    }
+
     return {
       root,
       lights,
@@ -539,12 +551,19 @@
       updateTargets,
       applySliders,
       buildMachine,
+      triggerSurrender,
       setStaticOverlayVisible(visible) {
         staticOverlayVisible = visible;
+      },
+      setVisible(v) {
+        root.visible = !!v;
       },
       setSeed(s) {
         state.seed = s >>> 0;
         state.machineBuilt = false;
+        state.surrendered = false;
+        state.surrenderStart = null;
+        state.shadowAmount = 0;
         state.prevPlatformExtras = -1;
       },
     };

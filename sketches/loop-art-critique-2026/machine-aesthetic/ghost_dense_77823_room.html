@@ -167,6 +167,100 @@
       }
       #room-c-controls #surrender-btn { grid-column: 2 / 3; }
     }
+    #room-b-controls {
+      position: fixed;
+      top: 42px;
+      right: 14px;
+      z-index: 20;
+      display: grid;
+      gap: 10px;
+      width: min(240px, 42vw);
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #e8e8e8;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #888;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    #room-b-controls.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    #room-b-controls label { display: grid; gap: 6px; }
+    #room-b-controls .ctrl-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    #room-b-controls .ctrl-head span.val {
+      letter-spacing: 0.04em;
+      text-transform: none;
+      color: #aaa;
+    }
+    #room-b-controls input[type="range"] {
+      width: 100%;
+      margin: 0;
+      accent-color: #74b4dc;
+    }
+    #room-b-controls button {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d8d8d8;
+      background: #fff;
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #666;
+      cursor: pointer;
+    }
+    #room-b-controls button:hover { border-color: #74b4dc; color: #444; }
+    #room-b-controls button[aria-pressed="true"] {
+      background: #f4f8fb;
+      border-color: #74b4dc;
+      color: #444;
+    }
+    #room-b-controls .gravity-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    #room-b-controls .gravity-btns button {
+      width: auto;
+      padding: 8px 4px;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+    }
+    #sound-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 25;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.75;
+      transition: opacity 0.2s, border-color 0.2s;
+      padding: 0;
+      color: #444;
+    }
+    #sound-btn:hover { opacity: 1; border-color: #74b4dc; }
+    #sound-btn.on { opacity: 1; border-color: #74b4dc; }
+    #sound-btn svg { width: 16px; height: 16px; display: block; }
   </style>
   <script type="importmap">
   {
@@ -197,6 +291,34 @@
     <span class="seed" id="hud-seed">walk moon · text cylinder · room A</span>
   </div>
 
+  <div id="room-b-controls" role="group" aria-label="Gravity machine controls">
+    <label>
+      <span class="ctrl-head">Speed <span class="val" id="val-speed">1.0×</span></span>
+      <input type="range" id="sl-speed" min="10" max="300" value="100" aria-label="Speed" />
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear size <span class="val" id="val-horizontal">1.00×</span></span>
+      <input type="range" id="sl-horizontal" min="25" max="200" value="100" aria-label="Horizontal gear size" />
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear size <span class="val" id="val-vertical">1.00×</span></span>
+      <input type="range" id="sl-vertical" min="25" max="200" value="100" aria-label="Vertical gear size" />
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear count <span class="val" id="val-h-count">40</span></span>
+      <input type="range" id="sl-h-count" min="0" max="40" value="40" aria-label="Horizontal gear count" />
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">40</span></span>
+      <input type="range" id="sl-v-count" min="0" max="40" value="40" aria-label="Vertical gear count" />
+    </label>
+    <div class="gravity-btns" aria-label="Gravity axes">
+      <button type="button" id="btn-gravity-x" aria-pressed="true">Gravity X</button>
+      <button type="button" id="btn-gravity-y" aria-pressed="true">Gravity Y</button>
+      <button type="button" id="btn-gravity-z" aria-pressed="true">Gravity Z</button>
+    </div>
+  </div>
+
   <div id="room-c-controls" role="group" aria-label="Surrender machine controls">
     <div class="ctrl" id="ctrl-anger">
       <div class="ctrl-label">Anger <span class="val" id="val-anger">50</span></div>
@@ -220,6 +342,18 @@
     <p>The circuit is open.</p>
   </div>
 
-  <script type="module" src="ghost_dense_77823_room.mjs?v=20260601-room-c-floor-g"></script>
+  <button type="button" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">
+    <svg id="icon-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+    </svg>
+    <svg id="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+    </svg>
+  </button>
+
+  <script type="module" src="ghost_dense_77823_room.mjs?v=20260701-b-c-machines"></script>
 </body>
 </html>

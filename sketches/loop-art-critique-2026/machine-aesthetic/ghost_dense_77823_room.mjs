@@ -11,22 +11,48 @@ import {
   HALL_AB,
   HALL_BC,
   buildWalkthroughRoomComplex,
-  buildGhostMachine,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createSurrenderMachinesRoomEmbed } from "./surrender-machines-room-embed.mjs?v=20260601-room-c-floor-g";
+import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-b-c-machines";
+import {
+  surrenderScaleForRoom,
+  SURRENDER_DEFAULT_SLIDERS,
+} from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
+import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-b-c-machines";
 
-const BUILD = "20260601-room-c-floor-g";
-const SURRENDER_MACHINE_SEED = 653057;
+const BUILD = "20260701-b-c-machines";
+const SEED = 77823;
 
 globalThis.THREE = THREE;
+
+await new Promise((resolve, reject) => {
+  const script = document.createElement("script");
+  script.src = new URL("./surrender-machines-three-core.js?v=20260701-b-c-machines", import.meta.url).href;
+  script.onload = resolve;
+  script.onerror = () => reject(new Error("surrender-machines-three-core.js failed to load"));
+  document.head.appendChild(script);
+});
 
 const prompt = document.getElementById("prompt");
 const modeEl = document.getElementById("mode");
 const hudRoom = document.getElementById("hud-room");
 const hudSeed = document.getElementById("hud-seed");
+const roomBControls = document.getElementById("room-b-controls");
 const roomCControls = document.getElementById("room-c-controls");
+const slSpeed = document.getElementById("sl-speed");
+const slHorizontal = document.getElementById("sl-horizontal");
+const slVertical = document.getElementById("sl-vertical");
+const slHCount = document.getElementById("sl-h-count");
+const slVCount = document.getElementById("sl-v-count");
+const valSpeed = document.getElementById("val-speed");
+const valHorizontal = document.getElementById("val-horizontal");
+const valVertical = document.getElementById("val-vertical");
+const valHCount = document.getElementById("val-h-count");
+const valVCount = document.getElementById("val-v-count");
+const btnGravityX = document.getElementById("btn-gravity-x");
+const btnGravityY = document.getElementById("btn-gravity-y");
+const btnGravityZ = document.getElementById("btn-gravity-z");
 const slAnger = document.getElementById("sl-anger");
 const slEgo = document.getElementById("sl-ego");
 const slAttachment = document.getElementById("sl-attachment");
@@ -37,6 +63,21 @@ const surrenderBtn = document.getElementById("surrender-btn");
 const zeroHint = document.getElementById("zero-hint");
 modeEl.textContent = `build · ${BUILD}`;
 
+const gravityAxisUi = { x: true, y: true, z: true };
+
+function getGravityControls() {
+  return {
+    speed: Number(slSpeed.value),
+    horizontal: Number(slHorizontal.value),
+    vertical: Number(slVertical.value),
+    hCount: Number(slHCount.value),
+    vCount: Number(slVCount.value),
+    gravityX: gravityAxisUi.x,
+    gravityY: gravityAxisUi.y,
+    gravityZ: gravityAxisUi.z,
+  };
+}
+
 function getSliderValues() {
   return {
     anger: Number(slAnger.value),
@@ -45,15 +86,36 @@ function getSliderValues() {
   };
 }
 
+function syncGravityLabels() {
+  const ctrl = getGravityControls();
+  valSpeed.textContent = `${(ctrl.speed / 100).toFixed(1)}×`;
+  valHorizontal.textContent = `${(ctrl.horizontal / 100).toFixed(2)}×`;
+  valVertical.textContent = `${(ctrl.vertical / 100).toFixed(2)}×`;
+  valHCount.textContent = String(ctrl.hCount);
+  valVCount.textContent = String(ctrl.vCount);
+}
+
 function syncSliderLabels() {
   valAnger.textContent = slAnger.value;
   valEgo.textContent = slEgo.value;
   valAttachment.textContent = slAttachment.value;
 }
 
+function setGravityAxis(axis, on) {
+  gravityAxisUi[axis] = !!on;
+  const btn = axis === "x" ? btnGravityX : axis === "y" ? btnGravityY : btnGravityZ;
+  btn?.setAttribute("aria-pressed", gravityAxisUi[axis] ? "true" : "false");
+  gravityEmbed?.setGravityAxis(axis, gravityAxisUi[axis]);
+  gravityEmbed?.syncControls();
+}
+
+const ROOM_B_ZONE_X0 = -RW + 0.5;
+const ROOM_B_ZONE_X1 = RW - 0.5;
 const ROOM_C_ZONE_X0 = ROOM_C_X - RW + 0.5;
 const ROOM_C_ZONE_X1 = ROOM_C_X + RW - 0.5;
+let roomBActive = false;
 let surrenderActive = false;
+let inWalkthrough = false;
 
 function syncZeroHint(inRoomC = surrenderActive) {
   if (!zeroHint) return;
@@ -62,7 +124,7 @@ function syncZeroHint(inRoomC = surrenderActive) {
   const st = surrenderEmbed?.state;
   const show = inRoomC &&
     allZero &&
-    prompt.classList.contains("hidden") &&
+    inWalkthrough &&
     (!st || (!st.surrendered && st.surrenderStart == null));
   zeroHint.classList.toggle("visible", show);
   zeroHint.setAttribute("aria-hidden", show ? "false" : "true");
@@ -94,27 +156,52 @@ const world = new THREE.Group();
 scene.add(world);
 
 await buildWalkthroughRoomComplex(world, ROOM.width, ROOM.depth, ROOM.height, { wallpaper: true });
-const { builder } = buildGhostMachine(world);
 
-/** Room C — user's p5 surrender-machines.html on the floor, center of the room */
+/** Room B — gravity pull · sliders (seed 77823) */
+const gravityEmbed = createGhostGravityRoomEmbed({
+  THREE,
+  parent: world,
+  x: 0,
+  y: 0,
+  z: 0,
+  seed: SEED,
+  getControls: getGravityControls,
+});
+gravityEmbed.setVisible(false);
+if (gravityEmbed.builder) {
+  slHCount.max = String(gravityEmbed.builder.horizontalGears.length);
+  slVCount.max = String(gravityEmbed.builder.verticalGears.length);
+}
+
+/** Room C — surrender-machines-three extract (seed 77823) */
 let surrenderEmbed = null;
-
-try {
-  surrenderEmbed = await createSurrenderMachinesRoomEmbed({
-    THREE,
+if (typeof globalThis.createSurrenderMachineEmbed === "function") {
+  surrenderEmbed = globalThis.createSurrenderMachineEmbed({
     parent: world,
     x: ROOM_C_X,
     y: 0.04,
     z: 0,
-    roomHeight: ROOM.height,
-    seed: SURRENDER_MACHINE_SEED,
-    getSliders: getSliderValues,
+    scale: surrenderScaleForRoom(ROOM.height),
+    flat: true,
+    seed: SEED,
+    sliders: SURRENDER_DEFAULT_SLIDERS,
   });
-  modeEl.textContent = `${BUILD} · room C surrender-machines.html on floor`;
-} catch (err) {
-  console.error("Room C surrender machine failed to load:", err);
-  modeEl.textContent = `${BUILD} · room C failed: ${err.message}`;
+  surrenderEmbed.lights.forEach((l) => scene.add(l));
+  surrenderEmbed.setVisible(false);
+  surrenderEmbed.setStaticOverlayVisible(false);
+  modeEl.textContent = `${BUILD} · seed ${SEED}`;
+} else {
+  modeEl.textContent = `${BUILD} · room C three-core missing`;
 }
+
+attachWalkthroughSound({
+  getSliders: getSliderValues,
+  isSurrendering: () => {
+    const st = surrenderEmbed?.state;
+    return !!(st && (st.surrenderStart != null || st.surrendered));
+  },
+  soundBtn: document.getElementById("sound-btn"),
+});
 
 /** Walk moon — your PNG sized to full north (left-hand) wall face */
 const WALK_MOON_URL = new URL("../walk_moon_audio_standalone.html", import.meta.url).href;
@@ -207,7 +294,7 @@ function pickLinkMesh(event) {
 }
 
 renderer.domElement.addEventListener("click", (event) => {
-  if (!prompt.classList.contains("hidden")) return;
+  if (!inWalkthrough) return;
   const hit = pickLinkMesh(event);
   if (hit?.userData.link) {
     event.preventDefault();
@@ -216,29 +303,43 @@ renderer.domElement.addEventListener("click", (event) => {
 });
 
 renderer.domElement.addEventListener("mousemove", (event) => {
-  if (prompt.classList.contains("hidden") && pickLinkMesh(event)) {
+  if (inWalkthrough && pickLinkMesh(event)) {
     renderer.domElement.style.cursor = "pointer";
   } else {
     renderer.domElement.style.cursor = walk.isLocked ? "none" : "grab";
   }
 });
 
-function onSliderInput() {
+function onSurrenderSliderInput() {
   syncSliderLabels();
   syncZeroHint();
+  if (surrenderEmbed) surrenderEmbed.applySliders(getSliderValues());
+}
+
+function onGravitySliderInput() {
+  syncGravityLabels();
+  gravityEmbed.syncControls();
 }
 
 [slAnger, slEgo, slAttachment].forEach((el) => {
-  el.addEventListener("input", onSliderInput);
+  el.addEventListener("input", onSurrenderSliderInput);
+});
+[slSpeed, slHorizontal, slVertical, slHCount, slVCount].forEach((el) => {
+  el.addEventListener("input", onGravitySliderInput);
 });
 
+btnGravityX?.addEventListener("click", () => setGravityAxis("x", !gravityAxisUi.x));
+btnGravityY?.addEventListener("click", () => setGravityAxis("y", !gravityAxisUi.y));
+btnGravityZ?.addEventListener("click", () => setGravityAxis("z", !gravityAxisUi.z));
+
+syncGravityLabels();
 syncZeroHint(false);
 
 surrenderBtn.addEventListener("click", () => {
   if (!surrenderEmbed) return;
   const st = surrenderEmbed.state;
   if (st.surrendered || st.surrenderStart != null) return;
-  surrenderEmbed.triggerSurrender();
+  if (!surrenderEmbed.triggerSurrender()) return;
   surrenderBtn.textContent = "Surrendering…";
   surrenderBtn.disabled = true;
   surrenderBtn.classList.add("surrendered");
@@ -265,35 +366,39 @@ function clampWalk(pos) {
 
 function updateHud(pos) {
   ghostSpinActive = pos.x >= GHOST_SPIN_X0 && pos.x <= GHOST_SPIN_X1;
+  const seedLabel = `seed ${SEED}`;
 
   if (pos.x < HALL_AB.x1) {
     hudRoom.textContent = pos.x >= ROOM_A_X - RW ? "Room A · black · code mural" : "Approach · Room A";
     hudSeed.textContent = pos.x >= ROOM_A_X - RW
       ? "text cylinder · center · click to make your own · walk moon · left wall · click"
-      : "ghost seed 77823 · room B ahead";
+      : `${seedLabel} · room B ahead`;
   } else if (pos.x < HALL_BC.x0) {
-    hudRoom.textContent = pos.x < 0 ? "Hall A–B" : "Room B · ghost wireframe";
-    hudSeed.textContent = "seed 77823";
+    hudRoom.textContent = pos.x < 0 ? "Hall A–B" : "Room B · gravity · sliders";
+    hudSeed.textContent = seedLabel;
   } else if (pos.x < ROOM_C_X + RW) {
     hudRoom.textContent = pos.x < HALL_BC.x1 ? "Hall B–C" : "Room C · surrender machine";
-    hudSeed.textContent = surrenderEmbed
-      ? `surrender · seed ${SURRENDER_MACHINE_SEED}`
-      : "surrender machine missing";
+    hudSeed.textContent = seedLabel;
   } else {
     hudRoom.textContent = "Room C · surrender machine";
-    hudSeed.textContent = surrenderEmbed
-      ? `surrender · seed ${SURRENDER_MACHINE_SEED}`
-      : "surrender machine missing";
+    hudSeed.textContent = seedLabel;
   }
+
+  roomBActive = pos.x >= ROOM_B_ZONE_X0 && pos.x <= ROOM_B_ZONE_X1;
   surrenderActive = pos.x >= ROOM_C_ZONE_X0 && pos.x <= ROOM_C_ZONE_X1;
-  if (roomCControls) {
-    roomCControls.classList.toggle(
-      "is-visible",
-      surrenderActive && prompt.classList.contains("hidden")
-    );
+
+  if (roomBControls) {
+    roomBControls.classList.toggle("is-visible", roomBActive && inWalkthrough);
   }
+  if (roomCControls) {
+    roomCControls.classList.toggle("is-visible", surrenderActive && inWalkthrough);
+  }
+  gravityEmbed.setVisible(roomBActive && inWalkthrough);
   if (surrenderEmbed?.setVisible) {
-    surrenderEmbed.setVisible(surrenderActive && prompt.classList.contains("hidden"));
+    surrenderEmbed.setVisible(surrenderActive && inWalkthrough);
+  }
+  if (surrenderEmbed?.setStaticOverlayVisible) {
+    surrenderEmbed.setStaticOverlayVisible(inWalkthrough);
   }
   syncZeroHint();
 }
@@ -307,8 +412,13 @@ orientSpawnEast();
 
 prompt.addEventListener("click", () => {
   prompt.classList.add("hidden");
+  inWalkthrough = true;
   orbit.enabled = true;
   modeEl.textContent = "orbit — drag · WASD · F walk";
+  if (surrenderEmbed) {
+    surrenderEmbed.applySliders(getSliderValues());
+    surrenderEmbed.setStaticOverlayVisible(true);
+  }
 });
 
 walk.addEventListener("lock", () => {
@@ -326,7 +436,12 @@ window.addEventListener("keydown", (e) => {
     walk.unlock();
     orbit.enabled = true;
     prompt.classList.add("hidden");
+    inWalkthrough = true;
     modeEl.textContent = "orbit — drag · F walk";
+    if (surrenderEmbed) {
+      surrenderEmbed.applySliders(getSliderValues());
+      surrenderEmbed.setStaticOverlayVisible(true);
+    }
   }
   if (e.code === "KeyF" && !walk.isLocked) {
     walk.lock().catch(() => {
@@ -340,17 +455,15 @@ window.addEventListener("keydown", (e) => { keys[e.code] = true; });
 window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
 const clock = new THREE.Clock();
-let sceneTime = 0;
 
 function tick() {
   requestAnimationFrame(tick);
   const dt = Math.min(clock.getDelta(), 0.05);
-  sceneTime += dt;
 
   textCylinder.update(dt, camera);
 
-  if (ghostSpinActive) {
-    builder.spinners.forEach((s) => {
+  if (ghostSpinActive && gravityEmbed.builder) {
+    gravityEmbed.builder.spinners.forEach((s) => {
       const d = s.speed * dt;
       if (s.axis === "x") s.pivot.rotation.x += d;
       else if (s.axis === "y") s.pivot.rotation.y += d;
@@ -358,8 +471,11 @@ function tick() {
     });
   }
 
-  if (surrenderEmbed) {
-    surrenderEmbed.update();
+  gravityEmbed.update(dt, roomBActive && inWalkthrough);
+
+  if (surrenderEmbed && inWalkthrough) {
+    surrenderEmbed.applySliders(getSliderValues());
+    surrenderEmbed.update(dt, true);
   }
 
   const moving = keys.KeyW || keys.KeyS || keys.KeyA || keys.KeyD ||
