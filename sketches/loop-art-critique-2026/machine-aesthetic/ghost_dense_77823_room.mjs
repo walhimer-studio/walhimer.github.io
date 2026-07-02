@@ -13,23 +13,23 @@ import {
   buildWalkthroughRoomComplex,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-walkthrough-record";
+import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-room-a-return";
 import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
-import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-walkthrough-record";
-import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260701-walkthrough-record";
+import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-room-a-return";
+import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260701-room-a-return";
 
-const BUILD = "20260701-walkthrough-record";
+const BUILD = "20260701-room-a-return";
 const SEED = 77823;
 
 globalThis.THREE = THREE;
 
 await new Promise((resolve, reject) => {
   const script = document.createElement("script");
-  script.src = new URL("./surrender-machines-three-core.js?v=20260701-walkthrough-record", import.meta.url).href;
+  script.src = new URL("./surrender-machines-three-core.js?v=20260701-room-a-return", import.meta.url).href;
   script.onload = resolve;
   script.onerror = () => reject(new Error("surrender-machines-three-core.js failed to load"));
   document.head.appendChild(script);
@@ -428,7 +428,7 @@ orbit.enabled = false;
 const walk = new PointerLockControls(camera, renderer.domElement);
 orientSpawnEast();
 
-prompt.addEventListener("click", () => {
+function enterWalkthrough() {
   prompt.classList.add("hidden");
   inWalkthrough = true;
   orbit.enabled = true;
@@ -438,7 +438,16 @@ prompt.addEventListener("click", () => {
     surrenderEmbed.applySliders(getSliderValues());
     surrenderEmbed.setStaticOverlayVisible(true);
   }
+}
+
+prompt.addEventListener("click", () => {
+  enterWalkthrough();
 });
+
+if (new URLSearchParams(location.search).get("room") === "a") {
+  enterWalkthrough();
+  history.replaceState(null, "", location.pathname);
+}
 
 walk.addEventListener("lock", () => {
   orbit.enabled = false;
@@ -455,23 +464,15 @@ walk.addEventListener("unlock", () => {
 window.addEventListener("keydown", (e) => {
   if (e.code === "KeyO") {
     walk.unlock();
-    orbit.enabled = true;
-    prompt.classList.add("hidden");
-    inWalkthrough = true;
-    modeBase = "orbit — drag · F walk · R record";
-    syncModeLine();
-    if (surrenderEmbed) {
-      surrenderEmbed.applySliders(getSliderValues());
-      surrenderEmbed.setStaticOverlayVisible(true);
-    }
+    enterWalkthrough();
   }
-  if (e.code === "KeyF" && !walk.isLocked) {
+  if (e.code === "KeyF" && !walk.isLocked && inWalkthrough) {
     walk.lock().catch(() => {
       modeBase = "walk blocked — drag to look";
       syncModeLine();
     });
   }
-  if (e.code === "KeyR" && !e.repeat && inWalkthrough) {
+  if (e.code === "KeyR" && !e.repeat) {
     e.preventDefault();
     walkthroughSound.ensureAudio().then(() => recorder.toggle()).then(() => syncModeLine());
   }
