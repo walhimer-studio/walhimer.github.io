@@ -13,23 +13,23 @@ import {
   buildWalkthroughRoomComplex,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-rec-clean";
+import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260702-mobile-dpad";
 import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
-import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-rec-clean";
-import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260701-rec-clean";
+import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260702-mobile-dpad";
+import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260702-mobile-dpad";
 
-const BUILD = "20260701-rec-clean";
+const BUILD = "20260702-mobile-dpad";
 const SEED = 77823;
 
 globalThis.THREE = THREE;
 
 await new Promise((resolve, reject) => {
   const script = document.createElement("script");
-  script.src = new URL("./surrender-machines-three-core.js?v=20260701-rec-clean", import.meta.url).href;
+  script.src = new URL("./surrender-machines-three-core.js?v=20260702-mobile-dpad", import.meta.url).href;
   script.onload = resolve;
   script.onerror = () => reject(new Error("surrender-machines-three-core.js failed to load"));
   document.head.appendChild(script);
@@ -491,6 +491,7 @@ orientSpawnEast();
 
 function enterWalkthrough() {
   prompt.classList.add("hidden");
+  document.body.classList.add("in-walkthrough");
   inWalkthrough = true;
   orbit.enabled = true;
   modeBase = "orbit — drag · WASD · F walk · R record";
@@ -553,6 +554,34 @@ const keys = {};
 window.addEventListener("keydown", (e) => { keys[e.code] = true; });
 window.addEventListener("keyup", (e) => { keys[e.code] = false; });
 
+const touchMove = { fwd: false, back: false, left: false, right: false };
+
+function bindTouchMoveBtn(btn, dir) {
+  if (!btn) return;
+  const on = (e) => {
+    e.preventDefault();
+    touchMove[dir] = true;
+  };
+  const off = (e) => {
+    e.preventDefault();
+    touchMove[dir] = false;
+  };
+  btn.addEventListener("pointerdown", on);
+  btn.addEventListener("pointerup", off);
+  btn.addEventListener("pointercancel", off);
+  btn.addEventListener("pointerleave", off);
+}
+
+bindTouchMoveBtn(document.getElementById("move-fwd"), "fwd");
+bindTouchMoveBtn(document.getElementById("move-back"), "back");
+bindTouchMoveBtn(document.getElementById("move-left"), "left");
+bindTouchMoveBtn(document.getElementById("move-right"), "right");
+
+const wantFwd = () => keys.KeyW || keys.ArrowUp || touchMove.fwd;
+const wantBack = () => keys.KeyS || keys.ArrowDown || touchMove.back;
+const wantLeft = () => keys.KeyA || keys.ArrowLeft || touchMove.left;
+const wantRight = () => keys.KeyD || keys.ArrowRight || touchMove.right;
+
 const clock = new THREE.Clock();
 
 function tick() {
@@ -577,15 +606,14 @@ function tick() {
     surrenderEmbed.update(dt, true);
   }
 
-  const moving = keys.KeyW || keys.KeyS || keys.KeyA || keys.KeyD ||
-    keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight;
+  const moving = wantFwd() || wantBack() || wantLeft() || wantRight();
 
   if (walk.isLocked) {
     const vel = ((keys.ShiftLeft || keys.ShiftRight) ? 4 : 2) * dt;
-    if (keys.KeyW || keys.ArrowUp) walk.moveForward(vel);
-    if (keys.KeyS || keys.ArrowDown) walk.moveForward(-vel);
-    if (keys.KeyA || keys.ArrowLeft) walk.moveRight(-vel);
-    if (keys.KeyD || keys.ArrowRight) walk.moveRight(vel);
+    if (wantFwd()) walk.moveForward(vel);
+    if (wantBack()) walk.moveForward(-vel);
+    if (wantLeft()) walk.moveRight(-vel);
+    if (wantRight()) walk.moveRight(vel);
     camera.position.y = 1.62;
   } else if (orbit.enabled && moving) {
     const vel = ((keys.ShiftLeft || keys.ShiftRight) ? 4 : 2) * dt;
@@ -594,10 +622,10 @@ function tick() {
     fwd.y = 0;
     fwd.normalize();
     const right = new THREE.Vector3().crossVectors(fwd, camera.up).normalize();
-    if (keys.KeyW || keys.ArrowUp) camera.position.addScaledVector(fwd, vel);
-    if (keys.KeyS || keys.ArrowDown) camera.position.addScaledVector(fwd, -vel);
-    if (keys.KeyA || keys.ArrowLeft) camera.position.addScaledVector(right, -vel);
-    if (keys.KeyD || keys.ArrowRight) camera.position.addScaledVector(right, vel);
+    if (wantFwd()) camera.position.addScaledVector(fwd, vel);
+    if (wantBack()) camera.position.addScaledVector(fwd, -vel);
+    if (wantLeft()) camera.position.addScaledVector(right, -vel);
+    if (wantRight()) camera.position.addScaledVector(right, vel);
     camera.position.y = 1.62;
     orbit.target.copy(camera.position).add(fwd.multiplyScalar(2));
   } else if (orbit.enabled) {

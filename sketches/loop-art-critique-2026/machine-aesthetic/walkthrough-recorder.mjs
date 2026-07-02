@@ -44,6 +44,24 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
     }
   };
 
+  const finish = () => {
+    if (!active) return;
+    if (recorder && recorder.state !== "inactive") {
+      try { recorder.stop(); } catch (_) { /* onstop runs cleanup */ }
+      return;
+    }
+    releaseCapture();
+    setActive(false);
+    setRecHud(false);
+    recorder = null;
+  };
+
+  const bindStreamEnd = (stream) => {
+    stream.getTracks().forEach((track) => {
+      track.addEventListener("ended", finish, { once: true });
+    });
+  };
+
   async function buildStream() {
     await getAudioStream();
 
@@ -92,6 +110,7 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
     }
 
     captureStream = stream;
+    bindStreamEnd(stream);
     chunks = [];
     recorder = new MediaRecorder(stream, {
       mimeType,
@@ -112,6 +131,7 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
       releaseCapture();
       setActive(false);
       setRecHud(false);
+      recorder = null;
     };
 
     recorder.start(250);

@@ -261,6 +261,46 @@
     #sound-btn:hover { opacity: 1; border-color: #74b4dc; }
     #sound-btn.on { opacity: 1; border-color: #74b4dc; }
     #sound-btn svg { width: 16px; height: 16px; display: block; }
+    #mobile-move {
+      position: fixed;
+      bottom: 24px;
+      left: 20px;
+      z-index: 25;
+      display: none;
+      grid-template-columns: 52px 52px 52px;
+      grid-template-rows: 52px 52px;
+      gap: 6px;
+      touch-action: none;
+    }
+    body.in-walkthrough #mobile-move { display: grid; }
+    @media (min-width: 821px) and (pointer: fine) {
+      body.in-walkthrough #mobile-move { display: none; }
+    }
+    #mobile-move .move-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 22px;
+      line-height: 1;
+      color: #444;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    #mobile-move .move-btn:active {
+      background: #f4f8fb;
+      border-color: #74b4dc;
+    }
+    #move-fwd { grid-column: 2; grid-row: 1; }
+    #move-left { grid-column: 1; grid-row: 2; }
+    #move-back { grid-column: 2; grid-row: 2; }
+    #move-right { grid-column: 3; grid-row: 2; }
     #rec-hud {
       position: fixed;
       top: 14px;
@@ -328,8 +368,6 @@
     body.recording-clean #mode,
     body.recording-clean .hud,
     body.recording-clean #sound-btn,
-    body.recording-clean #room-b-controls,
-    body.recording-clean #room-c-controls,
     body.recording-clean #zero-hint {
       display: none !important;
     }
@@ -346,7 +384,7 @@
 <body>
   <div id="prompt">
     <div>
-      <p><em>Surrender Machines</em></p>
+      <p><em>Surrender Machine</em></p>
       <p style="margin-top:1rem;font-size:14px;">Mark Walhimer</p>
       <p style="font-size:12px;color:#666;line-height:1.65;margin-top:0.35rem;">
         Loop Art Critique 2026 · Cohort 21<br>
@@ -354,7 +392,7 @@
         Doreen Rios, Curator
       </p>
       <p style="margin-top:0.85rem;font-size:14px;">Click to enter the room</p>
-      <p style="font-size:12px;color:#888;margin-top:0.35rem;">R record tab · Esc back · R stop · click to enter</p>
+      <p style="font-size:12px;color:#888;margin-top:0.35rem;">click to enter · drag to look · arrows to move</p>
     </div>
   </div>
   <div id="mode">build · loading</div>
@@ -420,6 +458,13 @@
     <p>The circuit is open.</p>
   </div>
 
+  <div id="mobile-move" aria-label="Move">
+    <button type="button" class="move-btn" id="move-fwd" aria-label="Forward">↑</button>
+    <button type="button" class="move-btn" id="move-left" aria-label="Left">←</button>
+    <button type="button" class="move-btn" id="move-back" aria-label="Back">↓</button>
+    <button type="button" class="move-btn" id="move-right" aria-label="Right">→</button>
+  </div>
+
   <button type="button" id="sound-btn" title="Toggle sound" aria-label="Toggle sound">
     <svg id="icon-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
@@ -432,6 +477,6 @@
     </svg>
   </button>
 
-  <script type="module" src="ghost_dense_77823_room.mjs?v=20260701-rec-clean"></script>
+  <script type="module" src="ghost_dense_77823_room.mjs?v=20260702-mobile-dpad"></script>
 </body>
 </html>
