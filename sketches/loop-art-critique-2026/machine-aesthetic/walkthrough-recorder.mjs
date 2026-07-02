@@ -1,5 +1,5 @@
 /**
- * Canvas + audio capture for Ghost 77823 walkthrough (R key).
+ * Tab capture (entry text + artworks) or canvas fallback — Ghost 77823 walkthrough (R key).
  */
 export function createWalkthroughRecorder(getCanvas, getAudioStream, {
   downloadPrefix = "ghost-77823-walkthrough",
@@ -8,6 +8,7 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
   let recorder = null;
   let chunks = [];
   let active = false;
+  let captureStream = null;
 
   const pickMime = () => {
     const types = [
@@ -24,13 +25,48 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
   const recExt = (mimeType) => (mimeType.startsWith("video/mp4") ? "mp4" : "webm");
 
   const setRecHud = (on) => {
-    if (recHud) recHud.classList.toggle("is-recording", on);
+    if (recHud) {
+      recHud.classList.toggle("is-recording", on);
+      recHud.setAttribute("aria-hidden", on ? "false" : "true");
+    }
   };
+
+  const releaseCapture = () => {
+    if (captureStream) {
+      captureStream.getTracks().forEach((t) => t.stop());
+      captureStream = null;
+    }
+  };
+
+  async function buildStream() {
+    await getAudioStream();
+
+    try {
+      const display = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: 60 },
+        audio: true,
+      });
+      const tracks = [...display.getVideoTracks(), ...display.getAudioTracks()];
+      if (!display.getAudioTracks().length) {
+        const audioStream = await getAudioStream();
+        tracks.push(...audioStream.getAudioTracks());
+      }
+      return new MediaStream(tracks);
+    } catch (err) {
+      if (err?.name === "NotAllowedError") throw err;
+      const canvas = getCanvas();
+      if (!canvas?.captureStream) throw new Error("capture unavailable");
+      const videoStream = canvas.captureStream(60);
+      const audioStream = await getAudioStream();
+      return new MediaStream([
+        ...videoStream.getVideoTracks(),
+        ...audioStream.getAudioTracks(),
+      ]);
+    }
+  }
 
   const start = async () => {
     if (active) return false;
-    const canvas = getCanvas();
-    if (!canvas?.captureStream) return false;
 
     const mimeType = pickMime();
     if (!mimeType) {
@@ -38,13 +74,18 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
       return false;
     }
 
-    const videoStream = canvas.captureStream(60);
-    const audioStream = await getAudioStream();
-    const stream = new MediaStream([
-      ...videoStream.getVideoTracks(),
-      ...audioStream.getAudioTracks(),
-    ]);
+    setRecHud(true);
 
+    let stream;
+    try {
+      stream = await buildStream();
+    } catch (err) {
+      setRecHud(false);
+      console.warn("Recording failed to start:", err);
+      return false;
+    }
+
+    captureStream = stream;
     chunks = [];
     recorder = new MediaRecorder(stream, {
       mimeType,
@@ -62,14 +103,13 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
       a.download = `${downloadPrefix}-seed77823-${ts}.${recExt(mimeType)}`;
       a.click();
       URL.revokeObjectURL(url);
-      stream.getTracks().forEach((t) => t.stop());
+      releaseCapture();
       active = false;
       setRecHud(false);
     };
 
-    recorder.start(1000);
+    recorder.start(250);
     active = true;
-    setRecHud(true);
     return true;
   };
 
@@ -88,4 +128,4 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
   };
 
   return { toggle, stop, isActive: () => active };
-}
+};
