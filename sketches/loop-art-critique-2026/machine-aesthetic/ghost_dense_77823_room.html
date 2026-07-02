@@ -261,6 +261,34 @@
     #sound-btn:hover { opacity: 1; border-color: #74b4dc; }
     #sound-btn.on { opacity: 1; border-color: #74b4dc; }
     #sound-btn svg { width: 16px; height: 16px; display: block; }
+    #rec-hud {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #c44;
+      pointer-events: none;
+    }
+    #rec-hud.is-recording { display: flex; }
+    #rec-hud::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e33;
+      animation: rec-pulse 1s ease-in-out infinite;
+    }
+    @keyframes rec-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
   </style>
   <script type="importmap">
   {
@@ -282,10 +310,11 @@
         Doreen Rios, Curator
       </p>
       <p style="margin-top:0.85rem;font-size:14px;">Click to enter the room</p>
-      <p style="font-size:12px;color:#888;margin-top:0.35rem;">drag to look · WASD move · F first-person (forward into hall)</p>
+      <p style="font-size:12px;color:#888;margin-top:0.35rem;">drag to look · WASD move · F first-person · R record</p>
     </div>
   </div>
   <div id="mode">build · loading</div>
+  <div id="rec-hud" aria-hidden="true">Recording</div>
   <div class="hud">
     <span id="hud-room">Room A · black · code mural</span>
     <span class="seed" id="hud-seed">walk moon · text cylinder · room A</span>
@@ -354,6 +383,6 @@
     </svg>
   </button>
 
-  <script type="module" src="ghost_dense_77823_room.mjs?v=20260701-b-c-machines"></script>
+  <script type="module" src="ghost_dense_77823_room.mjs?v=20260701-walkthrough-record"></script>
 </body>
 </html>

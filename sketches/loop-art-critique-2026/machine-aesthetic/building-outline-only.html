@@ -57,9 +57,27 @@
       color: rgba(255, 255, 255, 0.88);
       letter-spacing: 0.14em;
     }
+    .back-room-a {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 20;
+      padding: 8px 12px;
+      font: 10px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 4px;
+      backdrop-filter: blur(6px);
+    }
+    .back-room-a:hover { color: #fff; border-color: rgba(255, 255, 255, 0.35); }
   </style>
 </head>
 <body>
+  <a class="back-room-a" href="ghost_dense_77823_room.html">← Room A</a>
   <div id="bottom-hud">
     <div id="lifeline-track" aria-hidden="true"><span id="lifeline-fill"></span></div>
     <p id="seed-hud" aria-live="polite"></p>

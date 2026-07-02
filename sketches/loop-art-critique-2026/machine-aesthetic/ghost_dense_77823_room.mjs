@@ -13,22 +13,23 @@ import {
   buildWalkthroughRoomComplex,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-b-c-machines";
+import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-walkthrough-record";
 import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
-import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-b-c-machines";
+import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-walkthrough-record";
+import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260701-walkthrough-record";
 
-const BUILD = "20260701-b-c-machines";
+const BUILD = "20260701-walkthrough-record";
 const SEED = 77823;
 
 globalThis.THREE = THREE;
 
 await new Promise((resolve, reject) => {
   const script = document.createElement("script");
-  script.src = new URL("./surrender-machines-three-core.js?v=20260701-b-c-machines", import.meta.url).href;
+  script.src = new URL("./surrender-machines-three-core.js?v=20260701-walkthrough-record", import.meta.url).href;
   script.onload = resolve;
   script.onerror = () => reject(new Error("surrender-machines-three-core.js failed to load"));
   document.head.appendChild(script);
@@ -175,6 +176,7 @@ if (gravityEmbed.builder) {
 
 /** Room C — surrender-machines-three extract (seed 77823) */
 let surrenderEmbed = null;
+let modeBase = "";
 if (typeof globalThis.createSurrenderMachineEmbed === "function") {
   surrenderEmbed = globalThis.createSurrenderMachineEmbed({
     parent: world,
@@ -189,12 +191,14 @@ if (typeof globalThis.createSurrenderMachineEmbed === "function") {
   surrenderEmbed.lights.forEach((l) => scene.add(l));
   surrenderEmbed.setVisible(false);
   surrenderEmbed.setStaticOverlayVisible(false);
-  modeEl.textContent = `${BUILD} · seed ${SEED}`;
+  modeBase = `${BUILD} · seed ${SEED}`;
+  modeEl.textContent = modeBase;
 } else {
-  modeEl.textContent = `${BUILD} · room C three-core missing`;
+  modeBase = `${BUILD} · room C three-core missing`;
+  modeEl.textContent = modeBase;
 }
 
-attachWalkthroughSound({
+const walkthroughSound = attachWalkthroughSound({
   getSliders: getSliderValues,
   isSurrendering: () => {
     const st = surrenderEmbed?.state;
@@ -202,6 +206,20 @@ attachWalkthroughSound({
   },
   soundBtn: document.getElementById("sound-btn"),
 });
+
+const recorder = createWalkthroughRecorder(
+  () => renderer.domElement,
+  () => walkthroughSound.getAudioStream(),
+  { downloadPrefix: "ghost-77823-walkthrough" }
+);
+
+function syncModeLine() {
+  if (recorder.isActive()) {
+    modeEl.textContent = "recording · R stop";
+    return;
+  }
+  modeEl.textContent = modeBase;
+}
 
 /** Walk moon — your PNG sized to full north (left-hand) wall face */
 const WALK_MOON_URL = new URL("../walk_moon_audio_standalone.html", import.meta.url).href;
@@ -414,7 +432,8 @@ prompt.addEventListener("click", () => {
   prompt.classList.add("hidden");
   inWalkthrough = true;
   orbit.enabled = true;
-  modeEl.textContent = "orbit — drag · WASD · F walk";
+  modeBase = "orbit — drag · WASD · F walk · R record";
+  syncModeLine();
   if (surrenderEmbed) {
     surrenderEmbed.applySliders(getSliderValues());
     surrenderEmbed.setStaticOverlayVisible(true);
@@ -423,12 +442,14 @@ prompt.addEventListener("click", () => {
 
 walk.addEventListener("lock", () => {
   orbit.enabled = false;
-  modeEl.textContent = "walk — WASD · Shift run · Esc";
+  modeBase = "walk — WASD · Shift run · Esc · R record";
+  syncModeLine();
 });
 walk.addEventListener("unlock", () => {
   orbit.enabled = true;
   orientSpawnEast();
-  modeEl.textContent = "orbit — drag · F walk";
+  modeBase = "orbit — drag · F walk · R record";
+  syncModeLine();
 });
 
 window.addEventListener("keydown", (e) => {
@@ -437,7 +458,8 @@ window.addEventListener("keydown", (e) => {
     orbit.enabled = true;
     prompt.classList.add("hidden");
     inWalkthrough = true;
-    modeEl.textContent = "orbit — drag · F walk";
+    modeBase = "orbit — drag · F walk · R record";
+    syncModeLine();
     if (surrenderEmbed) {
       surrenderEmbed.applySliders(getSliderValues());
       surrenderEmbed.setStaticOverlayVisible(true);
@@ -445,8 +467,13 @@ window.addEventListener("keydown", (e) => {
   }
   if (e.code === "KeyF" && !walk.isLocked) {
     walk.lock().catch(() => {
-      modeEl.textContent = "walk blocked — drag to look";
+      modeBase = "walk blocked — drag to look";
+      syncModeLine();
     });
+  }
+  if (e.code === "KeyR" && !e.repeat && inWalkthrough) {
+    e.preventDefault();
+    walkthroughSound.ensureAudio().then(() => recorder.toggle()).then(() => syncModeLine());
   }
 });
 

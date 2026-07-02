@@ -196,9 +196,32 @@ export function attachWalkthroughSound(opts = {}) {
     }
   }
 
+  let recDest = null;
+
+  async function ensureAudio() {
+    initAudio();
+    if (ctx.state === "suspended") await ctx.resume();
+    if (!soundOn) {
+      soundOn = true;
+      masterGain.gain.cancelScheduledValues(ctx.currentTime);
+      masterGain.gain.setValueAtTime(0, ctx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.4);
+      setUiOn(true);
+    }
+  }
+
+  async function getAudioStream() {
+    await ensureAudio();
+    if (!recDest) {
+      recDest = ctx.createMediaStreamDestination();
+      masterGain.connect(recDest);
+    }
+    return recDest.stream;
+  }
+
   if (soundBtn) {
     soundBtn.addEventListener("click", toggle);
   }
 
-  return { toggle, initAudio };
+  return { toggle, initAudio, ensureAudio, getAudioStream, isOn: () => soundOn };
 }
