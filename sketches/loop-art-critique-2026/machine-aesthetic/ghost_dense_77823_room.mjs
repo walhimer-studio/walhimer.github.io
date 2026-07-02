@@ -13,23 +13,23 @@ import {
   buildWalkthroughRoomComplex,
   getWallpaperSource,
 } from "./ghost-machine-core.mjs";
-import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-rec-tab-overlay";
+import { createGhostGravityRoomEmbed } from "./ghost-gravity-room-embed.mjs?v=20260701-rec-clean";
 import {
   surrenderScaleForRoom,
   SURRENDER_DEFAULT_SLIDERS,
 } from "./surrender-machine-core.mjs";
 import { createTextCylinder } from "./text-cylinder-core.mjs?v=20260524-pdf-link";
-import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-rec-tab-overlay";
-import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260701-rec-tab-overlay";
+import { attachWalkthroughSound } from "./walkthrough-sound.mjs?v=20260701-rec-clean";
+import { createWalkthroughRecorder } from "./walkthrough-recorder.mjs?v=20260701-rec-clean";
 
-const BUILD = "20260701-rec-tab-overlay";
+const BUILD = "20260701-rec-clean";
 const SEED = 77823;
 
 globalThis.THREE = THREE;
 
 await new Promise((resolve, reject) => {
   const script = document.createElement("script");
-  script.src = new URL("./surrender-machines-three-core.js?v=20260701-rec-tab-overlay", import.meta.url).href;
+  script.src = new URL("./surrender-machines-three-core.js?v=20260701-rec-clean", import.meta.url).href;
   script.onload = resolve;
   script.onerror = () => reject(new Error("surrender-machines-three-core.js failed to load"));
   document.head.appendChild(script);
@@ -210,18 +210,50 @@ const walkthroughSound = attachWalkthroughSound({
 const recorder = createWalkthroughRecorder(
   () => renderer.domElement,
   () => walkthroughSound.getAudioStream(),
-  { downloadPrefix: "ghost-77823-walkthrough" }
+  {
+    downloadPrefix: "ghost-77823-walkthrough",
+    onActiveChange: (on) => {
+      document.body.classList.toggle("recording-clean", on);
+      if (on && artworkRecLayer?.classList.contains("is-open")) hideArtworkChrome();
+    },
+  }
 );
 
 const artworkRecLayer = document.getElementById("artwork-rec-layer");
 const artworkRecFrame = document.getElementById("artwork-rec-frame");
 const artworkRecBack = document.getElementById("artwork-rec-back");
 
+const ARTWORK_REC_HIDE_SELECTORS = [
+  ".back-room-a",
+  "#controls",
+  "#toggleUI",
+  "#hint",
+  "#ui",
+  ".ui",
+];
+
+function hideArtworkChrome() {
+  if (!artworkRecFrame?.contentDocument) return;
+  try {
+    const doc = artworkRecFrame.contentDocument;
+    for (const sel of ARTWORK_REC_HIDE_SELECTORS) {
+      doc.querySelectorAll(sel).forEach((el) => {
+        el.style.setProperty("display", "none");
+      });
+    }
+  } catch (_) {
+    /* cross-origin or not ready */
+  }
+}
+
 function openArtworkOverlay(url) {
   if (!artworkRecLayer || !artworkRecFrame) {
     window.location.assign(url);
     return;
   }
+  artworkRecFrame.onload = () => {
+    if (recorder.isActive()) hideArtworkChrome();
+  };
   artworkRecFrame.src = url;
   artworkRecLayer.classList.add("is-open");
   artworkRecLayer.setAttribute("aria-hidden", "false");
@@ -500,6 +532,11 @@ window.addEventListener("keydown", (e) => {
       modeBase = "walk blocked — drag to look";
       syncModeLine();
     });
+  }
+  if (e.code === "Escape" && recorder.isActive() && artworkRecLayer?.classList.contains("is-open")) {
+    e.preventDefault();
+    closeArtworkOverlay();
+    return;
   }
   if (e.code === "KeyR" && !e.repeat) {
     e.preventDefault();

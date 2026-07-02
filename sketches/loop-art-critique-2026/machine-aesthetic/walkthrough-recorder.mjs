@@ -4,6 +4,7 @@
 export function createWalkthroughRecorder(getCanvas, getAudioStream, {
   downloadPrefix = "ghost-77823-walkthrough",
   recHud = document.getElementById("rec-hud"),
+  onActiveChange,
 } = {}) {
   let recorder = null;
   let chunks = [];
@@ -23,6 +24,11 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
   };
 
   const recExt = (mimeType) => (mimeType.startsWith("video/mp4") ? "mp4" : "webm");
+
+  const setActive = (on) => {
+    active = on;
+    onActiveChange?.(on);
+  };
 
   const setRecHud = (on) => {
     if (recHud) {
@@ -104,12 +110,12 @@ export function createWalkthroughRecorder(getCanvas, getAudioStream, {
       a.click();
       URL.revokeObjectURL(url);
       releaseCapture();
-      active = false;
+      setActive(false);
       setRecHud(false);
     };
 
     recorder.start(250);
-    active = true;
+    setActive(true);
     return true;
   };
 
