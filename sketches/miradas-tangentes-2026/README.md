@@ -1,29 +1,44 @@
-# Miradas Tangentes — Madrid 2026
+# Miradas Tangentes (Tangent Gazes) — Madrid 2026
 
-**Exhibition bundle** — Siroco ArtLab, Madrid, February 2026.
+**Group show** — Peter 1, Madrid, **13 February 2026**.
 
 ## Live URL (hub)
 
 https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 
-## Opportunity
+## Show
 
 | Field | Value |
 |-------|--------|
-| Exhibition | Miradas Tangentes |
-| Venue | Siroco ArtLab, Madrid |
-| Date | February 2026 |
+| Title | Miradas Tangentes (Tangent Gazes) |
+| Venue | Peter 1, Madrid |
+| Date | 13 February 2026 |
+| Curator / host | Pedro Pitillas — [piti.2048](https://www.instagram.com/piti.2048/) |
 | Folder | `sketches/miradas-tangentes-2026/` |
 
-## Screens
+## Group show — artists
+
+| Artist | Notes |
+|--------|--------|
+| Gaudi | |
+| Luiz | |
+| Rapha | |
+| Solize | |
+| Luz | |
+| Edux | |
+| **Mark Walhimer** | **Screen 5** · Peter 1 · vertical |
+
+## Screens (Mark Walhimer)
 
 | Screen | Entry | Asset |
 |--------|-------|-------|
+| 5 | — | Peter 1 · vertical (venue assignment) |
 | 6 | `screen-6.html` | `assets/06-01-mark-walhimer.mp4` (1080×1920 · ~63s loop) |
+| 9 | `screen-9.html` | `assets/09-01-mark-walhimer.mp4` (1080×1920 · ~94s loop) |
 
-Source master: `06_01_Mark_Walhimer.mp4` (2160×3840 HEVC). Web copy transcoded for mark-walhimer.com hosting.
+Source masters live in `Desktop/miradas-tangentes-2026-madrid/` (2160×3840 HEVC). Web copies transcoded for mark-walhimer.com hosting.
 
-## Works in this show
+## Works in this show (Mark)
 
 | Work | Path |
 |------|------|
