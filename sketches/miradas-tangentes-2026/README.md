@@ -1,6 +1,6 @@
 # Miradas Tangentes (Tangent Gazes) — Madrid 2026
 
-**Group show** — Madrid, **13 February 2026**.
+**Group show** — Artlab Siroco, Madrid, **13 February 2026, 21h**. Free entry.
 
 ## Live URL (hub)
 
@@ -11,32 +11,42 @@ https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 | Field | Value |
 |-------|--------|
 | Title | Miradas Tangentes (Tangent Gazes) |
-| City | Madrid |
-| Date | 13 February 2026 |
-| Curator | Luz Otxoa — [@luzotxoa](https://www.instagram.com/luzotxoa/) |
+| Theme | NFT & creative programming |
+| Venue | Artlab Siroco, c/ San Dimas 3, Madrid |
+| Date | 13 February 2026, 21h |
+| Entry | Free |
+| Organizer | Luz Otxoa — [@luzotxoa](https://www.instagram.com/luzotxoa/) |
 | Folder | `sketches/miradas-tangentes-2026/` |
+| Source bundle | `Desktop/miradas-tangentes-2026-madrid/` |
+
+## Posters
+
+| File | Path |
+|------|------|
+| Mark Walhimer promo | `assets/miradas-tangentes-mark-walhimer-poster.jpg` |
+| Show static | `assets/miradas-tangentes-poster.png` |
 
 ## Group show — artists
 
 | Artist | Instagram |
 |--------|-----------|
-| Luiz André Gama | [@luizandregama](https://www.instagram.com/luizandregama/) |
-| Zilian Robin | [@ZilianRobin](https://www.instagram.com/ZilianRobin/) |
-| **Mark Walhimer** | [@WalhimerArt](https://www.instagram.com/WalhimerArt/) · screens 5, 6, 9 |
-| Pedro Pitillas | [@piti2048](https://www.instagram.com/piti2048/) |
-| Edux | [@eduxdux_](https://www.instagram.com/eduxdux_/) |
 | Gaudi Ramone | [@gaudiramone](https://www.instagram.com/gaudiramone/) |
-| Luz Otxoa | [@luzotxoa](https://www.instagram.com/luzotxoa/) · curator |
+| Pedro Pitillas | [@piti2048](https://www.instagram.com/piti2048/) |
+| Luiz André Gama | [@luizandregama](https://www.instagram.com/luizandregama/) |
+| Rapha Mey | [@rapha_nyc](https://www.instagram.com/rapha_nyc/) |
+| Solize / Zilian Robin | [@ZilianRobin](https://www.instagram.com/ZilianRobin/) |
+| Luz Otxoa | [@luzotxoa](https://www.instagram.com/luzotxoa/) · organizer |
+| Edux | [@eduxdux_](https://www.instagram.com/eduxdux_/) |
+| **Mark Walhimer** | [@WalhimerArt](https://www.instagram.com/WalhimerArt/) · screens 6, 9 |
 
 ## Screens (Mark Walhimer)
 
 | Screen | Entry | Asset |
 |--------|-------|-------|
-| 5 | — | Peter 1 · vertical (venue assignment) |
 | 6 | `screen-6.html` | **917 (around)** · `assets/06-01-mark-walhimer.mp4` (1080×1920 · ~63s loop) · [Manifold](https://manifold.xyz/@markwalhimer/id/4109553904) |
 | 9 | `screen-9.html` | **918 (forward)** · `assets/09-01-mark-walhimer.mp4` (1080×1920 · ~94s loop) · [Manifold](https://manifold.xyz/@markwalhimer/id/4109555952) |
 
-Source masters live in `Desktop/miradas-tangentes-2026-madrid/` (2160×3840 HEVC). Web copies transcoded for mark-walhimer.com hosting.
+Source masters: `Desktop/miradas-tangentes-2026-madrid/` (`06_01_Mark_Walhimer.mp4`, `P9_01_Mark_Walhimer.mp4`, 2160×3840 HEVC). Web copies transcoded for mark-walhimer.com hosting.
 
 ### Screen 6 — 917 (around)
 
