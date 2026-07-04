@@ -20,7 +20,7 @@ https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 
 | Artist | Notes |
 |--------|--------|
-| Gaudi | |
+| Gaudi Ramone | |
 | Luiz | |
 | Rapha | |
 | Solize | |
