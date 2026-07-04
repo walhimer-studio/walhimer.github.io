@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-06-23",
+  "updated": "2026-07-04",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -210,10 +210,10 @@
             "contact/index.html",
             "index.html",
             "sketches/bloom/bloom-release.html",
-            "sketches/index.html"
+            "sketches/index.html",
+            "sketches/js/Tone-14.7.77.js"
           ],
           "external_urls": [
-            "https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js",
             "https://fonts.googleapis.com",
             "https://fonts.gstatic.com",
             "https://mark-walhimer.com/sketches/bloom/bloom-release.html",
@@ -541,11 +541,10 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
+            "sketches/js/p5-1.9.0.min.js",
             "sketches/technical/technical-drawing-with-elevation.html"
           ],
-          "external_urls": [
-            "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-          ]
+          "external_urls": []
         },
         "installation_entry": {
           "repo_paths": [
@@ -610,11 +609,10 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
+            "sketches/js/p5-1.9.0.min.js",
             "sketches/technical/technical-drawing.html"
           ],
-          "external_urls": [
-            "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-          ]
+          "external_urls": []
         },
         "installation_entry": {
           "repo_paths": [
@@ -678,10 +676,10 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
+            "sketches/js/p5-1.11.2.min.js",
             "sketches/traveling-landscape.html"
           ],
           "external_urls": [
-            "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js",
             "https://fonts.googleapis.com",
             "https://fonts.gstatic.com"
           ]
@@ -739,8 +737,8 @@
           "sketches/surrender/index.html",
           "sketches/surrender/surrender 7.html",
           "sketches/surrender/surrender-machine 2.html",
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html",
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html",
+          "sketches/surrender/surrender-machine-madrid-v2 2.html",
+          "sketches/surrender/surrender-machine-madrid.html",
           "sketches/surrender/surrender-machines 2.html"
         ],
         "external_urls": []
@@ -790,94 +788,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid",
-      "dublin_core": {
-        "title": "surrender-machine-madrid",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000014"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Surrender Machines-surrender-machine-madrid",
-        "type": "HumanMadeObject",
-        "_label": "surrender-machine-madrid",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Surrender Machines",
-          "file": "miradas-tangentes-2026/surrender-machine-madrid.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
-        ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid-v2",
-      "dublin_core": {
-        "title": "surrender-machine-madrid-v2",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid-v2",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000015"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Surrender Machines-surrender-machine-madrid-v2",
-        "type": "HumanMadeObject",
-        "_label": "surrender-machine-madrid-v2",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Surrender Machines",
-          "file": "miradas-tangentes-2026/surrender-machine-madrid-v2.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Surrender Machines:surrender-7",
       "dublin_core": {
         "title": "surrender 7",
@@ -915,11 +825,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/surrender/surrender 7.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -960,11 +869,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergentdna-000-clean.html"
+          "sketches/emergentdna-000-clean.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1005,11 +913,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergentdna-000-v2.html"
+          "sketches/emergentdna-000-v2.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1050,11 +957,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergentdna-001.html"
+          "sketches/emergentdna-001.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1095,11 +1001,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergent-studio-v2.html"
+          "sketches/emergent-studio-v2.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1140,11 +1045,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergent_geometry.html"
+          "sketches/emergent_geometry.html",
+          "sketches/js/p5-1.7.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1229,11 +1133,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/920_emergentDNA.html"
+          "sketches/920_emergentDNA.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1274,11 +1177,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/919 (landscape) w-emergentDNA.html"
+          "sketches/919 (landscape) w-emergentDNA.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1319,11 +1221,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/919.html"
+          "sketches/919.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1364,11 +1265,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/919_landscape.html"
+          "sketches/919_landscape.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1409,11 +1309,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/gloabal_age.html"
+          "sketches/gloabal_age.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1454,11 +1353,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/test_bridge.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1499,11 +1397,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/915_manifold_test.html"
+          "sketches/915_manifold_test.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1548,10 +1445,10 @@
           "contact/index.html",
           "index.html",
           "sketches/index.html",
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/living-commons-artwork.html"
         ],
         "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js",
           "https://fonts.googleapis.com",
           "https://fonts.gstatic.com",
           "https://museumplanning.com",
@@ -1601,10 +1498,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/Tone-14.7.77.js",
           "sketches/shared-ground__3_.html"
         ],
         "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js",
           "https://fonts.googleapis.com",
           "https://fonts.gstatic.com"
         ]
@@ -1648,11 +1545,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.7.0.min.js",
           "sketches/the_commons.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1736,11 +1632,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/collective-architecture.html"
+          "sketches/collective-architecture.html",
+          "sketches/js/p5-1.7.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1824,11 +1719,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.7.0.min.js",
           "sketches/together_we_build.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1869,11 +1763,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/traveling_landscape.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1914,11 +1807,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/01-traveling-landscape-working.html"
+          "sketches/01-traveling-landscape-working.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -1959,11 +1851,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/02-traveling-landscape-live.html"
+          "sketches/02-traveling-landscape-live.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -2004,10 +1895,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/traveling_landscape_page.html"
         ],
         "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js",
           "https://fonts.googleapis.com",
           "https://fonts.gstatic.com",
           "https://markwalhimer.com",
@@ -2321,12 +2212,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/moon-walking/funk_boy.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js",
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -2367,12 +2256,11 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/CCapture-1.1.0.all.min.js",
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/moon-walking/one_revolution.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js",
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -2463,11 +2351,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergent-discs/disks.html"
+          "sketches/emergent-discs/disks.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -2508,11 +2395,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergent-discs/cells.html"
+          "sketches/emergent-discs/cells.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -2553,11 +2439,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergent-discs/disc-string (1).html"
+          "sketches/emergent-discs/disc-string (1).html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -2598,11 +2483,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergent-discs/string-art.html"
+          "sketches/emergent-discs/string-art.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -2729,11 +2613,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/emergent-discs/string-art-circle.html"
+          "sketches/emergent-discs/string-art-circle.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3247,11 +3130,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/lve008.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3292,11 +3174,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/three-0.155.0.min.js",
           "sketches/lve009.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r155/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3466,11 +3347,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/ai_studio_code (20).html"
+          "sketches/ai_studio_code (20).html",
+          "sketches/js/three-0.160.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3511,11 +3391,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/boxes.html"
+          "sketches/boxes.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3599,11 +3478,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/inside.html"
+          "sketches/inside.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3644,11 +3522,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/inside2.html"
+          "sketches/inside2.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3732,11 +3609,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/699 (float (iridescent)).html"
+          "sketches/699 (float (iridescent)).html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3777,11 +3653,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/710_around.html"
+          "sketches/710_around.html",
+          "sketches/js/p5-1.9.4.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -3822,11 +3697,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/738 (float).html"
+          "sketches/738 (float).html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4002,11 +3876,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/899(grounded) 1248 x 1456.html"
+          "sketches/899(grounded) 1248 x 1456.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4047,11 +3920,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/904_forward_exhibition.html"
+          "sketches/904_forward_exhibition.html",
+          "sketches/js/p5-1.4.0.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4092,11 +3964,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/919_surrender_fixed.html"
+          "sketches/919_surrender_fixed.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.2/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4137,11 +4008,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/922_centered.html"
+          "sketches/922_centered.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4182,11 +4052,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/923_centered.html"
+          "sketches/923_centered.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4227,11 +4096,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/text-cylinder.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4315,11 +4183,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/Untitled3.html"
+          "sketches/Untitled3.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4360,14 +4227,11 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/3d_print.html"
+          "sketches/3d_print.html",
+          "sketches/js/STLExporter-0.132.2.js",
+          "sketches/js/three-0.132.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js",
-          "https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/exporters/STLExporter.js",
-          "https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/geometries/TextGeometry.js",
-          "https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/FontLoader.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4580,11 +4444,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/breathing-cubes.html"
+          "sketches/breathing-cubes.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4668,11 +4531,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.4.min.js",
           "sketches/rotating-cubes.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4713,11 +4575,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/cube2.html"
+          "sketches/cube2.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4758,11 +4619,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/cube4.html"
+          "sketches/cube4.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4803,11 +4663,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/cube6.html"
+          "sketches/cube6.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4848,11 +4707,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/ShelvesAndCubes_TL.html"
+          "sketches/ShelvesAndCubes_TL.html",
+          "sketches/js/p5-1.9.3.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4893,11 +4751,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/shelves.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4938,11 +4795,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/shelves_min.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -4983,11 +4839,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/shelves_webgl.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5114,12 +4969,11 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/bubbles.html"
+          "sketches/bubbles.html",
+          "sketches/js/ethers-5.7.2.umd.min.js",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js",
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5165,11 +5019,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/audioscape001.html"
+          "sketches/audioscape001.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5215,11 +5068,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/Tone-14.7.77.js",
           "sketches/pentatonic-piano.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5265,33 +5117,32 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.7.0.min.js",
           "sketches/one_tube.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js",
-          "https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"
-        ]
+        "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes:miradas-tangentes",
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:index",
       "dublin_core": {
-        "title": "miradas-tangentes",
+        "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes:miradas-tangentes",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000124"
+        "catalog_number": "WS-000180"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes-miradas-tangentes",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
         "type": "HumanMadeObject",
-        "_label": "miradas-tangentes",
+        "_label": "technical-drawing-chronicle/index",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -5305,21 +5156,337 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes",
-          "file": "miradas-tangentes-2026/miradas-tangentes.html"
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/index.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/miradas-tangentes-2026/miradas-tangentes.html"
+          "sketches/miradas-tangentes-2026/README.md",
+          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
+          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
+          "sketches/miradas-tangentes-2026/exhibition_autosync.html",
+          "sketches/miradas-tangentes-2026/index.html",
+          "sketches/miradas-tangentes-2026/miradas-tangentes.html",
+          "sketches/miradas-tangentes-2026/screen-6.html",
+          "sketches/miradas-tangentes-2026/screen-9.html",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-mark-walhimer-poster",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-mark-walhimer-poster",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000225"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradas-tangentes-mark-walhimer-poster",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-poster",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-poster",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000226"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradas-tangentes-poster",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/assets/miradas-tangentes-poster.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-poster.png"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-6",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/screen-6",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-6",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000227"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-screen-6",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/screen-6",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/screen-6.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/screen-6.html"
         ],
         "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-6.html"
         ]
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes:exhibition_autosync",
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-9",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/screen-9",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-9",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000228"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-screen-9",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/screen-9",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/screen-9.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/screen-9.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-9.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:06-01-mark-walhimer",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:06-01-mark-walhimer",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000229"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-06-01-mark-walhimer",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:09-01-mark-walhimer",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:09-01-mark-walhimer",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000230"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-09-01-mark-walhimer",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:readme",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:exhibition_autosync",
       "dublin_core": {
         "title": "exhibition autosync",
         "creator": "Mark Walhimer",
@@ -5350,16 +5517,155 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes",
+          "series": "Miradas Tangentes — Madrid 2026",
           "file": "miradas-tangentes-2026/exhibition_autosync.html"
         }
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/miradas-tangentes-2026/exhibition_autosync.html"
         ],
         "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/exhibition_autosync.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes",
+      "dublin_core": {
+        "title": "miradas-tangentes",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes:miradas-tangentes",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000124"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes-miradas-tangentes",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/miradas-tangentes.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/miradas-tangentes-2026/miradas-tangentes.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/miradas-tangentes.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:surrender-machine-madrid",
+      "dublin_core": {
+        "title": "surrender-machine-madrid",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000014"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Surrender Machines-surrender-machine-madrid",
+        "type": "HumanMadeObject",
+        "_label": "surrender-machine-madrid",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/surrender-machine-madrid.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:surrender-machine-madrid-v2",
+      "dublin_core": {
+        "title": "surrender-machine-madrid-v2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000015"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Surrender Machines-surrender-machine-madrid-v2",
+        "type": "HumanMadeObject",
+        "_label": "surrender-machine-madrid-v2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes — Madrid 2026",
+          "file": "miradas-tangentes-2026/surrender-machine-madrid-v2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html"
         ]
       }
     },
@@ -5401,11 +5707,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/gradient-boxes.html"
+          "sketches/gradient-boxes.html",
+          "sketches/js/p5-1.7.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5706,12 +6011,11 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/p5.min.js",
           "sketches/vibe001.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5752,12 +6056,11 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/p5.min.js",
           "sketches/vibe1.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5798,12 +6101,11 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/p5.min.js",
           "sketches/vibe2.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5930,11 +6232,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/flower.html"
+          "sketches/flower.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5975,12 +6276,11 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/CCapture-1.1.0.all.min.js",
+          "sketches/js/p5-1.4.0.js",
           "sketches/snowfall.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/CCapture.all.min.js",
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6064,11 +6364,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/fluid-dynamics.html"
+          "sketches/fluid-dynamics.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6109,11 +6408,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/fluid-lines.html"
+          "sketches/fluid-lines.html",
+          "sketches/js/p5-1.7.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6240,11 +6538,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/three-0.128.0.min.js",
           "sketches/murmuration-exhibit.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6328,11 +6625,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/five.html"
+          "sketches/five.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6373,11 +6669,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/fivegame.html"
+          "sketches/fivegame.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6418,11 +6713,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/squirter.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6463,11 +6757,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/pick_up_sticks.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6508,11 +6801,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/pickupsticks.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6553,11 +6845,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/box.html"
+          "sketches/box.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6598,11 +6889,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/box_of_ocean.html"
+          "sketches/box_of_ocean.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.2/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6643,11 +6933,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/panels.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6688,11 +6977,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/un-grounded.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6733,11 +7021,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/un-grounded_transient.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6778,11 +7065,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/endgame.html"
+          "sketches/endgame.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6866,11 +7152,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.7.0.min.js",
           "sketches/minimal_tube.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6911,11 +7196,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/cylinder_lights.html"
+          "sketches/cylinder_lights.html",
+          "sketches/js/p5-1.7.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -6956,11 +7240,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/cylinder_lights_enhanced.html"
+          "sketches/cylinder_lights_enhanced.html",
+          "sketches/js/p5-1.7.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7001,11 +7284,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/centered.html"
+          "sketches/centered.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7046,11 +7328,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.7.0.min.js",
           "sketches/led_tube_installation.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7091,11 +7372,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/sketch-p5.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7222,12 +7502,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/lights.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/addons/p5.sound.min.js",
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7397,11 +7675,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/fluid_dynamics.html"
+          "sketches/fluid_dynamics.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7442,11 +7719,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/index 2.html"
+          "sketches/index 2.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7487,12 +7763,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/index_slider_test.html"
+          "sketches/index_slider_test.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/addons/p5.dom.min.js",
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7533,11 +7807,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/lights2.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7578,11 +7851,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/sketch-three.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7666,11 +7938,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/test2.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7945,11 +8216,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/bloom/bloom-garden.html"
+          "sketches/bloom/bloom-garden.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -7990,11 +8260,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/bloom/bloom.html"
+          "sketches/bloom/bloom.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -8035,11 +8304,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/bloom/radial-gradient.html"
+          "sketches/bloom/radial-gradient.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -8123,11 +8391,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/bloom/orchestrator-bloom.html"
+          "sketches/bloom/orchestrator-bloom.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -8168,11 +8435,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/bloom/bloom-surrender.html"
+          "sketches/bloom/bloom-surrender.html",
+          "sketches/js/three-0.128.0.min.js"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -8358,11 +8624,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
           "sketches/technical/technical-drawing-fxhash.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -8403,10 +8668,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.3.min.js",
           "sketches/light-art.html"
         ],
         "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js",
           "https://mark-walhimer.com/sketches/light-art.html"
         ]
       }
@@ -8500,13 +8765,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/column-tiles-breathing.html"
+          "sketches/column-tiles-breathing.html",
+          "sketches/js/gif-0.2.0.js",
+          "sketches/js/jszip-3.10.1.min.js",
+          "sketches/js/p5-1.11.3.min.js"
         ],
         "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js",
-          "https://mark-walhimer.com/sketches/column-tiles-breathing.html",
-          "https://unpkg.com/gif.js@0.2.0/dist/gif.js"
+          "https://mark-walhimer.com/sketches/column-tiles-breathing.html"
         ]
       }
     },
@@ -8548,13 +8813,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/column-tiles-breathing-fullscreen.html"
+          "sketches/column-tiles-breathing-fullscreen.html",
+          "sketches/js/gif-0.2.0.js",
+          "sketches/js/jszip-3.10.1.min.js",
+          "sketches/js/p5-1.11.3.min.js"
         ],
         "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js",
-          "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js",
-          "https://mark-walhimer.com/sketches/column-tiles-breathing-fullscreen.html",
-          "https://unpkg.com/gif.js@0.2.0/dist/gif.js"
+          "https://mark-walhimer.com/sketches/column-tiles-breathing-fullscreen.html"
         ]
       }
     },
@@ -9139,11 +9404,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
           "sketches/loop-snippets/surrender-machines.html"
         ],
-        "external_urls": [
-          "https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9184,12 +9448,11 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js",
           "sketches/loop-snippets/surrender-machines-three.html"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js",
-          "https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9230,12 +9493,11 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/loop-snippets/ghost_dense_77823_three.html"
+          "sketches/loop-snippets/ghost_dense_77823_three.html",
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js",
-          "https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9276,12 +9538,11 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders.html"
+          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders.html",
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js",
-          "https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9322,11 +9583,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/loop-snippets/js/three.min.js",
           "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy.html"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9367,11 +9627,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/loop-snippets/js/three.min.js",
           "sketches/loop-snippets/rgb-xyz-vol3d-code.html"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9412,11 +9671,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/loop-snippets/js/three.min.js",
           "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9457,11 +9715,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/loop-snippets/js/three.min.js",
           "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9502,11 +9759,10 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/loop-snippets/js/three.min.js",
           "sketches/loop-snippets/raster-spektrum-study-combined-vol3d.html"
         ],
-        "external_urls": [
-          "https://unpkg.com/three@0.128.0/build/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -9638,6 +9894,7 @@
       "artifacts": {
         "repo_paths": [
           "sketches/loop-art-critique-2026/.DS_Store",
+          "sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
           "sketches/loop-art-critique-2026/README.md",
           "sketches/loop-art-critique-2026/april-25/loop-5-1-2026-v2.mp4",
           "sketches/loop-art-critique-2026/april-25/loop-art-critique-combined.html",
@@ -10616,22 +10873,31 @@
           "sketches/loop-art-critique-2026/critique-hub.html",
           "sketches/loop-art-critique-2026/index.html",
           "sketches/loop-art-critique-2026/installation-composer-emergent-dna-soundscape.md",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/canvas-recorder.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/journey.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/void-scene.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel-engine.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel.mjs",
           "sketches/loop-art-critique-2026/loop-miami-critique-card.png",
           "sketches/loop-art-critique-2026/loop-miami-critique-qr.png",
           "sketches/loop-art-critique-2026/machine-aesthetic/README.md",
           "sketches/loop-art-critique-2026/machine-aesthetic/build-ghost-room-glb.mjs",
+          "sketches/loop-art-critique-2026/machine-aesthetic/build-loop-21-surrender-portal-glb.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/build-loop-portal-room-glb.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/building-outline-only.html",
           "sketches/loop-art-critique-2026/machine-aesthetic/building-outline-wall-panel.png",
           "sketches/loop-art-critique-2026/machine-aesthetic/counterproduction-essay-panel.png",
           "sketches/loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.md",
           "sketches/loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.pdf",
+          "sketches/loop-art-critique-2026/machine-aesthetic/ghost-gravity-room-embed.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost-machine-core.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room 2.html",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.glb",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/index.html",
+          "sketches/loop-art-critique-2026/machine-aesthetic/loop_21_surrender_portal.glb",
           "sketches/loop-art-critique-2026/machine-aesthetic/may-24-2026-wall-panel.png",
           "sketches/loop-art-critique-2026/machine-aesthetic/may-24-2026.pdf",
           "sketches/loop-art-critique-2026/machine-aesthetic/museum-text-panel-core.mjs",
@@ -11615,6 +11881,8 @@
           "sketches/loop-art-critique-2026/machine-aesthetic/surrender-room-c-sliders.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/text-cylinder-core.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/walk-moon-wall-panel.png",
+          "sketches/loop-art-critique-2026/machine-aesthetic/walkthrough-recorder.mjs",
+          "sketches/loop-art-critique-2026/machine-aesthetic/walkthrough-sound.mjs",
           "sketches/loop-art-critique-2026/orchestrator.html",
           "sketches/loop-art-critique-2026/traveling-landscape.html",
           "sketches/loop-art-critique-2026/walk_moon_audio_standalone.html",
@@ -11862,18 +12130,21 @@
         "repo_paths": [
           "sketches/loop-art-critique-2026/machine-aesthetic/README.md",
           "sketches/loop-art-critique-2026/machine-aesthetic/build-ghost-room-glb.mjs",
+          "sketches/loop-art-critique-2026/machine-aesthetic/build-loop-21-surrender-portal-glb.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/build-loop-portal-room-glb.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/building-outline-only.html",
           "sketches/loop-art-critique-2026/machine-aesthetic/building-outline-wall-panel.png",
           "sketches/loop-art-critique-2026/machine-aesthetic/counterproduction-essay-panel.png",
           "sketches/loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.md",
           "sketches/loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.pdf",
+          "sketches/loop-art-critique-2026/machine-aesthetic/ghost-gravity-room-embed.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost-machine-core.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room 2.html",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.glb",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html",
           "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/index.html",
+          "sketches/loop-art-critique-2026/machine-aesthetic/loop_21_surrender_portal.glb",
           "sketches/loop-art-critique-2026/machine-aesthetic/may-24-2026-wall-panel.png",
           "sketches/loop-art-critique-2026/machine-aesthetic/may-24-2026.pdf",
           "sketches/loop-art-critique-2026/machine-aesthetic/museum-text-panel-core.mjs",
@@ -12856,7 +13127,9 @@
           "sketches/loop-art-critique-2026/machine-aesthetic/surrender-machines.html",
           "sketches/loop-art-critique-2026/machine-aesthetic/surrender-room-c-sliders.mjs",
           "sketches/loop-art-critique-2026/machine-aesthetic/text-cylinder-core.mjs",
-          "sketches/loop-art-critique-2026/machine-aesthetic/walk-moon-wall-panel.png"
+          "sketches/loop-art-critique-2026/machine-aesthetic/walk-moon-wall-panel.png",
+          "sketches/loop-art-critique-2026/machine-aesthetic/walkthrough-recorder.mjs",
+          "sketches/loop-art-critique-2026/machine-aesthetic/walkthrough-sound.mjs"
         ],
         "external_urls": []
       }
@@ -13087,13 +13360,12 @@
       },
       "artifacts": {
         "repo_paths": [
+          "sketches/js/three-0.128.0.min.js",
           "sketches/loop-art-critique-2026/bloom-four-walls.html",
           "sketches/loop-art-critique-2026/critique-hub.html",
           "sketches/loop-art-critique-2026/index.html"
         ],
-        "external_urls": [
-          "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -13225,11 +13497,10 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/April 25/roland-s1-recorder.html"
+          "sketches/April 25/roland-s1-recorder.html",
+          "sketches/js/Tone-14.8.49.js"
         ],
-        "external_urls": [
-          "https://unpkg.com/tone@14.8.49/build/Tone.js"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -13273,6 +13544,156 @@
           "sketches/April 25/roland-s1-recording-2.wav"
         ],
         "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:actz — June Myths & Legends 2026:index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "actz — June Myths & Legends 2026",
+          "file": "actz-june-myths-legends-2026/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/actz-june-myths-legends-2026/.DS_Store",
+          "sketches/actz-june-myths-legends-2026/actz-wire-machine.mjs",
+          "sketches/actz-june-myths-legends-2026/assets/actz-poster.png",
+          "sketches/actz-june-myths-legends-2026/emergent-dna-kernel.mjs",
+          "sketches/actz-june-myths-legends-2026/emergent-dna-organism.mjs",
+          "sketches/actz-june-myths-legends-2026/emergent-dna-rng.mjs",
+          "sketches/actz-june-myths-legends-2026/gravity-sliders.html",
+          "sketches/actz-june-myths-legends-2026/index.html",
+          "sketches/actz-june-myths-legends-2026/objkt-bundle/actz-gravity-sliders-objkt.zip",
+          "sketches/actz-june-myths-legends-2026/objkt-bundle/index.html",
+          "sketches/actz-june-myths-legends-2026/objkt-bundle/js/OrbitControls.js",
+          "sketches/actz-june-myths-legends-2026/objkt-bundle/js/three.min.js",
+          "sketches/actz-june-myths-legends-2026/surrender-machine-dna.html",
+          "sketches/actz-june-myths-legends-2026/surrender-machine-dna.mjs"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:actz — June Myths & Legends 2026:gravity-sliders",
+      "dublin_core": {
+        "title": "actz-june-myths-legends-2026/gravity-sliders",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:actz — June Myths & Legends 2026:gravity-sliders",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000231"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/actz — June Myths & Legends 2026-gravity-sliders",
+        "type": "HumanMadeObject",
+        "_label": "actz-june-myths-legends-2026/gravity-sliders",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "actz — June Myths & Legends 2026",
+          "file": "actz-june-myths-legends-2026/gravity-sliders.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/actz-june-myths-legends-2026/gravity-sliders.html",
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/gravity-sliders.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:actz — June Myths & Legends 2026:surrender-machine-dna",
+      "dublin_core": {
+        "title": "actz-june-myths-legends-2026/surrender-machine-dna",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:actz — June Myths & Legends 2026:surrender-machine-dna",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000232"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/actz — June Myths & Legends 2026-surrender-machine-dna",
+        "type": "HumanMadeObject",
+        "_label": "actz-june-myths-legends-2026/surrender-machine-dna",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "actz — June Myths & Legends 2026",
+          "file": "actz-june-myths-legends-2026/surrender-machine-dna.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/actz-june-myths-legends-2026/surrender-machine-dna.html",
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/surrender-machine-dna.html"
+        ]
       }
     },
     {

@@ -1,17 +1,18 @@
-# Miradas Tangentes (Tangent Gazes) — Madrid 2026
+# Miradas Tangentes (Tangent Gazes) · Madrid 2026
 
-**Group show** — Artlab Siroco, Madrid, **13 February 2026, 21h**. Free entry.
+**Event bundle** — Artlab Siroco, Madrid, **13 February 2026, 21h**. Free entry. Structure guide: [Submission & series structure](../../docs/submission-and-series-structure.md).
+
+Group show — NFT & creative programming. Organized by **Luz Otxoa** ([@luzotxoa](https://www.instagram.com/luzotxoa/)). Mark Walhimer — screens 6 & 9.
 
 ## Live URL (hub)
 
 https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 
-## Show
+## Opportunity
 
 | Field | Value |
 |-------|--------|
 | Title | Miradas Tangentes (Tangent Gazes) |
-| Theme | NFT & creative programming |
 | Venue | Artlab Siroco, c/ San Dimas 3, Madrid |
 | Date | 13 February 2026, 21h |
 | Entry | Free |
@@ -19,12 +20,46 @@ https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 | Folder | `sketches/miradas-tangentes-2026/` |
 | Source bundle | `Desktop/miradas-tangentes-2026-madrid/` |
 
-## Posters
+## GitHub
 
-| File | Path |
-|------|------|
-| Mark Walhimer promo | `assets/miradas-tangentes-mark-walhimer-poster.jpg` |
-| Show static | `assets/miradas-tangentes-poster.png` |
+Repo: [walhimer-studio/walhimer.github.io](https://github.com/walhimer-studio/walhimer.github.io)
+
+Path: `sketches/miradas-tangentes-2026/`
+
+## Catalog entries (canonical — register here only)
+
+All works for this show live in **this folder**. Do **not** duplicate paths under `sketches/surrender/` or loose `sketches/*.html` in the catalog — those URLs are **redirect stubs only**.
+
+Registered in **`sketches/index.html`** → **`Miradas Tangentes — Madrid 2026`** series. After any path change: update this table, update `SERIES`, run `python3 _scripts/refresh_catalog.py`, commit `data/catalog.json`.
+
+| File | Role | Live URL |
+|------|------|----------|
+| `index.html` | Exhibition hub | https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html |
+| `screen-6.html` | Screen 6 — **917 (around)** video player | https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-6.html |
+| `screen-9.html` | Screen 9 — **918 (forward)** video player | https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-9.html |
+| `assets/06-01-mark-walhimer.mp4` | Screen 6 video (1080×1920 · ~63s loop) | — |
+| `assets/09-01-mark-walhimer.mp4` | Screen 9 video (1080×1920 · ~94s loop) | — |
+| `assets/miradas-tangentes-mark-walhimer-poster.jpg` | Mark Walhimer promo poster | — |
+| `assets/miradas-tangentes-poster.png` | Show static poster | — |
+| `miradas-tangentes.html` | Miradas Tangentes — paired organisms (1080×1920 · 3 min loop) | https://mark-walhimer.com/sketches/miradas-tangentes-2026/miradas-tangentes.html |
+| `surrender-machine-madrid.html` | Surrender Machine — Madrid lifecycle edition | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid.html |
+| `surrender-machine-madrid-v2.html` | Surrender Machine — Madrid v2 | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html |
+| `exhibition_autosync.html` | Exhibition Auto-Sync template | https://mark-walhimer.com/sketches/miradas-tangentes-2026/exhibition_autosync.html |
+| `README.md` | This file — catalog source of truth | — |
+
+### Screen 6 — 917 (around)
+
+*917 (around)* — meditative translucency and orbital motion. Twelve WebGL boxes in a vertical void; overlapping high-transparency volumes with emergent color at intersections.
+
+- Manifold: https://manifold.xyz/@markwalhimer/id/4109553904
+
+### Screen 9 — 918 (forward)
+
+*918 (forward)* — wavering translucent progression; breathing monoliths in a generative corridor with proximity-based fade.
+
+- Manifold: https://manifold.xyz/@markwalhimer/id/4109555952
+
+Source masters: `Desktop/miradas-tangentes-2026-madrid/` (`06_01_Mark_Walhimer.mp4`, `P9_01_Mark_Walhimer.mp4`, 2160×3840 HEVC). Web copies transcoded for mark-walhimer.com hosting.
 
 ## Group show — artists
 
@@ -39,37 +74,28 @@ https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 | Edux | [@eduxdux_](https://www.instagram.com/eduxdux_/) |
 | **Mark Walhimer** | [@WalhimerArt](https://www.instagram.com/WalhimerArt/) · screens 6, 9 |
 
-## Screens (Mark Walhimer)
+## Redirects (stubs — not catalog entries)
 
-| Screen | Entry | Asset |
-|--------|-------|-------|
-| 6 | `screen-6.html` | **917 (around)** · `assets/06-01-mark-walhimer.mp4` (1080×1920 · ~63s loop) · [Manifold](https://manifold.xyz/@markwalhimer/id/4109553904) |
-| 9 | `screen-9.html` | **918 (forward)** · `assets/09-01-mark-walhimer.mp4` (1080×1920 · ~94s loop) · [Manifold](https://manifold.xyz/@markwalhimer/id/4109555952) |
+Old paths redirect here. Do not register these in `SERIES`.
 
-Source masters: `Desktop/miradas-tangentes-2026-madrid/` (`06_01_Mark_Walhimer.mp4`, `P9_01_Mark_Walhimer.mp4`, 2160×3840 HEVC). Web copies transcoded for mark-walhimer.com hosting.
+| Old path | Redirects to |
+|----------|----------------|
+| `sketches/miradas-tangentes.html` | `miradas-tangentes-2026/miradas-tangentes.html` |
+| `sketches/exhibition_autosync.html` | `miradas-tangentes-2026/exhibition_autosync.html` |
+| `sketches/surrender-machine-madrid.html` | `miradas-tangentes-2026/surrender-machine-madrid.html` |
+| `sketches/surrender-machine-madrid-v2.html` | `miradas-tangentes-2026/surrender-machine-madrid-v2.html` |
+| `sketches/surrender/surrender-machine-madrid.html` | `miradas-tangentes-2026/surrender-machine-madrid.html` |
+| `sketches/surrender/surrender-machine-madrid-v2 2.html` | `miradas-tangentes-2026/surrender-machine-madrid-v2.html` |
 
-### Screen 6 — 917 (around)
+**Surrender Machines series** (`sketches/surrender/index.html`) links to this folder for Madrid editions — it does not list them as files in `sketches/surrender/`.
 
-*917 (around)* is a meditative exploration of translucency and orbital motion. Utilizing p5.js and WebGL, the piece features twelve three-dimensional boxes that rotate slowly through a vertical void. Each form is rendered with soft, shifting gradients—ranging from cyan-blues to magenta-yellows—and governed by a sinusoidal wave transparency function that creates a rhythmic "breathing" effect. By overlapping these high-transparency volumes, the work generates new, emergent colors at their intersections, inviting the viewer into a meditative state of observation where the boundaries between digital geometry and light dissolve.
+## Catalog registration checklist
 
-- Manifold: https://manifold.xyz/@markwalhimer/id/4109553904
-
-### Screen 9 — 918 (forward)
-
-*918 (forward)* is an exploration of wavering translucent progression. This piece presents a generative landscape of breathing monoliths, drawing the viewer continuously forward through a digital corridor. Each form is wrapped in color gradients with a randomized internal pulse, suggesting a living, breathing infrastructure. As the camera moves through the space, the forms fade in and out of existence based on their proximity, reflecting the artist's interest in the "lifespan" of digital organisms and the ephemeral nature of digital experiences.
-
-- Manifold: https://manifold.xyz/@markwalhimer/id/4109555952
-
-## Works in this show (Mark)
-
-| Work | Path |
-|------|------|
-| Miradas Tangentes — paired organisms | `sketches/miradas-tangentes-2026/miradas-tangentes.html` |
-| Surrender Machine — Madrid | `sketches/miradas-tangentes-2026/surrender-machine-madrid.html` |
-| Surrender Machine — Madrid v2 | `sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html` |
-| Exhibition Auto-Sync template | `sketches/miradas-tangentes-2026/exhibition_autosync.html` |
-
-Old URLs under `sketches/` and `sketches/surrender/` redirect here.
+1. **This README** — keep the catalog entries table current (canonical paths + live URLs).
+2. **`sketches/index.html`** — `Miradas Tangentes — Madrid 2026` in `SERIES` only; no Madrid duplicates under Surrender Machines.
+3. **Refresh manifest** — `python3 _scripts/refresh_catalog.py`, commit `data/catalog.json`.
+4. **Self-contained** — `python3 _scripts/check_self_contained.py` before push.
+5. **Push** — GitHub Pages rebuilds mark-walhimer.com.
 
 ## Run locally
 
