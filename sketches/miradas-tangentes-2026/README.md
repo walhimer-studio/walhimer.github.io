@@ -1,6 +1,6 @@
 # Miradas Tangentes (Tangent Gazes) — Madrid 2026
 
-**Group show** — Peter 1, Madrid, **13 February 2026**.
+**Group show** — Madrid, **13 February 2026**.
 
 ## Live URL (hub)
 
@@ -11,32 +11,44 @@ https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 | Field | Value |
 |-------|--------|
 | Title | Miradas Tangentes (Tangent Gazes) |
-| Venue | Peter 1, Madrid |
+| City | Madrid |
 | Date | 13 February 2026 |
-| Curator / host | Pedro Pitillas — [piti.2048](https://www.instagram.com/piti.2048/) |
+| Curator | Luz Otxoa — [@luzotxoa](https://www.instagram.com/luzotxoa/) |
 | Folder | `sketches/miradas-tangentes-2026/` |
 
 ## Group show — artists
 
-| Artist | Notes |
-|--------|--------|
-| Gaudi Ramone | |
-| Luiz | |
-| Rapha | |
-| Solize | |
-| Luz | |
-| Edux | |
-| **Mark Walhimer** | **Screen 5** · Peter 1 · vertical |
+| Artist | Instagram |
+|--------|-----------|
+| Luiz André Gama | [@luizandregama](https://www.instagram.com/luizandregama/) |
+| Zilian Robin | [@ZilianRobin](https://www.instagram.com/ZilianRobin/) |
+| **Mark Walhimer** | [@WalhimerArt](https://www.instagram.com/WalhimerArt/) · screens 5, 6, 9 |
+| Pedro Pitillas | [@piti2048](https://www.instagram.com/piti2048/) |
+| Edux | [@eduxdux_](https://www.instagram.com/eduxdux_/) |
+| Gaudi Ramone | [@gaudiramone](https://www.instagram.com/gaudiramone/) |
+| Luz Otxoa | [@luzotxoa](https://www.instagram.com/luzotxoa/) · curator |
 
 ## Screens (Mark Walhimer)
 
 | Screen | Entry | Asset |
 |--------|-------|-------|
 | 5 | — | Peter 1 · vertical (venue assignment) |
-| 6 | `screen-6.html` | `assets/06-01-mark-walhimer.mp4` (1080×1920 · ~63s loop) |
-| 9 | `screen-9.html` | `assets/09-01-mark-walhimer.mp4` (1080×1920 · ~94s loop) |
+| 6 | `screen-6.html` | **917 (around)** · `assets/06-01-mark-walhimer.mp4` (1080×1920 · ~63s loop) · [Manifold](https://manifold.xyz/@markwalhimer/id/4109553904) |
+| 9 | `screen-9.html` | **918 (forward)** · `assets/09-01-mark-walhimer.mp4` (1080×1920 · ~94s loop) · [Manifold](https://manifold.xyz/@markwalhimer/id/4109555952) |
 
 Source masters live in `Desktop/miradas-tangentes-2026-madrid/` (2160×3840 HEVC). Web copies transcoded for mark-walhimer.com hosting.
+
+### Screen 6 — 917 (around)
+
+*917 (around)* is a meditative exploration of translucency and orbital motion. Utilizing p5.js and WebGL, the piece features twelve three-dimensional boxes that rotate slowly through a vertical void. Each form is rendered with soft, shifting gradients—ranging from cyan-blues to magenta-yellows—and governed by a sinusoidal wave transparency function that creates a rhythmic "breathing" effect. By overlapping these high-transparency volumes, the work generates new, emergent colors at their intersections, inviting the viewer into a meditative state of observation where the boundaries between digital geometry and light dissolve.
+
+- Manifold: https://manifold.xyz/@markwalhimer/id/4109553904
+
+### Screen 9 — 918 (forward)
+
+*918 (forward)* is an exploration of wavering translucent progression. This piece presents a generative landscape of breathing monoliths, drawing the viewer continuously forward through a digital corridor. Each form is wrapped in color gradients with a randomized internal pulse, suggesting a living, breathing infrastructure. As the camera moves through the space, the forms fade in and out of existence based on their proximity, reflecting the artist's interest in the "lifespan" of digital organisms and the ephemeral nature of digital experiences.
+
+- Manifold: https://manifold.xyz/@markwalhimer/id/4109555952
 
 ## Works in this show (Mark)
 
