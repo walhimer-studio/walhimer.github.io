@@ -43,7 +43,20 @@
     .concept h2 { margin-bottom: 12px; }
     .concept p { font-size: 13px; color: rgba(58,56,52,.62); line-height: 1.85; }
     .roster { margin-bottom: 32px; }
-    .roster li { padding: 8px 0; color: rgba(58,56,52,.72); }
+    .roster li {
+      padding: 2px 0;
+      border-bottom: none;
+      color: rgba(58,56,52,.72);
+      font-size: 13px;
+      line-height: 1.85;
+    }
+    .roster li a {
+      display: inline;
+      padding: 0;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .roster li a:hover { text-decoration: underline; }
     .roster li.is-mark { color: var(--ink); font-weight: 500; }
     .roster-note { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-left: 8px; }
     .back { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); font-size: 11px; }
