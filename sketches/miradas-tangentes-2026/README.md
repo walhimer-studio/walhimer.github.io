@@ -26,6 +26,10 @@ Repo: [walhimer-studio/walhimer.github.io](https://github.com/walhimer-studio/wa
 
 Path: `sketches/miradas-tangentes-2026/`
 
+## Hub page (`index.html`)
+
+Public exhibition page matches `Desktop/miradas-tangentes-2026-madrid/text.rtfd`: group show, roster, Screen 6 & 9 copy, posters, README link. Sketch files and tools below are **not** listed on the hub — only in this README and the catalog.
+
 ## Catalog entries (canonical — register here only)
 
 All works for this show live in **this folder**. Do **not** duplicate paths under `sketches/surrender/` or loose `sketches/*.html` in the catalog — those URLs are **redirect stubs only**.
@@ -40,7 +44,7 @@ Registered in **`sketches/index.html`** → **`Miradas Tangentes — Madrid 2026
 | `assets/06-01-mark-walhimer.mp4` | Screen 6 video (1080×1920 · ~63s loop) | — |
 | `assets/09-01-mark-walhimer.mp4` | Screen 9 video (1080×1920 · ~94s loop) | — |
 | `assets/miradas-tangentes-mark-walhimer-poster.jpg` | Mark Walhimer promo poster | — |
-| `assets/miradas-tangentes-poster.png` | Show static poster | — |
+| `assets/miradasestatic.png` | Show static poster | — |
 | `miradas-tangentes.html` | Miradas Tangentes — paired organisms (1080×1920 · 3 min loop) | https://mark-walhimer.com/sketches/miradas-tangentes-2026/miradas-tangentes.html |
 | `surrender-machine-madrid.html` | Surrender Machine — Madrid lifecycle edition | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid.html |
 | `surrender-machine-madrid-v2.html` | Surrender Machine — Madrid v2 | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html |

@@ -5167,6 +5167,7 @@
           "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
           "sketches/miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
           "sketches/miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
+          "sketches/miradas-tangentes-2026/assets/miradasestatic.png",
           "sketches/miradas-tangentes-2026/exhibition_autosync.html",
           "sketches/miradas-tangentes-2026/index.html",
           "sketches/miradas-tangentes-2026/miradas-tangentes.html",
@@ -5222,24 +5223,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-poster",
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradasestatic",
       "dublin_core": {
-        "title": "miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
+        "title": "miradas-tangentes-2026/assets/miradasestatic.png",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-poster",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradasestatic",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000226"
+        "catalog_number": "WS-000233"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradas-tangentes-poster",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradasestatic",
         "type": "HumanMadeObject",
-        "_label": "miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
+        "_label": "miradas-tangentes-2026/assets/miradasestatic.png",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -5254,12 +5255,12 @@
         ],
         "sketch": {
           "series": "Miradas Tangentes — Madrid 2026",
-          "file": "miradas-tangentes-2026/assets/miradas-tangentes-poster.png"
+          "file": "miradas-tangentes-2026/assets/miradasestatic.png"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-poster.png"
+          "sketches/miradas-tangentes-2026/assets/miradasestatic.png"
         ],
         "external_urls": []
       }
