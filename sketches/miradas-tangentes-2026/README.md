@@ -15,6 +15,14 @@ https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 | Date | February 2026 |
 | Folder | `sketches/miradas-tangentes-2026/` |
 
+## Screens
+
+| Screen | Entry | Asset |
+|--------|-------|-------|
+| 6 | `screen-6.html` | `assets/06-01-mark-walhimer.mp4` (1080×1920 · ~63s loop) |
+
+Source master: `06_01_Mark_Walhimer.mp4` (2160×3840 HEVC). Web copy transcoded for mark-walhimer.com hosting.
+
 ## Works in this show
 
 | Work | Path |
