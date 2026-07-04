@@ -53,31 +53,27 @@ The hub is the **public exhibition page only**. It contains **exactly** these se
 6. **Miradas Tangentes — group show artists**
    - Line: Mark Walhimer — screens 6 & 9: *917 (around)*, *918 (forward)*
    - Artist roster (see below)
-7. **Screen 6 — 917 (around)** — description + Manifold link
-8. **Screen 9 — 918 (forward)** — description + Manifold link
-9. README link
-10. ← Full catalog
+7. **Screen 6 — 917 (around)** — description + links to `screen-6.html` + Manifold
+8. **Screen 9 — 918 (forward)** — description + links to `screen-9.html` + Manifold
+9. **Screens** — `screen-6.html`, `screen-9.html`
+10. **Enter the work** — `miradas-tangentes.html`, `surrender-machine-madrid.html`, `surrender-machine-madrid-v2.html`
+11. **Exhibition tools** — `exhibition_autosync.html`
+12. README link
+13. ← Full catalog
 
 ### Do NOT put on the hub
 
 - “Tangent Gazes” subtitle
-- “Works in this folder” file list
-- Miradas Tangentes paired-organisms sketch
-- Surrender Machine Madrid / v2
-- Exhibition Auto-Sync
 - Venue meta block
 - Extra sections invented by agents
 
-Those files exist in this folder and in the catalog — they are listed **below in this README only**.
+Sketch descriptions belong in the **Enter the work** links — not as duplicate prose blocks on the hub.
 
 ### Roster formatting (hub)
 
-Simple list. **No divider lines** between names. **Name and @ handle on the same line** — e.g. `Gaudi Ramone (@gaudiramone)`.
+Simple list — one artist per `<p>`, no `<ul>`. Name and @ handle on the same line, e.g. `Gaudi Ramone (@gaudiramone)`. No divider lines.
 
-CSS requirements in `index.html`:
-
-- `.roster li { border-bottom: none; }`
-- `.roster li a { display: inline; padding: 0; }` — overrides global `li a { display: flex }` which breaks handles onto a new line
+Use `<div class="roster">` with `<p>` lines — **not** `<ul><li>` (global catalog list styles break roster layout).
 
 Roster copy:
 
