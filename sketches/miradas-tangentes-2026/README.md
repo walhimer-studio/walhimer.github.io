@@ -64,12 +64,12 @@ Source masters: `Desktop/miradas-tangentes-2026-madrid/` (`06_01_Mark_Walhimer.m
 
 | Work | Path |
 |------|------|
-| Miradas Tangentes — paired organisms | `sketches/miradas-tangentes.html` |
-| Surrender Machine — Madrid | `sketches/surrender/surrender-machine-madrid.html` |
-| Surrender Machine — Madrid v2 | `sketches/surrender/surrender-machine-madrid-v2 2.html` |
-| Exhibition Auto-Sync template | `sketches/exhibition_autosync.html` |
+| Miradas Tangentes — paired organisms | `sketches/miradas-tangentes-2026/miradas-tangentes.html` |
+| Surrender Machine — Madrid | `sketches/miradas-tangentes-2026/surrender-machine-madrid.html` |
+| Surrender Machine — Madrid v2 | `sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html` |
+| Exhibition Auto-Sync template | `sketches/miradas-tangentes-2026/exhibition_autosync.html` |
 
-Artwork files remain at their existing paths; this folder is the exhibition hub and catalog entry.
+Old URLs under `sketches/` and `sketches/surrender/` redirect here.
 
 ## Run locally
 

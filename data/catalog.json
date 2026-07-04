@@ -739,8 +739,8 @@
           "sketches/surrender/index.html",
           "sketches/surrender/surrender 7.html",
           "sketches/surrender/surrender-machine 2.html",
-          "sketches/surrender/surrender-machine-madrid-v2 2.html",
-          "sketches/surrender/surrender-machine-madrid.html",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html",
           "sketches/surrender/surrender-machines 2.html"
         ],
         "external_urls": []
@@ -822,12 +822,12 @@
         ],
         "sketch": {
           "series": "Surrender Machines",
-          "file": "surrender/surrender-machine-madrid.html"
+          "file": "miradas-tangentes-2026/surrender-machine-madrid.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/surrender/surrender-machine-madrid.html"
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
         ],
         "external_urls": [
           "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
@@ -867,12 +867,12 @@
         ],
         "sketch": {
           "series": "Surrender Machines",
-          "file": "surrender/surrender-machine-madrid-v2.html"
+          "file": "miradas-tangentes-2026/surrender-machine-madrid-v2.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/surrender/surrender-machine-madrid-v2.html"
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html"
         ],
         "external_urls": []
       }
@@ -5306,12 +5306,12 @@
         ],
         "sketch": {
           "series": "Miradas Tangentes",
-          "file": "miradas-tangentes.html"
+          "file": "miradas-tangentes-2026/miradas-tangentes.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/miradas-tangentes.html"
+          "sketches/miradas-tangentes-2026/miradas-tangentes.html"
         ],
         "external_urls": [
           "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"
@@ -5351,12 +5351,12 @@
         ],
         "sketch": {
           "series": "Miradas Tangentes",
-          "file": "exhibition_autosync.html"
+          "file": "miradas-tangentes-2026/exhibition_autosync.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/exhibition_autosync.html"
+          "sketches/miradas-tangentes-2026/exhibition_autosync.html"
         ],
         "external_urls": [
           "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"

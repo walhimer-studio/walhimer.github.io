@@ -6,7 +6,7 @@ sketches/827 (centered) #10.html
 sketches/919.html
 sketches/bubbles.html
 sketches/emergent-dna/index.html
-sketches/exhibition_autosync.html
+sketches/miradas-tangentes-2026/exhibition_autosync.html
 sketches/index_slider_test.html
 sketches/snowfall.html
 sketches/test_bridge.html
