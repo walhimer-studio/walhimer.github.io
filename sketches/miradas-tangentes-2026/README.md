@@ -57,9 +57,10 @@ The hub is the **public exhibition page only**. It contains **exactly** these se
 8. **Screen 9 — 918 (forward)** — description + links to `screen-9.html` + Manifold
 9. **Screens** — `screen-6.html`, `screen-9.html`
 10. **Enter the work** — `miradas-tangentes.html`, `surrender-machine-madrid.html`, `surrender-machine-madrid-v2.html`
-11. **Exhibition tools** — `exhibition_autosync.html`
-12. README link
-13. ← Full catalog
+11. README link
+12. ← Full catalog
+
+**Not in this folder:** `sketches/exhibition_autosync.html` — general exhibition tool, listed in catalog under this series at repo root. Do not copy into `miradas-tangentes-2026/`.
 
 ### Do NOT put on the hub
 
@@ -106,8 +107,9 @@ All Madrid show files live in **this folder**. Register **only** these paths in 
 | `miradas-tangentes.html` | Miradas Tangentes — paired organisms (1080×1920 · 3 min loop) | https://mark-walhimer.com/sketches/miradas-tangentes-2026/miradas-tangentes.html |
 | `surrender-machine-madrid.html` | Surrender Machine — Madrid lifecycle edition | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid.html |
 | `surrender-machine-madrid-v2.html` | Surrender Machine — Madrid v2 | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html |
-| `exhibition_autosync.html` | Exhibition Auto-Sync template | https://mark-walhimer.com/sketches/miradas-tangentes-2026/exhibition_autosync.html |
 | `README.md` | This file | — |
+
+**Related (not in folder):** `sketches/exhibition_autosync.html` — https://mark-walhimer.com/sketches/exhibition_autosync.html
 
 ### Screen 6 — 917 (around)
 
@@ -128,7 +130,8 @@ Web videos transcoded from Desktop masters (2160×3840 HEVC).
 | Old path | Redirects to |
 |----------|----------------|
 | `sketches/miradas-tangentes.html` | `miradas-tangentes-2026/miradas-tangentes.html` |
-| `sketches/exhibition_autosync.html` | `miradas-tangentes-2026/exhibition_autosync.html` |
+| `sketches/exhibition_autosync.html` | (canonical — do not move into folder) |
+| `sketches/miradas-tangentes-2026/exhibition_autosync.html` | `../exhibition_autosync.html` (stub) |
 | `sketches/surrender-machine-madrid.html` | `miradas-tangentes-2026/surrender-machine-madrid.html` |
 | `sketches/surrender-machine-madrid-v2.html` | `miradas-tangentes-2026/surrender-machine-madrid-v2.html` |
 | `sketches/surrender/surrender-machine-madrid.html` | `miradas-tangentes-2026/surrender-machine-madrid.html` |

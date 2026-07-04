@@ -5519,16 +5519,16 @@
         ],
         "sketch": {
           "series": "Miradas Tangentes — Madrid 2026",
-          "file": "miradas-tangentes-2026/exhibition_autosync.html"
+          "file": "exhibition_autosync.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/js/p5-1.9.0.min.js",
-          "sketches/miradas-tangentes-2026/exhibition_autosync.html"
+          "sketches/exhibition_autosync.html",
+          "sketches/js/p5-1.9.0.min.js"
         ],
         "external_urls": [
-          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/exhibition_autosync.html"
+          "https://mark-walhimer.com/sketches/exhibition_autosync.html"
         ]
       }
     },
