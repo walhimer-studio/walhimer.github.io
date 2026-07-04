@@ -1,6 +1,6 @@
 # Miradas Tangentes (Tangent Gazes) · Madrid 2026
 
-**Read this file first.** This README is the source of truth for this folder. Do not move files, edit the hub, or touch the catalog until this document matches what you are about to ship.
+**Read this file first.** This README is the source of truth. **Do not copy artwork into this folder.**
 
 **Event bundle** — Artlab Siroco, Madrid, **13 February 2026, 21h**. Structure guide: [Submission & series structure](../../docs/submission-and-series-structure.md).
 
@@ -10,147 +10,80 @@ Group show — NFT & creative programming. **Curated and Organized by Luz Otxoa*
 
 https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html
 
+## What lives IN this folder (only)
+
+| File | Role |
+|------|------|
+| `index.html` | Exhibition hub |
+| `screen-6.html` | Screen 6 video player — **917 (around)** |
+| `screen-9.html` | Screen 9 video player — **918 (forward)** |
+| `assets/` | Posters + transcoded screen videos |
+| `README.md` | This file |
+
+Redirect stubs under `miradas-tangentes-2026/` point **out** to canonical artwork paths — do not register stubs as catalog works.
+
+## What does NOT live in this folder
+
+| Work | Canonical path | Live URL |
+|------|----------------|----------|
+| Miradas Tangentes — paired organisms | `sketches/miradas-tangentes.html` | https://mark-walhimer.com/sketches/miradas-tangentes.html |
+| Surrender Machine — Madrid | `sketches/surrender/surrender-machine-madrid.html` | https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid.html |
+| Surrender Machine — Madrid v2 | `sketches/surrender/surrender-machine-madrid-v2 2.html` | https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid-v2.html |
+| Exhibition Auto-Sync template | `sketches/exhibition_autosync.html` | https://mark-walhimer.com/sketches/exhibition_autosync.html |
+
+Hub **Enter the work** links use `../` paths to these files.
+
 ## Source of truth (Desktop)
 
 | Item | Path |
 |------|------|
 | Exhibition copy spec | `Desktop/miradas-tangentes-2026-madrid/text.rtfd` |
 | Source masters | `Desktop/miradas-tangentes-2026-madrid/` |
-| Mark promo poster | `625256828_…jpg` → `assets/miradas-tangentes-mark-walhimer-poster.jpg` |
-| Show static poster | `miradasestatic.png` → `assets/miradasestatic.png` |
-| Screen 6 video | `06_01_Mark_Walhimer.mp4` → `assets/06-01-mark-walhimer.mp4` |
-| Screen 9 video | `P9_01_Mark_Walhimer.mp4` → `assets/09-01-mark-walhimer.mp4` |
 
-## Opportunity
+## Hub page (`index.html`) — scope
 
-| Field | Value |
-|-------|--------|
-| Title | Miradas Tangentes (Tangent Gazes) |
-| Venue | Artlab Siroco, c/ San Dimas 3, Madrid |
-| Date | 13 February 2026, 21h |
-| Curator / organizer | Luz Otxoa — [@luzotxoa](https://www.instagram.com/luzotxoa/) |
-| Folder | `sketches/miradas-tangentes-2026/` |
+Per `text.rtfd`: posters, roster, Screen 6 & 9 copy, **Screens** list, **Enter the work** links (to paths above), README, catalog back-link.
 
-## GitHub
+### Roster formatting
 
-Repo: [walhimer-studio/walhimer.github.io](https://github.com/walhimer-studio/walhimer.github.io)
-
-Path: `sketches/miradas-tangentes-2026/`
+`<div class="roster">` with one `<p>` per artist. No `<ul>`. Name and @ on same line. No divider lines.
 
 ---
 
-## Hub page (`index.html`) — exact scope
+## Catalog (`sketches/index.html` → Miradas Tangentes — Madrid 2026)
 
-**Authority:** `Desktop/miradas-tangentes-2026-madrid/text.rtfd`
+**In folder:** `index.html`, `screen-6.html`, `screen-9.html`, assets, `README.md`
 
-The hub is the **public exhibition page only**. It contains **exactly** these sections, in this order:
+**At repo root (same series block, not in folder):**
 
-1. Kicker — `Catalog · Miradas Tangentes · 13 February 2026`
-2. Title — `Miradas Tangentes`
-3. Lede — Artlab Siroco, 13 Feb 2026 21h, NFT & creative programming, **Curated and Organized by Luz Otxoa**, links to main catalog + Bio/CV
-4. Poster — `assets/miradas-tangentes-mark-walhimer-poster.jpg`
-5. Poster — `assets/miradasestatic.png` + caption (San Dimas 3, 13.02.26, 21h)
-6. **Miradas Tangentes — group show artists**
-   - Line: Mark Walhimer — screens 6 & 9: *917 (around)*, *918 (forward)*
-   - Artist roster (see below)
-7. **Screen 6 — 917 (around)** — description + links to `screen-6.html` + Manifold
-8. **Screen 9 — 918 (forward)** — description + links to `screen-9.html` + Manifold
-9. **Screens** — `screen-6.html`, `screen-9.html`
-10. **Enter the work** — `miradas-tangentes.html`, `surrender-machine-madrid.html`, `surrender-machine-madrid-v2.html`
-11. README link
-12. ← Full catalog
+- `miradas-tangentes.html`
+- `exhibition_autosync.html`
+- `surrender/surrender-machine-madrid.html`
+- `surrender/surrender-machine-madrid-v2 2.html`
 
-**Not in this folder:** `sketches/exhibition_autosync.html` — general exhibition tool, listed in catalog under this series at repo root. Do not copy into `miradas-tangentes-2026/`.
+Do **not** register `miradas-tangentes-2026/miradas-tangentes.html` or other folder stubs.
 
-### Do NOT put on the hub
+After changes: `python3 _scripts/refresh_catalog.py` → commit `data/catalog.json`.
 
-- “Tangent Gazes” subtitle
-- Venue meta block
-- Extra sections invented by agents
+## Redirects
 
-Sketch descriptions belong in the **Enter the work** links — not as duplicate prose blocks on the hub.
+| Path | Points to |
+|------|-----------|
+| `miradas-tangentes-2026/miradas-tangentes.html` | `../miradas-tangentes.html` |
+| `miradas-tangentes-2026/surrender-machine-madrid.html` | `../surrender/surrender-machine-madrid.html` |
+| `miradas-tangentes-2026/surrender-machine-madrid-v2.html` | `../surrender/surrender-machine-madrid-v2 2.html` |
+| `miradas-tangentes-2026/exhibition_autosync.html` | `../exhibition_autosync.html` |
+| `sketches/surrender-machine-madrid.html` | `surrender/surrender-machine-madrid.html` |
+| `sketches/surrender-machine-madrid-v2.html` | `surrender/surrender-machine-madrid-v2 2.html` |
 
-### Roster formatting (hub)
+## Change workflow
 
-Simple list — one artist per `<p>`, no `<ul>`. Name and @ handle on the same line, e.g. `Gaudi Ramone (@gaudiramone)`. No divider lines.
+1. Update **this README**
+2. Edit hub / catalog to match
+3. `refresh_catalog.py` + `check_self_contained.py`
+4. Push
 
-Use `<div class="roster">` with `<p>` lines — **not** `<ul><li>` (global catalog list styles break roster layout).
-
-Roster copy:
-
-```
-Gaudi Ramone (@gaudiramone)
-Pedro Pitillas (@piti2048)
-Luiz André Gama (@luizandregama)
-Rapha Mey (@rapha_nyc)
-Solize / Zilian Robin (@ZilianRobin)
-Luz Otxoa (@luzotxoa) organizer
-Edux (@eduxdux_)
-Mark Walhimer (@WalhimerArt) screens 6, 9
-```
-
----
-
-## Catalog entries (canonical paths)
-
-All Madrid show files live in **this folder**. Register **only** these paths in `sketches/index.html` → **`Miradas Tangentes — Madrid 2026`**. Do **not** duplicate under Surrender Machines — old URLs are redirect stubs.
-
-| File | Role | Live URL |
-|------|------|----------|
-| `index.html` | Exhibition hub (see scope above) | https://mark-walhimer.com/sketches/miradas-tangentes-2026/index.html |
-| `screen-6.html` | Screen 6 — **917 (around)** video player | https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-6.html |
-| `screen-9.html` | Screen 9 — **918 (forward)** video player | https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-9.html |
-| `assets/06-01-mark-walhimer.mp4` | Screen 6 video (1080×1920 · ~63s loop) | — |
-| `assets/09-01-mark-walhimer.mp4` | Screen 9 video (1080×1920 · ~94s loop) | — |
-| `assets/miradas-tangentes-mark-walhimer-poster.jpg` | Mark Walhimer promo poster | — |
-| `assets/miradasestatic.png` | Show static poster | — |
-| `miradas-tangentes.html` | Miradas Tangentes — paired organisms (1080×1920 · 3 min loop) | https://mark-walhimer.com/sketches/miradas-tangentes-2026/miradas-tangentes.html |
-| `surrender-machine-madrid.html` | Surrender Machine — Madrid lifecycle edition | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid.html |
-| `surrender-machine-madrid-v2.html` | Surrender Machine — Madrid v2 | https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html |
-| `README.md` | This file | — |
-
-**Related (not in folder):** `sketches/exhibition_autosync.html` — https://mark-walhimer.com/sketches/exhibition_autosync.html
-
-### Screen 6 — 917 (around)
-
-Meditative translucency and orbital motion. Twelve WebGL boxes in a vertical void.
-
-- Manifold: https://manifold.xyz/@markwalhimer/id/4109553904
-
-### Screen 9 — 918 (forward)
-
-Wavering translucent progression; breathing monoliths in a generative corridor.
-
-- Manifold: https://manifold.xyz/@markwalhimer/id/4109555952
-
-Web videos transcoded from Desktop masters (2160×3840 HEVC).
-
-## Redirects (stubs — not catalog entries)
-
-| Old path | Redirects to |
-|----------|----------------|
-| `sketches/miradas-tangentes.html` | `miradas-tangentes-2026/miradas-tangentes.html` |
-| `sketches/exhibition_autosync.html` | (canonical — do not move into folder) |
-| `sketches/miradas-tangentes-2026/exhibition_autosync.html` | `../exhibition_autosync.html` (stub) |
-| `sketches/surrender-machine-madrid.html` | `miradas-tangentes-2026/surrender-machine-madrid.html` |
-| `sketches/surrender-machine-madrid-v2.html` | `miradas-tangentes-2026/surrender-machine-madrid-v2.html` |
-| `sketches/surrender/surrender-machine-madrid.html` | `miradas-tangentes-2026/surrender-machine-madrid.html` |
-| `sketches/surrender/surrender-machine-madrid-v2 2.html` | `miradas-tangentes-2026/surrender-machine-madrid-v2.html` |
-
-`sketches/surrender/index.html` links to this folder for Madrid editions — does not list them as files in `sketches/surrender/`.
-
----
-
-## Change workflow (mandatory)
-
-1. **Update this README first** — paths, hub scope, roster, copy.
-2. **Then** edit `index.html` to match this README and `text.rtfd`.
-3. **Then** update `SERIES` in `sketches/index.html` if files changed.
-4. Run `python3 _scripts/refresh_catalog.py` → commit `data/catalog.json`.
-5. Run `python3 _scripts/check_self_contained.py` — must pass.
-6. Push.
-
-**Do not:** move artwork without updating this README; add hub sections not listed above; register Madrid files under Surrender Machines; edit sketch bodies without explicit `AUTHORIZE EDIT`.
+**Never copy artwork into `miradas-tangentes-2026/` again.**
 
 ## Run locally
 

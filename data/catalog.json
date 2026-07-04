@@ -5565,16 +5565,16 @@
         ],
         "sketch": {
           "series": "Miradas Tangentes — Madrid 2026",
-          "file": "miradas-tangentes-2026/miradas-tangentes.html"
+          "file": "miradas-tangentes.html"
         }
       },
       "artifacts": {
         "repo_paths": [
           "sketches/js/p5-1.9.0.min.js",
-          "sketches/miradas-tangentes-2026/miradas-tangentes.html"
+          "sketches/miradas-tangentes.html"
         ],
         "external_urls": [
-          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/miradas-tangentes.html"
+          "https://mark-walhimer.com/sketches/miradas-tangentes.html"
         ]
       }
     },
@@ -5611,38 +5611,38 @@
         ],
         "sketch": {
           "series": "Miradas Tangentes — Madrid 2026",
-          "file": "miradas-tangentes-2026/surrender-machine-madrid.html"
+          "file": "surrender/surrender-machine-madrid.html"
         }
       },
       "artifacts": {
         "repo_paths": [
           "sketches/js/p5-1.9.0.min.js",
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
+          "sketches/surrender/surrender-machine-madrid.html"
         ],
         "external_urls": [
-          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
+          "https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid.html"
         ]
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:surrender-machine-madrid-v2",
+      "id": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:surrender-machine-madrid-v2-2",
       "dublin_core": {
-        "title": "surrender-machine-madrid-v2",
+        "title": "surrender/surrender-machine-madrid-v2 2",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid-v2",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:surrender-machine-madrid-v2-2",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000015"
+        "catalog_number": "WS-000234"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Surrender Machines-surrender-machine-madrid-v2",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-surrender-machine-madrid-v2-2",
         "type": "HumanMadeObject",
-        "_label": "surrender-machine-madrid-v2",
+        "_label": "surrender/surrender-machine-madrid-v2 2",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -5657,16 +5657,16 @@
         ],
         "sketch": {
           "series": "Miradas Tangentes — Madrid 2026",
-          "file": "miradas-tangentes-2026/surrender-machine-madrid-v2.html"
+          "file": "surrender/surrender-machine-madrid-v2 2.html"
         }
       },
       "artifacts": {
         "repo_paths": [
           "sketches/js/p5-1.9.0.min.js",
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html"
+          "sketches/surrender/surrender-machine-madrid-v2 2.html"
         ],
         "external_urls": [
-          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html"
+          "https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid-v2.html"
         ]
       }
     },
