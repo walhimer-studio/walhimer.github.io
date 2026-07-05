@@ -12,6 +12,7 @@ ALLOWED_DIRS = {
     ".git",
     "_scripts",
     "bio",
+    "catalog",
     "contact",
     "data",
     "docs",

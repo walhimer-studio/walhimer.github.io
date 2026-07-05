@@ -68,7 +68,7 @@ Reusable framework for future sampled sources or other embodiments of the same s
 Per [The Wrong Eclipse](https://thewrong.org/) open call:
 
 - **Audio:** binaural / stereo L–R track (DSP-managed movement)
-- **Cover:** screenshot of the generator UI (code lives in repo; not a screen-dependent submission)
+- **Cover:** screenshot of the generator UI (code in this catalog folder when built)
 - **PoC recording:** made before August 2026 with development inputs
 - **Live recording:** replaces or supersedes PoC as the canonical work after 12 August 2026
 
@@ -98,4 +98,4 @@ I treat eclipse day as a listening score. The machine reads the sky above Maitin
 | PoC Bandcamp release | Not started |
 | Live re-record · 12 Aug 2026 | Scheduled |
 
-**Planned code path:** this folder (entry HTML TBD at build).
+**Code path:** `catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/` (add files here as built).
