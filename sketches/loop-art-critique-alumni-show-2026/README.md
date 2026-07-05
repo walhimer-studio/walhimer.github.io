@@ -15,11 +15,18 @@ https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 | Surrender Machine — Loop 21 | `sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html` |
 | Loop 21 surrender wall notes | `sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md` |
 
+## Assets (in this folder)
+
+| Asset | Path |
+|-------|------|
+| Family Reunion poster | `assets/family-reunion-poster.png` |
+
 ## Context
 
 | Field | Value |
 |-------|--------|
 | Show | Loop Art Critique Alumni Show #3 |
+| Family Reunion | Loop Art Critique online · July 31 – August 2, 2026 |
 | Venue | ICA Miami · Loop Metaverse (Onland) |
 | Run | June 11 – October 5, 2026 |
 | Opening | July 3, 2026 |

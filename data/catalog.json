@@ -10593,7 +10593,51 @@
       "artifacts": {
         "repo_paths": [
           "sketches/loop-art-critique-alumni-show-2026/README.md",
+          "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
           "sketches/loop-art-critique-alumni-show-2026/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:family-reunion-poster",
+      "dublin_core": {
+        "title": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:family-reunion-poster",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000236"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-family-reunion-poster",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png"
         ],
         "external_urls": []
       }
@@ -14435,7 +14479,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ-June Myths & Legends 2026:index",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -14466,13 +14510,14 @@
           "sketch"
         ],
         "sketch": {
-          "series": "ACTZ-June Myths & Legends 2026",
+          "series": "ACTZ — Myths & Legends June 2026",
           "file": "actz-june-myths-legends-2026/index.html"
         }
       },
       "artifacts": {
         "repo_paths": [
           "sketches/actz-june-myths-legends-2026/.DS_Store",
+          "sketches/actz-june-myths-legends-2026/README.md",
           "sketches/actz-june-myths-legends-2026/actz-wire-machine.mjs",
           "sketches/actz-june-myths-legends-2026/assets/actz-poster.png",
           "sketches/actz-june-myths-legends-2026/emergent-dna-kernel.mjs",
@@ -14491,7 +14536,93 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ-June Myths & Legends 2026:gravity-sliders",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:readme",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "ACTZ — Myths & Legends June 2026",
+          "file": "actz-june-myths-legends-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/actz-june-myths-legends-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-poster",
+      "dublin_core": {
+        "title": "actz-june-myths-legends-2026/assets/actz-poster.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:ACTZ-June Myths & Legends 2026:actz-poster",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000237"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/ACTZ-June Myths & Legends 2026-actz-poster",
+        "type": "HumanMadeObject",
+        "_label": "actz-june-myths-legends-2026/assets/actz-poster.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "ACTZ — Myths & Legends June 2026",
+          "file": "actz-june-myths-legends-2026/assets/actz-poster.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/actz-june-myths-legends-2026/assets/actz-poster.png"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:gravity-sliders",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/gravity-sliders",
         "creator": "Mark Walhimer",
@@ -14522,7 +14653,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "ACTZ-June Myths & Legends 2026",
+          "series": "ACTZ — Myths & Legends June 2026",
           "file": "actz-june-myths-legends-2026/gravity-sliders.html"
         }
       },
@@ -14538,7 +14669,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ-June Myths & Legends 2026:surrender-machine-dna",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:surrender-machine-dna",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/surrender-machine-dna",
         "creator": "Mark Walhimer",
@@ -14569,7 +14700,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "ACTZ-June Myths & Legends 2026",
+          "series": "ACTZ — Myths & Legends June 2026",
           "file": "actz-june-myths-legends-2026/surrender-machine-dna.html"
         }
       },
