@@ -8,11 +8,19 @@ Mac + gigabit switch + Pi LED / touch object pipeline. PoC video and documentati
 
 https://mark-walhimer.com/sketches/artist-commons/index.html
 
+## External
+
+| Link | URL |
+|------|-----|
+| Artist Commons program | https://www.artistcommons.art/ |
+| Apply | https://www.artistcommons.art/apply |
+
 ## Opportunity
 
 | Field | Value |
 |-------|--------|
-| Program | Artist Commons |
+| Program | [Artist Commons](https://www.artistcommons.art/) |
+| Cohort | Summer 2026 |
 | Folder | `sketches/artist-commons/` |
 | Status | Interview / application stage |
 | Related build docs | `machine-aesthetic/docs/RESOLVED-DIRECTION.md` |
