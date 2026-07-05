@@ -127,7 +127,7 @@
           "inlined"
         ],
         "sketch": {
-          "series": "Async Museum, June 2026",
+          "series": "Async Museum",
           "file": "bloom/bloom-four-walls.html"
         },
         "surfaces": [
@@ -5125,6 +5125,552 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/README.md",
+          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
+          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
+          "sketches/miradas-tangentes-2026/assets/miradasestatic.png",
+          "sketches/miradas-tangentes-2026/exhibition_autosync.html",
+          "sketches/miradas-tangentes-2026/index.html",
+          "sketches/miradas-tangentes-2026/miradas-tangentes.html",
+          "sketches/miradas-tangentes-2026/screen-6.html",
+          "sketches/miradas-tangentes-2026/screen-9.html",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html",
+          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-mark-walhimer-poster",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-mark-walhimer-poster",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000225"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradas-tangentes-mark-walhimer-poster",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradasestatic",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/miradasestatic.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradasestatic",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000233"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradasestatic",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/miradasestatic.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/assets/miradasestatic.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/miradasestatic.png"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:screen-6",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/screen-6",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-6",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000227"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-screen-6",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/screen-6",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/screen-6.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/screen-6.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-6.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:screen-9",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/screen-9",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-9",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000228"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-screen-9",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/screen-9",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/screen-9.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+          "sketches/miradas-tangentes-2026/screen-9.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-9.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:06-01-mark-walhimer",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:06-01-mark-walhimer",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000229"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-06-01-mark-walhimer",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:09-01-mark-walhimer",
+      "dublin_core": {
+        "title": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:09-01-mark-walhimer",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000230"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-09-01-mark-walhimer",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:readme",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/miradas-tangentes-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:exhibition_autosync",
+      "dublin_core": {
+        "title": "exhibition autosync",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes:exhibition_autosync",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000125"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes-exhibition_autosync",
+        "type": "HumanMadeObject",
+        "_label": "exhibition autosync",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "exhibition_autosync.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/exhibition_autosync.html",
+          "sketches/js/p5-1.9.0.min.js"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/exhibition_autosync.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes",
+      "dublin_core": {
+        "title": "miradas-tangentes",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes:miradas-tangentes",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000124"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes-miradas-tangentes",
+        "type": "HumanMadeObject",
+        "_label": "miradas-tangentes",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "miradas-tangentes.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/miradas-tangentes.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/miradas-tangentes.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-machine-madrid",
+      "dublin_core": {
+        "title": "surrender-machine-madrid",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000014"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Surrender Machines-surrender-machine-madrid",
+        "type": "HumanMadeObject",
+        "_label": "surrender-machine-madrid",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "surrender/surrender-machine-madrid.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/surrender/surrender-machine-madrid.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-machine-madrid-v2-2",
+      "dublin_core": {
+        "title": "surrender/surrender-machine-madrid-v2 2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:surrender-machine-madrid-v2-2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000234"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-surrender-machine-madrid-v2-2",
+        "type": "HumanMadeObject",
+        "_label": "surrender/surrender-machine-madrid-v2 2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Miradas Tangentes, February 2026",
+          "file": "surrender/surrender-machine-madrid-v2 2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/surrender/surrender-machine-madrid-v2 2.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid-v2.html"
+        ]
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Gradients & Color:gradient-boxes",
       "dublin_core": {
         "title": "gradient-boxes",
@@ -9716,24 +10262,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:index",
+      "id": "urn:walhimer:sketch:BYOB CDMX:index",
       "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
+        "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
-        "date": "",
+        "date": "2026",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000180"
+        "catalog_number": "WS-000008"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
         "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
+        "_label": "tezos-early-works/index",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -9747,295 +10293,28 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/index.html"
+          "series": "BYOB CDMX",
+          "file": "byob-cdmx/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/miradas-tangentes-2026/README.md",
-          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
-          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
-          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
-          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-poster.png",
-          "sketches/miradas-tangentes-2026/assets/miradasestatic.png",
-          "sketches/miradas-tangentes-2026/exhibition_autosync.html",
-          "sketches/miradas-tangentes-2026/index.html",
-          "sketches/miradas-tangentes-2026/miradas-tangentes.html",
-          "sketches/miradas-tangentes-2026/screen-6.html",
-          "sketches/miradas-tangentes-2026/screen-9.html",
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid-v2.html",
-          "sketches/miradas-tangentes-2026/surrender-machine-madrid.html"
+          "sketches/byob-cdmx/README.md",
+          "sketches/byob-cdmx/index.html"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-mark-walhimer-poster",
-      "dublin_core": {
-        "title": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradas-tangentes-mark-walhimer-poster",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000225"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradas-tangentes-mark-walhimer-poster",
-        "type": "HumanMadeObject",
-        "_label": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradasestatic",
-      "dublin_core": {
-        "title": "miradas-tangentes-2026/assets/miradasestatic.png",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:miradasestatic",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000233"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-miradasestatic",
-        "type": "HumanMadeObject",
-        "_label": "miradas-tangentes-2026/assets/miradasestatic.png",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/assets/miradasestatic.png"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/assets/miradasestatic.png"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:screen-6",
-      "dublin_core": {
-        "title": "miradas-tangentes-2026/screen-6",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-6",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000227"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-screen-6",
-        "type": "HumanMadeObject",
-        "_label": "miradas-tangentes-2026/screen-6",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/screen-6.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
-          "sketches/miradas-tangentes-2026/screen-6.html"
-        ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-6.html"
-        ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:screen-9",
-      "dublin_core": {
-        "title": "miradas-tangentes-2026/screen-9",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:screen-9",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000228"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-screen-9",
-        "type": "HumanMadeObject",
-        "_label": "miradas-tangentes-2026/screen-9",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/screen-9.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
-          "sketches/miradas-tangentes-2026/screen-9.html"
-        ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/miradas-tangentes-2026/screen-9.html"
-        ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:06-01-mark-walhimer",
-      "dublin_core": {
-        "title": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:06-01-mark-walhimer",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000229"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-06-01-mark-walhimer",
-        "type": "HumanMadeObject",
-        "_label": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:09-01-mark-walhimer",
-      "dublin_core": {
-        "title": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:09-01-mark-walhimer",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000230"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-09-01-mark-walhimer",
-        "type": "HumanMadeObject",
-        "_label": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:readme",
+      "id": "urn:walhimer:sketch:BYOB CDMX:readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10066,36 +10345,36 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes-2026/README.md"
+          "series": "BYOB CDMX",
+          "file": "byob-cdmx/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/miradas-tangentes-2026/README.md"
+          "sketches/byob-cdmx/README.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:exhibition_autosync",
+      "id": "urn:walhimer:sketch:Artblocks 2026:index",
       "dublin_core": {
-        "title": "exhibition autosync",
+        "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
-        "date": "",
+        "date": "2026",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes:exhibition_autosync",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000125"
+        "catalog_number": "WS-000008"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes-exhibition_autosync",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
         "type": "HumanMadeObject",
-        "_label": "exhibition autosync",
+        "_label": "tezos-early-works/index",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -10109,39 +10388,45 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "exhibition_autosync.html"
+          "series": "Artblocks 2026",
+          "file": "artblocks-2026/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/exhibition_autosync.html",
-          "sketches/js/p5-1.9.0.min.js"
+          "sketches/artblocks-2026/README.md",
+          "sketches/artblocks-2026/index.html"
         ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/exhibition_autosync.html"
-        ]
+        "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes",
+      "id": "urn:walhimer:sketch:Artblocks 2026:readme",
       "dublin_core": {
-        "title": "miradas-tangentes",
+        "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes:miradas-tangentes",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000124"
+        "catalog_number": "WS-000184"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes-miradas-tangentes",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
         "type": "HumanMadeObject",
-        "_label": "miradas-tangentes",
+        "_label": "loop-art-critique-2026/README.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -10155,39 +10440,36 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "miradas-tangentes.html"
+          "series": "Artblocks 2026",
+          "file": "artblocks-2026/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/js/p5-1.9.0.min.js",
-          "sketches/miradas-tangentes.html"
+          "sketches/artblocks-2026/README.md"
         ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/miradas-tangentes.html"
-        ]
+        "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-machine-madrid",
+      "id": "urn:walhimer:sketch:VHAwards 2026:index",
       "dublin_core": {
-        "title": "surrender-machine-madrid",
+        "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
-        "date": "",
+        "date": "2026",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Surrender Machines:surrender-machine-madrid",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000014"
+        "catalog_number": "WS-000008"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Surrender Machines-surrender-machine-madrid",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
         "type": "HumanMadeObject",
-        "_label": "surrender-machine-madrid",
+        "_label": "tezos-early-works/index",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -10201,39 +10483,45 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "surrender/surrender-machine-madrid.html"
+          "series": "VHAwards 2026",
+          "file": "vhawards-2026/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/js/p5-1.9.0.min.js",
-          "sketches/surrender/surrender-machine-madrid.html"
+          "sketches/vhawards-2026/README.md",
+          "sketches/vhawards-2026/index.html"
         ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid.html"
-        ]
+        "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-machine-madrid-v2-2",
+      "id": "urn:walhimer:sketch:VHAwards 2026:readme",
       "dublin_core": {
-        "title": "surrender/surrender-machine-madrid-v2 2",
+        "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Miradas Tangentes — Madrid 2026:surrender-machine-madrid-v2-2",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000234"
+        "catalog_number": "WS-000184"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Miradas Tangentes — Madrid 2026-surrender-machine-madrid-v2-2",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
         "type": "HumanMadeObject",
-        "_label": "surrender/surrender-machine-madrid-v2 2",
+        "_label": "loop-art-critique-2026/README.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -10247,22 +10535,213 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Miradas Tangentes, February 2026",
-          "file": "surrender/surrender-machine-madrid-v2 2.html"
+          "series": "VHAwards 2026",
+          "file": "vhawards-2026/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/js/p5-1.9.0.min.js",
-          "sketches/surrender/surrender-machine-madrid-v2 2.html"
+          "sketches/vhawards-2026/README.md"
         ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/surrender/surrender-machine-madrid-v2.html"
-        ]
+        "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Async Museum, June 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-alumni-show-2026/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/README.md",
+          "sketches/loop-art-critique-alumni-show-2026/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:readme",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-alumni-show-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-2026/loop-21-surrender-machine/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/canvas-recorder.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/journey.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/void-scene.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel-engine.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel.mjs"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-21-surrender-wall",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-21-surrender-wall",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000235"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-loop-21-surrender-wall",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Async Museum:index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -10293,7 +10772,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Async Museum, June 2026",
+          "series": "Async Museum",
           "file": "async-museums/index.html"
         }
       },
@@ -10306,7 +10785,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Async Museum, June 2026:readme",
+      "id": "urn:walhimer:sketch:Async Museum:readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10337,7 +10816,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Async Museum, June 2026",
+          "series": "Async Museum",
           "file": "async-museums/README.md"
         }
       },
@@ -10349,7 +10828,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -10380,7 +10859,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/index.html"
         }
       },
@@ -12397,7 +12876,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:readme",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -12428,7 +12907,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/README.md"
         }
       },
@@ -12440,7 +12919,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:critique-hub",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:critique-hub",
       "dublin_core": {
         "title": "loop-art-critique-2026/critique-hub",
         "creator": "Mark Walhimer",
@@ -12471,7 +12950,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/critique-hub.html"
         }
       },
@@ -12498,7 +12977,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:installation-composer-emergent-dna-soundscape",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:installation-composer-emergent-dna-soundscape",
       "dublin_core": {
         "title": "loop-art-critique-2026/installation-composer-emergent-dna-soundscape.md",
         "creator": "Mark Walhimer",
@@ -12529,7 +13008,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/installation-composer-emergent-dna-soundscape.md"
         }
       },
@@ -12541,7 +13020,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:ghost_dense_77823_room",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:ghost_dense_77823_room",
       "dublin_core": {
         "title": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
         "creator": "Mark Walhimer",
@@ -12572,7 +13051,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html"
         }
       },
@@ -12584,7 +13063,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -12615,7 +13094,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/machine-aesthetic/index.html"
         }
       },
@@ -13628,7 +14107,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:counterproduction-essay-v2",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:counterproduction-essay-v2",
       "dublin_core": {
         "title": "loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.pdf",
         "creator": "Mark Walhimer",
@@ -13659,7 +14138,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.pdf"
         }
       },
@@ -13671,7 +14150,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:loop-art-critique-combined",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-combined",
       "dublin_core": {
         "title": "April 25/loop-art-critique-combined",
         "creator": "Mark Walhimer",
@@ -13702,7 +14181,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/april-25/loop-art-critique-combined.html"
         }
       },
@@ -13714,7 +14193,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:loop-art-critique-technical-surrender",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-technical-surrender",
       "dublin_core": {
         "title": "April 25/loop-art-critique-technical-surrender",
         "creator": "Mark Walhimer",
@@ -13745,7 +14224,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/april-25/loop-art-critique-technical-surrender.html"
         }
       },
@@ -13757,7 +14236,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:machine-aesthetic",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:machine-aesthetic",
       "dublin_core": {
         "title": "April 25/machine-aesthetic",
         "creator": "Mark Walhimer",
@@ -13788,7 +14267,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/april-25/machine-aesthetic.html"
         }
       },
@@ -13811,7 +14290,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:bloom-four-walls",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:bloom-four-walls",
       "dublin_core": {
         "title": "Bloom / Four Walls",
         "creator": "Mark Walhimer",
@@ -13842,7 +14321,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/bloom-four-walls.html"
         },
         "tech": [
@@ -13865,7 +14344,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -13896,7 +14375,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/webcam-point-cloud/v3-breath/index.html"
         }
       },
@@ -13913,7 +14392,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique, April 2026:orchestrator",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:orchestrator",
       "dublin_core": {
         "title": "orchestrator",
         "creator": "Mark Walhimer",
@@ -13944,7 +14423,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Loop Art Critique, April 2026",
+          "series": "Loop Art Critique 2026",
           "file": "loop-art-critique-2026/orchestrator.html"
         }
       },
@@ -13956,7 +14435,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ Myths & Legends, June 2026:index",
+      "id": "urn:walhimer:sketch:ACTZ-June Myths & Legends 2026:index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -13987,7 +14466,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "ACTZ Myths & Legends, June 2026",
+          "series": "ACTZ-June Myths & Legends 2026",
           "file": "actz-june-myths-legends-2026/index.html"
         }
       },
@@ -14012,7 +14491,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ Myths & Legends, June 2026:gravity-sliders",
+      "id": "urn:walhimer:sketch:ACTZ-June Myths & Legends 2026:gravity-sliders",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/gravity-sliders",
         "creator": "Mark Walhimer",
@@ -14043,7 +14522,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "ACTZ Myths & Legends, June 2026",
+          "series": "ACTZ-June Myths & Legends 2026",
           "file": "actz-june-myths-legends-2026/gravity-sliders.html"
         }
       },
@@ -14059,7 +14538,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ Myths & Legends, June 2026:surrender-machine-dna",
+      "id": "urn:walhimer:sketch:ACTZ-June Myths & Legends 2026:surrender-machine-dna",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/surrender-machine-dna",
         "creator": "Mark Walhimer",
@@ -14090,7 +14569,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "ACTZ Myths & Legends, June 2026",
+          "series": "ACTZ-June Myths & Legends 2026",
           "file": "actz-june-myths-legends-2026/surrender-machine-dna.html"
         }
       },
@@ -14106,7 +14585,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Artist Commons, July 2026:index",
+      "id": "urn:walhimer:sketch:ArtistCommons:index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -14137,7 +14616,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Artist Commons, July 2026",
+          "series": "ArtistCommons",
           "file": "artist-commons/index.html"
         },
         "tech": [
@@ -14158,7 +14637,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Artist Commons, July 2026:readme",
+      "id": "urn:walhimer:sketch:ArtistCommons:readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -14189,7 +14668,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Artist Commons, July 2026",
+          "series": "ArtistCommons",
           "file": "artist-commons/README.md"
         }
       },
