@@ -6,6 +6,12 @@
 
 https://mark-walhimer.com/sketches/byob-cdmx/index.html
 
+## External
+
+| Link | URL |
+|------|-----|
+| muv LAB Foro (venue) | https://muvlab.mx/foro/ |
+
 ## Status
 
 Placeholder — add projection piece HTML and event details when scheduled.
