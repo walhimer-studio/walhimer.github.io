@@ -10,6 +10,7 @@
 | Species | New **Machine DNA** species (not Surrender Machines, not Bloom) |
 | Astronomical anchor | The Wrong Biennale, Partida Maitino 2069c, Alicante, 03295, Spain |
 | Exhibition | [The Wrong Eclipse](https://thewrong.org/) — 12 August 2026, 24 hours |
+| Live hub | https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html |
 
 ---
 

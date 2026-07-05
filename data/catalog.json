@@ -697,7 +697,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Surrender Machines:index",
+      "id": "urn:walhimer:sketch:Surrender Machines:surrender-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -745,7 +745,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Surrender Machines:surrender-machine",
+      "id": "urn:walhimer:sketch:Surrender Machines:surrender-surrender-machine",
       "dublin_core": {
         "title": "surrender-machine",
         "creator": "Mark Walhimer",
@@ -788,7 +788,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Surrender Machines:surrender-7",
+      "id": "urn:walhimer:sketch:Surrender Machines:surrender-surrender-7",
       "dublin_core": {
         "title": "surrender 7",
         "creator": "Mark Walhimer",
@@ -1908,7 +1908,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:index",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -1958,7 +1958,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:moon-dish",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-moon-dish",
       "dublin_core": {
         "title": "moon-dish",
         "creator": "Mark Walhimer",
@@ -2001,7 +2001,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:bvh_viewer_07_01",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-bvh_viewer_07_01",
       "dublin_core": {
         "title": "bvh viewer 07 01",
         "creator": "Mark Walhimer",
@@ -2044,7 +2044,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:infinite-walk",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-infinite-walk",
       "dublin_core": {
         "title": "infinite-walk",
         "creator": "Mark Walhimer",
@@ -2087,7 +2087,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:figure",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-figure",
       "dublin_core": {
         "title": "figure",
         "creator": "Mark Walhimer",
@@ -2132,7 +2132,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:figure_audio_mobile_simple",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-figure_audio_mobile_simple",
       "dublin_core": {
         "title": "figure audio mobile simple",
         "creator": "Mark Walhimer",
@@ -2175,7 +2175,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:funk_boy",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-funk_boy",
       "dublin_core": {
         "title": "funk boy",
         "creator": "Mark Walhimer",
@@ -2219,7 +2219,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Moon & Walking:one_revolution",
+      "id": "urn:walhimer:sketch:Moon & Walking:moon-walking-one_revolution",
       "dublin_core": {
         "title": "one revolution",
         "creator": "Mark Walhimer",
@@ -2264,7 +2264,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:index",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -2314,7 +2314,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:disks",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-disks",
       "dublin_core": {
         "title": "disks",
         "creator": "Mark Walhimer",
@@ -2358,7 +2358,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:cells",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-cells",
       "dublin_core": {
         "title": "cells",
         "creator": "Mark Walhimer",
@@ -2402,7 +2402,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:disc-string-1",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-disc-string-1",
       "dublin_core": {
         "title": "disc-string (1)",
         "creator": "Mark Walhimer",
@@ -2446,7 +2446,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:string-art",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-string-art",
       "dublin_core": {
         "title": "string-art",
         "creator": "Mark Walhimer",
@@ -2490,7 +2490,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:string-art-1",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-string-art-1",
       "dublin_core": {
         "title": "string-art-1",
         "creator": "Mark Walhimer",
@@ -2533,7 +2533,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:string-art-animated",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-string-art-animated",
       "dublin_core": {
         "title": "string-art-animated",
         "creator": "Mark Walhimer",
@@ -2576,7 +2576,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent Discs:string-art-circle",
+      "id": "urn:walhimer:sketch:Emergent Discs:emergent-discs-string-art-circle",
       "dublin_core": {
         "title": "string-art-circle",
         "creator": "Mark Walhimer",
@@ -5125,7 +5125,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:index",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -5180,7 +5180,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-mark-walhimer-poster",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-assets-miradas-tangentes-mark-walhimer-poster",
       "dublin_core": {
         "title": "miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg",
         "creator": "Mark Walhimer",
@@ -5223,7 +5223,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradasestatic",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-assets-miradasestatic",
       "dublin_core": {
         "title": "miradas-tangentes-2026/assets/miradasestatic.png",
         "creator": "Mark Walhimer",
@@ -5266,7 +5266,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:screen-6",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-screen-6",
       "dublin_core": {
         "title": "miradas-tangentes-2026/screen-6",
         "creator": "Mark Walhimer",
@@ -5312,7 +5312,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:screen-9",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-screen-9",
       "dublin_core": {
         "title": "miradas-tangentes-2026/screen-9",
         "creator": "Mark Walhimer",
@@ -5358,7 +5358,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:06-01-mark-walhimer",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-assets-06-01-mark-walhimer",
       "dublin_core": {
         "title": "miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4",
         "creator": "Mark Walhimer",
@@ -5401,7 +5401,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:09-01-mark-walhimer",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-assets-09-01-mark-walhimer",
       "dublin_core": {
         "title": "miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4",
         "creator": "Mark Walhimer",
@@ -5444,7 +5444,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:readme",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:miradas-tangentes-2026-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -5579,7 +5579,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-machine-madrid",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-surrender-machine-madrid",
       "dublin_core": {
         "title": "surrender-machine-madrid",
         "creator": "Mark Walhimer",
@@ -5625,7 +5625,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-machine-madrid-v2-2",
+      "id": "urn:walhimer:sketch:Miradas Tangentes, February 2026:surrender-surrender-machine-madrid-v2-2",
       "dublin_core": {
         "title": "surrender/surrender-machine-madrid-v2 2",
         "creator": "Mark Walhimer",
@@ -8118,7 +8118,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:index",
+      "id": "urn:walhimer:sketch:Bloom:bloom-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -8180,7 +8180,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:bloom-garden",
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-garden",
       "dublin_core": {
         "title": "bloom-garden",
         "creator": "Mark Walhimer",
@@ -8224,7 +8224,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:bloom",
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom",
       "dublin_core": {
         "title": "bloom",
         "creator": "Mark Walhimer",
@@ -8268,7 +8268,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:radial-gradient",
+      "id": "urn:walhimer:sketch:Bloom:bloom-radial-gradient",
       "dublin_core": {
         "title": "radial-gradient",
         "creator": "Mark Walhimer",
@@ -8312,7 +8312,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:installation-builder-bloom",
+      "id": "urn:walhimer:sketch:Bloom:bloom-installation-builder-bloom",
       "dublin_core": {
         "title": "installation-builder-bloom",
         "creator": "Mark Walhimer",
@@ -8355,7 +8355,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:orchestrator-bloom",
+      "id": "urn:walhimer:sketch:Bloom:bloom-orchestrator-bloom",
       "dublin_core": {
         "title": "orchestrator-bloom",
         "creator": "Mark Walhimer",
@@ -8399,7 +8399,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:bloom-surrender",
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-surrender",
       "dublin_core": {
         "title": "bloom-surrender",
         "creator": "Mark Walhimer",
@@ -8443,7 +8443,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Bloom:index",
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-release-cathedral-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -8496,7 +8496,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical:index",
+      "id": "urn:walhimer:sketch:Technical:technical-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -8544,7 +8544,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical:index",
+      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-chronicle-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -8588,7 +8588,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Technical:technical-drawing-fxhash",
+      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-fxhash",
       "dublin_core": {
         "title": "technical-drawing-fxhash",
         "creator": "Mark Walhimer",
@@ -8678,7 +8678,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Light Art:index",
+      "id": "urn:walhimer:sketch:Light Art:light-art-023-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -8825,7 +8825,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:index",
+      "id": "urn:walhimer:sketch:Emergent DNA:emergent-dna-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -8868,7 +8868,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:demo",
+      "id": "urn:walhimer:sketch:Emergent DNA:machine-aesthetic-emergent-dna-examples-demo",
       "dublin_core": {
         "title": "../machine-aesthetic/emergent-dna/examples/demo",
         "creator": "Mark Walhimer",
@@ -8905,13 +8905,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/../machine-aesthetic/emergent-dna/examples/demo.html"
+          "machine-aesthetic/emergent-dna/examples/demo.html"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:step",
+      "id": "urn:walhimer:sketch:Emergent DNA:machine-aesthetic-emergent-dna-examples-step",
       "dublin_core": {
         "title": "../machine-aesthetic/emergent-dna/examples/step.mjs",
         "creator": "Mark Walhimer",
@@ -8948,13 +8948,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/../machine-aesthetic/emergent-dna/examples/step.mjs"
+          "machine-aesthetic/emergent-dna/examples/step.mjs"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:readme",
+      "id": "urn:walhimer:sketch:Emergent DNA:machine-aesthetic-emergent-dna-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -8991,13 +8991,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/../machine-aesthetic/emergent-dna/README.md"
+          "machine-aesthetic/emergent-dna/README.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:hosts",
+      "id": "urn:walhimer:sketch:Emergent DNA:machine-aesthetic-emergent-dna-docs-hosts",
       "dublin_core": {
         "title": "../machine-aesthetic/emergent-dna/docs/HOSTS.md",
         "creator": "Mark Walhimer",
@@ -9034,13 +9034,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/../machine-aesthetic/emergent-dna/docs/HOSTS.md"
+          "machine-aesthetic/emergent-dna/docs/HOSTS.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:genome-example",
+      "id": "urn:walhimer:sketch:Emergent DNA:machine-aesthetic-emergent-dna-schema-genome-example",
       "dublin_core": {
         "title": "../machine-aesthetic/emergent-dna/schema/genome.example.json",
         "creator": "Mark Walhimer",
@@ -9077,13 +9077,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/../machine-aesthetic/emergent-dna/schema/genome.example.json"
+          "machine-aesthetic/emergent-dna/schema/genome.example.json"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:firebase_dna",
+      "id": "urn:walhimer:sketch:Emergent DNA:machine-aesthetic-docs-firebase_dna",
       "dublin_core": {
         "title": "../machine-aesthetic/docs/FIREBASE DNA.md",
         "creator": "Mark Walhimer",
@@ -9120,13 +9120,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/../machine-aesthetic/docs/FIREBASE_DNA.md"
+          "machine-aesthetic/docs/FIREBASE_DNA.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Emergent DNA:osc",
+      "id": "urn:walhimer:sketch:Emergent DNA:machine-aesthetic-docs-osc",
       "dublin_core": {
         "title": "../machine-aesthetic/docs/OSC.md",
         "creator": "Mark Walhimer",
@@ -9163,13 +9163,13 @@
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/../machine-aesthetic/docs/OSC.md"
+          "machine-aesthetic/docs/OSC.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):readme",
+      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):loop-machine-aesthetic-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -9212,7 +9212,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):ghost_dense_77823_room",
+      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):loop-machine-aesthetic-ghost_dense_77823_room",
       "dublin_core": {
         "title": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
         "creator": "Mark Walhimer",
@@ -9255,7 +9255,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):index",
+      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):loop-machine-aesthetic-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -9317,7 +9317,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):counterproduction-essay-v2",
+      "id": "urn:walhimer:sketch:Loop · Machine Aesthetic (workspace):loop-machine-aesthetic-counterproduction-essay-v2",
       "dublin_core": {
         "title": "2026-lumen-prize-machine-aesthetic/counterproduction-essay-v2.pdf",
         "creator": "Mark Walhimer",
@@ -9360,7 +9360,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:surrender-machines",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines",
       "dublin_core": {
         "title": "Surrender Machines",
         "creator": "Mark Walhimer",
@@ -9412,7 +9412,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:surrender-machines-three",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-three",
       "dublin_core": {
         "title": "loop-snippets/surrender-machines-three",
         "creator": "Mark Walhimer",
@@ -9457,7 +9457,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:ghost_dense_77823_three",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_three",
       "dublin_core": {
         "title": "loop-snippets/ghost dense 77823 three",
         "creator": "Mark Walhimer",
@@ -9502,7 +9502,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:ghost_dense_77823_gravity_sliders",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders",
       "dublin_core": {
         "title": "loop-snippets/ghost dense 77823 gravity sliders",
         "creator": "Mark Walhimer",
@@ -9547,7 +9547,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living-copy",
       "dublin_core": {
         "title": "Chutes — volume · dense machine · seed 77823",
         "creator": "Mark Walhimer",
@@ -9591,7 +9591,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:rgb-xyz-vol3d-code",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-rgb-xyz-vol3d-code",
       "dublin_core": {
         "title": "loop-snippets/rgb-xyz-vol3d-code",
         "creator": "Mark Walhimer",
@@ -9635,7 +9635,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy-code",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living-copy-code",
       "dublin_core": {
         "title": "Surrender Machine 77823",
         "creator": "Mark Walhimer",
@@ -9679,7 +9679,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living",
       "dublin_core": {
         "title": "Chutes — living organism · seed 77823 · lifeline",
         "creator": "Mark Walhimer",
@@ -9723,7 +9723,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d",
       "dublin_core": {
         "title": "Chutes — open volume world · RGB sound",
         "creator": "Mark Walhimer",
@@ -9767,7 +9767,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:ghost_dense_77823_room",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_room",
       "dublin_core": {
         "title": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
         "creator": "Mark Walhimer",
@@ -9813,7 +9813,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:index",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-loop-machine-aesthetic-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -9857,7 +9857,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:April 25:roland-s1-recorder",
+      "id": "urn:walhimer:sketch:April 25:april-25-roland-s1-recorder",
       "dublin_core": {
         "title": "April 25/roland-s1-recorder",
         "creator": "Mark Walhimer",
@@ -9901,7 +9901,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:April 25:roland-s1-recording-2",
+      "id": "urn:walhimer:sketch:April 25:april-25-roland-s1-recording-2",
       "dublin_core": {
         "title": "April 25/roland-s1-recording-2.wav",
         "creator": "Mark Walhimer",
@@ -9944,7 +9944,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Prix Ars Electronica 2026:index",
+      "id": "urn:walhimer:sketch:Prix Ars Electronica 2026:2026-ars-electronica-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -9988,7 +9988,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Prix Ars Electronica 2026:readme",
+      "id": "urn:walhimer:sketch:Prix Ars Electronica 2026:2026-ars-electronica-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10031,7 +10031,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:index",
+      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:2026-lumen-prize-machine-aesthetic-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -10087,7 +10087,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:seed-77823-rooms",
+      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:2026-lumen-prize-machine-aesthetic-seed-77823-rooms",
       "dublin_core": {
         "title": "2026-lumen-prize-machine-aesthetic/seed-77823-rooms",
         "creator": "Mark Walhimer",
@@ -10133,7 +10133,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:counterproduction-essay-v2",
+      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:2026-lumen-prize-machine-aesthetic-counterproduction-essay-v2",
       "dublin_core": {
         "title": "2026-lumen-prize-machine-aesthetic/counterproduction-essay-v2.md",
         "creator": "Mark Walhimer",
@@ -10176,7 +10176,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:counterproduction-essay-v2",
+      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:2026-lumen-prize-machine-aesthetic-counterproduction-essay-v2",
       "dublin_core": {
         "title": "2026-lumen-prize-machine-aesthetic/counterproduction-essay-v2.md",
         "creator": "Mark Walhimer",
@@ -10219,7 +10219,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:readme",
+      "id": "urn:walhimer:sketch:The Lumen Prize 2026 · Machine Aesthetic:2026-lumen-prize-machine-aesthetic-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10262,7 +10262,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:BYOB CDMX:index",
+      "id": "urn:walhimer:sketch:BYOB CDMX:byob-cdmx-index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -10314,7 +10314,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:BYOB CDMX:readme",
+      "id": "urn:walhimer:sketch:BYOB CDMX:byob-cdmx-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10357,7 +10357,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Artblocks 2026:index",
+      "id": "urn:walhimer:sketch:Artblocks 2026:artblocks-2026-index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -10409,7 +10409,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Artblocks 2026:readme",
+      "id": "urn:walhimer:sketch:Artblocks 2026:artblocks-2026-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10452,7 +10452,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The 7th VH AWARD 2026:index",
+      "id": "urn:walhimer:sketch:The 7th VH AWARD 2026:vhawards-2026-index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -10504,7 +10504,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The 7th VH AWARD 2026:readme",
+      "id": "urn:walhimer:sketch:The 7th VH AWARD 2026:vhawards-2026-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10547,13 +10547,13 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:index",
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-index",
       "dublin_core": {
-        "title": "tezos-early-works/index",
+        "title": "The Wrong Eclipse August 2026 — series index",
         "creator": "Mark Walhimer",
         "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "description": "Hub for The Wrong Eclipse August 2026 — Holes in the Sky (Machine DNA soundscape).",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-index",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
@@ -10562,9 +10562,9 @@
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-index",
         "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
+        "_label": "The Wrong Eclipse August 2026 — series index",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -10580,14 +10580,6 @@
         "sketch": {
           "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
           "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
         }
       },
       "artifacts": {
@@ -10599,24 +10591,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:readme",
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
       "dublin_core": {
-        "title": "loop-art-critique-2026/README.md",
+        "title": "The Wrong Eclipse August 2026 — WIP README",
         "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+        "date": "2026",
+        "description": "Work-in-progress folder — OpenFrameworks, Pure Data, OSC, generative HTML.",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
         "type": "InteractiveResource",
-        "format": "text/html",
+        "format": "text/markdown",
         "language": "en",
         "relation": "",
         "catalog_number": "WS-000184"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
+        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-wip-readme",
         "type": "HumanMadeObject",
-        "_label": "loop-art-critique-2026/README.md",
+        "_label": "The Wrong Eclipse August 2026 — WIP README",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -10642,7 +10634,97 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:index",
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+      "dublin_core": {
+        "title": "The Wrong Eclipse August 2026 — opportunity statement",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "The Wrong Eclipse open call — deadline, exhibition, eclipse timing at Maitino.",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/markdown",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-opportunity",
+        "type": "HumanMadeObject",
+        "_label": "The Wrong Eclipse August 2026 — opportunity statement",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-holes-in-the-sky",
+      "dublin_core": {
+        "title": "Holes in the Sky",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "Machine DNA generative soundscape for The Wrong Eclipse — eclipse-as-listening at Maitino, Alicante.",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-holes-in-the-sky",
+        "type": "InteractiveResource",
+        "format": "text/markdown",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000238"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/holes-in-the-sky",
+        "type": "HumanMadeObject",
+        "_label": "Holes in the Sky",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch",
+          "soundscape"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md"
+        },
+        "soundscape": {
+          "note": "Generative soundscape for The Wrong Eclipse; Bandcamp PoC + live re-record 12 Aug 2026."
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -10695,7 +10777,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:family-reunion-poster",
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-assets-family-reunion-poster",
       "dublin_core": {
         "title": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
         "creator": "Mark Walhimer",
@@ -10738,7 +10820,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:readme",
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10781,7 +10863,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-2026-loop-21-surrender-machine-index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -10837,7 +10919,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-21-surrender-wall",
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-2026-loop-21-surrender-wall",
       "dublin_core": {
         "title": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
         "creator": "Mark Walhimer",
@@ -10880,7 +10962,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Async Museum:index",
+      "id": "urn:walhimer:sketch:Async Museum:async-museums-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -10924,7 +11006,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Async Museum:readme",
+      "id": "urn:walhimer:sketch:Async Museum:async-museums-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10967,7 +11049,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -13015,7 +13097,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -13058,7 +13140,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:critique-hub",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-critique-hub",
       "dublin_core": {
         "title": "loop-art-critique-2026/critique-hub",
         "creator": "Mark Walhimer",
@@ -13116,7 +13198,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:installation-composer-emergent-dna-soundscape",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-installation-composer-emergent-dna-soundscape",
       "dublin_core": {
         "title": "loop-art-critique-2026/installation-composer-emergent-dna-soundscape.md",
         "creator": "Mark Walhimer",
@@ -13159,7 +13241,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:ghost_dense_77823_room",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-machine-aesthetic-ghost_dense_77823_room",
       "dublin_core": {
         "title": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
         "creator": "Mark Walhimer",
@@ -13202,7 +13284,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-machine-aesthetic-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -14246,7 +14328,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:counterproduction-essay-v2",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-machine-aesthetic-counterproduction-essay-v2",
       "dublin_core": {
         "title": "loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.pdf",
         "creator": "Mark Walhimer",
@@ -14289,7 +14371,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-combined",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-april-25-loop-art-critique-combined",
       "dublin_core": {
         "title": "April 25/loop-art-critique-combined",
         "creator": "Mark Walhimer",
@@ -14332,7 +14414,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-technical-surrender",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-april-25-loop-art-critique-technical-surrender",
       "dublin_core": {
         "title": "April 25/loop-art-critique-technical-surrender",
         "creator": "Mark Walhimer",
@@ -14375,7 +14457,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:machine-aesthetic",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-april-25-machine-aesthetic",
       "dublin_core": {
         "title": "April 25/machine-aesthetic",
         "creator": "Mark Walhimer",
@@ -14429,7 +14511,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:bloom-four-walls",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-bloom-four-walls",
       "dublin_core": {
         "title": "Bloom / Four Walls",
         "creator": "Mark Walhimer",
@@ -14483,7 +14565,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:index",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-webcam-point-cloud-v3-breath-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -14531,7 +14613,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique 2026:orchestrator",
+      "id": "urn:walhimer:sketch:Loop Art Critique 2026:loop-art-critique-2026-orchestrator",
       "dublin_core": {
         "title": "orchestrator",
         "creator": "Mark Walhimer",
@@ -14574,7 +14656,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:index",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
         "creator": "Mark Walhimer",
@@ -14631,7 +14713,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:readme",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -14674,7 +14756,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-poster",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-assets-actz-poster",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/assets/actz-poster.png",
         "creator": "Mark Walhimer",
@@ -14717,7 +14799,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:gravity-sliders",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-gravity-sliders",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/gravity-sliders",
         "creator": "Mark Walhimer",
@@ -14764,7 +14846,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:surrender-machine-dna",
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-surrender-machine-dna",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/surrender-machine-dna",
         "creator": "Mark Walhimer",
@@ -14811,7 +14893,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ArtistCommons:index",
+      "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -14863,7 +14945,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ArtistCommons:readme",
+      "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",

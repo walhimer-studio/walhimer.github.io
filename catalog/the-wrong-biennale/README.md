@@ -11,6 +11,8 @@
 |-------------|--------|------------|
 | **The Wrong Eclipse** · August 2026 | [the-wrong-eclipse-august-2026/](./the-wrong-eclipse-august-2026/) | 12 August 2026 |
 
+**Live hub:** https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html
+
 ## Path
 
 `catalog/the-wrong-biennale/`

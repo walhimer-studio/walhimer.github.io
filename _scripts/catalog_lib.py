@@ -65,6 +65,21 @@ def parse_series_from_index(html: str) -> list[dict[str, list[str]]]:
     return out
 
 
+def sketch_entry_repo_path(fn: str) -> str:
+    """Repo-relative path for a SERIES file (sketches/ or catalog/ via ../)."""
+    fn = fn.replace("\\", "/")
+    if fn.startswith("../"):
+        return fn[3:]
+    return f"sketches/{fn}"
+
+
+def sketch_work_slug(fn: str) -> str:
+    """Stable work slug from full SERIES path (avoids README.md / index.html collisions)."""
+    fn = fn.replace("\\", "/").replace("../", "")
+    base = fn.rsplit(".", 1)[0]
+    return re.sub(r"[^a-zA-Z0-9_-]+", "-", base.replace("/", "-")).strip("-").lower() or "work"
+
+
 def slug_from_install_path(path: str) -> str:
     base = Path(path).stem
     return re.sub(r"[^a-zA-Z0-9_-]+", "-", base).strip("-").lower()
@@ -286,9 +301,8 @@ def build_works(
         for fn in block.get("files") or []:
             if fn in used_sketch_files:
                 continue
-            stem = Path(fn).stem
-            sid = re.sub(r"[^a-zA-Z0-9_-]+", "-", stem).strip("-").lower() or "work"
-            wid = f"urn:walhimer:sketch:{series}:{sid}"[:120]
+            sid = sketch_work_slug(fn)
+            wid = f"urn:walhimer:sketch:{series}:{sid}"
             title = fn.replace(".html", "").replace("_", " ")
             site: dict = {
                 "surfaces": ["sketch"],
@@ -370,7 +384,7 @@ def merge_catalog_works(old_works: list[dict], new_works: list[dict]) -> list[di
             sk = (nw.get("site") or {}).get("sketch")
             if sk and sk.get("file"):
                 fn = sk["file"]
-                prior = by_file.get(fn) or by_basename.get(Path(fn).name)
+                prior = by_file.get(fn)
         merged.append(merge_work_metadata(prior, nw))
     return merged
 
@@ -446,7 +460,7 @@ def attach_artifacts_to_works(root: Path, works: list[dict]) -> None:
 
         sk = site.get("sketch")
         if sk and sk.get("file"):
-            rel = f"sketches/{sk['file']}"
+            rel = sketch_entry_repo_path(sk["file"])
             arts.append(collect_artifacts(root, rel))
 
         inst = site.get("installation")
