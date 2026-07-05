@@ -121,7 +121,7 @@
 </head>
 <body>
   <div id="edition-seed">actz edition · seed <strong>1909113409</strong></div>
-  <div class="hint">drag orbit · scroll zoom · H hide controls · gravity cycles · seed locked</div>
+  <div class="hint">seed 1909113409 locked · gravity pull apart · reset · H hide controls</div>
   <div id="remote-hud">remote · <span id="remote-status">connecting…</span></div>
   <div class="controls" aria-label="Machine controls">
     <label>
@@ -144,7 +144,7 @@
       <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">4</span></span>
       <input type="range" id="sl-v-count" min="0" max="40" value="4" aria-label="Vertical gear count">
     </label>
-    <div class="gravity-btns" aria-label="Gravity axes">
+    <div class="gravity-btns" aria-label="Gravity axes on/off">
       <button type="button" id="btn-gravity-x" aria-pressed="false">Gravity X</button>
       <button type="button" id="btn-gravity-y" aria-pressed="true">Gravity Y</button>
       <button type="button" id="btn-gravity-z" aria-pressed="false">Gravity Z</button>
@@ -969,6 +969,11 @@
     setGravityAxis(axis, !gravityAxis[axis]);
   }
 
+  function gravityOnFromRemote(val) {
+    if (typeof val === 'boolean') return val;
+    return Number(val) > 0;
+  }
+
   function applyRemoteState(s) {
     if (!s || !builder) return;
     if (s.speed != null) slSpeed.value = s.speed;
@@ -979,9 +984,9 @@
     }
     if (s.vCount != null) slVCount.value = Math.min(s.vCount, builder.verticalGears.length);
     syncControls();
-    if (s.gravityX != null) setGravityAxis('x', s.gravityX);
-    if (s.gravityY != null) setGravityAxis('y', s.gravityY);
-    if (s.gravityZ != null) setGravityAxis('z', s.gravityZ);
+    if (s.gravityX != null) setGravityAxis('x', gravityOnFromRemote(s.gravityX));
+    if (s.gravityY != null) setGravityAxis('y', gravityOnFromRemote(s.gravityY));
+    if (s.gravityZ != null) setGravityAxis('z', gravityOnFromRemote(s.gravityZ));
   }
 
   function readLocalState() {
