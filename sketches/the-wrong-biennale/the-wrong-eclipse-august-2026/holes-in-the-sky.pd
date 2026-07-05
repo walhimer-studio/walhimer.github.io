@@ -1,0 +1,6 @@
+#N canvas 0 0 520 280 10;
+#X obj 30 40 netreceive 9000 0;
+#X obj 30 70 print holes-hit-osc;
+#X obj 30 110 note Holes in the Sky — wire Salamander sampler to /hit routes;
+#X obj 30 140 note See osc-contract.md · holes-in-the-sky.html browser PoC;
+#X connect 0 0 1 0;

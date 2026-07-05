@@ -10585,9 +10585,80 @@
       "artifacts": {
         "repo_paths": [
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html"
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/atmosphere.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/audio-engine.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/eclipse-clock.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky-app.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.pd",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/machine-dna-kernel.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/osc-contract.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/osc-map.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/A1v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/A2v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/A3v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/A4v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/A5v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/C2v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/C3v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/C4v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/C5v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander-lite/C6v8.wav"
         ],
         "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-holes-in-the-sky",
+      "dublin_core": {
+        "title": "Holes in the Sky — generative soundscape (PoC)",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "Machine DNA browser host — eclipse clock, atmosphere, Salamander binaural pentatonic.",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-holes-in-the-sky",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000239"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/The Wrong Biennale · The Wrong Eclipse · August 2026-the-wrong-biennale-the-wron",
+        "type": "HumanMadeObject",
+        "_label": "Holes in the Sky — generative soundscape (PoC)",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch",
+          "soundscape"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html"
+        },
+        "soundscape": {
+          "note": "PoC; live re-record 12 Aug 2026 at Maitino."
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md",
+          "sketches/index.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html"
+        ]
       }
     },
     {
@@ -10705,8 +10776,7 @@
       },
       "site": {
         "surfaces": [
-          "sketch",
-          "soundscape"
+          "sketch"
         ],
         "sketch": {
           "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
