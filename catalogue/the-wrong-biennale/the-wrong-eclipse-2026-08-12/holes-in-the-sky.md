@@ -1,0 +1,101 @@
+# Holes in the Sky
+
+**The Wrong Biennale · The Wrong Eclipse · 12 August 2026**
+
+| Field | Value |
+|-------|--------|
+| Title | Holes in the Sky |
+| Year | 2026 |
+| Medium | Generative soundscape (OpenFrameworks, Pure Data, OSC, DSP); Bandcamp stereo/binaural release |
+| Species | New **Machine DNA** species (not Surrender Machines, not Bloom) |
+| Astronomical anchor | Alicante, Spain |
+| Exhibition | [The Wrong Eclipse](https://thewrong.org/) — 12 August 2026, 24 hours |
+
+---
+
+## One line
+
+Code that **listens to the eclipse through the atmosphere** above Alicante; the artwork **happens at eclipse time**, not on Bandcamp alone.
+
+---
+
+## Work description
+
+*Holes in the Sky* is a time-locked listening work for [The Wrong Eclipse](https://thewrong.org/). The sky is the exhibition space; this piece is its soundtrack.
+
+The work does not illustrate the eclipse with visuals or translate image into sound. A **Machine DNA** lifeline drives the generative system: one clock, one genome, simultaneous expression in **sonification** and in the **generator** (life bar, state). Salamander Grand **pentatonic** piano samples — consonant subsets, Bloom-adjacent — are triggered and spatialized as the organism ages.
+
+Atmospheric **variation** matters more than literal “holes.” Fossil fuels, clouds, gases, storms, aircraft, and satellites all perturb what would be a uniform sky. Live feeds (NOAA weather, METAR, flight data, satellite passes over Alicante) modulate the piece during the **live run on 12 August 2026**. The atmosphere above The Wrong’s Alicante anchor is the input; Machine DNA is the interpreter.
+
+**Eclipse-as-listening:** listeners are asked to hear while watching the real sky. The Bandcamp entry is a **proof of concept** — screenshot of the generator plus a binaural recording made with placeholder or simulated inputs. The **authoritative artwork** is the **live re-recording** during the partial eclipse on 12 August 2026.
+
+---
+
+## Astronomical clock (Alicante · CEST)
+
+Alicante sees a **partial** eclipse peaking at **~99.1% obscuration** — the Sun is never fully covered.
+
+| Phase | Time | Obscuration | Lifeline |
+|-------|------|-------------|----------|
+| Forward build | ~19:40 → ~20:34 | 0% → 99% | Organism grows; notes accumulate |
+| Deep sky | ~20:34 – 20:36 | >99% | ~2 minutes near maximum |
+| **Reverse (~60 s)** | **~20:34:30 – 20:35:30** | centered on max | Crescendo then **backward** through accumulated material |
+| Unwind | ~20:36 → ~21:26 | 99% → 0% | Decay to last contact |
+| Full partial arc | ~1h 46m | — | Live recording spans the eclipse window |
+
+Maximum eclipse: **~20:34:59 CEST**. There is no totality at Alicante; the ~60 s reversal is compositional, centered on maximum obscuration inside the ~2-minute band above 99%.
+
+---
+
+## Technical stack
+
+| Layer | Role |
+|-------|------|
+| **Machine DNA kernel** | Seed, lifespan, traits, phases; `express()` snapshot each tick |
+| **OpenFrameworks (C++)** | Host brain; **life bar**; OSC out |
+| **Pure Data** | Sound engine; Salamander pentatonic sampler |
+| **OSC** | Transport and state between OF and PD |
+| **DSP** | Binaural note movement for **headphones / two speakers**; L/R stereo field |
+
+Principle: **not** audio-reactive visuals or visual-reactive audio. Machine DNA drives **both** from the same state.
+
+Reusable framework for future sampled sources or other embodiments of the same species.
+
+---
+
+## Bandcamp (submission)
+
+Per [The Wrong Eclipse](https://thewrong.org/) open call:
+
+- **Audio:** binaural / stereo L–R track (DSP-managed movement)
+- **Cover:** screenshot of the generator UI (code lives in repo; not a screen-dependent submission)
+- **PoC recording:** made before August 2026 with development inputs
+- **Live recording:** replaces or supersedes PoC as the canonical work after 12 August 2026
+
+Submit Bandcamp link, title, cover, artist info, and contact to **thewrongbiennale@gmail.com** by **1 August 2026**, subject **The Wrong Eclipse**.
+
+---
+
+## Artist information
+
+Mark Walhimer — digital installation and generative sound practice. Real-time systems, co-creation, lifespan, and code-as-artwork. See [mark-walhimer.com](https://mark-walhimer.com).
+
+---
+
+## Statement (short)
+
+I treat eclipse day as a listening score. The machine reads the sky above Alicante — weather, traffic, orbit — through a single DNA lifeline. Sound moves forward until the sky is almost gone, holds in the narrow band above ninety-nine percent obscuration, then runs backward for about a minute while the crescent hangs at its thinnest. Bandcamp holds a proof; the work is the air on the twelfth of August.
+
+---
+
+## Implementation status
+
+| Item | Status |
+|------|--------|
+| Catalogue statements | This file |
+| OF + PD + OSC patch | Not started |
+| Live API integration (NOAA, METAR, flights, satellites) | Not started |
+| PoC Bandcamp release | Not started |
+| Live re-record · 12 Aug 2026 | Scheduled |
+
+**Planned code path:** `sketches/the-wrong-eclipse-2026/` (confirm at build).
