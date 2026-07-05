@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVXX0YPGCN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TVXX0YPGCN');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Artwork Pipeline — Mark Walhimer</title>
+  <meta name="description" content="Machine DNA artwork pipeline: seed identity, lifeline, votive vs surrender modes, distributed install network, and publish checklist for mark-walhimer.com." />
+  <link rel="canonical" href="https://mark-walhimer.com/practice/artwork-pipeline.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Artwork Pipeline — Mark Walhimer" />
+  <meta property="og:description" content="Machine DNA artwork pipeline: seed identity, lifeline, votive vs surrender modes, distributed install network, and publish checklist." />
+  <meta property="og:url" content="https://mark-walhimer.com/practice/artwork-pipeline.html" />
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/cathedral-shell.css" />
+  <style>
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 64px 40px 100px;
+    }
+    .kicker {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(34px, 6vw, 64px);
+      font-weight: 300;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--ink);
+    }
+    h1 em { font-style: italic; color: var(--accent); }
+    .lede {
+      font-size: clamp(17px, 2.2vw, 21px);
+      line-height: 1.75;
+      color: var(--ink);
+      margin-bottom: 28px;
+      max-width: 44rem;
+    }
+    .lede em { font-style: italic; font-family: var(--serif); }
+    .body p {
+      font-size: 16px;
+      line-height: 1.85;
+      color: var(--ink-soft);
+      margin-bottom: 18px;
+      max-width: 44rem;
+    }
+    .body strong { color: var(--ink); font-weight: 500; }
+    .rule { border: 0; border-top: 1px solid var(--line); margin: 36px 0; }
+    section { margin-top: 40px; padding-top: 36px; border-top: 1px solid var(--line); }
+    section:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+    section h2 {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 16px;
+    }
+    section h3 {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      margin: 28px 0 12px;
+    }
+    .pullquote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(18px, 2.4vw, 22px);
+      line-height: 1.65;
+      color: var(--ink);
+      max-width: 44rem;
+      padding: 22px 24px;
+      background: var(--off);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      margin: 24px 0;
+    }
+    .design-note {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      padding: 16px 18px;
+      background: var(--pale);
+      border: 1px solid var(--line);
+      margin-bottom: 28px;
+      max-width: 44rem;
+    }
+    .design-note code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ink);
+    }
+    table.data {
+      width: 100%;
+      max-width: 44rem;
+      border-collapse: collapse;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 16px 0 24px;
+    }
+    table.data th,
+    table.data td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.data th {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      background: var(--off);
+      font-weight: 400;
+    }
+    table.data td { color: var(--ink-soft); }
+    table.data td strong { color: var(--ink); }
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 24px;
+      max-width: 44rem;
+    }
+    .checklist li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--pale);
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist input[type="checkbox"] {
+      margin-top: 4px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+    .checklist label { cursor: pointer; }
+    .checklist label strong { color: var(--ink); font-weight: 500; }
+    pre.diagram {
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      background: var(--off);
+      border: 1px solid var(--line);
+      padding: 16px 18px;
+      overflow-x: auto;
+      max-width: 44rem;
+      margin: 16px 0 24px;
+    }
+    a.link {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(184, 151, 106, 0.45);
+    }
+    a.link:hover { color: var(--ink); }
+    .gate-list {
+      counter-reset: gate;
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 24px;
+      max-width: 44rem;
+    }
+    .gate-list li {
+      counter-increment: gate;
+      position: relative;
+      padding: 12px 0 12px 36px;
+      border-bottom: 1px solid var(--pale);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+    }
+    .gate-list li::before {
+      content: counter(gate);
+      position: absolute;
+      left: 0;
+      top: 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gate-list li strong { color: var(--ink); }
+    .meta-foot {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+    @media (max-width: 900px) {
+      .page { padding: 48px 24px 80px; }
+      table.data { font-size: 13px; }
+    }
+  </style>
+</head>
+<body class="shell-page">
+<nav>
+  <a class="nav-logo" href="/" title="Home">Mark Walhimer</a>
+  <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
+    <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
+  </button>
+  <div class="nav-links" id="site-nav-links">
+    <a href="/installations/">Installations</a>
+    <a href="/available/">Available</a>
+    <a href="/sketches/index.html">Catalog</a>
+    <a class="active" href="/practice/index.html">Practice</a>
+    <a href="/bio/index.html">Bio / CV</a>
+    <a href="/contact/index.html">Contact</a>
+  </div>
+</nav>
+
+<main class="page">
+  <p class="kicker">Practice · Machine DNA · July 2026</p>
+  <h1>Artwork <em>pipeline</em></h1>
+  <p class="lede">One codebase, many bodies. Sketch in Three.js and WebGL; ship in OpenFrameworks, Pure Data, and DSP. The same genome drives browser pages, LED panels, LCD surfaces, and room-scale installs — when interactivity belongs in the work at all.</p>
+
+  <div class="design-note">
+    <strong>Site CSS.</strong> This page uses <code>/css/cathedral-shell.css</code> — shared nav, typography tokens (<code>--ink</code>, <code>--accent</code>, <code>--rule</code>), Cormorant Garamond + DM Sans + DM Mono — aligned with the homepage and inner pages such as <a class="link" href="/practice/index.html">Practice</a> and <a class="link" href="/bio/index.html">Bio / CV</a>. Page-specific rules live in a scoped <code>&lt;style&gt;</code> block; acquire/work grids use <code>/css/work-pages.css</code> where needed.
+  </div>
+
+  <div class="pullquote">
+    Machine DNA · lifeline · seed-driven — and where interactivity exists, it is about surrender and suffering: machines externalize internal questions of agency until we can internalize again and see ourselves in the reflection — the votive.
+  </div>
+
+  <div class="body">
+    <section id="identity">
+      <h2>Identity — title + seed</h2>
+      <p>Each piece is named twice: a human title and a numeric seed. The organism <strong>is</strong> that seed. A major revision may earn a new seed; the prior seed stays in the archive as an earlier life.</p>
+      <table class="data">
+        <thead>
+          <tr><th>Field</th><th>Rule</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Title</strong></td><td>Human name — <em>Holes in the Sky</em>, <em>Surrender Machines</em></td></tr>
+          <tr><td><strong>Seed</strong></td><td>Individual identity — e.g. 77823, 210021</td></tr>
+          <tr><td><strong>Catalog row</strong></td><td>Title · seed — same species, distinct organism</td></tr>
+          <tr><td><strong>Revision</strong></td><td>New genome or major code change → new seed is honest</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="modes">
+      <h2>Two modes — not every piece gets interactivity</h2>
+      <p>Interactivity is not a default feature. It belongs only where surrender and agency are the subject.</p>
+      <table class="data">
+        <thead>
+          <tr><th>Mode</th><th>Example</th><th>Visitor role</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Votive / witness</strong></td>
+            <td><a class="link" href="/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html">Holes in the Sky</a></td>
+            <td><strong>Listen.</strong> Sky is the exhibition. Machine DNA + astronomical clock + atmosphere. No nudge, no co-author. The awe is the eclipse.</td>
+          </tr>
+          <tr>
+            <td><strong>Surrender / mirror</strong></td>
+            <td>Surrender Machines · room installs</td>
+            <td><strong>Co-create.</strong> Externalize surrender and agency; machine yields; scars propagate; visitor sees reflection.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="pipeline">
+      <h2>Pipeline — sketch to ship</h2>
+      <h3>Sketch phase (Three.js / WebGL)</h3>
+      <ul class="checklist">
+        <li><input type="checkbox" id="s1" /><label for="s1"><strong>Browser sketch</strong> under <code>sketches/{catalog-path}/</code></label></li>
+        <li><input type="checkbox" id="s2" /><label for="s2"><strong>Self-contained</strong> — passes <code>python3 _scripts/check_self_contained.py</code></label></li>
+        <li><input type="checkbox" id="s3" /><label for="s3"><strong>Kernel wired</strong> — reads <code>express()</code> snapshot, not ad-hoc randomness</label></li>
+        <li><input type="checkbox" id="s4" /><label for="s4"><strong>Sound + image, same clock</strong> — one state drives both</label></li>
+        <li><input type="checkbox" id="s5" /><label for="s5"><strong>Seed reproducible</strong> — same seed → same organism on any machine</label></li>
+        <li><input type="checkbox" id="s6" /><label for="s6"><strong>Browser QA</strong> — Chrome, Safari, Firefox</label></li>
+      </ul>
+
+      <h3>Final hosts (same genome, different bodies)</h3>
+      <table class="data">
+        <thead>
+          <tr><th>Body</th><th>Host</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Browser</td><td>HTML / Three.js — offline-capable on mark-walhimer.com</td></tr>
+          <tr><td>Mac brain</td><td>OpenFrameworks C++ — kernel port matches JS PRNG + serialize JSON</td></tr>
+          <tr><td>Sound</td><td>Pure Data / DSP — OSC or FUDI contract documented</td></tr>
+          <tr><td>LED panel</td><td>Teensy 4.1 receiver — dumb pixel surface; brain on Mac or Pi</td></tr>
+          <tr><td>LCD / console</td><td>OF or dedicated display — same snapshot → pixels</td></tr>
+          <tr><td>Projection</td><td>Raspberry Pi 5 / map slice — OSC spine; no frame streaming</td></tr>
+        </tbody>
+      </table>
+      <ul class="checklist">
+        <li><input type="checkbox" id="h1" /><label for="h1"><strong>OSC contract written</strong> — prefix, addresses, args (see <a class="link" href="/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/osc-contract.md">Holes in the Sky /hit</a> pattern)</label></li>
+        <li><input type="checkbox" id="h2" /><label for="h2"><strong>Hot path vs slow path</strong> — expression never blocks on network I/O</label></li>
+      </ul>
+    </section>
+
+    <section id="network">
+      <h2>Distributed network as engine</h2>
+      <p>Install-scale work is not always hub-and-spoke from one Mac mini. Multiple Raspberry Pis and Teensy 4.1 boards on a switch share expression — the <strong>network itself</strong> becomes part of the engine.</p>
+      <pre class="diagram">                    ┌─ Teensy ─ LED panel
+         ┌─ Pi ────┼─ Teensy ─ LED / fan / sensor
+Switch ──┤         └─ projector / map slice
+         ├─ Pi ────┬─ …
+         └─ Mac mini (one node, not god)</pre>
+      <ul class="checklist">
+        <li><input type="checkbox" id="n1" /><label for="n1"><strong>Topology drawn</strong> — which nodes exist, what each expresses</label></li>
+        <li><input type="checkbox" id="n2" /><label for="n2"><strong>Mac role defined</strong> — brain, operator, or equal peer</label></li>
+        <li><input type="checkbox" id="n3" /><label for="n3"><strong>Network-as-engine</strong> — latency and desync treated as material</label></li>
+        <li><input type="checkbox" id="n4" /><label for="n4"><strong>Fallback</strong> — each node expresses locally from last genome snapshot if upstream drops</label></li>
+      </ul>
+      <p><em>Holes in the Sky</em> on eclipse day may stay simpler (OF + Pure Data + live feeds). The Pi/Teensy mesh is the pattern for room-scale surrender work, not a requirement on every species.</p>
+    </section>
+
+    <section id="dna">
+      <h2>Species identity (Machine DNA)</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" id="d1" /><label for="d1"><strong>Species named</strong> — <code>speciesId</code> registered</label></li>
+        <li><input type="checkbox" id="d2" /><label for="d2"><strong>Seed / lifeline</strong> — birth seed; arc juvenile → mature → senescent → dying</label></li>
+        <li><input type="checkbox" id="d3" /><label for="d3"><strong>Traits in human terms</strong> — warmth, machine, surrender, tension, decay</label></li>
+        <li><input type="checkbox" id="d4" /><label for="d4"><strong>Break / kintsugi</strong> — what breaks, what scars, what becomes gold</label></li>
+        <li><input type="checkbox" id="d5" /><label for="d5"><strong>Schema version</strong> — matches <code>schemaVersion</code> in serialized JSON</label></li>
+        <li><input type="checkbox" id="d6" /><label for="d6"><strong>Example genome on file</strong> — see <a class="link" href="/machine-aesthetic/emergent-dna/README.md">Emergent DNA</a></label></li>
+        <li><input type="checkbox" id="d7" /><label for="d7"><strong>Catalog entry</strong> — folder under <a class="link" href="/catalog/README.md">catalog/</a> + artwork <code>.md</code></label></li>
+      </ul>
+    </section>
+
+    <section id="interactivity">
+      <h2>Multi-person interaction (surrender mode only)</h2>
+      <p>Skip this block for votive / witness works such as <em>Holes in the Sky</em>.</p>
+      <ul class="checklist">
+        <li><input type="checkbox" id="i1" /><label for="i1"><strong>Supabase schema</strong> — genomes, scars, venues</label></li>
+        <li><input type="checkbox" id="i2" /><label for="i2"><strong>Smartphone / operator UI</strong> — co-creation, pause, nudge</label></li>
+        <li><input type="checkbox" id="i3" /><label for="i3"><strong>Cross-venue sync</strong> — events + scars propagate; not pixels or audio streams</label></li>
+        <li><input type="checkbox" id="i4" /><label for="i4"><strong>Visitor events defined</strong> — <code>visitor_nudge</code>, <code>break</code>, <code>gold</code>, <code>seed</code>, <code>death</code></label></li>
+      </ul>
+    </section>
+
+    <section id="physical">
+      <h2>Physical installation stack</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" id="p1" /><label for="p1"><strong>Brain identified</strong> — Mac mini or Linux; Teensy is receiver, not generative brain</label></li>
+        <li><input type="checkbox" id="p2" /><label for="p2"><strong>Network topology</strong> — switch, Wi‑Fi hub, ethernet to nodes</label></li>
+        <li><input type="checkbox" id="p3" /><label for="p3"><strong>Node inventory</strong> — Teensy 4.1, Pi 5, projectors, robotic arm, LED, fans, IoT sensors</label></li>
+        <li><input type="checkbox" id="p4" /><label for="p4"><strong>Sensors mapped</strong> — inputs become <code>applyEvent()</code> or trait nudges</label></li>
+        <li><input type="checkbox" id="p5" /><label for="p5"><strong>Install runbook</strong> — boot order, ports, IPs, reset procedure</label></li>
+      </ul>
+    </section>
+
+    <section id="publish">
+      <h2>Publish on mark-walhimer.com</h2>
+      <ul class="checklist">
+        <li><input type="checkbox" id="pub1" /><label for="pub1"><strong>Catalog refreshed</strong> — <code>python3 _scripts/refresh_catalog.py</code></label></li>
+        <li><input type="checkbox" id="pub2" /><label for="pub2"><strong>Public URL resolves</strong> — sketch or <code>installations/</code> canonical path</label></li>
+        <li><input type="checkbox" id="pub3" /><label for="pub3"><strong>Self-contained check</strong> — full repo passes before commit</label></li>
+        <li><input type="checkbox" id="pub4" /><label for="pub4"><strong>Wi‑Fi off test</strong> — page loads and runs with network disabled</label></li>
+        <li><input type="checkbox" id="pub5" /><label for="pub5"><strong>Lifespan verified</strong> — work does not loop forever as a perfect monument</label></li>
+      </ul>
+    </section>
+
+    <section id="gate">
+      <h2>Decision gate — every new piece</h2>
+      <ol class="gate-list">
+        <li><strong>Species</strong> — new genome contract or existing?</li>
+        <li><strong>Seed</strong> — mint at birth; document as identity</li>
+        <li><strong>Lifeline</strong> — how it ages, breaks, dies</li>
+        <li><strong>Relation mode</strong> — votive witness, surrender mirror, or both in sequence?</li>
+        <li><strong>Bodies</strong> — browser only · LED · room mesh · which nodes?</li>
+        <li><strong>Interactivity</strong> — only if mode 4 says surrender; else omit Supabase / phone HUD</li>
+      </ol>
+    </section>
+
+    <section id="examples">
+      <h2>Per-piece mini-card</h2>
+      <table class="data">
+        <thead>
+          <tr><th>Field</th><th>Holes in the Sky</th><th>Surrender Machines (77823)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mode</td><td>Votive — awe, listening</td><td>Surrender — co-creation, scars</td></tr>
+          <tr><td>Interactivity</td><td>No</td><td>Yes</td></tr>
+          <tr><td>Network</td><td>OF + PD + live feeds</td><td>Pi + Teensy mesh + optional Supabase</td></tr>
+          <tr><td>Lifeline</td><td>Eclipse clock → reverse → unwind</td><td>Age, stress, senescence, seed/death</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="meta-foot">Working notes from studio conversation · July 2026 · <a class="link" href="/practice/index.html">← Practice</a></p>
+  </div>
+</main>
+
+<footer class="shell-footer">Mark Walhimer — mark@walhimer.com · Artwork pipeline</footer>
+<script>
+(function () {
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  var btn = nav.querySelector('.nav-toggle');
+  var panel = document.getElementById('site-nav-links');
+  if (!btn || !panel) return;
+  btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('nav-open');
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  panel.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('nav-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open menu');
+    });
+  });
+})();
+</script>
+</body>
+</html>

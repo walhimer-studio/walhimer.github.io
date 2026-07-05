@@ -48,6 +48,21 @@
     h1 { font-family: var(--serif); font-size: clamp(40px,6vw,72px); font-weight: 300; line-height: 1; letter-spacing: -.02em; margin-bottom: 20px; }
     h1 em { font-style: italic; color: var(--accent); }
     .lede { font-size: 13px; color: rgba(58,56,52,.55); line-height: 1.8; max-width: 560px; }
+    .studio-doc-link {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 16px;
+      max-width: 560px;
+    }
+    .studio-doc-link a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(184, 151, 106, 0.45);
+    }
+    .studio-doc-link a:hover { color: var(--ink); }
 
     .controls { max-width: 1100px; margin: 0 auto; padding: 18px 48px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
     .ctrl-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); margin-right: 4px; }
@@ -126,6 +141,7 @@
   <p class="kicker">Studio archive</p>
   <h1>Cat<em>alog</em></h1>
   <p class="lede">All work organized by series. Click a series to expand. Click any file to open it.</p>
+  <p class="studio-doc-link"><a href="/practice/artwork-pipeline.html">Artwork pipeline</a> — living checklist · updated ongoing</p>
 </header>
 
 <div class="controls">
