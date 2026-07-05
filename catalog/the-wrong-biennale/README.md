@@ -15,4 +15,4 @@
 
 `catalog/the-wrong-biennale/`
 
-WIP sketches and code: [`sketches/the-wrong-biennale/`](../../sketches/the-wrong-biennale/).
+WIP sketches and code: [`sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/`](../../sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/).
