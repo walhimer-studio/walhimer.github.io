@@ -1,6 +1,6 @@
 # Holes in the Sky
 
-**The Wrong Biennale · The Wrong Eclipse · 12 August 2026**
+**The Wrong Biennale · The Wrong Eclipse · August 2026**
 
 | Field | Value |
 |-------|--------|
@@ -8,14 +8,14 @@
 | Year | 2026 |
 | Medium | Generative soundscape (OpenFrameworks, Pure Data, OSC, DSP); Bandcamp stereo/binaural release |
 | Species | New **Machine DNA** species (not Surrender Machines, not Bloom) |
-| Astronomical anchor | Alicante, Spain |
+| Astronomical anchor | The Wrong Biennale, Partida Maitino 2069c, Alicante, 03295, Spain |
 | Exhibition | [The Wrong Eclipse](https://thewrong.org/) — 12 August 2026, 24 hours |
 
 ---
 
 ## One line
 
-Code that **listens to the eclipse through the atmosphere** above Alicante; the artwork **happens at eclipse time**, not on Bandcamp alone.
+Code that **listens to the eclipse through the atmosphere** above **Maitino** (The Wrong Biennale, Alicante); the artwork **happens at eclipse time**, not on Bandcamp alone.
 
 ---
 
@@ -25,15 +25,15 @@ Code that **listens to the eclipse through the atmosphere** above Alicante; the 
 
 The work does not illustrate the eclipse with visuals or translate image into sound. A **Machine DNA** lifeline drives the generative system: one clock, one genome, simultaneous expression in **sonification** and in the **generator** (life bar, state). Salamander Grand **pentatonic** piano samples — consonant subsets, Bloom-adjacent — are triggered and spatialized as the organism ages.
 
-Atmospheric **variation** matters more than literal “holes.” Fossil fuels, clouds, gases, storms, aircraft, and satellites all perturb what would be a uniform sky. Live feeds (NOAA weather, METAR, flight data, satellite passes over Alicante) modulate the piece during the **live run on 12 August 2026**. The atmosphere above The Wrong’s Alicante anchor is the input; Machine DNA is the interpreter.
+Atmospheric **variation** matters more than literal “holes.” Fossil fuels, clouds, gases, storms, aircraft, and satellites all perturb what would be a uniform sky. Live feeds (NOAA weather, METAR, flight data, satellite passes over **Partida Maitino 2069c, Alicante, 03295**) modulate the piece during the **live run on 12 August 2026**. The atmosphere above The Wrong’s Maitino site is the input; Machine DNA is the interpreter.
 
 **Eclipse-as-listening:** listeners are asked to hear while watching the real sky. The Bandcamp entry is a **proof of concept** — screenshot of the generator plus a binaural recording made with placeholder or simulated inputs. The **authoritative artwork** is the **live re-recording** during the partial eclipse on 12 August 2026.
 
 ---
 
-## Astronomical clock (Alicante · CEST)
+## Astronomical clock (Maitino · CEST)
 
-Alicante sees a **partial** eclipse peaking at **~99.1% obscuration** — the Sun is never fully covered.
+The Wrong’s Maitino site (Alicante province) sees a **partial** eclipse peaking at **~99.1% obscuration** — the Sun is never fully covered. Times below use [Alicante city ephemeris](https://time.now/alicante/eclipses/2026-08-12/) (same province; within seconds of Maitino).
 
 | Phase | Time | Obscuration | Lifeline |
 |-------|------|-------------|----------|
@@ -43,7 +43,7 @@ Alicante sees a **partial** eclipse peaking at **~99.1% obscuration** — the Su
 | Unwind | ~20:36 → ~21:26 | 99% → 0% | Decay to last contact |
 | Full partial arc | ~1h 46m | — | Live recording spans the eclipse window |
 
-Maximum eclipse: **~20:34:59 CEST**. There is no totality at Alicante; the ~60 s reversal is compositional, centered on maximum obscuration inside the ~2-minute band above 99%.
+Maximum eclipse: **~20:34:59 CEST**. There is no totality at Maitino; the ~60 s reversal is compositional, centered on maximum obscuration inside the ~2-minute band above 99%.
 
 ---
 
@@ -84,7 +84,7 @@ Mark Walhimer — digital installation and generative sound practice. Real-time 
 
 ## Statement (short)
 
-I treat eclipse day as a listening score. The machine reads the sky above Alicante — weather, traffic, orbit — through a single DNA lifeline. Sound moves forward until the sky is almost gone, holds in the narrow band above ninety-nine percent obscuration, then runs backward for about a minute while the crescent hangs at its thinnest. Bandcamp holds a proof; the work is the air on the twelfth of August.
+I treat eclipse day as a listening score. The machine reads the sky above Maitino — Partida Maitino 2069c, where The Wrong Biennale is based — weather, traffic, orbit — through a single DNA lifeline. Sound moves forward until the sky is almost gone, holds in the narrow band above ninety-nine percent obscuration, then runs backward for about a minute while the crescent hangs at its thinnest. Bandcamp holds a proof; the work is the air on the twelfth of August.
 
 ---
 
@@ -92,7 +92,7 @@ I treat eclipse day as a listening score. The machine reads the sky above Alican
 
 | Item | Status |
 |------|--------|
-| Catalogue statements | This file |
+| Catalog statements | This file |
 | OF + PD + OSC patch | Not started |
 | Live API integration (NOAA, METAR, flights, satellites) | Not started |
 | PoC Bandcamp release | Not started |

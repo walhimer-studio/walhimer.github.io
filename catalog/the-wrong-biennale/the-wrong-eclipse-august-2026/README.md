@@ -1,6 +1,6 @@
-# The Wrong Biennale · The Wrong Eclipse
+# The Wrong Biennale · The Wrong Eclipse · August 2026
 
-**Opportunity folder** — open call, submission metadata, and catalogue index for works submitted to [The Wrong Eclipse](https://thewrong.org/).
+**Opportunity folder** — open call, submission metadata, and catalog index for works submitted to [The Wrong Eclipse](https://thewrong.org/).
 
 | Field | Value |
 |-------|--------|
@@ -18,9 +18,9 @@ The eclipse itself is the visual artwork. The exhibition invites listeners to **
 
 ## Geographic anchor (this submission)
 
-The Wrong’s administrative base is in **Alicante, Spain** (decentralized biennale; no single exhibition venue). Works in this folder use **Alicante** as the atmospheric and astronomical clock unless a piece states otherwise.
+The Wrong Biennale — **Partida Maitino 2069c, Alicante, 03295, Spain** (decentralized biennale; no single exhibition venue). Works in this folder use this site as the atmospheric and astronomical clock unless a piece states otherwise.
 
-### Eclipse at Alicante · 12 August 2026
+### Eclipse at Maitino / Alicante · 12 August 2026
 
 Partial eclipse only — **no totality**. Maximum obscuration **~99.1%** (~0.9% of the solar disc still visible).
 
@@ -32,7 +32,7 @@ Partial eclipse only — **no totality**. Maximum obscuration **~99.1%** (~0.9% 
 | Last contact | ~21:25:59 |
 | Full partial arc | ~1h 46m |
 
-Sources: [Time.now — Alicante](https://time.now/alicante/eclipses/2026-08-12/). Exact last contact varies slightly by coordinates within the province (sunset may end visibility before geometric last contact at some sites).
+Sources: [Time.now — Alicante](https://time.now/alicante/eclipses/2026-08-12/) (Maitino is in Alicante province; times match Alicante city within seconds). Exact last contact may vary slightly by coordinates (sunset may end visibility before geometric last contact at some sites).
 
 ## Works in this folder
 
@@ -44,12 +44,12 @@ Sources: [Time.now — Alicante](https://time.now/alicante/eclipses/2026-08-12/)
 
 | Path | Role |
 |------|------|
-| `catalogue/the-wrong-biennale/the-wrong-eclipse-2026-08-12/` | Opportunity + artwork statements (this folder) |
+| `catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/` | Opportunity + artwork statements (this folder) |
 | `sketches/the-wrong-eclipse-2026/` | Runnable generative piece (OpenFrameworks + Pure Data + OSC); **TBD at build** |
 
-Bandcamp release uses a **screenshot** of the generator UI plus **binaural L/R audio**. The live artwork is **re-recorded on 12 August 2026** during the eclipse using live atmospheric data above Alicante.
+Bandcamp release uses a **screenshot** of the generator UI plus **binaural L/R audio**. The live artwork is **re-recorded on 12 August 2026** during the eclipse using live atmospheric data above Maitino.
 
 ## Related docs
 
-- [Submission & series structure](../../docs/submission-and-series-structure.md)
-- [Unified catalog](../../docs/unified-catalog.md)
+- [Submission & series structure](../../../docs/submission-and-series-structure.md)
+- [Unified catalog](../../../docs/unified-catalog.md)
