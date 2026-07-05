@@ -10,6 +10,10 @@
 | Subject line | `The Wrong Eclipse` |
 | Deliverable | Sound work hosted on **Bandcamp** (embedded by curators) |
 
+## Live URL (hub)
+
+https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html
+
 ## Concept (curators)
 
 The eclipse itself is the visual artwork. The exhibition invites listeners to **hear** while experiencing the real eclipse outdoors — less screen time, more sky. Sound only; no video or screen-dependent entries.
