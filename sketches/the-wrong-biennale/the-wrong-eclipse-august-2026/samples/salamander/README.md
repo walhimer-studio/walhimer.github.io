@@ -4,9 +4,9 @@
 
 | Folder | Contents |
 |--------|----------|
-| `./` | Full web pack — all minor-third roots (`A0`–`C8`), `.mp3` and `.ogg` |
+| `./` | Full web pack — minor-third roots (`A0`–`C8`), `.mp3` only |
 | `pentatonic/` | C-major pentatonic subset (19 mp3 roots for Bloom-style mapping) |
-| `pentatonic/wav-v8/` | Optional v8 velocity WAV (C + A roots from `../salamander-lite/`) |
+| `pentatonic/wav-v8/` | v8 velocity WAV (C + A roots) for Pure Data / offline use |
 
 Reinstall after samples go missing:
 

@@ -14,7 +14,7 @@
 #X obj 200 208 sig~;
 #X obj 200 236 r trigger;
 #X obj 360 40 loadbang;
-#X obj 360 68 open ../samples/salamander-lite/C4v8.wav;
+#X obj 360 68 open ../samples/salamander/pentatonic/wav-v8/C4v8.wav;
 #X obj 360 96 soundfiler sample_c4;
 #X obj 360 124 tabplay~ sample_c4;
 #X obj 360 152 *~;

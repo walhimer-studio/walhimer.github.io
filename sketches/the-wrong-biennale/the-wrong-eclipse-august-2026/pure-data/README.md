@@ -7,7 +7,7 @@
 - Port **9001** · FUDI plain text · **no OSC externals**
 - **`netreceive 9001 1`** (UDP + FUDI parse)
 - **Media → DSP on**
-- Samples: `../samples/salamander-lite/*.wav` (relative to this folder)
+- Samples: `../samples/salamander/pentatonic/wav-v8/*.wav` (relative to this folder)
 
 ### Start stack
 

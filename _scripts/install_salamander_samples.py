@@ -8,8 +8,8 @@ salamander.zip into:
   sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/
   sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/
 
-Also copies v8 WAV roots from samples/salamander-lite/ into pentatonic/wav-v8/
-when present.
+Also copies v8 WAV roots into pentatonic/wav-v8/ from sketches/April 25/salamander-lite/
+when present (fallback source if wav-v8 is empty).
 
 Source zip search order (first hit wins):
   - SALAMANDER_ZIP env var
@@ -34,7 +34,7 @@ TARGET = (
     ROOT
     / "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander"
 )
-LITE = TARGET.parent / "salamander-lite"
+LITE = ROOT / "sketches/April 25/salamander-lite"
 
 # Bloom / inject_salamander pentatonic roots (mp3 in zip)
 PENTATONIC_MP3 = [
@@ -63,9 +63,9 @@ README = """# Salamander Grand Piano samples
 
 | Folder | Contents |
 |--------|----------|
-| `./` | Full web pack — all minor-third roots (`A0`–`C8`), `.mp3` and `.ogg` |
+| `./` | Full web pack — minor-third roots (`A0`–`C8`), `.mp3` only |
 | `pentatonic/` | C-major pentatonic subset (19 mp3 roots for Bloom-style mapping) |
-| `pentatonic/wav-v8/` | Optional v8 velocity WAV (C + A roots from `../salamander-lite/`) |
+| `pentatonic/wav-v8/` | v8 velocity WAV (C + A roots) for Pure Data / offline use |
 
 Reinstall after samples go missing:
 
@@ -96,6 +96,8 @@ def extract_all(zip_path: Path, dest: Path) -> int:
                 continue
             base = Path(name).name
             if base.startswith(".") or base == "README":
+                continue
+            if not base.endswith(".mp3"):
                 continue
             out = dest / base
             out.write_bytes(zf.read(name))
