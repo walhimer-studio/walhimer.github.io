@@ -7,13 +7,13 @@ Submission for [The Wrong Eclipse](https://thewrong.org/) · deadline **1 Aug 20
 | Item | Source |
 |------|--------|
 | **Audio** | Binaural / stereo L–R track (headphones) |
-| **Cover** | Screenshot of generator UI (`holes-in-the-sky.html` or OF brain window) |
+| **Cover** | Screenshot of generator UI (`listening-to-the-sky.html` or OF brain window) |
 | **Title** | Listening to the Sky |
 | **Artist** | Mark Walhimer |
 
 ## Record PoC (browser)
 
-1. Open [holes-in-the-sky.html](./holes-in-the-sky.html) · **headphones**
+1. Open [listening-to-the-sky.html](./listening-to-the-sky.html) · **headphones**
 2. Tap **Start**
 3. Tap **Record PoC** — runs with simulate arc (~10 min) or stop early
 4. Tap **Stop record** — downloads `holes-in-the-sky-poc-{timestamp}.webm`

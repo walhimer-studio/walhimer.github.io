@@ -96,7 +96,7 @@ I treat eclipse day as a listening score. The machine reads the sky above Maitin
 | Item | Status |
 |------|--------|
 | Catalog statements | This file |
-| Browser PoC host | `holes-in-the-sky.html` |
+| Browser PoC host | `listening-to-the-sky.html` |
 | Machine DNA kernel | `machine-dna-kernel.mjs` |
 | OpenFrameworks brain | `openframeworks/HolesInTheSky/` — life bar + OSC `/hit` |
 | Pure Data patch | `pure-data/holes-in-the-sky-vanilla.pd` — Salamander + binaural |

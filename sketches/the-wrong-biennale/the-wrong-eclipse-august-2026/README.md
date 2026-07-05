@@ -5,13 +5,13 @@ Work in progress — generative soundscape for [The Wrong Eclipse](https://thewr
 | | |
 |--|--|
 | **Hub** | https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html |
-| **Artwork (PoC)** | [`holes-in-the-sky.html`](./holes-in-the-sky.html) |
+| **Artwork (PoC)** | [`listening-to-the-sky.html`](./listening-to-the-sky.html) |
 | **Archive** | [`catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/`](../../../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/) |
 | **Statement** | [`holes-in-the-sky.md`](../../../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md) |
 
 ## Run browser PoC
 
-Open `holes-in-the-sky.html` · **headphones** · **Start** · optional **Live feeds** · **Record PoC** for Bandcamp draft.
+Open `listening-to-the-sky.html` · **headphones** · **Start** · optional **Live feeds** · **Record PoC** for Bandcamp draft.
 
 Salamander samples: `samples/salamander/` (full pack) · `samples/salamander/pentatonic/` (PoC). Reinstall:
 

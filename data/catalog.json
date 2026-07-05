@@ -4930,6 +4930,8 @@
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html",
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.pd",
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-in-the-sky.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html",
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/live-feeds.mjs",
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/machine-dna-kernel.mjs",
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/README.md",
@@ -5006,24 +5008,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-holes-in-the-sky",
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-listening-to-the-sky",
       "dublin_core": {
-        "title": "Holes in the Sky — generative soundscape (PoC)",
+        "title": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky",
         "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "Machine DNA browser host — eclipse clock, atmosphere, Salamander binaural pentatonic.",
-        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-holes-in-the-sky",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-listening-to-the-sky",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000239"
+        "catalog_number": "WS-000289"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
         "id": "https://mark-walhimer.com/#work/The Wrong Biennale · The Wrong Eclipse · August 2026-the-wrong-biennale-the-wron",
         "type": "HumanMadeObject",
-        "_label": "Holes in the Sky — generative soundscape (PoC)",
+        "_label": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -5038,10 +5040,7 @@
         ],
         "sketch": {
           "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
-          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html"
-        },
-        "soundscape": {
-          "note": "PoC; live re-record 12 Aug 2026 at Maitino."
+          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
         }
       },
       "artifacts": {
@@ -5049,11 +5048,11 @@
           "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md",
           "sketches/index.html",
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bandcamp-poc.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html"
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
         ],
         "external_urls": [
-          "https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html"
+          "https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
         ]
       }
     },
