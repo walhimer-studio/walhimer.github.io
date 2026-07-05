@@ -12,6 +12,10 @@
 | Subject line | `The Wrong Eclipse` |
 | Deliverable | Sound work hosted on **Bandcamp** (embedded by curators) |
 
+## Live URL (hub)
+
+https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html
+
 ## Concept (curators)
 
 The eclipse itself is the visual artwork. The exhibition invites listeners to **hear** while experiencing the real eclipse outdoors — less screen time, more sky. Sound only; no video or screen-dependent entries.
@@ -40,14 +44,15 @@ Sources: [Time.now — Alicante](https://time.now/alicante/eclipses/2026-08-12/)
 |------|------|--------|
 | **Holes in the Sky** | [holes-in-the-sky.md](./holes-in-the-sky.md) | In development |
 
-## Planned repo paths (implementation)
-
-| Path | Role |
-|------|------|
-| `catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/` | Opportunity + artwork statements (this folder) |
-| `sketches/the-wrong-eclipse-2026/` | Runnable generative piece (OpenFrameworks + Pure Data + OSC); **TBD at build** |
-
 Bandcamp release uses a **screenshot** of the generator UI plus **binaural L/R audio**. The live artwork is **re-recorded on 12 August 2026** during the eclipse using live atmospheric data above Maitino.
+
+## GitHub
+
+Path: `sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/`
+
+## Catalog registration
+
+Registered in `sketches/index.html` → `SERIES`. After file changes: `python3 _scripts/refresh_catalog.py` → commit `data/catalog.json`.
 
 ## Related docs
 

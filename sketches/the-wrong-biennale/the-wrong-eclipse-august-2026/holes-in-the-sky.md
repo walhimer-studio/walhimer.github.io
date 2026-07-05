@@ -98,4 +98,4 @@ I treat eclipse day as a listening score. The machine reads the sky above Maitin
 | PoC Bandcamp release | Not started |
 | Live re-record · 12 Aug 2026 | Scheduled |
 
-**Planned code path:** `sketches/the-wrong-eclipse-2026/` (confirm at build).
+**Planned code path:** this folder (entry HTML TBD at build).

@@ -1,6 +1,6 @@
 # The Wrong Biennale
 
-**Catalog folder** — submissions and artwork statements for [The Wrong Biennale](https://thewrong.org/About).
+**Catalog series folder** — submissions and artwork statements for [The Wrong Biennale](https://thewrong.org/About). Structure: [Submission & series structure](../../docs/submission-and-series-structure.md).
 
 | Field | Value |
 |-------|--------|
@@ -12,3 +12,7 @@
 | Opportunity | Folder | Exhibition |
 |-------------|--------|------------|
 | **The Wrong Eclipse** · August 2026 | [the-wrong-eclipse-august-2026/](./the-wrong-eclipse-august-2026/) | 12 August 2026 |
+
+## GitHub
+
+Path: `sketches/the-wrong-biennale/`
