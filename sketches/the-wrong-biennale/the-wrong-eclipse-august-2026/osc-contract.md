@@ -24,4 +24,14 @@ Prefix: **`/hit`**. UDP port **9000** (browser PoC logs only; OpenFrameworks bra
 | `/hit/clock/progress` | `f` | 0–1 through eclipse arc |
 | `/hit/clock/running` | `i` | 0/1 |
 
-Pure Data patch `holes-in-the-sky.pd` listens on port 9000. OpenFrameworks host replaces browser log when wired.
+### Notes (Pure Data sampler)
+
+| Address | Args | Notes |
+|---------|------|--------|
+| `/hit/note/name` | `s` | e.g. `C4` |
+| `/hit/note/vel` | `f` | 0–1 |
+| `/hit/note/pan` | `f` | -1…1 binaural |
+| `/hit/note/reverse` | `i` | 1 during reverse phase |
+| `/hit/note/trigger` | `i` | 1 fires sample |
+
+FUDI equivalent for vanilla patch (port **9001**): `note C4 1; pan 0.25; vel 0.18; trigger 1;`

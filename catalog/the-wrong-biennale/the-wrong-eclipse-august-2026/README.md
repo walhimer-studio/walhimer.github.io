@@ -1,5 +1,7 @@
 # The Wrong Biennale · The Wrong Eclipse · August 2026
 
+**Studio direction:** [Artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [STUDIO-DIRECTION.md](../../STUDIO-DIRECTION.md)
+
 | Field | Value |
 |-------|--------|
 | Organizers | Graziela Calfat, David Quiles Guilló · [The Wrong Biennale](https://thewrong.org/About) |

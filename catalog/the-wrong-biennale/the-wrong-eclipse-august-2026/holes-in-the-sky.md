@@ -11,6 +11,8 @@
 | Astronomical anchor | The Wrong Biennale, Partida Maitino 2069c, Alicante, 03295, Spain |
 | Exhibition | [The Wrong Eclipse](https://thewrong.org/) — 12 August 2026, 24 hours |
 | Live hub | https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html |
+| Studio pipeline | [Artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [catalog direction](../../STUDIO-DIRECTION.md) |
+| Mode | **Votive / witness** — listen; no visitor interactivity (see pipeline) |
 
 ---
 
@@ -94,9 +96,12 @@ I treat eclipse day as a listening score. The machine reads the sky above Maitin
 | Item | Status |
 |------|--------|
 | Catalog statements | This file |
-| OF + PD + OSC patch | Not started |
-| Live API integration (NOAA, METAR, flights, satellites) | Not started |
-| PoC Bandcamp release | Not started |
+| Browser PoC host | `holes-in-the-sky.html` |
+| Machine DNA kernel | `machine-dna-kernel.mjs` |
+| OpenFrameworks brain | `openframeworks/HolesInTheSky/` — life bar + OSC `/hit` |
+| Pure Data patch | `pure-data/holes-in-the-sky-vanilla.pd` — Salamander + binaural |
+| Live feeds | `live-feeds.mjs` + `feed-bridge.mjs` (METAR / NOAA / OpenSky / ISS) |
+| Bandcamp PoC recording | In-browser **Record PoC** + `bandcamp-poc.md` |
 | Live re-record · 12 Aug 2026 | Scheduled |
 
 **Code path (WIP):** `sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/`

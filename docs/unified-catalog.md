@@ -1,5 +1,7 @@
 # Unified catalog (`data/catalog.json`)
 
+**Studio direction for all artwork:** [Artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [catalog/STUDIO-DIRECTION.md](../catalog/STUDIO-DIRECTION.md)
+
 There is **one** persisted dataset: **`works[]`** - each row is a work with **Dublin Core**, **Linked Art**, **`site`** (surfaces such as installation / sketch / soundscape), and **`artifacts`** for recovery.
 
 **Refresh inputs** (not stored as top-level JSON arrays):

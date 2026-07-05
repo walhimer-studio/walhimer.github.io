@@ -1,5 +1,7 @@
 # The Wrong Biennale
 
+**Studio direction:** all works here follow the [artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [catalog/STUDIO-DIRECTION.md](../STUDIO-DIRECTION.md)
+
 | Field | Value |
 |-------|--------|
 | Organization | [The Wrong Biennale](https://thewrong.org/About) |

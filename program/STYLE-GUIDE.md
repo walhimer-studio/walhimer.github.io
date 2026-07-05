@@ -64,7 +64,7 @@ Avoid “NFT drop”, “mint now”. Prefer “published”, “available”.
 - Process visible in **context** posts, not every daily caption
 - Gas: FAQ once (~$10 + fees)
 - **12:00 ET** daily rhythm replaces FOMO
-- Themes: focus/perception · cloud chambers · quantum · singularity · machine aesthetics
+- Themes: focus/perception · cloud chambers · quantum · singularity · Machine DNA · acceptance / control / agency
 
 ---
 

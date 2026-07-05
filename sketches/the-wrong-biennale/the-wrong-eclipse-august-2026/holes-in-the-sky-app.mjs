@@ -2,7 +2,8 @@ import { createMachineDna } from "./machine-dna-kernel.mjs";
 import { createEclipseClock } from "./eclipse-clock.mjs";
 import { createAtmosphere } from "./atmosphere.mjs";
 import { createAudioEngine } from "./audio-engine.mjs";
-import { snapshotToOsc, formatOscLine } from "./osc-map.mjs";
+import { snapshotToOsc, formatOscLine, noteToOsc } from "./osc-map.mjs";
+import { createBandcampRecorder } from "./bandcamp-recorder.mjs";
 import { makeRng } from "../../../machine-aesthetic/emergent-dna/kernel/rng.mjs";
 
 export async function bootHolesInTheSky(root) {
@@ -19,18 +20,50 @@ export async function bootHolesInTheSky(root) {
     btnStart: root.querySelector("#btn-start"),
     btnStop: root.querySelector("#btn-stop"),
     btnReset: root.querySelector("#btn-reset"),
+    btnLive: root.querySelector("#btn-live"),
+    btnRecord: root.querySelector("#btn-record"),
   };
 
+  let liveFeeds = false;
   const clock = createEclipseClock("simulate");
   const dna = createMachineDna({ seed: 120826, lifespanSeconds: 6360 });
-  const atmosphere = createAtmosphere(120826);
-  const audio = createAudioEngine("samples/salamander-lite/");
+  let atmosphere = createAtmosphere(120826, { live: false });
+  let recorder = null;
+  const oscLines = [];
+
+  const pushOsc = (lines, max = 8) => {
+    for (const ln of lines) {
+      oscLines.unshift(ln);
+    }
+    els.oscLog.textContent = oscLines.slice(0, max).join("\n");
+  };
+
+  const audio = createAudioEngine("samples/salamander/pentatonic/", {
+    onNote(ev) {
+      pushOsc(noteToOsc(ev.noteName, ev.velocity, ev.pan).map(formatOscLine));
+    },
+  });
   const _rng = makeRng(120826);
   const rng = () => _rng.random();
 
+  els.btnStart.disabled = true;
+  els.btnRecord.disabled = true;
   els.status.textContent = "Loading Salamander samples…";
-  await audio.load();
-  els.status.textContent = "Ready — use headphones";
+
+  try {
+    await audio.load((n, total, sample) => {
+      els.status.textContent = `Loading Salamander ${n}/${total} · ${sample}…`;
+    });
+  } catch (err) {
+    console.error(err);
+    els.status.textContent = `Sample load failed — ${err.message}`;
+    return () => {};
+  }
+
+  recorder = createBandcampRecorder(audio.getContext(), audio.getMaster());
+  els.btnStart.disabled = false;
+  els.btnRecord.disabled = false;
+  els.status.textContent = "Ready — 19 Salamander samples · use headphones";
 
   let last = performance.now();
   let raf = 0;
@@ -57,6 +90,7 @@ export async function bootHolesInTheSky(root) {
     els.vitality.textContent = snap.vitality.toFixed(3);
     els.notes.textContent = String(audio.noteCount());
     els.atmo.textContent = [
+      atmo.feedLabel ?? "simulate",
       `cloud ${atmo.cloud.toFixed(2)}`,
       `wind ${atmo.wind.toFixed(2)}`,
       `air ${atmo.aircraft.toFixed(2)}`,
@@ -102,15 +136,21 @@ export async function bootHolesInTheSky(root) {
     oscThrottle += dt;
     if (oscThrottle > 0.5) {
       oscThrottle = 0;
-      const lines = snapshotToOsc(snap, atmo, clockSnap)
-        .slice(0, 6)
-        .map(formatOscLine);
-      els.oscLog.textContent = lines.join("\n");
+      pushOsc(
+        snapshotToOsc(snap, atmo, clockSnap).slice(0, 4).map(formatOscLine)
+      );
     }
 
     if (clockSnap.progress >= 1 && clock.isRunning()) {
       setRunning(false);
       els.status.textContent = "Arc complete";
+      if (recorder?.isRecording()) {
+        recorder.stop().then((r) => {
+          recorder.download(r);
+          els.btnRecord.textContent = "Record PoC";
+          els.status.textContent = "Arc complete · recording saved";
+        });
+      }
     }
 
     raf = requestAnimationFrame(tick);
@@ -134,8 +174,39 @@ export async function bootHolesInTheSky(root) {
     render(clock.snapshot(), dna.express(), atmosphere.snapshot());
   });
 
+  els.btnLive.addEventListener("click", () => {
+    liveFeeds = !liveFeeds;
+    atmosphere.dispose?.();
+    atmosphere = createAtmosphere(120826, { live: liveFeeds });
+    els.btnLive.textContent = liveFeeds ? "Live feeds on" : "Live feeds";
+    els.btnLive.classList.toggle("active", liveFeeds);
+    els.status.textContent = liveFeeds
+      ? "Polling METAR / NOAA / OpenSky / ISS…"
+      : "Simulated atmosphere";
+  });
+
+  els.btnRecord.addEventListener("click", async () => {
+    if (!recorder) return;
+    if (recorder.isRecording()) {
+      const result = await recorder.stop();
+      recorder.download(result);
+      els.btnRecord.textContent = "Record PoC";
+      els.status.textContent = "Recording saved";
+      return;
+    }
+    await audio.resume();
+    if (recorder.start()) {
+      els.btnRecord.textContent = "Stop record";
+      els.status.textContent = "Recording PoC…";
+      if (!clock.isRunning()) setRunning(true);
+    }
+  });
+
   render(clock.snapshot(), dna.express(), atmosphere.snapshot());
   raf = requestAnimationFrame(tick);
 
-  return () => cancelAnimationFrame(raf);
+  return () => {
+    cancelAnimationFrame(raf);
+    atmosphere.dispose?.();
+  };
 }

@@ -11,6 +11,7 @@ const PENTA_POOL = [
   "C6",
 ];
 
+/** Pentatonic mapping — D/E/G from Ds/Fs roots (Salamander minor-thirds pack). */
 const NOTE_MAP = {
   C2: { s: "C2", r: 1.0 },
   D2: { s: "Ds2", r: 0.943874 },
@@ -35,27 +36,45 @@ const NOTE_MAP = {
   C6: { s: "C6", r: 1.0 },
 };
 
-export function createAudioEngine(sampleBase = "samples/salamander-lite/") {
+/** Unique mp3 roots in samples/salamander/pentatonic/ */
+export const SALAMANDER_PENTATONIC_FILES = [
+  "C2", "C3", "C4", "C5", "C6",
+  "A2", "A3", "A4", "A5",
+  "Ds2", "Ds3", "Ds4", "Ds5", "Ds6",
+  "Fs2", "Fs3", "Fs4", "Fs5", "Fs6",
+];
+
+export function createAudioEngine(
+  sampleBase = "samples/salamander/pentatonic/",
+  opts = {}
+) {
   let ctx = null;
   let master = null;
   let buffers = {};
   let ready = false;
   const noteHistory = [];
   let reverseIndex = -1;
+  const onNote = opts.onNote ?? null;
 
-  async function load() {
+  async function load(onProgress) {
     if (ready) return;
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain();
     master.gain.value = 0.72;
     master.connect(ctx.destination);
 
-    const needed = new Set(Object.values(NOTE_MAP).map((m) => m.s));
+    const needed = SALAMANDER_PENTATONIC_FILES;
+    let loaded = 0;
     for (const sample of needed) {
-      const url = `${sampleBase}${sample}v8.wav`;
+      const url = `${sampleBase}${sample}.mp3`;
       const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`Salamander sample missing: ${url} (${res.status})`);
+      }
       const ab = await res.arrayBuffer();
       buffers[sample] = await ctx.decodeAudioData(ab);
+      loaded += 1;
+      if (onProgress) onProgress(loaded, needed.length, sample);
     }
     ready = true;
   }
@@ -98,6 +117,7 @@ export function createAudioEngine(sampleBase = "samples/salamander-lite/") {
 
     const event = { noteName, velocity: v, pan, at: performance.now() };
     if (record) noteHistory.push(event);
+    if (onNote) onNote(event);
     return event;
   }
 
@@ -148,6 +168,8 @@ export function createAudioEngine(sampleBase = "samples/salamander-lite/") {
     load,
     resume,
     isReady: () => ready,
+    getContext: () => ctx,
+    getMaster: () => master,
     triggerForward,
     triggerReverse,
     resetReverse,

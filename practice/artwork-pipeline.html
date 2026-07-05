@@ -295,7 +295,7 @@
       <h3>Sketch phase (Three.js / WebGL)</h3>
       <ul class="checklist">
         <li><input type="checkbox" id="s1" /><label for="s1"><strong>Browser sketch</strong> under <code>sketches/{catalog-path}/</code></label></li>
-        <li><input type="checkbox" id="s2" /><label for="s2"><strong>Self-contained</strong> — passes <code>python3 _scripts/check_self_contained.py</code></label></li>
+        <li><input type="checkbox" id="s2" /><label for="s2"><strong>Self-contained</strong> — full repo passes <code>python3 _scripts/check_self_contained.py</code> (all HTML under <code>sketches/</code>, <code>installations/</code>, <code>machine-aesthetic/</code>, <code>practice/</code>, root <code>index.html</code>; no CDN for core libs; local script paths must exist)</label></li>
         <li><input type="checkbox" id="s3" /><label for="s3"><strong>Kernel wired</strong> — reads <code>express()</code> snapshot, not ad-hoc randomness</label></li>
         <li><input type="checkbox" id="s4" /><label for="s4"><strong>Sound + image, same clock</strong> — one state drives both</label></li>
         <li><input type="checkbox" id="s5" /><label for="s5"><strong>Seed reproducible</strong> — same seed → same organism on any machine</label></li>
@@ -379,7 +379,7 @@ Switch ──┤         └─ projector / map slice
       <ul class="checklist">
         <li><input type="checkbox" id="pub1" /><label for="pub1"><strong>Catalog refreshed</strong> — <code>python3 _scripts/refresh_catalog.py</code></label></li>
         <li><input type="checkbox" id="pub2" /><label for="pub2"><strong>Public URL resolves</strong> — sketch or <code>installations/</code> canonical path</label></li>
-        <li><input type="checkbox" id="pub3" /><label for="pub3"><strong>Self-contained check</strong> — full repo passes before commit</label></li>
+        <li><input type="checkbox" id="pub3" /><label for="pub3"><strong>Self-contained check</strong> — <code>python3 _scripts/check_self_contained.py</code> exits 0 on the full repo before commit or push (see README § Self-contained rule; CI and <code>_scripts/safe_publish.sh</code> run the same gate)</label></li>
         <li><input type="checkbox" id="pub4" /><label for="pub4"><strong>Wi‑Fi off test</strong> — page loads and runs with network disabled</label></li>
         <li><input type="checkbox" id="pub5" /><label for="pub5"><strong>Lifespan verified</strong> — work does not loop forever as a perfect monument</label></li>
       </ul>

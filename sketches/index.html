@@ -140,8 +140,8 @@
 <header>
   <p class="kicker">Studio archive</p>
   <h1>Cat<em>alog</em></h1>
-  <p class="lede">All work organized by series. Click a series to expand. Click any file to open it.</p>
-  <p class="studio-doc-link"><a href="/practice/artwork-pipeline.html">Artwork pipeline</a> — living checklist · updated ongoing</p>
+  <p class="lede">All work organized by series. <strong>Machine DNA</strong> is the studio system; historical submissions appear under project names (e.g. Machine Aesthetic · Loop ’26). Click a series to expand.</p>
+  <p class="studio-doc-link"><a href="/practice/artwork-pipeline.html">Artwork pipeline</a> — Machine DNA living checklist · self-contained publish gate</p>
 </header>
 
 <div class="controls">
@@ -181,391 +181,55 @@
 <script>
 const SERIES = [
   {
-    name: 'Tezos / Objkt — archive',
+    name: 'Machine DNA — studio system',
     files: [
-      {name:'tezos-early-works/index.html', title:'Early Tezos / Objkt works — progression (text + images)', version:false},
-    ]
-  },
-  {
-    name: 'Surrender Machines',
-    files: [
-      {name:'surrender/index.html', title:'Surrender Machines — series index', version:false},
-      {name:'surrender/surrender-machines.html', title:'Surrender Machines', version:false},
-      {name:'surrender/surrender-machine.html', title:'Surrender Machine', version:false},
-      {name:'surrender/surrender 7.html', title:'Surrender 7', version:false},
-    ]
-  },
-  {
-    name: 'Emergent DNA',
-    files: [
-      {name:'emergentdna-000-clean.html', title:'EmergentDNA 000 (clean)', version:false},
-      {name:'emergentdna-000-v2.html', title:'EmergentDNA 000 v2', version:false},
-      {name:'emergentdna-001.html', title:'EmergentDNA 001', version:false},
-      {name:'emergent-studio-v2.html', title:'Emergent DNA Studio', version:false},
-      {name:'emergent_geometry.html', title:'Emergent Geometry', version:false},
-      {name:'emergent - Objkt.html', title:'Emergent — Objkt', version:false},
-      {name:'920_emergentDNA.html', title:'Emergent Machines (920)', version:false},
-      {name:'919 (landscape) w-emergentDNA.html', title:'919 Landscape w/ Emergent DNA', version:false},
-      {name:'919.html', title:'919', version:false},
-      {name:'919_landscape.html', title:'919 Landscape', version:true},
-      {name:'gloabal_age.html', title:'Emergent DNA — Discs → Rectangles', version:false},
-      {name:'test_bridge.html', title:'Emergent DNA — Bridge Test', version:true},
-      {name:'915_manifold_test.html', title:'Emergent DNA — Manifold Test', version:true},
-    ]
-  },
-  {
-    name: 'Living Commons',
-    files: [
-      {name:'living-commons.html', title:'Living Commons', version:false},
-      {name:'living-commons-artwork.html', title:'Living Commons artwork', version:false},
-      {name:'shared-ground.html', title:'Shared Ground', version:false},
-      {name:'shared-ground__3_.html', title:'Shared Ground (v3 clean)', version:false},
-      {name:'the_commons.html', title:'The Commons', version:false},
-      {name:'weaving-commons.html', title:'The Weaving Commons', version:false},
-      {name:'collective-architecture.html', title:'Collective Architecture', version:false},
-      {name:'intersection-commons.html', title:'Intersection Commons', version:false},
-      {name:'together_we_build.html', title:'Together We Build', version:false},
-    ]
-  },
-  {
-    name: 'Traveling Landscape',
-    files: [
-      {name:'traveling-landscape.html', title:'Traveling Landscape', version:false},
-      {name:'traveling_landscape.html', title:'Traveling Landscape (alt)', version:true},
-      {name:'01-traveling-landscape-working.html', title:'Traveling Landscape (working)', version:true},
-      {name:'02-traveling-landscape-live.html', title:'Traveling Landscape (live)', version:true},
-      {name:'traveling_landscape_page.html', title:'Traveling Landscape — page', version:true},
-    ]
-  },
-  {
-    name: 'Moon & Walking',
-    files: [
-      {name:'moon-walking/index.html', title:'Moon & Walking — series index', version:false},
-      {name:'moon-walking/moon-dish.html', title:'Moon Dish', version:false},
-      {name:'moon-walking/bvh_viewer_07_01.html', title:'BVH Viewer — 07_01', version:false},
-      {name:'moon-walking/infinite-walk.html', title:'Infinite Walk', version:false},
-      {name:'moon-walking/figure.html', title:'Figure', version:false},
-      {name:'moon-walking/figure_audio_mobile_simple.html', title:'Figure + Audio (mobile)', version:false},
-      {name:'moon-walking/funk_boy.html', title:'Funk Boy', version:false},
-      {name:'moon-walking/one_revolution.html', title:'One Revolution', version:false},
-    ]
-  },
-  {
-    name: 'Emergent Discs',
-    files: [
-      {name:'emergent-discs/index.html', title:'Emergent Discs — series index', version:false},
-      {name:'emergent-discs/disks.html', title:'Emergent Discs (disks.html)', version:false},
-      {name:'emergent-discs/cells.html', title:'Emergent Discs (cells)', version:false},
-      {name:'emergent-discs/disc-string (1).html', title:'Disc String', version:false},
-      {name:'emergent-discs/string-art.html', title:'String Art', version:false},
-      {name:'emergent-discs/string-art-1.html', title:'String Art 1', version:false},
-      {name:'emergent-discs/string-art-animated.html', title:'String Art — Animated', version:false},
-      {name:'emergent-discs/string-art-circle.html', title:'String Art — Circle', version:false},
-    ]
-  },
-  {
-    name: 'Convergence Era',
-    files: [
-      {name:'convergence-era-v3 copy.html', title:'Convergence Era v3', version:false},
-      {name:'convergence-era-v3 copy 2.html', title:'Convergence Era v3 (2)', version:true},
-      {name:'convergence-era-v3 copy 3.html', title:'Convergence Era v3 (3)', version:true},
-      {name:'convergence-era-v3 copy 4.html', title:'Convergence Era v3 (4)', version:true},
-    ]
-  },
-  {
-    name: 'Three.js / LVE',
-    files: [
-      {name:'lve001.html', title:'Three.js — City Corridor', version:false},
-      {name:'lve002.html', title:'Three.js — Artwork Rewrite', version:false},
-      {name:'lve003.html', title:'One Chamber', version:false},
-      {name:'lve004.html', title:'One Open Chamber', version:false},
-      {name:'lve005.html', title:'One Open Chamber v2', version:true},
-      {name:'lve006.html', title:'One Open Chamber v3', version:true},
-      {name:'lve007.html', title:'Three.js Corridor', version:false},
-      {name:'lve008.html', title:'Gradient Nested Boxes', version:false},
-      {name:'lve009.html', title:'Three.js Corridor v2', version:true},
-      {name:'ai_studio_code (15).html', title:'3JS Shader Port', version:true},
-      {name:'ai_studio_code (16).html', title:'3JS Port — Forward', version:true},
-      {name:'ai_studio_code (17).html', title:'3JS Smooth Forward', version:true},
-      {name:'ai_studio_code (20).html', title:'3JS Forward — Final', version:true},
-      {name:'boxes.html', title:'Three.js Boxes', version:false},
-      {name:'gradient_boxes.html', title:'Gradient Boxes — Three.js', version:false},
-      {name:'inside.html', title:'Vivid Gradient Boxes — Inside', version:false},
-      {name:'inside2.html', title:'Immersive Colored Boxes', version:false},
-      {name:'traffic-light-axometric.html', title:'Traffic Light with Pigeon — Axonometric', version:false},
-    ]
-  },
-  {
-    name: 'Numbered Pieces',
-    files: [
-      {name:'699 (float (iridescent)).html', title:'699 (float, iridescent)', version:false},
-      {name:'710_around.html', title:'710 (around)', version:false},
-      {name:'738 (float).html', title:'738 (float)', version:false},
-      {name:'821 (around) — 1536 × 864.html', title:'821 (around) 1536×864', version:false},
-      {name:'827 (centered) #10.html', title:'827 (centered) #10', version:false},
-      {name:'838_artwork.html', title:'838 artwork', version:false},
-      {name:'899(grounded) 1248 x 1456.html', title:'899 (grounded) 1248×1456', version:false},
-      {name:'904_forward_exhibition.html', title:'904 (forward) Exhibition', version:false},
-      {name:'919_surrender_fixed.html', title:'919 Surrender Fixed', version:true},
-      {name:'922_centered.html', title:'922 (centered)', version:false},
-      {name:'923_centered.html', title:'923 (centered) Breathing Layers', version:false},
-    ]
-  },
-
-  {
-    name: 'Word Art / Text',
-    files: [
-      {name:'text-cylinder.html', title:'Text Cylinder — Volumetric', version:false},
-      {name:'Untitled.html', title:'3D Text Effect', version:false},
-      {name:'Untitled3.html', title:'Text Cylinder Variant', version:false},
-      {name:'3d_print.html', title:'Text to 3D', version:false},
-      {name:'testv7.html', title:'Text Cylinder v7', version:true},
-      {name:'testv8.html', title:'Text Cylinder v8', version:true},
-      {name:'testv9.html', title:'Text Cylinder v9', version:true},
-      {name:'text11.html', title:'Text Cylinder v11', version:true},
-    ]
-  },
-  {
-    name: 'Cubes',
-    files: [
-      {name:'breathing-cubes.html', title:'Breathing Cubes', version:false},
-      {name:'cube.html', title:'Cube', version:false},
-      {name:'rotating-cubes.html', title:'Rotating Cubes', version:false},
-      {name:'cube2.html', title:'Cube 2', version:true},
-      {name:'cube4.html', title:'Cube 4', version:true},
-      {name:'cube6.html', title:'Cube 6', version:true},
-      {name:'ShelvesAndCubes_TL.html', title:'Shelves & Cubes — Transient Labs', version:false},
-    ]
-  },
-  {
-    name: 'Shelves',
-    files: [
-      {name:'shelves.html', title:'Shelves — WebGL', version:false},
-      {name:'shelves_min.html', title:'Sliders Proof (2D)', version:false},
-      {name:'shelves_webgl.html', title:'Shelves — WebGL (with fallback)', version:false},
-    ]
-  },
-  {
-    name: 'Reading the Sky',
-    files: [
-      {name:'reading-the-sky.html', title:'Reading the Sky', version:false},
-      {name:'reading-the-sky_and_agnostic.html', title:'Reading the Sky / Agnostic — Synchronized', version:false},
-      {name:'bubbles.html', title:'Reading the Sky — Bubbles', version:false},
-    ]
-  },
-  {
-    name: 'Audioscape',
-    files: [
-      {name:'audioscape001.html', title:'Soundscape + p5.js', version:false},
-      {name:'pentatonic-piano.html', title:'Pentatonic Piano', version:false},
-      {name:'one_tube.html', title:'One Tube — Beat Sync', version:false},
-    ]
-  },
-  {
-    name: 'Miradas Tangentes, February 2026',
-    files: [
-      {name:'miradas-tangentes-2026/index.html', title:'Miradas Tangentes — Madrid — exhibition index', version:false},
-      {name:'miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg', title:'Miradas Tangentes — Mark Walhimer poster', version:false},
-      {name:'miradas-tangentes-2026/assets/miradasestatic.png', title:'Miradas Tangentes — show poster', version:false},
-      {name:'miradas-tangentes-2026/screen-6.html', title:'Miradas Tangentes — Screen 6 · 917 (around)', version:false},
-      {name:'miradas-tangentes-2026/screen-9.html', title:'Miradas Tangentes — Screen 9 · 918 (forward)', version:false},
-      {name:'miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4', title:'Miradas Tangentes — Screen 6 video', version:false},
-      {name:'miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4', title:'Miradas Tangentes — Screen 9 video', version:false},
-      {name:'miradas-tangentes-2026/README.md', title:'Miradas Tangentes — Madrid — README', version:false},
-      {name:'exhibition_autosync.html', title:'Exhibition Auto-Sync template', version:false},
-      {name:'miradas-tangentes.html', title:'Miradas Tangentes — paired organisms', version:false},
-      {name:'surrender/surrender-machine-madrid.html', title:'Surrender Machine — Madrid', version:false},
-      {name:'surrender/surrender-machine-madrid-v2 2.html', title:'Surrender Machine — Madrid v2', version:false},
-    ]
-  },
-  {
-    name: 'Gradients & Color',
-    files: [
-      {name:'gradient-boxes.html', title:'Gradient Box Column', version:false},
-      {name:'concept-1-color-field.html', title:'Concept 1: Color Field — Corporate Lobby', version:false},
-      {name:'concept-2-kinetic-language.html', title:'Concept 2: Kinetic Language — Hospital', version:false},
-      {name:'concept-3-translucent-layers.html', title:'Concept 3: Translucent Layers — Hotel', version:false},
-      {name:'smear.html', title:'Smear', version:false},
-    ]
-  },
-  {
-    name: 'Mint / NFT',
-    files: [
-      {name:'mint_poc.html', title:'Mint PoC — Swarm Interaction', version:false},
-      {name:'single_mint_poc.html', title:'Single Mint — Evolving Over Time', version:false},
-      {name:'vibe001.html', title:'VIBE — Single Mint PoC', version:false},
-      {name:'vibe1.html', title:'VIBE v1', version:true},
-      {name:'vibe2.html', title:'VIBE v2', version:true},
-    ]
-  },
-  {
-    name: 'Binary Partitions',
-    files: [
-      {name:'binary-partitions-1765814423174.html', title:'Binary Partitions', version:false},
-      {name:'binary-partitions-1765817739662.html', title:'Binary Partitions v2', version:true},
-    ]
-  },
-  {
-    name: 'Miscellaneous',
-    files: [
-      {name:'flower.html', title:'Generative Flower', version:false},
-      {name:'snowfall.html', title:'Snowfall', version:false},
-      {name:'terrain.html', title:'Terrain', version:false},
-      {name:'fluid-dynamics.html', title:'Fluid Dynamics — 3D Points', version:false},
-      {name:'fluid-lines.html', title:'Fluid Lines', version:false},
-      {name:'mural.html', title:'Mural', version:false},
-      {name:'premural.html', title:'Pre-mural', version:false},
-      {name:'murmuration-exhibit.html', title:'Murmuration — Interactive Exhibit', version:false},
-      {name:'umbrellas.html', title:'Floating Umbrellas', version:false},
-      {name:'five.html', title:'Multiple Umbrellas', version:false},
-      {name:'fivegame.html', title:'Umbrella Catch Game', version:false},
-      {name:'squirter.html', title:'Belt / Wheel / Groove', version:false},
-      {name:'pick_up_sticks.html', title:'Pick Up Sticks', version:false},
-      {name:'pickupsticks.html', title:'Pickup Sticks 3D', version:false},
-      {name:'box.html', title:'Box', version:false},
-      {name:'box_of_ocean.html', title:'Grid Cubes + Sliders', version:false},
-      {name:'panels.html', title:'Panels', version:false},
-      {name:'un-grounded.html', title:'un:grounded', version:false},
-      {name:'un-grounded_transient.html', title:'un:grounded — Transient Labs', version:false},
-      {name:'endgame.html', title:'Room Projectors', version:false},
-      {name:'garden.html', title:'Garden', version:false},
-      {name:'minimal_tube.html', title:'One Tube', version:false},
-      {name:'cylinder_lights.html', title:'10 Cylinders with Lights', version:false},
-      {name:'cylinder_lights_enhanced.html', title:'10 Cylinders — Enhanced', version:false},
-      {name:'centered.html', title:'Centered — screen agnostic', version:false},
-      {name:'led_tube_installation.html', title:'LED Tube Curtain Installation', version:false},
-      {name:'sketch-p5.html', title:'sketch-p5', version:false},
-      {name:'furn.html', title:'Furniture', version:false},
-      {name:'furn2.html', title:'Product', version:false},
-      {name:'lights.html', title:'Flash Box', version:false},
-      {name:'forever terrain.html', title:'Forever Terrain', version:false},
-      {name:'lasertemp.html', title:'Lasers, Lights, and Illusion', version:false},
-      {name:'example_artwork.html', title:'Example artwork', version:true},
-      {name:'fluid_dynamics.html', title:'Fluid Dynamics (alt)', version:true},
-      {name:'index 2.html', title:'Cloud Sketch PoC', version:true},
-      {name:'index_slider_test.html', title:'Slider Test', version:true},
-      {name:'lights2.html', title:'Flash Box v2', version:true},
-      {name:'sketch-three.html', title:'Emergent DNA Three.js PoC', version:true},
-      {name:'test.html', title:'Text Cylinder test', version:true},
-      {name:'test2.html', title:'Text Cylinder test2', version:true},
-      {name:'test4.html', title:'Text Cylinder test4', version:true},
-    ]
-  },
-  {
-    name: 'Spatial Orchestrator',
-    files: [
-      {name:'orchestrator.html', title:'8-Pillar Spatial Orchestrator', version:false},
-      {name:'spatial_orchestrator_mixer.html', title:'Spatial Orchestrator Mixer', version:false},
-      {name:'spatial-orchestrator-board.html', title:'Spatial Orchestrator Board', version:false},
-    ]
-  },
-  {
-    name: 'Bloom',
-    files: [
-      {name:'bloom/index.html', title:'Bloom — series index', version:false},
-      {name:'bloom/bloom-four-walls.html', title:'Bloom / Four Walls', version:false},
-      {name:'bloom/bloom-release.html', title:'Bloom / Release', version:false},
-      {name:'bloom/bloom-garden.html', title:'Bloom Garden', version:false},
-      {name:'bloom/bloom.html', title:'Bloom — radial gradient', version:false},
-      {name:'bloom/radial-gradient.html', title:'Radial Gradient', version:false},
-      {name:'bloom/installation-builder-bloom.html', title:'Installation Builder', version:false},
-      {name:'bloom/orchestrator-bloom.html', title:'Orchestrator — Bloom', version:false},
-      {name:'bloom/bloom-surrender.html', title:'Bloom Surrender', version:false},
-      {name:'bloom/bloom-release-cathedral/index.html', title:'Bloom Release Cathedral', version:false},
-    ]
-  },
-  {
-    name: 'Technical',
-    files: [
-      {name:'technical/index.html', title:'Technical — series index', version:false},
-      {name:'technical/technical-drawing-chronicle/index.html', title:'Notes & progression (chronicle)', version:false},
-      {name:'technical/technical-drawing-with-elevation.html', title:'technical 020', version:false},
-      {name:'technical/technical-drawing.html', title:'Technical Drawing (previous)', version:true},
-      {name:'technical/technical-drawing-fxhash.html', title:'Technical Drawing — fxhash', version:false},
-    ]
-  },
-  {
-    name: 'Light Art',
-    files: [
-      {name:'light-art.html', title:'Light Art', version:false},
-      {name:'light-art-023/index.html', title:'Light Art 023 — Modular AV Room Lab', version:false},
-    ]
-  },
-  {
-    name: 'Breathing Columns',
-    files: [
-      {name:'column-tiles-breathing.html', title:'Column Tiles — Breathing', version:false},
-      {name:'column-tiles-breathing-fullscreen.html', title:'Column Tiles — Breathing (fullscreen)', version:false},
-    ]
-  },
-  {
-    name: 'Emergent DNA',
-    files: [
+      {name:'../practice/artwork-pipeline.html', title:'Artwork pipeline — living checklist', version:false},
+      {name:'../catalog/STUDIO-DIRECTION.md', title:'Studio direction — catalog anchor', version:false},
       {name:'emergent-dna/index.html', title:'Emergent DNA — series index', version:false},
+      {name:'../machine-aesthetic/emergent-dna/README.md', title:'Machine DNA kernel — style guide & API', version:false},
+      {name:'../machine-aesthetic/emergent-dna/docs/HOSTS.md', title:'Hosts — C++, OSC, openFrameworks, Pure Data', version:false},
       {name:'../machine-aesthetic/emergent-dna/examples/demo.html', title:'Machine demo — blueprint + gear audio', version:false},
       {name:'../machine-aesthetic/emergent-dna/examples/step.mjs', title:'Kernel CLI step demo (node)', version:false},
-      {name:'../machine-aesthetic/emergent-dna/README.md', title:'Emergent DNA — style guide & kernel API', version:false},
-      {name:'../machine-aesthetic/emergent-dna/docs/HOSTS.md', title:'Hosts — C++, OSC, openFrameworks, Pure Data', version:false},
       {name:'../machine-aesthetic/emergent-dna/schema/genome.example.json', title:'Genome example (JSON)', version:false},
-      {name:'../machine-aesthetic/docs/FIREBASE_DNA.md', title:'Firebase & lineage (draft)', version:false},
       {name:'../machine-aesthetic/docs/OSC.md', title:'OSC contract (draft)', version:false},
+      {name:'../machine-aesthetic/docs/FIREBASE_DNA.md', title:'Firebase & lineage (draft)', version:false},
     ]
   },
   {
-    name: 'Loop · Machine Aesthetic (workspace)',
+    name: 'The Wrong Biennale · The Wrong Eclipse · August 2026',
     files: [
-      {name:'loop-machine-aesthetic/README.md', title:'Loop Machine Aesthetic — README', version:false},
-      {name:'loop-machine-aesthetic/ghost_dense_77823_room.html', title:'Ghost 77823 — walkthrough (workspace)', version:false},
-      {name:'loop-machine-aesthetic/index.html', title:'Loop Machine Aesthetic — redirect', version:false},
-      {name:'loop-machine-aesthetic/counterproduction-essay-v2.pdf', title:'Counterproduction essay (PDF)', version:false},
+      {name:'the-wrong-biennale/the-wrong-eclipse-august-2026/index.html', title:'The Wrong Eclipse August 2026 — series index', version:false},
+      {name:'the-wrong-biennale/the-wrong-eclipse-august-2026/README.md', title:'The Wrong Eclipse August 2026 — WIP README', version:false},
+      {name:'../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md', title:'Holes in the Sky — artwork statement', version:false},
+      {name:'the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html', title:'Holes in the Sky — generative soundscape (PoC)', version:false},
+      {name:'../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md', title:'The Wrong Eclipse August 2026 — opportunity statement', version:false},
     ]
   },
-  {
-    name: 'Loop Snippets',
-    files: [
-      {name:'loop-snippets/surrender-machines.html', title:'Surrender Machines (p5 snippet)', version:false},
-      {name:'loop-snippets/surrender-machines-three.html', title:'Surrender Machines (Three.js snippet)', version:false},
-      {name:'loop-snippets/ghost_dense_77823_three.html', title:'Ghost 77823 — Three.js snippet', version:false},
-      {name:'loop-snippets/ghost_dense_77823_gravity_sliders.html', title:'Ghost 77823 — gravity · sliders', version:false},
-      {name:'loop-snippets/raster-spektrum-study-combined-vol3d-living-copy.html', title:'Chutes — volume · dense machine · seed 77823', version:false},
-      {name:'loop-snippets/rgb-xyz-vol3d-code.html', title:'Chutes — living · code art layer · seed cycles', version:false},
-      {name:'loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html', title:'Surrender Machine 77823', version:false},
-      {name:'loop-snippets/raster-spektrum-study-combined-vol3d-living.html', title:'Chutes — living organism · seed 77823 · lifeline', version:false},
-      {name:'loop-snippets/raster-spektrum-study-combined-vol3d.html', title:'Chutes — open volume world · RGB sound', version:false},
-      {name:'loop-snippets/ghost_dense_77823_room.html', title:'Ghost 77823 room snippet', version:false},
-      {name:'loop-snippets/loop-machine-aesthetic/index.html', title:'Loop snippets — machine aesthetic redirect', version:false},
-    ]
-  },
-  {
-    name: 'April 25',
-    files: [
-      {name:'April 25/roland-s1-recorder.html', title:'Roland S-1 USB Recorder', version:false},
-      {name:'April 25/roland-s1-recording-2.wav', title:'Roland S-1 recording (WAV)', version:false},
-    ]
-  },
-  {
-    name: 'Prix Ars Electronica 2026',
-    files: [
-      {name:'2026-ars-electronica/index.html', title:'Prix Ars Electronica 2026 — series index', version:false},
-      {name:'2026-ars-electronica/README.md', title:'Prix Ars Electronica 2026 — README', version:false},
-    ]
-  },
-  {
-    name: 'The Lumen Prize 2026 · Machine Aesthetic',
-    files: [
-      {name:'2026-lumen-prize-machine-aesthetic/index.html', title:'Machine Aesthetic — series index', version:false},
-      {name:'2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html', title:'Seed 77823 — Rooms walkthrough', version:false},
-      {name:'2026-lumen-prize-machine-aesthetic/counterproduction-essay-v2.pdf', title:'Counterproduction essay (PDF)', version:false},
-      {name:'2026-lumen-prize-machine-aesthetic/counterproduction-essay-v2.md', title:'Counterproduction essay (markdown)', version:false},
-      {name:'2026-lumen-prize-machine-aesthetic/README.md', title:'Lumen Prize 2026 Machine Aesthetic — README', version:false},
-    ]
-  },
-  // Priority folders — last in array = first on page when "Newest first" (default).
   {
     name: 'BYOB CDMX',
     files: [
-      {name:'byob-cdmx/index.html', title:'BYOB CDMX — series index', version:false},
       {name:'byob-cdmx/README.md', title:'BYOB CDMX — README', version:false},
+      {name:'byob-cdmx/index.html', title:'BYOB CDMX — series index', version:false},
+    ]
+  },
+  {
+    name: 'ACTZ — Myths & Legends June 2026',
+    files: [
+      {name:'actz-june-myths-legends-2026/README.md', title:'ACTZ — Myths & Legends June 2026 — README', version:false},
+      {name:'actz-june-myths-legends-2026/index.html', title:'ACTZ — Myths & Legends June 2026 — series index', version:false},
+      {name:'actz-june-myths-legends-2026/gravity-sliders.html', title:'Surrender Machine seed 1909113409 — Gravity · Sliders (actz)', version:false},
+      {name:'actz-june-myths-legends-2026/surrender-machine-dna.html', title:'Surrender Machine — Machine DNA · Lifeline (actz)', version:false},
+      {name:'actz-june-myths-legends-2026/assets/actz-poster.png', title:'ACTZ — Myths & Legends June 2026 — group poster', version:false},
+    ]
+  },
+  {
+    name: 'Loop Art Critique Alumni Show #3 July 2026',
+    files: [
+      {name:'loop-art-critique-alumni-show-2026/README.md', title:'Loop Art Critique Alumni Show #3 — README', version:false},
+      {name:'loop-art-critique-alumni-show-2026/index.html', title:'Loop Art Critique Alumni Show #3 — series index', version:false},
+      {name:'loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png', title:'Loop Art Critique — Family Reunion poster', version:false},
+      {name:'loop-art-critique-2026/loop-21-surrender-machine/index.html', title:'Surrender Machine — Loop 21 alumni piece', version:false},
+      {name:'loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md', title:'Loop 21 surrender wall — notes', version:false},
     ]
   },
   {
@@ -583,26 +247,6 @@ const SERIES = [
     ]
   },
   {
-    name: 'The Wrong Biennale · The Wrong Eclipse · August 2026',
-    files: [
-      {name:'the-wrong-biennale/the-wrong-eclipse-august-2026/index.html', title:'The Wrong Eclipse August 2026 — series index', version:false},
-      {name:'the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html', title:'Holes in the Sky — generative soundscape (PoC)', version:false},
-      {name:'the-wrong-biennale/the-wrong-eclipse-august-2026/README.md', title:'The Wrong Eclipse August 2026 — WIP README', version:false},
-      {name:'../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md', title:'The Wrong Eclipse August 2026 — opportunity statement', version:false},
-      {name:'../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md', title:'Holes in the Sky — artwork statement', version:false},
-    ]
-  },
-  {
-    name: 'Loop Art Critique Alumni Show #3 July 2026',
-    files: [
-      {name:'loop-art-critique-alumni-show-2026/index.html', title:'Loop Art Critique Alumni Show #3 — series index', version:false},
-      {name:'loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png', title:'Loop Art Critique — Family Reunion poster', version:false},
-      {name:'loop-art-critique-alumni-show-2026/README.md', title:'Loop Art Critique Alumni Show #3 — README', version:false},
-      {name:'loop-art-critique-2026/loop-21-surrender-machine/index.html', title:'Surrender Machine — Loop 21 alumni piece', version:false},
-      {name:'loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md', title:'Loop 21 surrender wall — notes', version:false},
-    ]
-  },
-  {
     name: 'Async Museum',
     files: [
       {name:'async-museums/index.html', title:'Async Museum — series index', version:false},
@@ -611,38 +255,394 @@ const SERIES = [
     ]
   },
   {
-    name: 'Loop Art Critique 2026',
-    files: [
-      {name:'loop-art-critique-2026/index.html', title:'Loop Art Critique 2026 — bundle index', version:false},
-      {name:'loop-art-critique-2026/README.md', title:'Loop Art Critique 2026 — README', version:false},
-      {name:'loop-art-critique-2026/critique-hub.html', title:'Critique hub (presentation)', version:false},
-      {name:'loop-art-critique-2026/installation-composer-emergent-dna-soundscape.md', title:'Installation Composer × Emergent DNA × Soundscape', version:false},
-      {name:'loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html', title:'Machine Aesthetic — Ghost 77823 walkthrough', version:false},
-      {name:'loop-art-critique-2026/machine-aesthetic/index.html', title:'Machine Aesthetic — series index', version:false},
-      {name:'loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.pdf', title:'Counterproduction essay (PDF)', version:false},
-      {name:'loop-art-critique-2026/april-25/loop-art-critique-combined.html', title:'Loop Art Critique — Combined Flow', version:false},
-      {name:'loop-art-critique-2026/april-25/loop-art-critique-technical-surrender.html', title:'Loop Art Critique — Technical Surrender', version:false},
-      {name:'loop-art-critique-2026/april-25/machine-aesthetic.html', title:'Machine Aesthetic — Loop Art Critique', version:false},
-      {name:'loop-art-critique-2026/bloom-four-walls.html', title:'Bloom / Four Walls', version:false},
-      {name:'loop-art-critique-2026/webcam-point-cloud/v3-breath/index.html', title:'Webcam point cloud — v3 breath', version:false},
-      {name:'loop-art-critique-2026/orchestrator.html', title:'8-pillar spatial orchestrator', version:false},
-    ]
-  },
-  {
-    name: 'ACTZ — Myths & Legends June 2026',
-    files: [
-      {name:'actz-june-myths-legends-2026/index.html', title:'ACTZ — Myths & Legends June 2026 — series index', version:false},
-      {name:'actz-june-myths-legends-2026/README.md', title:'ACTZ — Myths & Legends June 2026 — README', version:false},
-      {name:'actz-june-myths-legends-2026/assets/actz-poster.png', title:'ACTZ — Myths & Legends June 2026 — group poster', version:false},
-      {name:'actz-june-myths-legends-2026/gravity-sliders.html', title:'Surrender Machine seed 1909113409 — Gravity · Sliders (actz)', version:false},
-      {name:'actz-june-myths-legends-2026/surrender-machine-dna.html', title:'Surrender Machine — Machine DNA · Lifeline (actz)', version:false},
-    ]
-  },
-  {
     name: 'ArtistCommons',
     files: [
       {name:'artist-commons/index.html', title:'Artist Commons — series index', version:false},
       {name:'artist-commons/README.md', title:'Artist Commons — README', version:false},
+    ]
+  },
+  {
+    name: 'Miradas Tangentes, February 2026',
+    files: [
+      {name:'miradas-tangentes-2026/index.html', title:'Miradas Tangentes — Madrid — exhibition index', version:false},
+      {name:'miradas-tangentes-2026/README.md', title:'Miradas Tangentes — Madrid — README', version:false},
+      {name:'surrender/surrender-machine-madrid-v2 2.html', title:'Surrender Machine — Madrid v2', version:false},
+      {name:'surrender/surrender-machine-madrid.html', title:'Surrender Machine — Madrid', version:false},
+      {name:'miradas-tangentes.html', title:'Miradas Tangentes — paired organisms', version:false},
+      {name:'exhibition_autosync.html', title:'Exhibition Auto-Sync template', version:false},
+      {name:'miradas-tangentes-2026/assets/miradasestatic.png', title:'Miradas Tangentes — show poster', version:false},
+      {name:'miradas-tangentes-2026/assets/miradas-tangentes-mark-walhimer-poster.jpg', title:'Miradas Tangentes — Mark Walhimer poster', version:false},
+      {name:'miradas-tangentes-2026/screen-9.html', title:'Miradas Tangentes — Screen 9 · 918 (forward)', version:false},
+      {name:'miradas-tangentes-2026/screen-6.html', title:'Miradas Tangentes — Screen 6 · 917 (around)', version:false},
+      {name:'miradas-tangentes-2026/assets/09-01-mark-walhimer.mp4', title:'Miradas Tangentes — Screen 9 video', version:false},
+      {name:'miradas-tangentes-2026/assets/06-01-mark-walhimer.mp4', title:'Miradas Tangentes — Screen 6 video', version:false},
+    ]
+  },
+  {
+    name: 'Surrender Machines',
+    files: [
+      {name:'surrender/index.html', title:'Surrender Machines — series index', version:false},
+      {name:'surrender/surrender 7.html', title:'Surrender 7', version:false},
+      {name:'surrender/surrender-machines.html', title:'Surrender Machines', version:false},
+      {name:'surrender/surrender-machine.html', title:'Surrender Machine', version:false},
+    ]
+  },
+  {
+    name: 'Light Art',
+    files: [
+      {name:'light-art-023/index.html', title:'Light Art 023 — Modular AV Room Lab', version:false},
+      {name:'light-art.html', title:'Light Art', version:false},
+    ]
+  },
+  {
+    name: 'Tezos / Objkt — archive',
+    files: [
+      {name:'tezos-early-works/index.html', title:'Early Tezos / Objkt works — progression (text + images)', version:false},
+    ]
+  },
+  {
+    name: 'Machine DNA · Lumen Prize 2026 (project: Machine Aesthetic · frozen submission)',
+    files: [
+      {name:'2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html', title:'Seed 77823 — Rooms walkthrough', version:false},
+      {name:'2026-lumen-prize-machine-aesthetic/index.html', title:'Lumen 2026 — series index (project: Machine Aesthetic)', version:false},
+      {name:'2026-lumen-prize-machine-aesthetic/README.md', title:'Lumen Prize 2026 — README (project: Machine Aesthetic)', version:false},
+      {name:'2026-lumen-prize-machine-aesthetic/counterproduction-essay-v2.pdf', title:'Counterproduction essay (PDF)', version:false},
+      {name:'2026-lumen-prize-machine-aesthetic/counterproduction-essay-v2.md', title:'Counterproduction essay (markdown)', version:false},
+    ]
+  },
+  {
+    name: 'Prix Ars Electronica 2026',
+    files: [
+      {name:'2026-ars-electronica/index.html', title:'Prix Ars Electronica 2026 — series index', version:false},
+      {name:'2026-ars-electronica/README.md', title:'Prix Ars Electronica 2026 — README', version:false},
+    ]
+  },
+  {
+    name: 'Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)',
+    files: [
+      {name:'loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html', title:'Ghost 77823 walkthrough (project: Machine Aesthetic)', version:false},
+      {name:'loop-art-critique-2026/webcam-point-cloud/v3-breath/index.html', title:'Webcam point cloud — v3 breath', version:false},
+      {name:'loop-art-critique-2026/bloom-four-walls.html', title:'Bloom / Four Walls', version:false},
+      {name:'loop-art-critique-2026/machine-aesthetic/index.html', title:'Loop 2026 — series index (project: Machine Aesthetic)', version:false},
+      {name:'loop-art-critique-2026/index.html', title:'Loop Art Critique 2026 — bundle index', version:false},
+      {name:'loop-art-critique-2026/README.md', title:'Loop Art Critique 2026 — README', version:false},
+      {name:'loop-art-critique-2026/critique-hub.html', title:'Critique hub (presentation)', version:false},
+      {name:'loop-art-critique-2026/installation-composer-emergent-dna-soundscape.md', title:'Installation Composer × Emergent DNA × Soundscape', version:false},
+      {name:'loop-art-critique-2026/april-25/machine-aesthetic.html', title:'Loop Art Critique — Machine Aesthetic (April packet)', version:false},
+      {name:'loop-art-critique-2026/april-25/loop-art-critique-technical-surrender.html', title:'Loop Art Critique — Technical Surrender', version:false},
+      {name:'loop-art-critique-2026/april-25/loop-art-critique-combined.html', title:'Loop Art Critique — Combined Flow', version:false},
+      {name:'loop-art-critique-2026/machine-aesthetic/counterproduction-essay-v2.pdf', title:'Counterproduction essay (PDF)', version:false},
+      {name:'loop-art-critique-2026/orchestrator.html', title:'8-pillar spatial orchestrator', version:false},
+    ]
+  },
+  {
+    name: 'Technical',
+    files: [
+      {name:'technical/technical-drawing.html', title:'Technical Drawing (previous)', version:true},
+      {name:'technical/technical-drawing-with-elevation.html', title:'technical 020', version:false},
+      {name:'technical/technical-drawing-fxhash.html', title:'Technical Drawing — fxhash', version:false},
+      {name:'technical/technical-drawing-chronicle/index.html', title:'Notes & progression (chronicle)', version:false},
+      {name:'technical/index.html', title:'Technical — series index', version:false},
+    ]
+  },
+  {
+    name: 'Emergent Discs',
+    files: [
+      {name:'emergent-discs/disc-string (1).html', title:'Disc String', version:false},
+      {name:'emergent-discs/string-art.html', title:'String Art', version:false},
+      {name:'emergent-discs/string-art-circle.html', title:'String Art — Circle', version:false},
+      {name:'emergent-discs/disks.html', title:'Emergent Discs (disks.html)', version:false},
+      {name:'emergent-discs/cells.html', title:'Emergent Discs (cells)', version:false},
+      {name:'emergent-discs/index.html', title:'Emergent Discs — series index', version:false},
+      {name:'emergent-discs/string-art-1.html', title:'String Art 1', version:false},
+      {name:'emergent-discs/string-art-animated.html', title:'String Art — Animated', version:false},
+    ]
+  },
+  {
+    name: 'Moon & Walking',
+    files: [
+      {name:'moon-walking/one_revolution.html', title:'One Revolution', version:false},
+      {name:'moon-walking/funk_boy.html', title:'Funk Boy', version:false},
+      {name:'moon-walking/index.html', title:'Moon & Walking — series index', version:false},
+      {name:'moon-walking/figure.html', title:'Figure', version:false},
+      {name:'moon-walking/bvh_viewer_07_01.html', title:'BVH Viewer — 07_01', version:false},
+      {name:'moon-walking/moon-dish.html', title:'Moon Dish', version:false},
+      {name:'moon-walking/infinite-walk.html', title:'Infinite Walk', version:false},
+      {name:'moon-walking/figure_audio_mobile_simple.html', title:'Figure + Audio (mobile)', version:false},
+    ]
+  },
+  {
+    name: 'Bloom',
+    files: [
+      {name:'bloom/orchestrator-bloom.html', title:'Orchestrator — Bloom', version:false},
+      {name:'bloom/bloom-surrender.html', title:'Bloom Surrender', version:false},
+      {name:'bloom/bloom-release.html', title:'Bloom / Release', version:false},
+      {name:'bloom/radial-gradient.html', title:'Radial Gradient', version:false},
+      {name:'bloom/bloom.html', title:'Bloom — radial gradient', version:false},
+      {name:'bloom/bloom-garden.html', title:'Bloom Garden', version:false},
+      {name:'bloom/index.html', title:'Bloom — series index', version:false},
+      {name:'bloom/bloom-release-cathedral/index.html', title:'Bloom Release Cathedral', version:false},
+      {name:'bloom/bloom-four-walls.html', title:'Bloom / Four Walls', version:false},
+      {name:'bloom/installation-builder-bloom.html', title:'Installation Builder', version:false},
+    ]
+  },
+  {
+    name: 'Machine DNA · Loop workspace (project: Machine Aesthetic)',
+    files: [
+      {name:'loop-machine-aesthetic/ghost_dense_77823_room.html', title:'Ghost 77823 — walkthrough (workspace)', version:false},
+      {name:'loop-machine-aesthetic/README.md', title:'Loop workspace — README (project: Machine Aesthetic)', version:false},
+      {name:'loop-machine-aesthetic/index.html', title:'Loop workspace — redirect', version:false},
+      {name:'loop-machine-aesthetic/counterproduction-essay-v2.pdf', title:'Counterproduction essay (PDF)', version:false},
+    ]
+  },
+  {
+    name: 'Loop Snippets',
+    files: [
+      {name:'loop-snippets/surrender-machines-three.html', title:'Surrender Machines (Three.js snippet)', version:false},
+      {name:'loop-snippets/surrender-machines.html', title:'Surrender Machines (p5 snippet)', version:false},
+      {name:'loop-snippets/ghost_dense_77823_gravity_sliders.html', title:'Ghost 77823 — gravity · sliders', version:false},
+      {name:'loop-snippets/rgb-xyz-vol3d-code.html', title:'Chutes — living · code art layer · seed cycles', version:false},
+      {name:'loop-snippets/raster-spektrum-study-combined-vol3d.html', title:'Chutes — open volume world · RGB sound', version:false},
+      {name:'loop-snippets/raster-spektrum-study-combined-vol3d-living.html', title:'Chutes — living organism · seed 77823 · lifeline', version:false},
+      {name:'loop-snippets/raster-spektrum-study-combined-vol3d-living-copy.html', title:'Chutes — volume · dense machine · seed 77823', version:false},
+      {name:'loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html', title:'Surrender Machine 77823', version:false},
+      {name:'loop-snippets/ghost_dense_77823_three.html', title:'Ghost 77823 — Three.js snippet', version:false},
+      {name:'loop-snippets/ghost_dense_77823_room.html', title:'Ghost 77823 room snippet', version:false},
+      {name:'loop-snippets/loop-machine-aesthetic/index.html', title:'Loop snippets — machine aesthetic redirect', version:false},
+    ]
+  },
+  {
+    name: 'Machine DNA — early sketches',
+    files: [
+      {name:'test_bridge.html', title:'Emergent DNA — Bridge Test', version:true},
+      {name:'gloabal_age.html', title:'Emergent DNA — Discs → Rectangles', version:false},
+      {name:'emergentdna-001.html', title:'EmergentDNA 001', version:false},
+      {name:'emergentdna-000-v2.html', title:'EmergentDNA 000 v2', version:false},
+      {name:'emergentdna-000-clean.html', title:'EmergentDNA 000 (clean)', version:false},
+      {name:'emergent_geometry.html', title:'Emergent Geometry', version:false},
+      {name:'emergent-studio-v2.html', title:'Emergent DNA Studio', version:false},
+      {name:'920_emergentDNA.html', title:'Emergent Machines (920)', version:false},
+      {name:'919_landscape.html', title:'919 Landscape', version:true},
+      {name:'919.html', title:'919', version:false},
+      {name:'919 (landscape) w-emergentDNA.html', title:'919 Landscape w/ Emergent DNA', version:false},
+      {name:'915_manifold_test.html', title:'Emergent DNA — Manifold Test', version:true},
+      {name:'emergent - Objkt.html', title:'Emergent — Objkt', version:false},
+    ]
+  },
+  {
+    name: 'Living Commons',
+    files: [
+      {name:'shared-ground__3_.html', title:'Shared Ground (v3 clean)', version:false},
+      {name:'together_we_build.html', title:'Together We Build', version:false},
+      {name:'the_commons.html', title:'The Commons', version:false},
+      {name:'living-commons-artwork.html', title:'Living Commons artwork', version:false},
+      {name:'collective-architecture.html', title:'Collective Architecture', version:false},
+      {name:'living-commons.html', title:'Living Commons', version:false},
+      {name:'weaving-commons.html', title:'The Weaving Commons', version:false},
+      {name:'intersection-commons.html', title:'Intersection Commons', version:false},
+      {name:'shared-ground.html', title:'Shared Ground', version:false},
+    ]
+  },
+  {
+    name: 'Traveling Landscape',
+    files: [
+      {name:'traveling_landscape_page.html', title:'Traveling Landscape — page', version:true},
+      {name:'traveling_landscape.html', title:'Traveling Landscape (alt)', version:true},
+      {name:'traveling-landscape.html', title:'Traveling Landscape', version:false},
+      {name:'02-traveling-landscape-live.html', title:'Traveling Landscape (live)', version:true},
+      {name:'01-traveling-landscape-working.html', title:'Traveling Landscape (working)', version:true},
+    ]
+  },
+  {
+    name: 'Convergence Era',
+    files: [
+      {name:'convergence-era-v3 copy 2.html', title:'Convergence Era v3 (2)', version:true},
+      {name:'convergence-era-v3 copy.html', title:'Convergence Era v3', version:false},
+      {name:'convergence-era-v3 copy 3.html', title:'Convergence Era v3 (3)', version:true},
+      {name:'convergence-era-v3 copy 4.html', title:'Convergence Era v3 (4)', version:true},
+    ]
+  },
+  {
+    name: 'Three.js / LVE',
+    files: [
+      {name:'lve005.html', title:'One Open Chamber v2', version:true},
+      {name:'ai_studio_code (16).html', title:'3JS Port — Forward', version:true},
+      {name:'lve004.html', title:'One Open Chamber', version:false},
+      {name:'lve002.html', title:'Three.js — Artwork Rewrite', version:false},
+      {name:'gradient_boxes.html', title:'Gradient Boxes — Three.js', version:false},
+      {name:'lve003.html', title:'One Chamber', version:false},
+      {name:'ai_studio_code (17).html', title:'3JS Smooth Forward', version:true},
+      {name:'lve001.html', title:'Three.js — City Corridor', version:false},
+      {name:'lve006.html', title:'One Open Chamber v3', version:true},
+      {name:'ai_studio_code (15).html', title:'3JS Shader Port', version:true},
+      {name:'traffic-light-axometric.html', title:'Traffic Light with Pigeon — Axonometric', version:false},
+      {name:'lve007.html', title:'Three.js Corridor', version:false},
+      {name:'lve009.html', title:'Three.js Corridor v2', version:true},
+      {name:'ai_studio_code (20).html', title:'3JS Forward — Final', version:true},
+      {name:'lve008.html', title:'Gradient Nested Boxes', version:false},
+      {name:'inside2.html', title:'Immersive Colored Boxes', version:false},
+      {name:'inside.html', title:'Vivid Gradient Boxes — Inside', version:false},
+      {name:'boxes.html', title:'Three.js Boxes', version:false},
+    ]
+  },
+  {
+    name: 'Numbered Pieces',
+    files: [
+      {name:'923_centered.html', title:'923 (centered) Breathing Layers', version:false},
+      {name:'922_centered.html', title:'922 (centered)', version:false},
+      {name:'919_surrender_fixed.html', title:'919 Surrender Fixed', version:true},
+      {name:'904_forward_exhibition.html', title:'904 (forward) Exhibition', version:false},
+      {name:'899(grounded) 1248 x 1456.html', title:'899 (grounded) 1248×1456', version:false},
+      {name:'738 (float).html', title:'738 (float)', version:false},
+      {name:'710_around.html', title:'710 (around)', version:false},
+      {name:'699 (float (iridescent)).html', title:'699 (float, iridescent)', version:false},
+      {name:'827 (centered) #10.html', title:'827 (centered) #10', version:false},
+      {name:'821 (around) — 1536 × 864.html', title:'821 (around) 1536×864', version:false},
+      {name:'838_artwork.html', title:'838 artwork', version:false},
+    ]
+  },
+  {
+    name: 'Word Art / Text',
+    files: [
+      {name:'text11.html', title:'Text Cylinder v11', version:true},
+      {name:'3d_print.html', title:'Text to 3D', version:false},
+      {name:'text-cylinder.html', title:'Text Cylinder — Volumetric', version:false},
+      {name:'Untitled3.html', title:'Text Cylinder Variant', version:false},
+      {name:'testv8.html', title:'Text Cylinder v8', version:true},
+      {name:'testv9.html', title:'Text Cylinder v9', version:true},
+      {name:'testv7.html', title:'Text Cylinder v7', version:true},
+      {name:'Untitled.html', title:'3D Text Effect', version:false},
+    ]
+  },
+  {
+    name: 'Cubes',
+    files: [
+      {name:'cube6.html', title:'Cube 6', version:true},
+      {name:'cube4.html', title:'Cube 4', version:true},
+      {name:'cube2.html', title:'Cube 2', version:true},
+      {name:'breathing-cubes.html', title:'Breathing Cubes', version:false},
+      {name:'rotating-cubes.html', title:'Rotating Cubes', version:false},
+      {name:'ShelvesAndCubes_TL.html', title:'Shelves & Cubes — Transient Labs', version:false},
+      {name:'cube.html', title:'Cube', version:false},
+    ]
+  },
+  {
+    name: 'Shelves',
+    files: [
+      {name:'shelves_webgl.html', title:'Shelves — WebGL (with fallback)', version:false},
+      {name:'shelves_min.html', title:'Sliders Proof (2D)', version:false},
+      {name:'shelves.html', title:'Shelves — WebGL', version:false},
+    ]
+  },
+  {
+    name: 'Reading the Sky',
+    files: [
+      {name:'bubbles.html', title:'Reading the Sky — Bubbles', version:false},
+      {name:'reading-the-sky.html', title:'Reading the Sky', version:false},
+      {name:'reading-the-sky_and_agnostic.html', title:'Reading the Sky / Agnostic — Synchronized', version:false},
+    ]
+  },
+  {
+    name: 'Audioscape',
+    files: [
+      {name:'pentatonic-piano.html', title:'Pentatonic Piano', version:false},
+      {name:'one_tube.html', title:'One Tube — Beat Sync', version:false},
+      {name:'audioscape001.html', title:'Soundscape + p5.js', version:false},
+    ]
+  },
+  {
+    name: 'Gradients & Color',
+    files: [
+      {name:'gradient-boxes.html', title:'Gradient Box Column', version:false},
+      {name:'concept-1-color-field.html', title:'Concept 1: Color Field — Corporate Lobby', version:false},
+      {name:'smear.html', title:'Smear', version:false},
+      {name:'concept-2-kinetic-language.html', title:'Concept 2: Kinetic Language — Hospital', version:false},
+      {name:'concept-3-translucent-layers.html', title:'Concept 3: Translucent Layers — Hotel', version:false},
+    ]
+  },
+  {
+    name: 'Mint / NFT',
+    files: [
+      {name:'vibe2.html', title:'VIBE v2', version:true},
+      {name:'vibe1.html', title:'VIBE v1', version:true},
+      {name:'vibe001.html', title:'VIBE — Single Mint PoC', version:false},
+      {name:'mint_poc.html', title:'Mint PoC — Swarm Interaction', version:false},
+      {name:'single_mint_poc.html', title:'Single Mint — Evolving Over Time', version:false},
+    ]
+  },
+  {
+    name: 'Binary Partitions',
+    files: [
+      {name:'binary-partitions-1765817739662.html', title:'Binary Partitions v2', version:true},
+      {name:'binary-partitions-1765814423174.html', title:'Binary Partitions', version:false},
+    ]
+  },
+  {
+    name: 'Miscellaneous',
+    files: [
+      {name:'snowfall.html', title:'Snowfall', version:false},
+      {name:'murmuration-exhibit.html', title:'Murmuration — Interactive Exhibit', version:false},
+      {name:'box.html', title:'Box', version:false},
+      {name:'un-grounded_transient.html', title:'un:grounded — Transient Labs', version:false},
+      {name:'un-grounded.html', title:'un:grounded', version:false},
+      {name:'test2.html', title:'Text Cylinder test2', version:true},
+      {name:'squirter.html', title:'Belt / Wheel / Groove', version:false},
+      {name:'sketch-three.html', title:'Emergent DNA Three.js PoC', version:true},
+      {name:'sketch-p5.html', title:'sketch-p5', version:false},
+      {name:'pickupsticks.html', title:'Pickup Sticks 3D', version:false},
+      {name:'pick_up_sticks.html', title:'Pick Up Sticks', version:false},
+      {name:'panels.html', title:'Panels', version:false},
+      {name:'minimal_tube.html', title:'One Tube', version:false},
+      {name:'lights2.html', title:'Flash Box v2', version:true},
+      {name:'lights.html', title:'Flash Box', version:false},
+      {name:'led_tube_installation.html', title:'LED Tube Curtain Installation', version:false},
+      {name:'index_slider_test.html', title:'Slider Test', version:true},
+      {name:'index 2.html', title:'Cloud Sketch PoC', version:true},
+      {name:'fluid_dynamics.html', title:'Fluid Dynamics (alt)', version:true},
+      {name:'fluid-lines.html', title:'Fluid Lines', version:false},
+      {name:'fluid-dynamics.html', title:'Fluid Dynamics — 3D Points', version:false},
+      {name:'flower.html', title:'Generative Flower', version:false},
+      {name:'fivegame.html', title:'Umbrella Catch Game', version:false},
+      {name:'five.html', title:'Multiple Umbrellas', version:false},
+      {name:'endgame.html', title:'Room Projectors', version:false},
+      {name:'cylinder_lights_enhanced.html', title:'10 Cylinders — Enhanced', version:false},
+      {name:'cylinder_lights.html', title:'10 Cylinders with Lights', version:false},
+      {name:'centered.html', title:'Centered — screen agnostic', version:false},
+      {name:'box_of_ocean.html', title:'Grid Cubes + Sliders', version:false},
+      {name:'lasertemp.html', title:'Lasers, Lights, and Illusion', version:false},
+      {name:'furn.html', title:'Furniture', version:false},
+      {name:'garden.html', title:'Garden', version:false},
+      {name:'umbrellas.html', title:'Floating Umbrellas', version:false},
+      {name:'test.html', title:'Text Cylinder test', version:true},
+      {name:'test4.html', title:'Text Cylinder test4', version:true},
+      {name:'furn2.html', title:'Product', version:false},
+      {name:'terrain.html', title:'Terrain', version:false},
+      {name:'premural.html', title:'Pre-mural', version:false},
+      {name:'mural.html', title:'Mural', version:false},
+      {name:'forever terrain.html', title:'Forever Terrain', version:false},
+      {name:'example_artwork.html', title:'Example artwork', version:true},
+    ]
+  },
+  {
+    name: 'Spatial Orchestrator',
+    files: [
+      {name:'spatial-orchestrator-board.html', title:'Spatial Orchestrator Board', version:false},
+      {name:'orchestrator.html', title:'8-Pillar Spatial Orchestrator', version:false},
+      {name:'spatial_orchestrator_mixer.html', title:'Spatial Orchestrator Mixer', version:false},
+    ]
+  },
+  {
+    name: 'Breathing Columns',
+    files: [
+      {name:'column-tiles-breathing.html', title:'Column Tiles — Breathing', version:false},
+      {name:'column-tiles-breathing-fullscreen.html', title:'Column Tiles — Breathing (fullscreen)', version:false},
+    ]
+  },
+  {
+    name: 'April 25',
+    files: [
+      {name:'April 25/roland-s1-recorder.html', title:'Roland S-1 USB Recorder', version:false},
+      {name:'April 25/roland-s1-recording-2.wav', title:'Roland S-1 recording (WAV)', version:false},
     ]
   },
 ];
@@ -659,7 +659,7 @@ function build() {
   let visibleFiles = 0;
   let visibleSeries = 0;
 
-  const orderedPairs = sortOrder === 'desc'
+  const orderedPairs = sortOrder === 'asc'
     ? [...SERIES.entries()].map(([si, s]) => ({ si, s })).reverse()
     : [...SERIES.entries()].map(([si, s]) => ({ si, s }));
 

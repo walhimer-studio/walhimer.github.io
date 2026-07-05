@@ -109,6 +109,7 @@
     }
     button:hover { border-color: rgba(154,168,200,0.7); color: var(--ink); }
     button:disabled { opacity: 0.35; cursor: default; }
+    button.active { border-color: rgba(196,184,150,0.7); color: var(--life); }
     #status-label { color: var(--accent); margin-bottom: 16px; min-height: 1.4em; }
     #osc-log {
       white-space: pre-wrap;
@@ -161,12 +162,15 @@
       <button type="button" id="btn-start">Start</button>
       <button type="button" id="btn-stop" disabled>Stop</button>
       <button type="button" id="btn-reset">Reset</button>
+      <button type="button" id="btn-live">Live feeds</button>
+      <button type="button" id="btn-record">Record PoC</button>
     </div>
 
     <pre id="osc-log">/hit/ready 1</pre>
   </div>
 
   <p class="foot">
+    <a href="bandcamp-poc.md">Bandcamp PoC</a> ·
     <a href="index.html">Series hub</a> ·
     <a href="../../../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md">Statement</a> ·
     <a href="../../index.html">Catalog</a>

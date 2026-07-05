@@ -38,3 +38,14 @@ export function snapshotToOsc(snapshot, atmosphere, clock) {
 export function formatOscLine([addr, ...args]) {
   return `${addr} ${args.map((a) => (typeof a === "number" ? a.toFixed(4) : a)).join(" ")}`;
 }
+
+/** Note event for Pure Data Salamander sampler (midi-ish + binaural pan). */
+export function noteToOsc(noteName, velocity, pan, reverse = false) {
+  return [
+    [`${OSC_PREFIX}/note/name`, noteName],
+    [`${OSC_PREFIX}/note/vel`, velocity],
+    [`${OSC_PREFIX}/note/pan`, pan],
+    [`${OSC_PREFIX}/note/reverse`, reverse ? 1 : 0],
+    [`${OSC_PREFIX}/note/trigger`, 1],
+  ];
+}

@@ -9,24 +9,42 @@ Work in progress — generative soundscape for [The Wrong Eclipse](https://thewr
 | **Archive** | [`catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/`](../../../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/) |
 | **Statement** | [`holes-in-the-sky.md`](../../../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md) |
 
-## Run locally
+## Run browser PoC
 
-Open `holes-in-the-sky.html` in a browser (or serve from repo root). **Headphones recommended.**
+Open `holes-in-the-sky.html` · **headphones** · **Start** · optional **Live feeds** · **Record PoC** for Bandcamp draft.
 
-- **Start** — compressed 10-minute eclipse arc (forward → deep → ~60s reverse → unwind)
-- **Stop / Reset** — pause or clear note history
+Salamander samples: `samples/salamander/` (full pack) · `samples/salamander/pentatonic/` (PoC). Reinstall:
 
-## v0 stack (this folder)
+```bash
+python3 _scripts/install_salamander_samples.py
+```
+
+## Full stack (eclipse day)
+
+| Layer | Path |
+|-------|------|
+| OpenFrameworks brain | `openframeworks/HolesInTheSky/` |
+| Pure Data audio | `pure-data/holes-in-the-sky-vanilla.pd` |
+| Live feed bridge | `node feed-bridge.mjs` |
+| OSC contract | `osc-contract.md` |
+| Bandcamp checklist | `bandcamp-poc.md` |
+
+```bash
+# Terminal 1
+node feed-bridge.mjs
+
+# Terminal 2 — build & run OF brain (see openframeworks/HolesInTheSky/README.md)
+
+# Pure Data — open pure-data/holes-in-the-sky-vanilla.pd · Media → DSP on
+```
+
+## Modules
 
 | File | Role |
 |------|------|
-| `machine-dna-kernel.mjs` | Machine DNA species — `express()` each tick |
-| `eclipse-clock.mjs` | Maitino 12 Aug 2026 timing + simulate mode |
-| `atmosphere.mjs` | PoC atmospheric inputs (live APIs TBD) |
-| `audio-engine.mjs` | Salamander pentatonic + binaural L/R |
-| `osc-map.mjs` | `/hit` OSC namespace |
-| `holes-in-the-sky-app.mjs` | Host loop |
-| `holes-in-the-sky.pd` | PD receive stub (port 9000) |
-| `samples/salamander-lite/` | Local Salamander Grand samples |
-
-Next: OpenFrameworks brain + live NOAA / METAR / flight / satellite feeds on eclipse day.
+| `machine-dna-kernel.mjs` | Machine DNA · `express()` |
+| `eclipse-clock.mjs` | Maitino 12 Aug 2026 timing |
+| `atmosphere.mjs` | Sim + live feed merge |
+| `live-feeds.mjs` | METAR LEAL · NOAA · OpenSky · ISS |
+| `audio-engine.mjs` | Salamander pentatonic · binaural |
+| `bandcamp-recorder.mjs` | Stereo PoC capture |

@@ -2,6 +2,8 @@
 
 How to organize **competitions**, **residencies**, **critiques**, and **ongoing series** under `sketches/` so future-you can always find what you submitted, when, and where.
 
+**All artwork follows one studio pipeline** (Machine DNA, seed identity, hosts, publish gates): [Artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [catalog/STUDIO-DIRECTION.md](../catalog/STUDIO-DIRECTION.md). Mirror that direction in every `catalog/{path}/{artwork}.md` statement.
+
 **Examples in this repo:**
 
 | Folder | Type | Role |
