@@ -35,7 +35,7 @@ catalog/
 sketches/{same-path}/        ← WIP code (mirrors catalog project folders)
 ```
 
-**When you start a new work:** read [STUDIO-DIRECTION.md](./STUDIO-DIRECTION.md) and the [artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html). Create a folder under `catalog/` and write its folder `README.md` (or `index.html` when the folder hub is HTML). Add `{artwork}.md` when the piece has a name. Add WIP files under `sketches/{same-path}/`.
+**When you start a new work:** read [STUDIO-DIRECTION.md](./STUDIO-DIRECTION.md) and the [artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html). Create a folder under `catalog/` and write its folder `README.md` (or `index.html` when the folder hub is HTML). Add `{artwork}.md` when the piece has a name. Add WIP files under `sketches/{same-path}/`. To backfill or register mirrors in bulk: `python3 _scripts/bootstrap_catalog_mirrors.py` (then reorder + refresh + self-contained check).
 
 ---
 
@@ -60,5 +60,44 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 
 | Folder | Description |
 |--------|-------------|
-| [the-wrong-biennale/](./the-wrong-biennale/) | The Wrong Biennale — submissions and opportunities |
+| [april-25/](./april-25/) | april 25 |
+| [machine-dna-studio/](./machine-dna-studio/) | machine dna studio |
+| [light-art/](./light-art/) | light art |
+| [loop-art-critique-2026/](./loop-art-critique-2026/) | loop art critique 2026 |
+| [technical/](./technical/) | technical |
+| [loop-snippets/](./loop-snippets/) | loop snippets |
+| [breathing-columns/](./breathing-columns/) | breathing columns |
+| [spatial-orchestrator/](./spatial-orchestrator/) | spatial orchestrator |
+| [miscellaneous/](./miscellaneous/) | miscellaneous |
+| [binary-partitions/](./binary-partitions/) | binary partitions |
+| [mint-nft/](./mint-nft/) | mint nft |
+| [gradients-color/](./gradients-color/) | gradients color |
+| [audioscape/](./audioscape/) | audioscape |
+| [reading-the-sky/](./reading-the-sky/) | reading the sky |
+| [shelves/](./shelves/) | shelves |
+| [cubes/](./cubes/) | cubes |
+| [word-art-text/](./word-art-text/) | word art text |
+| [numbered-pieces/](./numbered-pieces/) | numbered pieces |
+| [three-js-lve/](./three-js-lve/) | three js lve |
+| [convergence-era/](./convergence-era/) | convergence era |
+| [traveling-landscape/](./traveling-landscape/) | traveling landscape |
+| [living-commons/](./living-commons/) | living commons |
+| [machine-dna-early-sketches/](./machine-dna-early-sketches/) | machine dna early sketches |
+| [loop-machine-aesthetic/](./loop-machine-aesthetic/) | loop machine aesthetic |
+| [bloom/](./bloom/) | bloom |
+| [moon-walking/](./moon-walking/) | moon walking |
+| [emergent-discs/](./emergent-discs/) | emergent discs |
+| [2026-ars-electronica/](./2026-ars-electronica/) | 2026 ars electronica |
+| [2026-lumen-prize-machine-aesthetic/](./2026-lumen-prize-machine-aesthetic/) | 2026 lumen prize machine aesthetic |
+| [tezos-early-works/](./tezos-early-works/) | tezos early works |
+| [surrender/](./surrender/) | surrender |
+| [miradas-tangentes-2026/](./miradas-tangentes-2026/) | miradas tangentes 2026 |
+| [artist-commons/](./artist-commons/) | artist commons |
+| [async-museums/](./async-museums/) | async museums |
+| [vhawards-2026/](./vhawards-2026/) | vhawards 2026 |
+| [artblocks-2026/](./artblocks-2026/) | artblocks 2026 |
+| [loop-art-critique-alumni-show-2026/](./loop-art-critique-alumni-show-2026/) | loop art critique alumni show 2026 |
+| [actz-june-myths-legends-2026/](./actz-june-myths-legends-2026/) | actz june myths legends 2026 |
+| [byob-cdmx/](./byob-cdmx/) | byob cdmx |
 | [the-wrong-biennale/the-wrong-eclipse-august-2026/](./the-wrong-biennale/the-wrong-eclipse-august-2026/) | The Wrong Biennale — The Wrong Eclipse · August 2026 · *Holes in the Sky* |
+| [the-wrong-biennale/](./the-wrong-biennale/) | The Wrong Biennale — submissions and opportunities |

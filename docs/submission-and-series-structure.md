@@ -140,11 +140,14 @@ python3 -m http.server 8765
 
 After creating or renaming a submission folder:
 
-1. **Series card** — add/update in [`sketches/index.html`](../sketches/index.html) under **Catalog series**.
-2. **`SERIES` array** — add the same folder + files in the `const SERIES = […]` block in that file (drives search + file list).
-3. **Refresh manifest** — `python3 _scripts/refresh_catalog.py`, commit `data/catalog.json`.
-4. **Push** — GitHub Pages rebuilds mark-walhimer.com.
-5. **Redirects** — if you renamed a folder or entry file, leave stub HTML at the old path (see [`sketches/lumen-machine-aesthetic/`](../sketches/lumen-machine-aesthetic/) → redirects to `2026-lumen-prize-machine-aesthetic/`).
+1. **Catalog mirror** — `catalog/{path}/README.md` (+ `{artwork}.md` when named); mirror [Wrong Eclipse](../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/) pattern.
+2. **Series card** — add/update in [`sketches/index.html`](../sketches/index.html) under **Catalog series**.
+3. **`SERIES` array** — include `../catalog/{path}/README.md` link in that file (or run `python3 _scripts/bootstrap_catalog_mirrors.py`).
+4. **Reorder** — `python3 _scripts/reorder_series_by_index_mtime.py`
+5. **Refresh manifest** — `python3 _scripts/refresh_catalog.py`, commit `data/catalog.json`.
+6. **Self-contained** — `python3 _scripts/check_self_contained.py` (full repo, exit 0) before commit.
+7. **Push** — GitHub Pages rebuilds mark-walhimer.com.
+8. **Redirects** — if you renamed a folder or entry file, leave stub HTML at the old path (see [`sketches/lumen-machine-aesthetic/`](../sketches/lumen-machine-aesthetic/) → redirects to `2026-lumen-prize-machine-aesthetic/`).
 
 ---
 
