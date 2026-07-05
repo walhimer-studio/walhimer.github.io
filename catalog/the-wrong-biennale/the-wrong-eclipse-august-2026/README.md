@@ -42,7 +42,7 @@ Sources: [Time.now — Alicante](https://time.now/alicante/eclipses/2026-08-12/)
 
 | Work | File | Status |
 |------|------|--------|
-| **Holes in the Sky** | [holes-in-the-sky.md](./holes-in-the-sky.md) | In development |
+| **Listening to the Sky** | [holes-in-the-sky.md](./holes-in-the-sky.md) | In development |
 
 Bandcamp: screenshot of generator UI + binaural L/R audio (PoC). Live re-record **12 August 2026** using atmospheric data above Maitino.
 

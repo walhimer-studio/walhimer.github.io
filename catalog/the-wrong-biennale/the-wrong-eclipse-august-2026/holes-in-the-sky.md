@@ -1,10 +1,10 @@
-# Holes in the Sky
+# Listening to the Sky
 
 **The Wrong Biennale · The Wrong Eclipse · August 2026**
 
 | Field | Value |
 |-------|--------|
-| Title | Holes in the Sky |
+| Title | Listening to the Sky |
 | Year | 2026 |
 | Medium | Generative soundscape (OpenFrameworks, Pure Data, OSC, DSP); Bandcamp stereo/binaural release |
 | Species | New **Machine DNA** species (not Surrender Machines, not Bloom) |
@@ -24,7 +24,7 @@ Code that **listens to the eclipse through the atmosphere** above **Maitino** (T
 
 ## Work description
 
-*Holes in the Sky* is a time-locked listening work for [The Wrong Eclipse](https://thewrong.org/). The sky is the exhibition space; this piece is its soundtrack.
+*Listening to the Sky* is a time-locked listening work for [The Wrong Eclipse](https://thewrong.org/). The sky is the exhibition space; this piece is its soundtrack.
 
 The work does not illustrate the eclipse with visuals or translate image into sound. A **Machine DNA** lifeline drives the generative system: one clock, one genome, simultaneous expression in **sonification** and in the **generator** (life bar, state). Salamander Grand **pentatonic** piano samples — consonant subsets, Bloom-adjacent — are triggered and spatialized as the organism ages.
 

@@ -1,4 +1,4 @@
-# Bandcamp PoC — Holes in the Sky
+# Bandcamp PoC — Listening to the Sky
 
 Submission for [The Wrong Eclipse](https://thewrong.org/) · deadline **1 Aug 2026** · **thewrongbiennale@gmail.com** · subject **The Wrong Eclipse**.
 
@@ -8,7 +8,7 @@ Submission for [The Wrong Eclipse](https://thewrong.org/) · deadline **1 Aug 20
 |------|--------|
 | **Audio** | Binaural / stereo L–R track (headphones) |
 | **Cover** | Screenshot of generator UI (`holes-in-the-sky.html` or OF brain window) |
-| **Title** | Holes in the Sky |
+| **Title** | Listening to the Sky |
 | **Artist** | Mark Walhimer |
 
 ## Record PoC (browser)

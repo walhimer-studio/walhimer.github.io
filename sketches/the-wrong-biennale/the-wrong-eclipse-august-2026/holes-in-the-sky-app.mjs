@@ -4,6 +4,7 @@ import { createAtmosphere } from "./atmosphere.mjs";
 import { createAudioEngine } from "./audio-engine.mjs";
 import { snapshotToOsc, formatOscLine, noteToOsc } from "./osc-map.mjs";
 import { createBandcampRecorder } from "./bandcamp-recorder.mjs";
+import { createBloomGarden } from "./bloom-garden.mjs";
 import { makeRng } from "../../../machine-aesthetic/emergent-dna/kernel/rng.mjs";
 
 export async function bootHolesInTheSky(root) {
@@ -22,9 +23,12 @@ export async function bootHolesInTheSky(root) {
     btnReset: root.querySelector("#btn-reset"),
     btnLive: root.querySelector("#btn-live"),
     btnRecord: root.querySelector("#btn-record"),
+    canvas: root.querySelector("#bloom-canvas"),
   };
 
+  const garden = els.canvas ? createBloomGarden(els.canvas) : null;
   let liveFeeds = false;
+  let lastPhase = "forward";
   const clock = createEclipseClock("simulate");
   const dna = createMachineDna({ seed: 120826, lifespanSeconds: 6360 });
   let atmosphere = createAtmosphere(120826, { live: false });
@@ -40,6 +44,7 @@ export async function bootHolesInTheSky(root) {
 
   const audio = createAudioEngine("samples/salamander/pentatonic/", {
     onNote(ev) {
+      garden?.addBloom(ev.noteName);
       pushOsc(noteToOsc(ev.noteName, ev.velocity, ev.pan).map(formatOscLine));
     },
   });
@@ -83,12 +88,13 @@ export async function bootHolesInTheSky(root) {
   }
 
   function render(clockSnap, snap, atmo) {
-    els.lifeBar.style.width = `${(snap.vitality * 100).toFixed(1)}%`;
+    const lifePct = clockSnap.progress * 100;
+    els.lifeBar.style.width = `${Math.min(100, lifePct).toFixed(1)}%`;
     els.obscBar.style.width = `${(clockSnap.obscuration * 100).toFixed(1)}%`;
     els.phase.textContent = clockSnap.phase;
     els.clockLabel.textContent = clockLabel(clockSnap);
-    els.vitality.textContent = snap.vitality.toFixed(3);
-    els.notes.textContent = String(audio.noteCount());
+    els.vitality.textContent = `${clockSnap.elapsedSec.toFixed(0)}s`;
+    els.notes.textContent = String(garden?.count() ?? audio.noteCount());
     els.atmo.textContent = [
       atmo.feedLabel ?? "simulate",
       `cloud ${atmo.cloud.toFixed(2)}`,
@@ -99,7 +105,8 @@ export async function bootHolesInTheSky(root) {
   }
 
   function clockLabel(s) {
-    return `${s.label} · ${(s.progress * 100).toFixed(1)}% · ${s.elapsedSec.toFixed(0)}s`;
+    const total = clock.simulateDurationSec;
+    return `${s.label} · ${(s.progress * 100).toFixed(1)}% · ${s.elapsedSec.toFixed(0)}s / ${total}s`;
   }
 
   function tick(now) {
@@ -120,17 +127,25 @@ export async function bootHolesInTheSky(root) {
     snap.obscuration = clockSnap.obscuration;
     snap.eclipsePhase = clockSnap.phase;
 
+    if (clockSnap.phase === "reverse" && lastPhase !== "reverse") {
+      garden?.beginReverse();
+    }
+    lastPhase = clockSnap.phase;
+
     if (clock.isRunning()) {
       if (clockSnap.phase === "reverse") {
         if (Math.random() < dt * 6) audio.triggerReverse(snap);
-      } else if (clockSnap.phase !== "idle") {
+      } else if (clockSnap.phase === "forward" || clockSnap.phase === "deep") {
         audio.triggerForward(snap, rng, atmo);
       }
       if (clockSnap.phase === "forward" && clockSnap.progress < 0.02) {
         audio.resetReverse();
+        lastPhase = "forward";
       }
     }
 
+    garden?.update(dt);
+    garden?.draw(now);
     render(clockSnap, snap, atmo);
 
     oscThrottle += dt;
@@ -170,8 +185,11 @@ export async function bootHolesInTheSky(root) {
     clock.reset();
     audio.clearHistory();
     audio.resetReverse();
+    garden?.reset();
+    lastPhase = "forward";
     els.status.textContent = "Reset";
     render(clock.snapshot(), dna.express(), atmosphere.snapshot());
+    garden?.draw(performance.now());
   });
 
   els.btnLive.addEventListener("click", () => {
@@ -203,6 +221,7 @@ export async function bootHolesInTheSky(root) {
   });
 
   render(clock.snapshot(), dna.express(), atmosphere.snapshot());
+  garden?.draw(performance.now());
   raf = requestAnimationFrame(tick);
 
   return () => {

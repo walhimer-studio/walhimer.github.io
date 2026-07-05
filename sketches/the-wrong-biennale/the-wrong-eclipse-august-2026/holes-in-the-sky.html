@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Holes in the Sky — Mark Walhimer</title>
-  <meta name="description" content="Machine DNA generative soundscape for The Wrong Eclipse · August 2026. Maitino, Alicante." />
+  <title>Listening to the Sky — Mark Walhimer</title>
+  <meta name="description" content="Listening to the Sky — Machine DNA generative soundscape for The Wrong Eclipse · August 2026. Maitino, Alicante." />
   <link rel="canonical" href="https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <style>
@@ -52,8 +52,21 @@
     .lede {
       color: var(--dim);
       line-height: 1.85;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
       max-width: 52ch;
+    }
+    .garden-wrap {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      margin-bottom: 24px;
+      border: 1px solid rgba(154, 168, 200, 0.12);
+      background: #07080c;
+      overflow: hidden;
+    }
+    #bloom-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
     .bars { margin-bottom: 24px; }
     .bar-row { margin-bottom: 14px; }
@@ -72,7 +85,7 @@
     }
     .fill-life {
       height: 100%;
-      width: 100%;
+      width: 0%;
       background: linear-gradient(90deg, rgba(196,184,150,0.2), var(--life));
       transition: width 0.12s linear;
     }
@@ -132,20 +145,24 @@
 <body>
   <div class="panel">
     <p class="kicker">The Wrong Eclipse · August 2026 · Machine DNA</p>
-    <h1>Holes in the <em>Sky</em></h1>
+    <h1>Listening to the <em>Sky</em></h1>
     <p class="lede">
-      One lifeline drives sonification and this generator. Pentatonic Salamander piano, binaural L/R.
-      PoC uses a compressed eclipse arc; live run · 12 Aug 2026 · Maitino, Alicante.
+      Bloom lifeline — color on each note, hold at peak obscuration, reverse through accumulated sound.
+      Fixed PoC arc · 10 minutes · live eclipse run 12 Aug 2026 · Maitino.
       <strong>Use headphones.</strong>
     </p>
 
+    <div class="garden-wrap">
+      <canvas id="bloom-canvas" aria-label="Bloom garden — listening lifeline"></canvas>
+    </div>
+
     <div class="bars">
       <div class="bar-row">
-        <div class="bar-label"><span>Life</span><span id="vitality-val">1.000</span></div>
+        <div class="bar-label"><span>Life</span><span id="vitality-val">0s</span></div>
         <div class="track"><div class="fill-life" id="life-bar"></div></div>
       </div>
       <div class="bar-row">
-        <div class="bar-label"><span>Obscuration</span><span id="phase-label">idle</span></div>
+        <div class="bar-label"><span>Obscuration</span><span id="phase-label">forward</span></div>
         <div class="track"><div class="fill-obsc" id="obsc-bar"></div></div>
       </div>
     </div>
