@@ -21,15 +21,20 @@
     h2 { font-family: var(--serif); font-size: 18px; font-weight: 400; color: var(--ink); margin-bottom: 16px; }
     ul { list-style: none; margin: 0; padding: 0; }
     li { border-bottom: 1px solid var(--rule); font-size: 13px; }
-    li .placeholder { padding: 14px 0; color: var(--dim); font-style: italic; display: flex; justify-content: space-between; gap: 16px; }
-    li a { padding: 14px 0; color: var(--ink); text-decoration: none; display: flex; justify-content: space-between; gap: 16px; }
+    li a, li .placeholder {
+      padding: 14px 0; color: var(--ink); text-decoration: none;
+      display: flex; justify-content: space-between; gap: 16px; align-items: baseline;
+    }
     li a:hover { color: var(--accent); }
+    li .placeholder { color: var(--dim); font-style: italic; }
     .path { font-family: var(--mono); font-size: 11px; color: var(--dim); flex-shrink: 0; }
     .back { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); font-size: 11px; }
     .back a { color: var(--accent); text-decoration: none; }
+    .back a:hover { text-decoration: underline; }
   </style>
 </head>
 <body class="catalog-page">
+
 <nav>
   <a class="nav-logo" href="/">Mark Walhimer</a>
   <div class="nav-links" id="site-nav-links">
@@ -45,16 +50,12 @@
   <h1>Art<em>blocks</em> 2026</h1>
   <p class="lede">
     Surrender Machines · Drop 1 planning.
-    <a href="https://www.artblocks.io/apply" rel="noopener">Apply at Art Blocks</a> ·
-    <a href="../index.html">Main catalog</a>.
+    <a href="https://www.artblocks.io/apply/artist" rel="noopener">Art Blocks</a>.
+    Listed on the <a href="../index.html">main catalog</a>.
   </p>
   <h2>Works in this folder</h2>
   <ul>
     <li><span class="placeholder"><span>Mintable project HTML — add here</span><span class="path">TBD</span></span></li>
-  </ul>
-  <h2>Related (canonical paths)</h2>
-  <ul>
-    <li><a href="../surrender/index.html"><span>Surrender Machines series</span><span class="path">surrender/</span></a></li>
   </ul>
   <h2>Bundle notes</h2>
   <ul>

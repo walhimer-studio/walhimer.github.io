@@ -139,8 +139,8 @@
   </div>
   <div class="ctrl-group">
     <span class="ctrl-label">Order</span>
-    <button type="button" class="ctrl-btn sort-btn" onclick="setSortOrder('asc',this)">Oldest first</button>
     <button type="button" class="ctrl-btn sort-btn active" onclick="setSortOrder('desc',this)">Newest first</button>
+    <button type="button" class="ctrl-btn sort-btn" onclick="setSortOrder('asc',this)">Oldest first</button>
   </div>
   <input id="search" type="text" placeholder="Search…" oninput="doSearch(this.value)">
 </div>
@@ -544,7 +544,7 @@ const SERIES = [
       {name:'2026-lumen-prize-machine-aesthetic/README.md', title:'Lumen Prize 2026 Machine Aesthetic — README', version:false},
     ]
   },
-  // Top catalog folders — append here; "Newest first" (default) reverses for display (#1 at top).
+  // Priority folders — last in array = first on page when "Newest first" (default).
   {
     name: 'BYOB CDMX',
     files: [
@@ -560,10 +560,10 @@ const SERIES = [
     ]
   },
   {
-    name: 'VHAwards 2026',
+    name: 'The 7th VH AWARD 2026',
     files: [
-      {name:'vhawards-2026/index.html', title:'VHAwards 2026 — series index', version:false},
-      {name:'vhawards-2026/README.md', title:'VHAwards 2026 — README', version:false},
+      {name:'vhawards-2026/index.html', title:'The 7th VH AWARD 2026 — series index', version:false},
+      {name:'vhawards-2026/README.md', title:'The 7th VH AWARD 2026 — README', version:false},
     ]
   },
   {

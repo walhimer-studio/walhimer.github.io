@@ -10452,7 +10452,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:VHAwards 2026:index",
+      "id": "urn:walhimer:sketch:The 7th VH AWARD 2026:index",
       "dublin_core": {
         "title": "tezos-early-works/index",
         "creator": "Mark Walhimer",
@@ -10483,7 +10483,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "VHAwards 2026",
+          "series": "The 7th VH AWARD 2026",
           "file": "vhawards-2026/index.html"
         },
         "tech": [
@@ -10504,7 +10504,7 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:VHAwards 2026:readme",
+      "id": "urn:walhimer:sketch:The 7th VH AWARD 2026:readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
@@ -10535,7 +10535,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "VHAwards 2026",
+          "series": "The 7th VH AWARD 2026",
           "file": "vhawards-2026/README.md"
         }
       },

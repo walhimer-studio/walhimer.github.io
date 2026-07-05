@@ -10,7 +10,7 @@ https://mark-walhimer.com/sketches/artblocks-2026/index.html
 
 | Link | URL |
 |------|-----|
-| Art Blocks apply | https://www.artblocks.io/apply |
+| Apply to release (artist) | https://www.artblocks.io/apply/artist |
 | Creator docs | https://docs.artblocks.io/creator-onboarding/artists/overview/ |
 
 ## Status

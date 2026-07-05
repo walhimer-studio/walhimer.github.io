@@ -17,18 +17,24 @@
     h1 em { font-style: italic; color: var(--accent); }
     .lede { font-size: 13px; color: rgba(58,56,52,.62); line-height: 1.85; margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--rule); }
     .lede a { color: var(--accent); text-decoration: none; }
+    .lede a:hover { text-decoration: underline; }
     h2 { font-family: var(--serif); font-size: 18px; font-weight: 400; color: var(--ink); margin-bottom: 16px; }
     ul { list-style: none; margin: 0; padding: 0; }
     li { border-bottom: 1px solid var(--rule); font-size: 13px; }
-    li .placeholder { padding: 14px 0; color: var(--dim); font-style: italic; display: flex; justify-content: space-between; gap: 16px; }
-    li a { padding: 14px 0; color: var(--ink); text-decoration: none; display: flex; justify-content: space-between; gap: 16px; }
+    li a, li .placeholder {
+      padding: 14px 0; color: var(--ink); text-decoration: none;
+      display: flex; justify-content: space-between; gap: 16px; align-items: baseline;
+    }
     li a:hover { color: var(--accent); }
+    li .placeholder { color: var(--dim); font-style: italic; }
     .path { font-family: var(--mono); font-size: 11px; color: var(--dim); flex-shrink: 0; }
     .back { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); font-size: 11px; }
     .back a { color: var(--accent); text-decoration: none; }
+    .back a:hover { text-decoration: underline; }
   </style>
 </head>
 <body class="catalog-page">
+
 <nav>
   <a class="nav-logo" href="/">Mark Walhimer</a>
   <div class="nav-links" id="site-nav-links">
@@ -39,19 +45,27 @@
     <a href="/contact/index.html">Contact</a>
   </div>
 </nav>
+
 <article class="wrap">
   <p class="kicker">Catalog &middot; BYOB CDMX</p>
   <h1>BYOB <em>CDMX</em></h1>
-  <p class="lede">Bring Your Own Beamer — Mexico City. <a href="../index.html">Main catalog</a>.</p>
+  <p class="lede">
+    Bring Your Own Beamer — Mexico City.
+    Listed on the <a href="../index.html">main catalog</a>.
+  </p>
+
   <h2>Works in this folder</h2>
   <ul>
     <li><span class="placeholder"><span>Projection piece — add HTML here</span><span class="path">TBD</span></span></li>
   </ul>
+
   <h2>Bundle notes</h2>
   <ul>
     <li><a href="README.md"><span>README — folder checklist</span><span class="path">README.md</span></a></li>
   </ul>
+
   <p class="back"><a href="../index.html">&larr; Full catalog</a></p>
 </article>
+
 </body>
 </html>
