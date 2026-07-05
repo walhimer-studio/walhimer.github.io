@@ -1,6 +1,6 @@
 # Catalog — Mark Walhimer archive
 
-**Public archive** of works. Each entry is a folder; each folder has a **markdown file for that folder**. Artworks add a **markdown file for the artwork**. Runnable code for a piece lives in the same folder (or linked paths listed in the folder markdown).
+**Public archive** of works. Each entry is a folder; each folder has a **markdown file for that folder**. Artworks add a **markdown file for the artwork**. Work in progress (HTML, code) lives in the matching path under **`sketches/`** until a piece is canonical → **`installations/`** and/or homepage.
 
 Repo: [walhimer-studio/walhimer.github.io](https://github.com/walhimer-studio/walhimer.github.io) · Site: [mark-walhimer.com](https://mark-walhimer.com)
 
@@ -16,11 +16,13 @@ catalog/
     ├── {subfolder}/          ← optional (series, opportunity, year, …)
     │   ├── README.md         ← markdown for this folder
     │   ├── {artwork}.md      ← artwork statement (when applicable)
-    │   └── …                 ← code, assets, recordings
+    │   └── …
     └── …
+
+sketches/{same-path}/        ← WIP code (mirrors catalog project folders)
 ```
 
-**When you start a new work:** create a new folder under `catalog/` and write its folder `README.md`. Add `{artwork}.md` when the piece has a name. Add code in that folder as the work is built.
+**When you start a new work:** create a folder under `catalog/` and write its folder `README.md`. Add `{artwork}.md` when the piece has a name. Add WIP files under `sketches/{same-path}/`.
 
 ---
 

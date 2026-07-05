@@ -43,3 +43,5 @@ Bandcamp: screenshot of generator UI + binaural L/R audio (PoC). Live re-record 
 ## Path
 
 `catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/`
+
+WIP sketches and code: [`sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/`](../../../sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/).

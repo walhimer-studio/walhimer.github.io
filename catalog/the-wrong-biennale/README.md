@@ -14,3 +14,5 @@
 ## Path
 
 `catalog/the-wrong-biennale/`
+
+WIP sketches and code: [`sketches/the-wrong-biennale/`](../../sketches/the-wrong-biennale/).
