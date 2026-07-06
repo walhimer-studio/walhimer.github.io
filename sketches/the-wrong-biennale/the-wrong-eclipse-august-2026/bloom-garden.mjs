@@ -30,8 +30,6 @@ function rgbaStr(rgb, a) {
 
 class Bloom {
   constructor(rng, W, H, noteName) {
-    this.x = rng.range(W * 0.08, W * 0.92);
-    this.y = rng.range(H * 0.1, H * 0.9);
     const h0 = rng.range(0, 360);
     this.c1 = hsbToRgb(h0, rng.range(80, 100), 100);
     this.c2 = hsbToRgb((h0 + rng.range(30, 80)) % 360, rng.range(70, 95), 100);
@@ -44,6 +42,9 @@ class Bloom {
       rScale: 1.0 - i * (0.38 / this.layerCount),
       alpha: 0.35 - i * (0.06 / this.layerCount),
     }));
+    const pad = this.maxR * 1.08;
+    this.x = rng.range(pad, Math.max(pad + 1, W - pad));
+    this.y = rng.range(pad, Math.max(pad + 1, H - pad));
     this.breathAmp = rng.range(0.05, 0.1);
     this.breathSpeed = rng.range(0.6, 1.5);
     this.breathPhase = rng.range(0, Math.PI * 2);
