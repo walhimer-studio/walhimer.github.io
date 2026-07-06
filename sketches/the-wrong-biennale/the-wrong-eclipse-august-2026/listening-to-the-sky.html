@@ -251,6 +251,7 @@
       <button type="button" id="btn-reset">Reset</button>
       <button type="button" id="btn-live">Live feeds</button>
       <button type="button" id="btn-record">Record PoC</button>
+      <button type="button" id="btn-cover">Save bloom cover</button>
     </div>
 
     <pre id="osc-log">/hit/ready 1</pre>
@@ -265,7 +266,27 @@
 
   <script type="module">
     import { bootHolesInTheSky } from "./holes-in-the-sky-app.mjs";
+    import { downloadBloomCover } from "./bloom-cover-export.mjs";
+
     bootHolesInTheSky(document.body);
+
+    const coverBtn = document.getElementById("btn-cover");
+    const status = document.getElementById("status-label");
+    coverBtn?.addEventListener("click", async () => {
+      const canvas = document.getElementById("bloom-canvas");
+      try {
+        coverBtn.disabled = true;
+        const result = await downloadBloomCover(canvas);
+        const mb = (result.bytes / (1024 * 1024)).toFixed(2);
+        if (status) {
+          status.textContent = `Cover saved · ${result.size}×${result.size} · ${mb}MB · ${result.format}`;
+        }
+      } catch (err) {
+        if (status) status.textContent = `Cover export failed — ${err.message}`;
+      } finally {
+        coverBtn.disabled = false;
+      }
+    });
   </script>
   <script>
     (function () {
