@@ -29,7 +29,7 @@ echo ""
 echo "Studies index: http://127.0.0.1:${PORT}/"
   echo "  · orthographic-translucent-cube-v10.html"
 echo "  · orthographic-translucent-cube-v8.html"
-echo "  · raster-spektrum-study-webgl.html"
+echo "  · chutes study webgl"
 echo ""
 echo "Server PID ${SERVER_PID} — leave this window open. Ctrl+C to stop."
 

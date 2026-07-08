@@ -3,23 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Raster / Spektrum — study mockup</title>
+  <title>Chutes — study mockup</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
     canvas { display: block; width: 100%; height: 100%; }
     #hint {
-      position: fixed; left: 10px; top: 10px;
+      position: fixed; left: 10px; top: 10px; z-index: 2;
       font: 11px/1.4 ui-monospace, monospace;
       color: rgba(90, 120, 140, 0.5);
       pointer-events: none;
       max-width: 300px;
+    }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
     }
   </style>
 </head>
 <body>
   <div id="hint">
     WebGL2 ortho · embedded 924 palette · static host OK<br>
-    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle
+    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle · R record
   </div>
   <script src="centered-924-data.js"></script>
   <script>
@@ -504,11 +508,93 @@ void main() {
     imgTex = makeTex(16, 16, palette16());
   };
 
-  return { init, setup, render, refreshPalette };
+  return { init, setup, render, refreshPalette, getCanvas: () => canvas };
+};
+
+const CanvasRecorder = (getCanvas) => {
+  let recorder = null;
+  let chunks = [];
+  let active = false;
+
+  const pickMime = () => {
+    const types = [
+      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm',
+    ];
+    return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
+  };
+
+  const recExt = (mimeType) => (mimeType.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+  const setRecHint = (on) => {
+    const hint = document.getElementById('hint');
+    if (hint) hint.dataset.rec = on ? '1' : '';
+  };
+
+  const start = () => {
+    if (active) return false;
+    const canvas = getCanvas();
+    if (!canvas?.captureStream) return false;
+
+    const mimeType = pickMime();
+    if (!mimeType) {
+      console.warn('MediaRecorder: no supported mp4/webm mime type');
+      return false;
+    }
+
+    const stream = canvas.captureStream(60);
+    chunks = [];
+    recorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 16_000_000,
+    });
+    recorder.ondataavailable = (e) => {
+      if (e.data.size) chunks.push(e.data);
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: mimeType.split(';')[0] });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      a.href = url;
+      a.download = `chutes-study-${ts}.${recExt(mimeType)}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      stream.getTracks().forEach((t) => t.stop());
+      active = false;
+      setRecHint(false);
+    };
+
+    recorder.start(1000);
+    active = true;
+    setRecHint(true);
+    return true;
+  };
+
+  const stop = () => {
+    if (!active || !recorder) return;
+    if (recorder.state !== 'inactive') recorder.stop();
+    recorder = null;
+  };
+
+  const toggle = () => {
+    if (active) {
+      stop();
+      return false;
+    }
+    return start();
+  };
+
+  return { toggle, isActive: () => active };
 };
 
 const c2d = Canvas2d();
 const gpu = GL();
+const rec = CanvasRecorder(() => gpu.getCanvas());
 const options = { auto: true, mode: 0 };
 let showHint = true;
 
@@ -522,6 +608,7 @@ document.addEventListener('keydown', (e) => {
   if (k === '1') { options.mode = 0; options.auto = false; }
   if (k === '2') { options.mode = 1; options.auto = false; }
   if (k === '3') { options.mode = 2; options.auto = false; }
+  if (k === 'r') rec.toggle();
 });
 
 function setup() {

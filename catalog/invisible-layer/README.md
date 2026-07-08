@@ -13,6 +13,10 @@
 
 https://mark-walhimer.com/sketches/invisible-layer/index.html
 
+## Primary entry (June-7-2026 · Vol3D)
+
+https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html
+
 ## Publish checklist
 
 1. Update this README and any `{artwork}.md` in this folder
@@ -22,11 +26,13 @@ https://mark-walhimer.com/sketches/invisible-layer/index.html
 5. `python3 _scripts/refresh_catalog.py`
 6. `python3 _scripts/check_self_contained.py` (full repo, exit 0)
 
-## Machine DNA (fill in for new work)
+## Machine DNA
 
 | Field | Value |
 |-------|--------|
-| Species | TBD |
-| Seed | TBD |
-| Mode | TBD |
-| Bodies | browser · vol3d · install · … |
+| Species | Invisible Layer |
+| Seed | 77823 (default) |
+| Mode | Live / surrender / rebirth |
+| Bodies | browser · vol3d |
+
+See [invisible-layer-june-7-2026-vol3d.md](./invisible-layer-june-7-2026-vol3d.md) · [invisible-layer-june-7-2026.md](./invisible-layer-june-7-2026.md) · [invisible-layer-vol3d.md](./invisible-layer-vol3d.md).

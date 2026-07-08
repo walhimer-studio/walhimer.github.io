@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Raster / Spektrum — study mockup</title>
+  <title>Chutes — study mockup</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
     canvas { display: block; width: 100%; height: 100%; }
@@ -19,12 +19,11 @@
 <body>
   <div id="hint">
     WebGL2 ortho · translucent 924 palette · <code>924_centered.png</code><br>
-    Same study in <code>local/raster-spektrum-study-three.html</code><br>
+    Same study in <code>local/chutes-study-three.html</code><br>
     H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle
   </div>
   <script>
 /**
- * Educational mockup inspired by Kim Asendorf — Raster und Spektrum (2025).
  * Canvas2D → motion map; WebGL2 ping-pong feedback. Original code, same idea.
  * Colors: sampled along the 924 centered cross (924_centered.png).
  */

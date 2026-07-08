@@ -60,6 +60,9 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 
 | Folder | Description |
 |--------|-------------|
+| [invisible-layer/](./invisible-layer/) | invisible layer |
+| [the-wrong-biennale/the-wrong-eclipse-august-2026/](./the-wrong-biennale/the-wrong-eclipse-august-2026/) | The Wrong Biennale — The Wrong Eclipse · August 2026 · *Holes in the Sky* |
+| [the-wrong-biennale/](./the-wrong-biennale/) | The Wrong Biennale — submissions and opportunities |
 | [april-25/](./april-25/) | april 25 |
 | [machine-dna-studio/](./machine-dna-studio/) | machine dna studio |
 | [light-art/](./light-art/) | light art |
@@ -99,5 +102,3 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 | [loop-art-critique-alumni-show-2026/](./loop-art-critique-alumni-show-2026/) | loop art critique alumni show 2026 |
 | [actz-june-myths-legends-2026/](./actz-june-myths-legends-2026/) | actz june myths legends 2026 |
 | [byob-cdmx/](./byob-cdmx/) | byob cdmx |
-| [the-wrong-biennale/the-wrong-eclipse-august-2026/](./the-wrong-biennale/the-wrong-eclipse-august-2026/) | The Wrong Biennale — The Wrong Eclipse · August 2026 · *Listening to the Sky* |
-| [the-wrong-biennale/](./the-wrong-biennale/) | The Wrong Biennale — submissions and opportunities |
