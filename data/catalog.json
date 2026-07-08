@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-05",
+  "updated": "2026-07-07",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Machine DNA · Loop workspace (project: Machine Aesthetic)",
-          "file": "loop-machine-aesthetic/index.html"
+          "series": "Invisible Layer",
+          "file": "invisible-layer/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,26 +53,9 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/loop-machine-aesthetic/README.md",
-            "sketches/loop-machine-aesthetic/build-ghost-room-glb.mjs",
-            "sketches/loop-machine-aesthetic/build-loop-portal-room-glb.mjs",
-            "sketches/loop-machine-aesthetic/building-outline-only.html",
-            "sketches/loop-machine-aesthetic/building-outline-wall-panel.png",
-            "sketches/loop-machine-aesthetic/counterproduction-essay-panel.png",
-            "sketches/loop-machine-aesthetic/counterproduction-essay-v2.md",
-            "sketches/loop-machine-aesthetic/counterproduction-essay-v2.pdf",
-            "sketches/loop-machine-aesthetic/ghost-machine-core.mjs",
-            "sketches/loop-machine-aesthetic/ghost_dense_77823_room 2.html",
-            "sketches/loop-machine-aesthetic/ghost_dense_77823_room.glb",
-            "sketches/loop-machine-aesthetic/ghost_dense_77823_room.html",
-            "sketches/loop-machine-aesthetic/ghost_dense_77823_room.mjs",
-            "sketches/loop-machine-aesthetic/index.html",
-            "sketches/loop-machine-aesthetic/package.json",
-            "sketches/loop-machine-aesthetic/surrender-machine-core.mjs",
-            "sketches/loop-machine-aesthetic/surrender-machines-three-core.js",
-            "sketches/loop-machine-aesthetic/text-cylinder-core.mjs",
-            "sketches/loop-machine-aesthetic/walk-moon-wall-panel.png",
-            "sketches/loop-machine-aesthetic/walk_moon_audio_standalone.html"
+            "sketches/invisible-layer/README.md",
+            "sketches/invisible-layer/index.html",
+            "sketches/invisible-layer/invisible-layer-study-webgl.html"
           ],
           "external_urls": []
         },
@@ -692,6 +675,450 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
+      "dublin_core": {
+        "title": "invisible-layer/invisible-layer-study-webgl",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000290"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-study-webgl",
+        "type": "HumanMadeObject",
+        "_label": "invisible-layer/invisible-layer-study-webgl",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "invisible-layer/invisible-layer-study-webgl.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/invisible-layer/invisible-layer-study-webgl.html",
+          "sketches/loop-snippets/centered-924-data.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
+      "dublin_core": {
+        "title": "../catalog/invisible-layer/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000291"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/invisible-layer/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "../catalog/invisible-layer/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/invisible-layer/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-readme",
+      "dublin_core": {
+        "title": "invisible-layer/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000292"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-readme",
+        "type": "HumanMadeObject",
+        "_label": "invisible-layer/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "invisible-layer/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/invisible-layer/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+      "dublin_core": {
+        "title": "The Wrong Eclipse August 2026 — opportunity statement",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "The Wrong Eclipse open call — deadline, exhibition, eclipse timing at Maitino.",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/markdown",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-opportunity",
+        "type": "HumanMadeObject",
+        "_label": "The Wrong Eclipse August 2026 — opportunity statement",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+      "dublin_core": {
+        "title": "The Wrong Eclipse August 2026 — opportunity statement",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "The Wrong Eclipse open call — deadline, exhibition, eclipse timing at Maitino.",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/markdown",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-opportunity",
+        "type": "HumanMadeObject",
+        "_label": "The Wrong Eclipse August 2026 — opportunity statement",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-listening-to-the-sky",
+      "dublin_core": {
+        "title": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-listening-to-the-sky",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000289"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/The Wrong Biennale · The Wrong Eclipse · August 2026-the-wrong-biennale-the-wron",
+        "type": "HumanMadeObject",
+        "_label": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md",
+          "sketches/index.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bandcamp-poc.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+      "dublin_core": {
+        "title": "The Wrong Eclipse August 2026 — WIP README",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "Work-in-progress folder — OpenFrameworks, Pure Data, OSC, generative HTML.",
+        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/markdown",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-wip-readme",
+        "type": "HumanMadeObject",
+        "_label": "The Wrong Eclipse August 2026 — WIP README",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
+          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/atmosphere.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/audio-engine.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bandcamp-poc.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bandcamp-recorder.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bloom-cover-export.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bloom-garden.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/eclipse-clock.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/feed-bridge.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky-app.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.pd",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-in-the-sky.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/live-feeds.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/machine-dna-kernel.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/README.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/addons.make",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/HolesKernel.h",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/main.cpp",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/ofApp.cpp",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/ofApp.h",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/osc-contract.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/osc-map.mjs",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/pure-data/README.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/pure-data/holes-in-the-sky-vanilla.pd",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A0.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A1.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A6.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A7.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C1.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C6.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C7.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C8.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds1.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds6.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds7.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs1.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs6.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs7.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/README.md",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C6.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds6.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs2.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs3.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs4.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs5.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs6.mp3",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A2v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A3v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A4v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A5v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C2v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C3v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C4v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C5v8.wav",
+          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C6v8.wav"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Machine DNA · Loop workspace (project: Machine Aesthetic):catalog-loop-machine-aesthetic-readme",
       "dublin_core": {
         "title": "../catalog/loop-machine-aesthetic/README.md",
@@ -816,6 +1243,76 @@
       "artifacts": {
         "repo_paths": [
           "sketches/loop-machine-aesthetic/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Machine DNA · Loop workspace (project: Machine Aesthetic):loop-machine-aesthetic-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Machine DNA · Loop workspace (project: Machine Aesthetic)",
+          "file": "loop-machine-aesthetic/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-machine-aesthetic/README.md",
+          "sketches/loop-machine-aesthetic/build-ghost-room-glb.mjs",
+          "sketches/loop-machine-aesthetic/build-loop-portal-room-glb.mjs",
+          "sketches/loop-machine-aesthetic/building-outline-only.html",
+          "sketches/loop-machine-aesthetic/building-outline-wall-panel.png",
+          "sketches/loop-machine-aesthetic/counterproduction-essay-panel.png",
+          "sketches/loop-machine-aesthetic/counterproduction-essay-v2.md",
+          "sketches/loop-machine-aesthetic/counterproduction-essay-v2.pdf",
+          "sketches/loop-machine-aesthetic/ghost-machine-core.mjs",
+          "sketches/loop-machine-aesthetic/ghost_dense_77823_room 2.html",
+          "sketches/loop-machine-aesthetic/ghost_dense_77823_room.glb",
+          "sketches/loop-machine-aesthetic/ghost_dense_77823_room.html",
+          "sketches/loop-machine-aesthetic/ghost_dense_77823_room.mjs",
+          "sketches/loop-machine-aesthetic/index.html",
+          "sketches/loop-machine-aesthetic/package.json",
+          "sketches/loop-machine-aesthetic/surrender-machine-core.mjs",
+          "sketches/loop-machine-aesthetic/surrender-machines-three-core.js",
+          "sketches/loop-machine-aesthetic/text-cylinder-core.mjs",
+          "sketches/loop-machine-aesthetic/walk-moon-wall-panel.png",
+          "sketches/loop-machine-aesthetic/walk_moon_audio_standalone.html"
         ],
         "external_urls": []
       }
@@ -4092,6 +4589,9 @@
         "repo_paths": [
           "sketches/loop-art-critique-alumni-show-2026/README.md",
           "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+          "sketches/loop-art-critique-alumni-show-2026/compose-offer.html",
+          "sketches/loop-art-critique-alumni-show-2026/compose-rgb-xyz.mjs",
+          "sketches/loop-art-critique-alumni-show-2026/compose.html",
           "sketches/loop-art-critique-alumni-show-2026/index.html"
         ],
         "external_urls": []
@@ -4237,6 +4737,53 @@
           "sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md"
         ],
         "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-gravity-sliders",
+      "dublin_core": {
+        "title": "actz-june-myths-legends-2026/gravity-sliders",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:actz — June Myths & Legends 2026:gravity-sliders",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000231"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/actz — June Myths & Legends 2026-gravity-sliders",
+        "type": "HumanMadeObject",
+        "_label": "actz-june-myths-legends-2026/gravity-sliders",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "ACTZ — Myths & Legends June 2026",
+          "file": "actz-june-myths-legends-2026/gravity-sliders.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/actz-june-myths-legends-2026/gravity-sliders.html",
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js"
+        ],
+        "external_urls": [
+          "https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/gravity-sliders.html"
+        ]
       }
     },
     {
@@ -4469,53 +5016,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-gravity-sliders",
-      "dublin_core": {
-        "title": "actz-june-myths-legends-2026/gravity-sliders",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:actz — June Myths & Legends 2026:gravity-sliders",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000231"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/actz — June Myths & Legends 2026-gravity-sliders",
-        "type": "HumanMadeObject",
-        "_label": "actz-june-myths-legends-2026/gravity-sliders",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "ACTZ — Myths & Legends June 2026",
-          "file": "actz-june-myths-legends-2026/gravity-sliders.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/actz-june-myths-legends-2026/gravity-sliders.html",
-          "sketches/loop-snippets/js/OrbitControls.js",
-          "sketches/loop-snippets/js/three.min.js"
-        ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/actz-june-myths-legends-2026/gravity-sliders.html"
-        ]
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-surrender-machine-dna",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/surrender-machine-dna",
@@ -4601,49 +5101,6 @@
       "artifacts": {
         "repo_paths": [
           "sketches/actz-june-myths-legends-2026/assets/actz-poster.png"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:BYOB CDMX:catalog-byob-cdmx-readme",
-      "dublin_core": {
-        "title": "../catalog/byob-cdmx/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:BYOB CDMX:catalog-byob-cdmx-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000262"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/BYOB CDMX-catalog-byob-cdmx-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/byob-cdmx/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "BYOB CDMX",
-          "file": "../catalog/byob-cdmx/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/byob-cdmx/README.md"
         ],
         "external_urls": []
       }
@@ -4744,288 +5201,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
+      "id": "urn:walhimer:sketch:BYOB CDMX:catalog-byob-cdmx-readme",
       "dublin_core": {
-        "title": "The Wrong Eclipse August 2026 — opportunity statement",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "The Wrong Eclipse open call — deadline, exhibition, eclipse timing at Maitino.",
-        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
-        "type": "InteractiveResource",
-        "format": "text/markdown",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000184"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-opportunity",
-        "type": "HumanMadeObject",
-        "_label": "The Wrong Eclipse August 2026 — opportunity statement",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
-          "file": "../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
-      "dublin_core": {
-        "title": "The Wrong Eclipse August 2026 — opportunity statement",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "The Wrong Eclipse open call — deadline, exhibition, eclipse timing at Maitino.",
-        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:catalog-the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
-        "type": "InteractiveResource",
-        "format": "text/markdown",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000184"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-opportunity",
-        "type": "HumanMadeObject",
-        "_label": "The Wrong Eclipse August 2026 — opportunity statement",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
-          "file": "../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
-      "dublin_core": {
-        "title": "The Wrong Eclipse August 2026 — WIP README",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "Work-in-progress folder — OpenFrameworks, Pure Data, OSC, generative HTML.",
-        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-readme",
-        "type": "InteractiveResource",
-        "format": "text/markdown",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000184"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/wrong-eclipse-august-2026-wip-readme",
-        "type": "HumanMadeObject",
-        "_label": "The Wrong Eclipse August 2026 — WIP README",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
-          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
-          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/README.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/atmosphere.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/audio-engine.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bandcamp-poc.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bandcamp-recorder.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bloom-garden.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/eclipse-clock.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/feed-bridge.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky-app.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.html",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.pd",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-in-the-sky.html",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/live-feeds.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/machine-dna-kernel.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/README.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/addons.make",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/HolesKernel.h",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/main.cpp",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/ofApp.cpp",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/openframeworks/HolesInTheSky/src/ofApp.h",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/osc-contract.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/osc-map.mjs",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/pure-data/README.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/pure-data/holes-in-the-sky-vanilla.pd",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A0.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A1.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A6.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/A7.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C1.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C6.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C7.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/C8.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds1.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds6.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Ds7.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs1.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs6.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/Fs7.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/README.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/A5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/C6.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Ds6.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs2.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs3.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs4.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs5.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/Fs6.mp3",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A2v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A3v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A4v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/A5v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C2v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C3v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C4v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C5v8.wav",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C6v8.wav"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-listening-to-the-sky",
-      "dublin_core": {
-        "title": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky",
+        "title": "../catalog/byob-cdmx/README.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:The Wrong Biennale · The Wrong Eclipse · August 2026:the-wrong-biennale-the-wrong-eclipse-august-2026-listening-to-the-sky",
+        "identifier": "urn:walhimer:sketch:BYOB CDMX:catalog-byob-cdmx-readme",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000289"
+        "catalog_number": "WS-000262"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/The Wrong Biennale · The Wrong Eclipse · August 2026-the-wrong-biennale-the-wron",
+        "id": "https://mark-walhimer.com/#work/BYOB CDMX-catalog-byob-cdmx-readme",
         "type": "HumanMadeObject",
-        "_label": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky",
+        "_label": "../catalog/byob-cdmx/README.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -5039,21 +5232,15 @@
           "sketch"
         ],
         "sketch": {
-          "series": "The Wrong Biennale · The Wrong Eclipse · August 2026",
-          "file": "the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
+          "series": "BYOB CDMX",
+          "file": "../catalog/byob-cdmx/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/holes-in-the-sky.md",
-          "sketches/index.html",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/bandcamp-poc.md",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html",
-          "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
+          "catalog/byob-cdmx/README.md"
         ],
-        "external_urls": [
-          "https://mark-walhimer.com/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/listening-to-the-sky.html"
-        ]
+        "external_urls": []
       }
     },
     {
@@ -5193,6 +5380,59 @@
         ],
         "external_urls": [
           "https://mark-walhimer.com/sketches/light-art.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):loop-art-critique-2026-april-25-machine-aesthetic",
+      "dublin_core": {
+        "title": "April 25/machine-aesthetic",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:April 25:machine-aesthetic",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000196"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/April 25-machine-aesthetic",
+        "type": "HumanMadeObject",
+        "_label": "April 25/machine-aesthetic",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)",
+          "file": "loop-art-critique-2026/april-25/machine-aesthetic.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-2026/april-25/machine-aesthetic.html"
+        ],
+        "external_urls": [
+          "https://cwandt.com",
+          "https://entangled.tools",
+          "https://ertdfgcvb.xyz",
+          "https://fictiv.com",
+          "https://fonts.googleapis.com",
+          "https://mark-walhimer.com",
+          "https://sendcutsend.com",
+          "https://spogel.xyz",
+          "https://wennew-atelier.xyz"
         ]
       }
     },
@@ -8621,60 +8861,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):loop-art-critique-2026-april-25-machine-aesthetic",
-      "dublin_core": {
-        "title": "April 25/machine-aesthetic",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:April 25:machine-aesthetic",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000196"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/April 25-machine-aesthetic",
-        "type": "HumanMadeObject",
-        "_label": "April 25/machine-aesthetic",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)",
-          "file": "loop-art-critique-2026/april-25/machine-aesthetic.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-2026/april-25/machine-aesthetic.html"
-        ],
-        "external_urls": [
-          "https://cwandt.com",
-          "https://entangled.tools",
-          "https://ertdfgcvb.xyz",
-          "https://fictiv.com",
-          "https://fonts.googleapis.com",
-          "https://kimasendorf.com",
-          "https://mark-walhimer.com",
-          "https://sendcutsend.com",
-          "https://spogel.xyz",
-          "https://wennew-atelier.xyz"
-        ]
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):loop-art-critique-2026-april-25-loop-art-critique-technical-surrender",
       "dublin_core": {
         "title": "April 25/loop-art-critique-technical-surrender",
@@ -9026,49 +9212,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Machine DNA — studio system:catalog-machine-dna-studio-readme",
-      "dublin_core": {
-        "title": "../catalog/machine-dna-studio/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Machine DNA — studio system:catalog-machine-dna-studio-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000287"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Machine DNA — studio system-catalog-machine-dna-studio-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/machine-dna-studio/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Machine DNA — studio system",
-          "file": "../catalog/machine-dna-studio/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/machine-dna-studio/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Machine DNA — studio system:catalog-studio-direction",
       "dublin_core": {
         "title": "../catalog/STUDIO-DIRECTION.md",
@@ -9154,6 +9297,49 @@
         "external_urls": [
           "https://mark-walhimer.com/practice/artwork-pipeline.html"
         ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Machine DNA — studio system:catalog-machine-dna-studio-readme",
+      "dublin_core": {
+        "title": "../catalog/machine-dna-studio/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Machine DNA — studio system:catalog-machine-dna-studio-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000287"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Machine DNA — studio system-catalog-machine-dna-studio-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/machine-dna-studio/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Machine DNA — studio system",
+          "file": "../catalog/machine-dna-studio/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/machine-dna-studio/README.md"
+        ],
+        "external_urls": []
       }
     },
     {
@@ -9501,24 +9687,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living-copy-code",
       "dublin_core": {
-        "title": "../catalog/loop-snippets/README.md",
+        "title": "Surrender Machine 77823",
         "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+        "date": "2026",
+        "description": "Surrender Machine 77823 (Chutes — living · dense machine · code art layer). Mark Walhimer, 2026. Loop Art Critique, ICA Miami, Cohort #21 residency, curated by Doreen Rios.",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy-code",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000288"
+        "relation": "urn:walhimer:work:surrender-machine-77823",
+        "catalog_number": "WS-000222"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-catalog-loop-snippets-readme",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d-living-copy-code",
         "type": "HumanMadeObject",
-        "_label": "../catalog/loop-snippets/README.md",
+        "_label": "Surrender Machine 77823",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -9533,12 +9719,101 @@
         ],
         "sketch": {
           "series": "Loop Snippets",
-          "file": "../catalog/loop-snippets/README.md"
+          "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/loop-snippets/README.md"
+          "sketches/loop-snippets/js/three.min.js",
+          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living",
+      "dublin_core": {
+        "title": "Chutes — living organism · seed 77823 · lifeline",
+        "creator": "Mark Walhimer",
+        "date": "2026-06-15",
+        "description": "Open volume world driven by invisible RGB XYZ operators; seeded organism with lifeline and surrender rebirth; RGB soundscape.",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
+        "catalog_number": "WS-000219"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d-living",
+        "type": "HumanMadeObject",
+        "_label": "Chutes — living organism · seed 77823 · lifeline",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/js/three.min.js",
+          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d",
+      "dublin_core": {
+        "title": "Chutes — open volume world · RGB sound",
+        "creator": "Mark Walhimer",
+        "date": "2026-06-15",
+        "description": "Traversable Three.js volume: invisible RGB instruction layer re-addresses XYZ; GPU raymarch and Web Audio read the same motion map.",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
+        "catalog_number": "WS-000220"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d",
+        "type": "HumanMadeObject",
+        "_label": "Chutes — open volume world · RGB sound",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/raster-spektrum-study-combined-vol3d.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/js/three.min.js",
+          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d.html"
         ],
         "external_urls": []
       }
@@ -9686,6 +9961,49 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+      "dublin_core": {
+        "title": "../catalog/loop-snippets/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000288"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-catalog-loop-snippets-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/loop-snippets/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "../catalog/loop-snippets/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/loop-snippets/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-rgb-xyz-vol3d-code",
       "dublin_core": {
         "title": "loop-snippets/rgb-xyz-vol3d-code",
@@ -9730,94 +10048,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d",
-      "dublin_core": {
-        "title": "Chutes — open volume world · RGB sound",
-        "creator": "Mark Walhimer",
-        "date": "2026-06-15",
-        "description": "Traversable Three.js volume: invisible RGB instruction layer re-addresses XYZ; GPU raymarch and Web Audio read the same motion map.",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
-        "catalog_number": "WS-000220"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d",
-        "type": "HumanMadeObject",
-        "_label": "Chutes — open volume world · RGB sound",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/raster-spektrum-study-combined-vol3d.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/js/three.min.js",
-          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living",
-      "dublin_core": {
-        "title": "Chutes — living organism · seed 77823 · lifeline",
-        "creator": "Mark Walhimer",
-        "date": "2026-06-15",
-        "description": "Open volume world driven by invisible RGB XYZ operators; seeded organism with lifeline and surrender rebirth; RGB soundscape.",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy",
-        "catalog_number": "WS-000219"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d-living",
-        "type": "HumanMadeObject",
-        "_label": "Chutes — living organism · seed 77823 · lifeline",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/js/three.min.js",
-          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living-copy",
       "dublin_core": {
         "title": "Chutes — volume · dense machine · seed 77823",
@@ -9857,50 +10087,6 @@
         "repo_paths": [
           "sketches/loop-snippets/js/three.min.js",
           "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living-copy-code",
-      "dublin_core": {
-        "title": "Surrender Machine 77823",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "Surrender Machine 77823 (Chutes — living · dense machine · code art layer). Mark Walhimer, 2026. Loop Art Critique, ICA Miami, Cohort #21 residency, curated by Doreen Rios.",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:raster-spektrum-study-combined-vol3d-living-copy-code",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "urn:walhimer:work:surrender-machine-77823",
-        "catalog_number": "WS-000222"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-raster-spektrum-study-combined-vol3d-living-copy-code",
-        "type": "HumanMadeObject",
-        "_label": "Surrender Machine 77823",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/js/three.min.js",
-          "sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html"
         ],
         "external_urls": []
       }
