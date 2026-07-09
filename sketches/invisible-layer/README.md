@@ -29,6 +29,8 @@ Path: `sketches/invisible-layer/`
 | File | Role |
 |------|------|
 | `index.html` | Series hub — catalog visitors |
+| `invisible-layer-july-8-2026.html` | **July-8-2026** Vol3D · seed · sound · lifeline · **R** record |
+| `invisible-layer-june-7-2026-2.html` | **June-7-2026-2** Vol3D · seed · sound · lifeline · **R** record |
 | `invisible-layer-june-7-2026-vol3d.html` | **June-7-2026** Vol3D · seed · sound · lifeline · **R** record |
 | `invisible-layer-study-webgl.html` | **June-7-2026** study · G/R motion map · no sound · **R** record |
 | `invisible-layer-vol3d.html` | Vol3D (undated) · seed · sound · lifeline |

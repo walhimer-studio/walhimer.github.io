@@ -37,4 +37,4 @@ https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-june-7-2026-v
 | Mode | Live / surrender / rebirth |
 | Bodies | browser · vol3d |
 
-See [invisible-layer-june-7-2026-vol3d.md](./invisible-layer-june-7-2026-vol3d.md) · [invisible-layer-june-7-2026.md](./invisible-layer-june-7-2026.md) · [invisible-layer-vol3d.md](./invisible-layer-vol3d.md).
+See [invisible-layer-july-8-2026.md](./invisible-layer-july-8-2026.md) · [invisible-layer-june-7-2026-2.md](./invisible-layer-june-7-2026-2.md) · [invisible-layer-june-7-2026-vol3d.md](./invisible-layer-june-7-2026-vol3d.md) · [invisible-layer-june-7-2026.md](./invisible-layer-june-7-2026.md) · [invisible-layer-vol3d.md](./invisible-layer-vol3d.md).
