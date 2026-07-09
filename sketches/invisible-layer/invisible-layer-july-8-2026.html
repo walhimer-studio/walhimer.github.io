@@ -7,23 +7,6 @@
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
     canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
-    #hint {
-      position: fixed; left: 10px; top: 10px; z-index: 2;
-      font: 11px/1.4 ui-monospace, monospace;
-      color: rgba(90, 120, 140, 0.5);
-      pointer-events: none;
-      max-width: 380px;
-    }
-    #hint[data-rec="1"]::after {
-      content: ' · REC';
-      color: rgba(220, 50, 70, 0.9);
-    }
-    #seed-hud {
-      position: fixed; left: 10px; bottom: 8px; z-index: 2;
-      font: 11px/1.4 ui-monospace, monospace;
-      color: rgba(90, 120, 140, 0.45);
-      pointer-events: none;
-    }
     #lifebar-wrap {
       position: fixed; bottom: 0; left: 0; width: 100%; height: 3px; z-index: 2;
       background: rgba(0, 0, 0, 0.07);
@@ -37,12 +20,7 @@
   </style>
 </head>
 <body>
-  <div id="hint">
-    auto travel · T toggle · colors + code forward<br>
-    ↑↓ forward/back · ←→ strafe · drag look · scroll zoom · M mute · R record · N new seed rebirth · L LED
-  </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
-  <div id="seed-hud">Invisible Layer July-8-2026 · 77823</div>
   <script src="../loop-snippets/js/three.min.js"></script>
   <script>
 /** 924_centered.png embedded for static / file:// hosting */
@@ -918,7 +896,7 @@ const VolRoomGPU = () => {
   let viewRot = { x: 0, y: 0, drag: false, px: 0, py: 0 };
   const camPos = new THREE.Vector3();
   let camPosReady = false;
-  let travelOn = true;
+  let travelOn = false;
   let travelPhase = 0;
   let TRAVEL_RATE = 0.11;
   let travelFreq = { wx: 0.95, wy: 0.55, wz: 0.72, wz2: 1.6, look: 0.35 };
@@ -1150,38 +1128,7 @@ const VolRoomGPU = () => {
     return travelOn;
   };
 
-  const syncCodeArtSurfaces = () => {
-    if (codeImgTex) codeImgTex.dispose();
-    codeImgTex = rasterizeCodeArtLayer(2048);
-    if (sliceMat) sliceMat.uniforms.codeImg.value = codeImgTex;
-
-    codeWallMeshes.forEach((m) => (artLayerGroup || scene).remove(m));
-    codeWallMeshes.length = 0;
-    if (!bx) return;
-
-    const parent = artLayerGroup || scene;
-    const mat = new THREE.MeshBasicMaterial({
-      map: codeImgTex,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.94,
-      depthWrite: false,
-    });
-    const plane = new THREE.PlaneGeometry(bx * codeWallScale, by * (codeWallScale * 0.72));
-    [
-      [0, 0, -bz * 0.86, 0],
-      [0, 0, bz * 0.86, Math.PI],
-      [-bx * 0.86, 0, 0, Math.PI * 0.5],
-      [bx * 0.86, 0, 0, -Math.PI * 0.5],
-    ].forEach(([x, y, z, ry]) => {
-      const mesh = new THREE.Mesh(plane, mat);
-      mesh.position.set(x, y, z);
-      mesh.rotation.y = ry;
-      mesh.renderOrder = 2;
-      parent.add(mesh);
-      codeWallMeshes.push(mesh);
-    });
-  };
+  const syncCodeArtSurfaces = () => {};
 
   const init = () => {
     if (!THREE) throw new Error('Three.js required');
@@ -1244,7 +1191,7 @@ const VolRoomGPU = () => {
       specAlphaInk: { value: 0.36 },
       paletteVeil: { value: 0.88 },
       codeImg: { value: null },
-      codeVeil: { value: 0.62 },
+      codeVeil: { value: 0 },
     });
     sliceMat = new THREE.ShaderMaterial({
       uniforms: sliceUniforms(),
@@ -1360,8 +1307,7 @@ const VolRoomGPU = () => {
 
     innerVol.material.uniforms.vol.value = volTex[volCur];
 
-    const manual = applyManualMove(time);
-    if (!manual) updateTravel(time, viewRot.drag);
+    applyManualMove(time);
 
     camera.rotation.order = 'YXZ';
     camera.rotation.y = viewRot.x;
@@ -1406,7 +1352,7 @@ const VolRoomGPU = () => {
       sliceMat.uniforms.specAlphaAB.value = g.specAlphaAB;
       sliceMat.uniforms.specAlphaInk.value = g.specAlphaInk;
       sliceMat.uniforms.paletteVeil.value = g.paletteVeil;
-      sliceMat.uniforms.codeVeil.value = g.codeVeil;
+      sliceMat.uniforms.codeVeil.value = 0;
       sliceMat.uniforms.dims.value.set(
         sliceMat.uniforms.dims.value.x || 1,
         sliceMat.uniforms.dims.value.y || 1,
@@ -1435,15 +1381,13 @@ const snd = MotionSoundscape();
 const rec = CanvasRecorder(() => gpu.getCanvas(), () => snd.getAudioStream());
 
 const lifebar = document.getElementById('lifebar');
-const seedHud = document.getElementById('seed-hud');
 const options = { auto: true, mode: 0 };
 
 const seriesTitle = (seed) => `Invisible Layer July-8-2026 · ${seed >>> 0}`;
 
 const updateSeedHud = (extra) => {
   const label = seriesTitle(activeSeed);
-  seedHud.textContent = extra ? `${label} · ${extra}` : label;
-  document.title = label;
+  document.title = extra ? `${label} · ${extra}` : label;
 };
 
 const applySeed = (seed) => {
@@ -1495,7 +1439,6 @@ const rebirth = (t, nextSeed) => {
   surrenderAt = 0;
   lifebar.style.width = '0%';
   snd.setMasterGain(1);
-  gpu.setTravel(true);
 };
 
 const updateLife = (t) => {
@@ -1507,7 +1450,6 @@ const updateLife = (t) => {
     if (t - lifeStart >= LIFESPAN_MS) {
       lifePhase = 'surrender';
       surrenderAt = t;
-      gpu.setTravel(false);
     }
     return;
   }
@@ -1520,8 +1462,6 @@ const updateLife = (t) => {
   }
 };
 
-let showHint = true;
-
 document.addEventListener('keydown', async (e) => {
   const k = e.key.toLowerCase();
   if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
@@ -1533,12 +1473,7 @@ document.addEventListener('keydown', async (e) => {
     if (k === 'arrowright') gpu.setMoveKey('right', true);
     return;
   }
-  if (k === 'h') {
-    showHint = !showHint;
-    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
-  }
   if (k === 'm') await snd.toggle();
-  if (k === 't') gpu.toggleTravel();
   if (k === 'r') { await snd.ensureOn(); await rec.toggle(); }
   if (k === 'l') {
     if (e.repeat) return;
