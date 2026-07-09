@@ -3,6 +3,8 @@
 
 **Studio direction:** [Artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [../STUDIO-DIRECTION.md](../STUDIO-DIRECTION.md)
 
+**Invisible Layer** names emotions made visible — emotions shown in real time. The work renders that invisible layer as a votive.
+
 | Field | Value |
 |-------|--------|
 | Series | Invisible Layer |

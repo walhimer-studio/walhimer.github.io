@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Invisible Layer June-7-2026</title>
+  <title>Invisible Layer June-7-2026 · 77823</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
     canvas { display: block; width: 100%; height: 100%; }
@@ -12,32 +12,124 @@
       font: 11px/1.4 ui-monospace, monospace;
       color: rgba(90, 120, 140, 0.5);
       pointer-events: none;
-      max-width: 300px;
+      max-width: 340px;
     }
     #hint[data-rec="1"]::after {
       content: ' · REC';
       color: rgba(220, 50, 70, 0.9);
+    }
+    #seed-hud {
+      position: fixed; left: 10px; bottom: 8px; z-index: 2;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.45);
+      pointer-events: none;
+    }
+    #lifebar-wrap {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 3px; z-index: 2;
+      background: rgba(0, 0, 0, 0.07);
+    }
+    #lifebar {
+      height: 100%; width: 0%;
+      background: rgba(255, 16, 240, 0.55);
+      transition: width 0.12s linear;
     }
   </style>
 </head>
 <body>
   <div id="hint">
     WebGL2 ortho · embedded 924 palette · static host OK<br>
-    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle · R record
+    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle · R record · N rebirth · ?seed=N
   </div>
+  <div id="lifebar-wrap"><div id="lifebar"></div></div>
+  <div id="seed-hud">Invisible Layer June-7-2026 · 77823</div>
   <script src="../loop-snippets/centered-924-data.js"></script>
   <script>
 /**
- * Invisible Layer June-7-2026 — real-time animation.
+ * Invisible Layer June-7-2026 — Machine DNA · seed · lifeline · solidification.
  * Invisible layer · G scanners · R layers → GPU; Canvas2D + WebGL2/JavaScript · WebGL feedback (ping-pong buffers).
- * Colors: sampled along the 924 centered cross (924_centered.png).
  */
-const { floor, min, max, random, sqrt, pow } = Math;
+const { floor, min, max, sqrt, pow } = Math;
+const DEFAULT_SEED = 77823;
+const LIFESPAN_MS = 480000;
+const SURRENDER_MS = 4200;
+
+const makeRng = (seed) => {
+  let s = seed >>> 0;
+  return {
+    random() {
+      s = (s + 0x6d2b79f5) >>> 0;
+      let t = s;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    },
+    uniform(a, b) { return a + this.random() * (b - a); },
+    randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+    choice(arr) { return arr[this.randint(0, arr.length - 1)]; },
+    chance(p) { return this.random() < p; },
+  };
+};
+
+const parseInitialSeed = () => {
+  try {
+    const q = new URLSearchParams(location.search).get('seed');
+    if (q != null && q !== '') {
+      const n = Number(q) >>> 0;
+      if (Number.isFinite(n)) return n;
+    }
+  } catch (_) {}
+  return DEFAULT_SEED >>> 0;
+};
+
+const rgbToHsl = (r, g, b) => {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) * 0.5;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h = 0;
+  if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+  else if (max === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return [h / 6, s, l];
+};
+
+const hslToRgb = (h, s, l) => {
+  if (s === 0) return [l, l, l];
+  const hue2rgb = (p, q, t) => {
+    let tt = t;
+    if (tt < 0) tt += 1;
+    if (tt > 1) tt -= 1;
+    if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+    if (tt < 1 / 2) return q;
+    if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+    return p;
+  };
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  return [hue2rgb(p, q, h + 1 / 3), hue2rgb(p, q, h), hue2rgb(p, q, h - 1 / 3)];
+};
+
+const hueRotateRgb = (rgb, deg) => {
+  const [h, s, l] = rgbToHsl(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
+  const nh = (h + deg / 360 + 1) % 1;
+  const ns = min(1, max(0.35, s * 1.05));
+  return hslToRgb(nh, ns, min(0.92, max(0.38, l))).map((v) => floor(v * 255));
+};
+
+const shuffleInPlace = (arr, rng) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = rng.randint(0, i);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
 
 const CENTERED_REF = CENTERED_924_SRC;
 
 /** Fallbacks: fringes, arms, and core on 924_centered. */
-const PAL = {
+const BASE_PAL = {
   white: [255, 255, 255],
   pink: [248, 229, 231],
   yellow: [255, 255, 226],
@@ -50,14 +142,64 @@ const PAL = {
   violet: [105, 94, 173],
 };
 
+const PAL = {};
+
+const buildSeedProfile = (seed) => {
+  const r = makeRng(seed);
+  const r2 = makeRng(seed ^ 0x9e3779b9);
+  const r3 = makeRng(seed ^ 0x517cc1b7);
+  const hueShift = r.uniform(0, 360);
+  const palette = {};
+  for (const [k, v] of Object.entries(BASE_PAL)) {
+    if (k === 'white') {
+      palette[k] = v.slice();
+      continue;
+    }
+    palette[k] = hueRotateRgb(v, hueShift + r2.uniform(-24, 24));
+  }
+  const spectrumKeys = shuffleInPlace(Object.keys(BASE_PAL).filter((k) => k !== 'white'), r3);
+  const cell = r.choice([8, 16, 32]);
+  return {
+    seed: seed >>> 0,
+    palette,
+    spectrumKeys,
+    canvas: {
+      cell,
+      grid: cell * r.choice([1, 2, 4]),
+      scannerSpawn: r.uniform(0.08, 0.22),
+      layerSpawn: r.uniform(0.06, 0.18),
+      maxLayers: r.randint(2, 8),
+      capMul: r.uniform(0.28, 0.52),
+    },
+    gpu: {
+      specAlphaAB: r.uniform(0.12, 0.36),
+      specAlphaInk: r.uniform(0.2, 0.48),
+      paletteVeil: r.uniform(0.62, 0.94),
+    },
+    defaultMode: r.randint(0, 2),
+    autoMode: r.chance(0.62),
+  };
+};
+
+let activeSeed = parseInitialSeed();
+let seedProfile = null;
+let orgRng = makeRng(activeSeed);
+let lifeStart = 0;
+let lifePhase = 'live';
+let surrenderAt = 0;
+let solidifyK = 0;
+
 const SPECTRUM = [];
 
 const rebuildSpectrum = () => {
   SPECTRUM.length = 0;
-  SPECTRUM.push(
-    PAL.pink, PAL.yellow, PAL.skyBlue, PAL.lavender,
-    PAL.peach, PAL.magenta, PAL.mint, PAL.violet, PAL.blend
-  );
+  const keys = seedProfile?.spectrumKeys ?? Object.keys(BASE_PAL).filter((k) => k !== 'white');
+  for (const k of keys) SPECTRUM.push(PAL[k] ?? BASE_PAL[k]);
+};
+
+const applyPaletteFromProfile = (prof) => {
+  for (const [k, v] of Object.entries(BASE_PAL)) PAL[k] = (prof.palette[k] ?? v).slice();
+  rebuildSpectrum();
 };
 
 const applyCenteredSamples = (img) => {
@@ -101,7 +243,7 @@ const applyCenteredSamples = (img) => {
   }
 };
 
-rebuildSpectrum();
+const rnd = () => orgRng.random();
 
 const loadCenteredArtwork = (onReady) => {
   const img = new Image();
@@ -116,6 +258,17 @@ const rgb01 = (c) => [c[0] / 255, c[1] / 255, c[2] / 255];
 
 const Canvas2d = () => {
   let ctx, width, height, scanners = [], layers = [];
+  let profile = {
+    cell: 16,
+    grid: 32,
+    scannerSpawn: 0.14,
+    layerSpawn: 0.1,
+    maxLayers: 4,
+    capMul: 0.4,
+  };
+
+  const setProfile = (p) => { profile = { ...profile, ...p }; };
+  const reset = () => { scanners = []; layers = []; };
 
   const greenLevel = (time, opt) => {
     if (!opt.auto) return [1, 2, 4][opt.mode] ?? 1;
@@ -155,21 +308,21 @@ const Canvas2d = () => {
     let xp = x + w;
 
     const edgeX = () => {
-      const s = 1 + floor(random() * 3);
-      const xs = Array.from({ length: s }, () => floor(random() * (w - grid) / grid) * grid).sort((a, b) => a - b);
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => a - b);
       for (let i = 0; i < s; i++) {
         pts.push([x + xs[i], yp]);
-        yp += random() < 0.5 ? grid : -grid;
+        yp += rnd() < 0.5 ? grid : -grid;
         pts.push([x + xs[i], yp]);
       }
     };
     const edgeY = (reverse) => {
-      const s = 1 + floor(random() * 3);
-      const ys = Array.from({ length: s }, () => floor(random() * (h - grid) / grid) * grid)
+      const s = 1 + floor(rnd() * 3);
+      const ys = Array.from({ length: s }, () => floor(rnd() * (h - grid) / grid) * grid)
         .sort((a, b) => (reverse ? b - a : a - b));
       for (let i = 0; i < s; i++) {
         pts.push([xp, y + ys[i]]);
-        xp += random() < 0.5 ? grid : -grid;
+        xp += rnd() < 0.5 ? grid : -grid;
         pts.push([xp, y + ys[i]]);
       }
     };
@@ -181,11 +334,11 @@ const Canvas2d = () => {
     pts.push([xp, y + h]);
     yp = y + h;
     if (y + h !== height) {
-      const s = 1 + floor(random() * 3);
-      const xs = Array.from({ length: s }, () => floor(random() * (w - grid) / grid) * grid).sort((a, b) => b - a);
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => b - a);
       for (let i = 0; i < s; i++) {
         pts.push([x + xs[i], yp]);
-        yp += random() < 0.5 ? grid : -grid;
+        yp += rnd() < 0.5 ? grid : -grid;
         pts.push([x + xs[i], yp]);
       }
     }
@@ -226,52 +379,55 @@ const Canvas2d = () => {
     ctx.globalCompositeOperation = 'lighter';
     layers = layers.filter((fn) => fn());
 
-    const cell = 16;
-    const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * 0.4);
+    const cell = profile.cell;
+    const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * profile.capMul);
 
-    if (scanners.length < cap && random() < 0.14) {
-      const x = floor(random() * floor((width - cell) / cell)) * cell;
-      const y = floor(random() * floor((height - cell) / cell)) * cell;
-      const dir = random() < 0.5 ? [floor(random() * 2) * 2 - 1, 0] : [0, floor(random() * 2) * 2 - 1];
-      const speed = pow(2, floor(random() * 2));
-      const stride = pow(2, floor(random() * 2));
-      const g = greenLevel(time, options);
-      const n = dir[0]
-        ? 1 + floor(random() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
-        : 1 + floor(random() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
-      const life = (14 + floor(random() * 20)) * 32;
-      for (let i = 0; i < n; i++) {
-        scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+    if (lifePhase === 'live') {
+      if (scanners.length < cap && rnd() < profile.scannerSpawn) {
+        const x = floor(rnd() * floor((width - cell) / cell)) * cell;
+        const y = floor(rnd() * floor((height - cell) / cell)) * cell;
+        const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+        const speed = pow(2, floor(rnd() * 2));
+        const stride = pow(2, floor(rnd() * 2));
+        const g = greenLevel(time, options);
+        const n = dir[0]
+          ? 1 + floor(rnd() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
+          : 1 + floor(rnd() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
+        const life = (14 + floor(rnd() * 20)) * 32;
+        for (let i = 0; i < n; i++) {
+          scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+        }
       }
-    }
 
-    const grid = 32;
-    if (layers.length < 4 && random() < 0.1) {
-      const cols = floor(width / grid);
-      const rows = floor(height / grid);
-      const vert = random() < 0.5;
-      const w = vert ? floor(cols * (0.2 + random() * 0.5)) * grid : width;
-      const h = vert ? height : floor(rows * (0.2 + random() * 0.5)) * grid;
-      let lx = random() < 0.5 ? 0 : width - w;
-      let ly = random() < 0.5 ? 0 : height - h;
-      if (random() < 0.3) {
-        lx = floor(random() * floor((width - w) / grid)) * grid;
-        ly = floor(random() * floor((height - h) / grid)) * grid;
+      const grid = profile.grid;
+      if (layers.length < profile.maxLayers && rnd() < profile.layerSpawn) {
+        const cols = floor(width / grid);
+        const rows = floor(height / grid);
+        const vert = rnd() < 0.5;
+        const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : width;
+        const h = vert ? height : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+        let lx = rnd() < 0.5 ? 0 : width - w;
+        let ly = rnd() < 0.5 ? 0 : height - h;
+        if (rnd() < 0.3) {
+          lx = floor(rnd() * floor((width - w) / grid)) * grid;
+          ly = floor(rnd() * floor((height - h) / grid)) * grid;
+        }
+        layers.push(layer(lx, ly, w, h, grid, (8 + floor(rnd() * 16)) * 32, pow(2, floor(rnd() * 6))));
       }
-      layers.push(layer(lx, ly, w, h, grid, (8 + floor(random() * 16)) * 32, pow(2, floor(random() * 6))));
     }
 
     ctx.globalCompositeOperation = 'source-over';
     return ctx.getImageData(0, 0, width, height);
   };
 
-  return { init, setup, draw };
+  return { init, setup, draw, setProfile, reset };
 };
 
 const GL = () => {
   let canvas, gl, width, height, scale;
   let fbos = [], fboId = 0, imgTex, motTex, vBuf, fProg, dProg;
   let uOrthoFeedback, uOrthoDisplay;
+  let gpuTune = { specAlphaAB: 0.24, specAlphaInk: 0.36, paletteVeil: 0.88 };
 
   const orthoMat4 = () => new Float32Array([
     1, 0, 0, 0,
@@ -297,7 +453,7 @@ uniform vec2 dims;
 uniform int doRaster;
 uniform int doSpectrum;
 uniform vec3 specA, specB, specInk;
-uniform float specAlphaAB, specAlphaInk, paletteVeil;
+uniform float specAlphaAB, specAlphaInk, paletteVeil, uSolidify;
 in vec2 vUv;
 out vec4 frag;
 
@@ -308,6 +464,7 @@ void main() {
   float dr = floor(m.r * 255.0 + 0.5);
   float dg = floor(m.g * 255.0 + 0.5);
   vec2 o = vec2(0.0);
+  float motion = 1.0 - uSolidify;
 
   if (doRaster == 1) {
     if (mod(dr, 2.0) >= 1.0) o += vec2(0.0, 1.0 / dims.y);
@@ -318,6 +475,7 @@ void main() {
     if (mod(dr, 64.0) >= 32.0) o += vec2(2.0 / dims.x, 0.0);
     if (mod(dr, 128.0) >= 64.0) o -= vec2(0.0, 2.0 / dims.y);
     if (mod(dr, 256.0) >= 128.0) o -= vec2(2.0 / dims.x, 0.0);
+    o *= motion;
     col = texture(buf, vUv + o).rgb;
   }
 
@@ -325,13 +483,20 @@ void main() {
     if (mod(dg, 2.0) >= 1.0) {
       vec2 bUv = mod(pos, 16.0) / 16.0;
       vec4 tile = texture(img, bUv);
-      col = mix(col, tile.rgb, tile.a * paletteVeil);
+      col = mix(col, tile.rgb, tile.a * paletteVeil * motion);
     }
     if (mod(dg, 4.0) >= 2.0) {
       vec3 spec = mix(specA, specB, fract(time * 0.14));
-      col = mix(col, spec, specAlphaAB);
+      col = mix(col, spec, specAlphaAB * motion);
     }
-    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk);
+    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk * motion);
+  }
+
+  if (uSolidify > 0.001) {
+    vec3 freeze = texture(buf, vUv).rgb;
+    col = mix(col, freeze, uSolidify * 0.92);
+    float bands = mix(48.0, 4.0, uSolidify);
+    col = floor(col * bands) / bands;
   }
 
   frag = vec4(col, 1.0);
@@ -456,7 +621,7 @@ void main() {
     return { raster: 1, spectrum: 1 };
   };
 
-  const render = (time, pixels, options) => {
+  const render = (time, pixels, options, solidify) => {
     const prev = fboId;
     const cur = fboId ^= 1;
     const { raster, spectrum } = modeFlags(options.mode);
@@ -488,9 +653,10 @@ void main() {
     gl.uniform3f(gl.getUniformLocation(fProg, 'specA'), ca[0], ca[1], ca[2]);
     gl.uniform3f(gl.getUniformLocation(fProg, 'specB'), cb[0], cb[1], cb[2]);
     gl.uniform3f(gl.getUniformLocation(fProg, 'specInk'), ink[0], ink[1], ink[2]);
-    gl.uniform1f(gl.getUniformLocation(fProg, 'paletteVeil'), 0.88);
-    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaAB'), 0.24);
-    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaInk'), 0.36);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'paletteVeil'), gpuTune.paletteVeil);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaAB'), gpuTune.specAlphaAB);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaInk'), gpuTune.specAlphaInk);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'uSolidify'), solidify ?? 0);
     quad(fProg, uOrthoFeedback);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -508,7 +674,11 @@ void main() {
     imgTex = makeTex(16, 16, palette16());
   };
 
-  return { init, setup, render, refreshPalette, getCanvas: () => canvas };
+  const applySeedProfile = (g) => {
+    gpuTune = { ...gpuTune, ...g };
+  };
+
+  return { init, setup, render, refreshPalette, applySeedProfile, getCanvas: () => canvas };
 };
 
 const CanvasRecorder = (getCanvas) => {
@@ -595,8 +765,65 @@ const CanvasRecorder = (getCanvas) => {
 const c2d = Canvas2d();
 const gpu = GL();
 const rec = CanvasRecorder(() => gpu.getCanvas());
+const lifebar = document.getElementById('lifebar');
+const seedHud = document.getElementById('seed-hud');
 const options = { auto: true, mode: 0 };
 let showHint = true;
+
+const seriesTitle = (seed) => `Invisible Layer June-7-2026 · ${seed >>> 0}`;
+
+const updateSeedHud = () => {
+  const label = seriesTitle(activeSeed);
+  seedHud.textContent = label;
+  document.title = label;
+};
+
+const applySeed = (seed) => {
+  activeSeed = seed >>> 0;
+  seedProfile = buildSeedProfile(activeSeed);
+  orgRng = makeRng(activeSeed);
+  applyPaletteFromProfile(seedProfile);
+  c2d.setProfile(seedProfile.canvas);
+  gpu.applySeedProfile(seedProfile.gpu);
+  options.mode = seedProfile.defaultMode;
+  options.auto = seedProfile.autoMode;
+  updateSeedHud();
+};
+
+const randomSeed = () => ((Math.random() * 0x100000000) >>> 0);
+
+const rebirth = (t, nextSeed) => {
+  applySeed(nextSeed ?? randomSeed());
+  c2d.reset();
+  gpu.setup();
+  gpu.refreshPalette();
+  lifeStart = t;
+  lifePhase = 'live';
+  surrenderAt = 0;
+  solidifyK = 0;
+  lifebar.style.width = '0%';
+};
+
+const updateLife = (t) => {
+  if (!lifeStart) lifeStart = t;
+
+  if (lifePhase === 'live') {
+    solidifyK = 0;
+    const pct = min(100, ((t - lifeStart) / LIFESPAN_MS) * 100);
+    lifebar.style.width = `${pct.toFixed(2)}%`;
+    if (t - lifeStart >= LIFESPAN_MS) {
+      lifePhase = 'surrender';
+      surrenderAt = t;
+    }
+    return;
+  }
+
+  if (lifePhase === 'surrender') {
+    lifebar.style.width = '100%';
+    solidifyK = min(1, (t - surrenderAt) / SURRENDER_MS);
+    if (t - surrenderAt >= SURRENDER_MS) rebirth(t);
+  }
+};
 
 document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -608,6 +835,7 @@ document.addEventListener('keydown', (e) => {
   if (k === '1') { options.mode = 0; options.auto = false; }
   if (k === '2') { options.mode = 1; options.auto = false; }
   if (k === '3') { options.mode = 2; options.auto = false; }
+  if (k === 'n') rebirth(performance.now());
   if (k === 'r') rec.toggle();
 });
 
@@ -617,13 +845,15 @@ function setup() {
 }
 
 function frame(t) {
+  updateLife(t);
   const pixels = c2d.draw(t, options);
-  gpu.render(t, pixels, options);
+  gpu.render(t, pixels, options, solidifyK);
   requestAnimationFrame(frame);
 }
 
 c2d.init();
 gpu.init();
+applySeed(activeSeed);
 setup();
 loadCenteredArtwork(() => gpu.refreshPalette());
 window.addEventListener('resize', setup);
