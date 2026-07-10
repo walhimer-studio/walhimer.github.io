@@ -7,6 +7,17 @@
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
     canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 2;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.5);
+      pointer-events: none;
+      max-width: 380px;
+    }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
     #seed-hud {
       position: fixed; left: 10px; bottom: 8px; z-index: 2;
       font: 11px/1.4 ui-monospace, monospace;
@@ -26,6 +37,10 @@
   </style>
 </head>
 <body>
+  <div id="hint">
+    1·2·3 modes · A auto colors<br>
+    ↑↓ forward/back · ←→ strafe · drag look · scroll zoom · M mute · R record · N new seed rebirth · L LED
+  </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
   <div id="seed-hud">Invisible Layer July-8-2026 · 77823</div>
   <script src="../loop-snippets/js/three.min.js"></script>
@@ -1471,6 +1486,8 @@ const updateLife = (t) => {
   }
 };
 
+let showHint = true;
+
 document.addEventListener('keydown', async (e) => {
   const k = e.key.toLowerCase();
   if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
@@ -1481,6 +1498,10 @@ document.addEventListener('keydown', async (e) => {
     if (k === 'arrowleft') gpu.setMoveKey('left', true);
     if (k === 'arrowright') gpu.setMoveKey('right', true);
     return;
+  }
+  if (k === 'h') {
+    showHint = !showHint;
+    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
   }
   if (k === 'm') await snd.toggle();
   if (k === 'r') { await snd.ensureOn(); await rec.toggle(); }
