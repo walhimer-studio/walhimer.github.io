@@ -23,4 +23,6 @@ Real-time animation using invisible layers: green scanners and red layers on a h
 
 ## Related
 
+[Invisible Layer July-8-2026 · piano exp](./invisible-layer-july-8-2026-piano-exp.md) — sound-only · invisible layer · Salamander pentatonic · RGB→XYZ.
+
 [Invisible Layer June-7-2026-2](./invisible-layer-june-7-2026-2.md) — prior dated Vol3D piece · same pipeline.

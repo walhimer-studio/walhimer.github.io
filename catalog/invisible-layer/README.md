@@ -15,9 +15,13 @@
 
 https://mark-walhimer.com/sketches/invisible-layer/index.html
 
-## Primary entry (June-7-2026 · Vol3D)
+## Primary entry (July-8-2026 · Vol3D)
 
-https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html
+https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-july-8-2026.html
+
+## Sound experiment (July-8-2026 · piano exp)
+
+https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html
 
 ## Publish checklist
 
@@ -37,4 +41,4 @@ https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-june-7-2026-v
 | Mode | Live / surrender / rebirth |
 | Bodies | browser · vol3d |
 
-See [invisible-layer-july-8-2026.md](./invisible-layer-july-8-2026.md) · [invisible-layer-june-7-2026-2.md](./invisible-layer-june-7-2026-2.md) · [invisible-layer-june-7-2026-vol3d.md](./invisible-layer-june-7-2026-vol3d.md) · [invisible-layer-june-7-2026.md](./invisible-layer-june-7-2026.md) · [invisible-layer-vol3d.md](./invisible-layer-vol3d.md).
+See [invisible-layer-july-8-2026.md](./invisible-layer-july-8-2026.md) · [invisible-layer-july-8-2026-piano-exp.md](./invisible-layer-july-8-2026-piano-exp.md) · [invisible-layer-june-7-2026-2.md](./invisible-layer-june-7-2026-2.md) · [invisible-layer-june-7-2026-vol3d.md](./invisible-layer-june-7-2026-vol3d.md) · [invisible-layer-june-7-2026.md](./invisible-layer-june-7-2026.md) · [invisible-layer-vol3d.md](./invisible-layer-vol3d.md).
