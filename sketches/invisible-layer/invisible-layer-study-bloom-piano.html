@@ -68,6 +68,7 @@
 /**
  * Invisible Layer study + Bloom piano — co-created.
  * WebGL2 study visuals · hidden Canvas2D → GPU + Salamander pentatonic bloom garden.
+ * One invisible layer: G/R spawns drive both motion map (visuals) and piano notes.
  */
 const { floor, min, max, sqrt, pow } = Math;
 const DEFAULT_SEED = 77823;
@@ -452,11 +453,14 @@ const BloomGarden = (piano) => {
     return true;
   };
 
-  const update = (t, dt) => {
-    if (lifePhase === 'live' && !dyingStarted && spawnCount < TOTAL_BLOOMS && t >= nextSpawn
-        && (!lifeStart || t - lifeStart < HALF_LIFE_MS)) {
-      spawnNote(t, 'bloom');
+  const onInvisibleEvents = (t, events) => {
+    if (!events.length || lifePhase !== 'live') return;
+    for (const ev of events) {
+      if (spawnNote(t, ev.kind.toUpperCase())) break;
     }
+  };
+
+  const update = (t, dt) => {
     voices.forEach((v) => v.update(dt));
   };
 
@@ -464,16 +468,7 @@ const BloomGarden = (piano) => {
 
   const hudLine = () => `garden ${spawnCount}/${TOTAL_BLOOMS} · ${phaseLabel} · ${lastPlayedMeta || piano.getLast()}`;
 
-  const peekFirstNote = () => noteAssignments[0] ?? 'C4';
-
-  const spawnFirst = (t) => {
-    if (spawnCount > 0) return;
-    nextSpawn = t;
-    spawnNote(t, 'unlock');
-    nextSpawn = t + SPAWN_INTERVAL;
-  };
-
-  return { reset, update, forceRelease, hudLine, peekFirstNote, spawnFirst };
+  return { reset, onInvisibleEvents, update, forceRelease, hudLine };
 };
 
 const Canvas2d = () => {
@@ -1056,7 +1051,6 @@ const doUnlock = async (t) => {
   try {
     await piano.unlock();
     beginSession(t);
-    garden.spawnFirst(t);
   } catch (err) {
     const fileHint = location.protocol === 'file:'
       ? ' · open via http://127.0.0.1:8765/… not file://'
@@ -1129,6 +1123,7 @@ function frame(t) {
   const { pixels, events } = c2d.draw(t, options);
   gpu.render(t, pixels, options, solidifyK);
   if (piano.isUnlocked()) {
+    garden.onInvisibleEvents(t, events);
     garden.update(t, dt);
   }
   hud.textContent = piano.isUnlocked()
