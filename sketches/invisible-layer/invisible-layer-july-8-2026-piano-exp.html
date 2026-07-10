@@ -6,15 +6,25 @@
   <title>Invisible Layer · piano exp · 77823</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
-    #hint, #hud {
+    #hint, #hud, #seed-hud {
       position: fixed; left: 10px; z-index: 2;
       font: 11px/1.5 ui-monospace, monospace;
       color: rgba(90, 120, 140, 0.55);
       pointer-events: none;
-      max-width: 420px;
+      max-width: 440px;
     }
     #hint { top: 10px; }
-    #hud { bottom: 10px; }
+    #seed-hud { bottom: 22px; }
+    #hud { bottom: 8px; font-size: 10px; color: rgba(90, 120, 140, 0.45); }
+    #lifebar-wrap {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 3px; z-index: 2;
+      background: rgba(0, 0, 0, 0.07);
+    }
+    #lifebar {
+      height: 100%; width: 0%;
+      background: rgba(255, 16, 240, 0.55);
+      transition: width 0.12s linear;
+    }
     #unlock {
       position: fixed; inset: 0; z-index: 3; margin: 0; padding: 0; border: 0;
       background: transparent; cursor: pointer;
@@ -24,21 +34,28 @@
 </head>
 <body>
   <div id="hint">
-    Piano exp · invisible layer only · RGB→XYZ → Salamander pentatonic<br>
-    click to hear · N new seed · ?seed=N
+    Bloom lifeline · invisible layer → pentatonic · RGB→XYZ<br>
+    click to hear · N rebirth · ?seed=N
   </div>
-  <div id="hud">XYZ · — · audio locked</div>
+  <div id="lifebar-wrap"><div id="lifebar"></div></div>
+  <div id="seed-hud">Invisible Layer · piano exp · 77823</div>
+  <div id="hud">garden · — · audio locked</div>
   <button type="button" id="unlock" aria-label="Unlock audio"> </button>
   <script>
 /**
- * Invisible Layer — piano experiment (from July-8-2026).
- * No visuals: hidden Canvas2D motion map only.
- * R→X · G→Y · B→Z — channel energy picks pentatonic Salamander notes.
+ * Invisible Layer — piano experiment · Bloom garden + Machine DNA lifeline.
+ * Hidden Canvas2D motion map spawns bloom voices (shuffled pentatonic);
+ * accumulate → hold → release; DNA live / surrender / rebirth.
  */
 const { floor, min, max, sqrt, pow } = Math;
 const DEFAULT_SEED = 77823;
-const SAMPLE_MS = 48;
-const NOTE_COOLDOWN_MS = 160;
+const LIFESPAN_MS = 480000;
+const SURRENDER_MS = 4200;
+const TOTAL_BLOOMS = 22;
+const SPAWN_INTERVAL = 1800;
+const HOLD_AFTER_FULL = 8000;
+const RELEASE_STAGGER = 600;
+const TOTAL_GARDEN_MS = TOTAL_BLOOMS * SPAWN_INTERVAL + HOLD_AFTER_FULL + 30000;
 
 const makeRng = (seed) => {
   let s = seed >>> 0;
@@ -92,22 +109,14 @@ let seedProfile = buildSeedProfile(activeSeed);
 let orgRng = makeRng(activeSeed);
 const rnd = () => orgRng.random();
 
-const applySeed = (seed) => {
-  activeSeed = seed >>> 0;
-  seedProfile = buildSeedProfile(activeSeed);
-  orgRng = makeRng(activeSeed);
-  c2d.setProfile(seedProfile.canvas);
-  c2d.reset();
-  piano.resetTriggers();
-  document.title = `Invisible Layer · piano exp · ${activeSeed}`;
-};
+let lifeStart = 0;
+let lifePhase = 'live';
+let surrenderAt = 0;
 
-const randomSeed = () => ((Math.random() * 0x100000000) >>> 0);
-
-/** C-major pentatonic pools (Salamander roots via NOTE_MAP). */
-const POOL_X = ['C2', 'D2', 'E2', 'G2', 'A2', 'C3', 'D3', 'E3'];
-const POOL_Y = ['G3', 'A3', 'C4', 'D4', 'E4', 'G4'];
-const POOL_Z = ['C5', 'E5', 'G5', 'A5', 'C6'];
+const PENTA_POOL = [
+  'C2', 'D2', 'E2', 'G2', 'A2', 'C3', 'D3', 'E3', 'G3', 'A3',
+  'C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5', 'G5', 'A5', 'C6', 'D6',
+];
 
 const NOTE_MAP = {
   C2: { s: 'C2', r: 1 }, D2: { s: 'Ds2', r: 0.943874 }, E2: { s: 'Ds2', r: 1.059463 },
@@ -115,9 +124,10 @@ const NOTE_MAP = {
   C3: { s: 'C3', r: 1 }, D3: { s: 'Ds3', r: 0.943874 }, E3: { s: 'Ds3', r: 1.059463 },
   G3: { s: 'Fs3', r: 1.059463 }, A3: { s: 'A3', r: 1 },
   C4: { s: 'C4', r: 1 }, D4: { s: 'Ds4', r: 0.943874 }, E4: { s: 'Ds4', r: 1.059463 },
-  G4: { s: 'Fs4', r: 1.059463 },
-  C5: { s: 'C5', r: 1 }, E5: { s: 'Ds5', r: 1.059463 }, G5: { s: 'Fs5', r: 1.059463 },
-  A5: { s: 'A5', r: 1 }, C6: { s: 'C6', r: 1 },
+  G4: { s: 'Fs4', r: 1.059463 }, A4: { s: 'A4', r: 1 },
+  C5: { s: 'C5', r: 1 }, D5: { s: 'Ds5', r: 0.943874 }, E5: { s: 'Ds5', r: 1.059463 },
+  G5: { s: 'Fs5', r: 1.059463 }, A5: { s: 'A5', r: 1 },
+  C6: { s: 'C6', r: 1 }, D6: { s: 'Ds6', r: 0.943874 },
 };
 
 const SAMPLE_ROOTS = [
@@ -126,6 +136,15 @@ const SAMPLE_ROOTS = [
   'Ds2', 'Ds3', 'Ds4', 'Ds5', 'Ds6',
   'Fs2', 'Fs3', 'Fs4', 'Fs5', 'Fs6',
 ];
+
+const shufflePool = (rng) => {
+  const pool = [...PENTA_POOL];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = floor(rng.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool;
+};
 
 const Canvas2d = () => {
   let ctx, width, height, scanners = [], layers = [], depthProbes = [];
@@ -229,7 +248,8 @@ const Canvas2d = () => {
     ctx.canvas.height = height;
   };
 
-  const draw = (time, options) => {
+  const draw = (time, options, allowMotion) => {
+    const events = [];
     ctx.clearRect(0, 0, width, height);
     ctx.globalCompositeOperation = 'source-over';
     scanners = scanners.filter((fn) => fn());
@@ -237,50 +257,55 @@ const Canvas2d = () => {
     layers = layers.filter((fn) => fn());
     depthProbes = depthProbes.filter((fn) => fn());
 
-    const cell = profile.cell;
-    const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * profile.capMul);
+    if (allowMotion) {
+      const cell = profile.cell;
+      const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * profile.capMul);
 
-    if (depthProbes.length < cap * profile.depthCap && rnd() < profile.depthSpawn) {
-      const x = floor(rnd() * floor((width - cell) / cell)) * cell;
-      const y = floor(rnd() * floor((height - cell) / cell)) * cell;
-      const b = pow(2, floor(rnd() * 4));
-      depthProbes.push(depthProbe(x, y, cell, (10 + floor(rnd() * 18)) * 32, b));
-    }
-
-    if (scanners.length < cap && rnd() < profile.scannerSpawn) {
-      const x = floor(rnd() * floor((width - cell) / cell)) * cell;
-      const y = floor(rnd() * floor((height - cell) / cell)) * cell;
-      const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
-      const speed = pow(2, floor(rnd() * 2));
-      const stride = pow(2, floor(rnd() * 2));
-      const g = greenLevel(time, options);
-      const n = dir[0]
-        ? 1 + floor(rnd() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
-        : 1 + floor(rnd() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
-      const life = (14 + floor(rnd() * 20)) * 32;
-      for (let i = 0; i < n; i++) {
-        scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+      if (depthProbes.length < cap * profile.depthCap && rnd() < profile.depthSpawn) {
+        const x = floor(rnd() * floor((width - cell) / cell)) * cell;
+        const y = floor(rnd() * floor((height - cell) / cell)) * cell;
+        const b = pow(2, floor(rnd() * 4));
+        depthProbes.push(depthProbe(x, y, cell, (10 + floor(rnd() * 18)) * 32, b));
+        events.push({ kind: 'b', x: x / width, y: y / height, z: b / 16 });
       }
-    }
 
-    const grid = profile.grid;
-    if (layers.length < profile.maxLayers && rnd() < profile.layerSpawn) {
-      const cols = floor(width / grid);
-      const rows = floor(height / grid);
-      const vert = rnd() < 0.5;
-      const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : width;
-      const h = vert ? height : floor(rows * (0.2 + rnd() * 0.5)) * grid;
-      let lx = rnd() < 0.5 ? 0 : width - w;
-      let ly = rnd() < 0.5 ? 0 : height - h;
-      if (rnd() < 0.3) {
-        lx = floor(rnd() * floor((width - w) / grid)) * grid;
-        ly = floor(rnd() * floor((height - h) / grid)) * grid;
+      if (scanners.length < cap && rnd() < profile.scannerSpawn) {
+        const x = floor(rnd() * floor((width - cell) / cell)) * cell;
+        const y = floor(rnd() * floor((height - cell) / cell)) * cell;
+        const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+        const speed = pow(2, floor(rnd() * 2));
+        const stride = pow(2, floor(rnd() * 2));
+        const g = greenLevel(time, options);
+        const n = dir[0]
+          ? 1 + floor(rnd() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
+          : 1 + floor(rnd() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
+        const life = (14 + floor(rnd() * 20)) * 32;
+        for (let i = 0; i < n; i++) {
+          scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+        }
+        events.push({ kind: 'g', x: x / width, y: y / height, z: g / 4 });
       }
-      layers.push(layer(lx, ly, w, h, grid, (8 + floor(rnd() * 16)) * 32, pow(2, floor(rnd() * 6))));
+
+      const grid = profile.grid;
+      if (layers.length < profile.maxLayers && rnd() < profile.layerSpawn) {
+        const cols = floor(width / grid);
+        const rows = floor(height / grid);
+        const vert = rnd() < 0.5;
+        const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : width;
+        const h = vert ? height : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+        let lx = rnd() < 0.5 ? 0 : width - w;
+        let ly = rnd() < 0.5 ? 0 : height - h;
+        if (rnd() < 0.3) {
+          lx = floor(rnd() * floor((width - w) / grid)) * grid;
+          ly = floor(rnd() * floor((height - h) / grid)) * grid;
+        }
+        layers.push(layer(lx, ly, w, h, grid, (8 + floor(rnd() * 16)) * 32, pow(2, floor(rnd() * 6))));
+        events.push({ kind: 'r', x: lx / width, y: ly / height, z: 0.5 });
+      }
     }
 
     ctx.globalCompositeOperation = 'source-over';
-    return ctx.getImageData(0, 0, width, height);
+    return { pixels: ctx.getImageData(0, 0, width, height), events };
   };
 
   const reset = () => { scanners = []; layers = []; depthProbes = []; };
@@ -288,7 +313,6 @@ const Canvas2d = () => {
   return { init, setup, draw, reset, setProfile };
 };
 
-/** Sample invisible motion map → RGB energies → XYZ (0–1). */
 const rgbToXyz = (pixels) => {
   const d = pixels.data;
   let r = 0, g = 0, b = 0, n = 0;
@@ -299,28 +323,43 @@ const rgbToXyz = (pixels) => {
     b += d[i + 2];
     n++;
   }
-  return {
-    x: r / n / 255,
-    y: g / n / 255,
-    z: b / n / 255,
-  };
+  return { x: r / n / 255, y: g / n / 255, z: b / n / 255 };
 };
+
+class BloomVoice {
+  constructor(note, rng) {
+    this.note = note;
+    this.growing = true;
+    this.dying = false;
+    this.dead = false;
+    this.fadeAlpha = 1;
+    this.growT = 0;
+    this.growDur = 400 + rng.uniform(0, 400);
+    this.fadeSpeed = rng.uniform(0.0008, 0.002);
+  }
+  update(dt) {
+    if (this.growing) {
+      this.growT += dt;
+      if (this.growT >= this.growDur) this.growing = false;
+    }
+    if (this.dying) {
+      this.fadeAlpha -= this.fadeSpeed * (dt / 16.67);
+      if (this.fadeAlpha <= 0) this.dead = true;
+    }
+  }
+  startDying() { this.dying = true; }
+}
 
 const PentatonicPiano = () => {
   const BASE = 'samples/salamander-pentatonic/';
   let ctx, master, buffers = {}, ready = false, unlocked = false;
-  let lastSample = 0;
-  let smooth = { x: 0, y: 0, z: 0 };
-  let prev = { x: 0, y: 0, z: 0 };
-  let lastNote = { x: 0, y: 0, z: 0 };
   let lastPlayed = '—';
-  const hud = document.getElementById('hud');
 
   const load = async () => {
     if (ready) return;
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain();
-    master.gain.value = 0.65;
+    master.gain.value = 0.4;
     master.connect(ctx.destination);
     await Promise.all(SAMPLE_ROOTS.map(async (name) => {
       const res = await fetch(`${BASE}${name}.mp3`);
@@ -337,9 +376,7 @@ const PentatonicPiano = () => {
     document.getElementById('unlock').hidden = true;
   };
 
-  const pickFromPool = (pool, axis) => pool[min(pool.length - 1, floor(axis * pool.length))];
-
-  const playNote = (noteName, velocity, pan) => {
+  const playNote = (noteName, velocity) => {
     if (!ready || !unlocked) return;
     const map = NOTE_MAP[noteName];
     if (!map) return;
@@ -350,80 +387,183 @@ const PentatonicPiano = () => {
     src.buffer = buf;
     src.playbackRate.value = map.r;
     const gain = ctx.createGain();
-    const panner = ctx.createStereoPanner();
-    panner.pan.value = max(-1, min(1, pan));
-    const v = max(0.04, min(0.5, velocity));
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(v, now + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
+    const v = max(0.04, min(0.55, velocity));
+    gain.gain.setValueAtTime(v, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 6);
     src.connect(gain);
-    gain.connect(panner);
-    panner.connect(master);
+    gain.connect(master);
     src.start(now);
-    src.stop(now + 3.5);
+    src.stop(now + 6.5);
     lastPlayed = noteName;
   };
 
-  const maybeTrigger = (channel, axis, pool, t) => {
-    const delta = smooth[channel] - prev[channel];
-    const thresh = channel === 'z' ? 0.008 : 0.011;
-    if (delta < thresh || t - lastNote[channel] < NOTE_COOLDOWN_MS) return;
-    if (smooth[channel] < 0.015) return;
-    lastNote[channel] = t;
-    const note = pickFromPool(pool, axis);
-    const vel = 0.18 + smooth[channel] * 0.55;
-    const pan = (axis - 0.5) * 1.6;
-    playNote(note, vel, pan);
+  return { unlock, playNote, getLast: () => lastPlayed, isUnlocked: () => unlocked };
+};
+
+const BloomGarden = (piano) => {
+  let voices = [];
+  let spawnCount = 0;
+  let nextSpawn = 0;
+  let gardenFull = false;
+  let fullAt = -1;
+  let dyingStarted = false;
+  let gardenStart = 0;
+  let noteAssignments = [];
+  let gardenPct = 0;
+  let phaseLabel = 'accumulate';
+
+  const reset = (t, seed) => {
+    voices = [];
+    spawnCount = 0;
+    nextSpawn = t + 600;
+    gardenFull = false;
+    fullAt = -1;
+    dyingStarted = false;
+    gardenStart = t;
+    noteAssignments = shufflePool(makeRng(seed ^ 0x517cc1b7));
+    gardenPct = 0;
+    phaseLabel = 'accumulate';
   };
 
-  const update = (pixels, time) => {
-    if (!unlocked || time - lastSample < SAMPLE_MS) return;
-    lastSample = time;
-
-    const raw = rgbToXyz(pixels);
-    const k = 0.2;
-    prev = { ...smooth };
-    smooth.x += (raw.x - smooth.x) * k;
-    smooth.y += (raw.y - smooth.y) * k;
-    smooth.z += (raw.z - smooth.z) * k;
-
-    maybeTrigger('x', smooth.x, POOL_X, time);
-    maybeTrigger('y', smooth.y, POOL_Y, time);
-    maybeTrigger('z', smooth.z, POOL_Z, time);
-
-    hud.textContent = [
-      `seed ${activeSeed}`,
-      `X(R) ${smooth.x.toFixed(3)} · Y(G) ${smooth.y.toFixed(3)} · Z(B) ${smooth.z.toFixed(3)}`,
-      unlocked ? `last ${lastPlayed}` : 'audio locked',
-    ].join(' · ');
+  const startRelease = () => {
+    if (dyingStarted || voices.length === 0) return;
+    dyingStarted = true;
+    phaseLabel = 'release';
+    [...voices].reverse().forEach((v, i) => {
+      setTimeout(() => {
+        v.startDying();
+        piano.playNote(v.note, 0.14 + rnd() * 0.08);
+      }, i * RELEASE_STAGGER);
+    });
   };
 
-  const resetTriggers = () => {
-    smooth = { x: 0, y: 0, z: 0 };
-    prev = { x: 0, y: 0, z: 0 };
-    lastNote = { x: 0, y: 0, z: 0 };
-    lastPlayed = '—';
+  const trySpawnFromEvent = (t, ev) => {
+    if (lifePhase !== 'live' || spawnCount >= TOTAL_BLOOMS || t < nextSpawn) return false;
+    const note = noteAssignments[spawnCount];
+    const voiceRng = makeRng(activeSeed + spawnCount + 1);
+    voices.push(new BloomVoice(note, voiceRng));
+    piano.playNote(note, 0.22 + rnd() * 0.1);
+    spawnCount++;
+    nextSpawn = t + SPAWN_INTERVAL;
+    lastPlayedMeta = `${note} · ${ev.kind.toUpperCase()}`;
+    if (spawnCount >= TOTAL_BLOOMS) {
+      gardenFull = true;
+      fullAt = t;
+      phaseLabel = 'hold';
+    }
+    return true;
   };
 
-  return { unlock, update, resetTriggers };
+  let lastPlayedMeta = '—';
+
+  const onInvisibleEvents = (t, events) => {
+    if (!events.length || lifePhase !== 'live') return;
+    for (const ev of events) {
+      if (trySpawnFromEvent(t, ev)) break;
+    }
+  };
+
+  const update = (t, dt) => {
+    if (gardenFull && !dyingStarted && t > fullAt + HOLD_AFTER_FULL) {
+      startRelease();
+    }
+    voices.forEach((v) => v.update(dt));
+    if (dyingStarted && voices.length > 0 && voices.every((v) => v.dead)) {
+      reset(t, activeSeed);
+    }
+    const elapsed = t - gardenStart;
+    gardenPct = min(100, (elapsed / TOTAL_GARDEN_MS) * 100);
+  };
+
+  const forceRelease = () => startRelease();
+
+  const hudLine = () => {
+    const last = piano.getLast();
+    return `garden ${spawnCount}/${TOTAL_BLOOMS} · ${phaseLabel} · ${lastPlayedMeta || last}`;
+  };
+
+  return {
+    reset, onInvisibleEvents, update, forceRelease, hudLine,
+    getPhase: () => phaseLabel,
+  };
 };
 
 const c2d = Canvas2d();
 const piano = PentatonicPiano();
+const garden = BloomGarden(piano);
 const options = { auto: true, mode: 0 };
+const lifebar = document.getElementById('lifebar');
+const seedHud = document.getElementById('seed-hud');
+const hud = document.getElementById('hud');
+let lastFrame = 0;
+
+const seriesTitle = (seed) => `Invisible Layer · piano exp · ${seed >>> 0}`;
+
+const updateSeedHud = () => {
+  seedHud.textContent = seriesTitle(activeSeed);
+  document.title = seriesTitle(activeSeed);
+};
+
+const rebirth = (t, nextSeed) => {
+  activeSeed = (nextSeed ?? ((Math.random() * 0x100000000) >>> 0)) >>> 0;
+  seedProfile = buildSeedProfile(activeSeed);
+  orgRng = makeRng(activeSeed);
+  c2d.setProfile(seedProfile.canvas);
+  c2d.reset();
+  options.mode = seedProfile.defaultMode;
+  options.auto = seedProfile.autoMode;
+  lifeStart = t;
+  lifePhase = 'live';
+  surrenderAt = 0;
+  lifebar.style.width = '0%';
+  garden.reset(t, activeSeed);
+  updateSeedHud();
+};
+
+const applySeed = (seed) => rebirth(performance.now(), seed >>> 0);
+
+const updateLife = (t) => {
+  if (!lifeStart) lifeStart = t;
+
+  if (lifePhase === 'live') {
+    const pct = min(100, ((t - lifeStart) / LIFESPAN_MS) * 100);
+    lifebar.style.width = `${pct.toFixed(2)}%`;
+    if (t - lifeStart >= LIFESPAN_MS) {
+      lifePhase = 'surrender';
+      surrenderAt = t;
+      lifebar.style.width = '100%';
+      garden.forceRelease();
+    }
+    return;
+  }
+
+  if (lifePhase === 'surrender') {
+    if (t - surrenderAt >= SURRENDER_MS) rebirth(t);
+  }
+};
 
 document.getElementById('unlock').addEventListener('click', () => piano.unlock());
 
 document.addEventListener('keydown', (e) => {
-  const k = e.key.toLowerCase();
-  if (k === 'n') applySeed(randomSeed());
+  if (e.key.toLowerCase() === 'n') rebirth(performance.now());
 });
 
 function setup() { c2d.setup(); }
 
 function frame(t) {
-  const pixels = c2d.draw(t, options);
-  piano.update(pixels, t);
+  const dt = lastFrame ? t - lastFrame : 16.67;
+  lastFrame = t;
+  updateLife(t);
+  const allowMotion = lifePhase === 'live';
+  const { pixels, events } = c2d.draw(t, options, allowMotion);
+  rgbToXyz(pixels);
+  if (piano.isUnlocked()) {
+    garden.onInvisibleEvents(t, events);
+    garden.update(t, dt);
+  }
+  hud.textContent = piano.isUnlocked()
+    ? `${garden.hudLine()} · DNA ${lifePhase}`
+    : `${garden.hudLine()} · audio locked`;
   requestAnimationFrame(frame);
 }
 
