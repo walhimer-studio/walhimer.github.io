@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TVXX0YPGCN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TVXX0YPGCN');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Machine DNA — Mark Walhimer</title>
+  <meta name="description" content="Machine DNA — one kernel, one genome, many bodies. Essay on acceptance, control, and agency in real-time generative installation work by Mark Walhimer." />
+  <link rel="canonical" href="https://mark-walhimer.com/practice/machine-dna.html" />
+  <meta property="og:title" content="Machine DNA — Mark Walhimer" />
+  <meta property="og:description" content="I use code and real-time systems as a lens for acceptance, control, and agency." />
+  <meta property="og:url" content="https://mark-walhimer.com/practice/machine-dna.html" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/cathedral-shell.css" />
+  <style>
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 64px 40px 100px;
+    }
+    .kicker {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 300;
+      line-height: 1.04;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      color: var(--ink);
+    }
+    .deck {
+      font-family: var(--serif);
+      font-size: clamp(20px, 2.8vw, 28px);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.45;
+      color: var(--ink);
+      margin-bottom: 12px;
+      max-width: 40rem;
+    }
+    .date-line {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 36px;
+    }
+    .figure {
+      margin: 0 0 40px;
+      max-width: 44rem;
+    }
+    .figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+    }
+    .figure figcaption {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-top: 10px;
+    }
+    .body h2 {
+      font-family: var(--serif);
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+      margin: 48px 0 16px;
+      max-width: 44rem;
+    }
+    .body h2 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--accent);
+    }
+    .body p {
+      font-size: 16px;
+      line-height: 1.85;
+      color: var(--ink-soft);
+      margin-bottom: 18px;
+      max-width: 44rem;
+    }
+    .body p.lede-section {
+      font-size: clamp(17px, 2.2vw, 20px);
+      color: var(--ink);
+      line-height: 1.75;
+    }
+    .body em { font-style: italic; }
+    .body strong { color: var(--ink); font-weight: 500; }
+    .glossary {
+      margin-top: 48px;
+      padding-top: 36px;
+      border-top: 1px solid var(--line);
+      max-width: 44rem;
+    }
+    .glossary h2 {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin: 0 0 24px;
+      font-weight: 400;
+    }
+    .term {
+      margin-bottom: 22px;
+    }
+    .term dt {
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .term dd {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+    .refs {
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line);
+      max-width: 44rem;
+    }
+    .refs h2 {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin: 0 0 20px;
+      font-weight: 400;
+    }
+    .refs h3 {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin: 24px 0 10px;
+      font-weight: 400;
+    }
+    .refs ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .refs li {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink-soft);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--pale);
+    }
+    .refs li:last-child { border-bottom: none; }
+    .refs strong { color: var(--ink); font-weight: 500; }
+    .note-box {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      padding: 18px 20px;
+      background: var(--off);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      margin: 32px 0;
+      max-width: 44rem;
+    }
+    .back {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .back a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .back a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body class="shell-page">
+<nav>
+  <a class="nav-logo" href="/" title="Home">Mark Walhimer</a>
+  <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
+    <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
+  </button>
+  <div class="nav-links" id="site-nav-links">
+    <a href="/installations/">Installations</a>
+    <a href="/available/">Available</a>
+    <a href="/sketches/index.html">Catalog</a>
+    <a class="active" href="/practice/index.html">Practice</a>
+    <a href="/bio/index.html">Bio / CV</a>
+    <a href="/contact/index.html">Contact</a>
+  </div>
+</nav>
+
+<main class="page">
+  <p class="kicker">Practice · Essay</p>
+  <h1>Machine DNA</h1>
+  <p class="deck">“I use code and real-time systems as a lens for acceptance, control, and agency.”</p>
+  <p class="date-line">Mark Walhimer · July 2026 · Formerly Emergent DNA</p>
+
+  <figure class="figure">
+    <a href="/installations/surrender-machines.html"><img src="/images/homepage-featured/001.png" width="1024" height="529" alt="Surrender Machines — generative installation preview" loading="lazy" /></a>
+    <figcaption><a href="/installations/surrender-machines.html">Surrender Machines</a> · Loop / installation body</figcaption>
+  </figure>
+
+  <article class="body">
+    <h2>The method — <em>Conditions, then recognition</em></h2>
+    <p class="lede-section">For nearly thirty years, my work has been in interactive museums and educational settings, designing exhibits and environments that visitors complete by moving through them — an experience made rather than an explanation given. I now turn the same methodology toward existential questions. The habit predates the code, a phenomenon set in motion and left to proceed. I learned to begin with a rough sketch, set it aside for a day, and return to it — and the judgment was always the same one. Not whether I had made the thing, but whether the thing could stand without me.</p>
+    <p>Working for Judy Pfaff, I came to understand a sculpture as something entered rather than viewed; in Edward Kienholz I found environments that are, before anything else, about a feeling — the room, or machine, as the carrier of an emotional state. What I build now is such a room, out of running code.</p>
+
+    <h2>The agreement — <em>Surrender</em></h2>
+    <p>The Surrender Machines began as a question — can a machine surrender for us? I create the machines in worlds generated by image and text, or code; the machine surrenders on our behalf, and we recognize ourselves in what it returns. We build the votive, and we leave the votive behind, but we are the ones who started the process of the votive. We are still the composers.</p>
+
+    <h2>Devotion — <em>The votive</em></h2>
+    <p>I think of each machine as a votive. In the Brazilian tradition, a votive is a devotional object — carved by your own hand or commissioned from a carver — that is then left behind in the church after serving its purpose. The machine holds what has been surrendered to it, and having held it, it is finished: it breaks, it scars, and it is left behind, its work done.</p>
+    <p>A technical object that fails — the aesthetic of the machine that wears and breaks, the teacup worth more once shattered, its cracks mended with gold. As a studio assistant to Donald Lipski, I learned that the assemblage of objects becomes larger than any single piece, and larger than the self that gathered them — a whole that outlasts both its parts and its maker.</p>
+
+    <h2>Apparatus — <em>The machine as subject</em></h2>
+    <p>I wanted machines that move, not pictures of them. In code, a mechanism can be drawn in isometric or axonometric projection, given color, and set turning — a gear, a motor, an apparatus of no use to anyone. The reference is Alice Aycock’s orthographic drawings of impossible machines.</p>
+    <p>I do not hold the projections strict. Isometric and axonometric blur into one another because the code is indifferent to the distinction — hand it a plane and it renders depth regardless — and that indifference is the room I work in. A drafting convention built for precision becomes, in code, a loose and playable dimension.</p>
+
+    <h2>Perception — <em>Misreadings</em></h2>
+    <p>Some of the work turns on the instant a thing is taken for something else. Waiting once in a slow apothecary in Macon, Georgia, I watched people enter and leave and saw a choreography in it, then wrote code that reproduces the dance. Walking home in Mexico another night, I raised a smartphone camera to the moon and found afterward it had been a satellite antenna on a roof — and made, from the error, an animation of a figure walking beneath a moon that is not one. Between these sit the mechanical drawings for emotions: feelings diagrammed in p5.js, three.js, Python, and openFrameworks, as though they were apparatus. It is here that the work achieves its intention: the moment a viewer looks at the machine and whispers unprompted that it looks like a ghost, only to realize an instant later — this is actually about me.</p>
+
+    <h2>Agency — <em>Ceding control</em></h2>
+    <p>If the work is about surrender, it cannot keep authority for itself. Using Firebase and Netlify I let the audience’s phones drive what happens on screen, altering a single work at once — a condition I first admired in Leander Herzog’s <em>Haystack</em>.</p>
+
+    <h2>The hidden field — <em>The invisible layer</em></h2>
+    <p>In game engines, terrain is not modeled in advance but summoned: a hidden field triggers geometry into existence as one moves through it, sparing the processor the cost of a world held all at once. Kim Asendorf’s <em>Raster und Spektrum</em> (2025) works this hidden field in two dimensions, as RGB. I remap it — RGB to XYZ — so that color becomes elevation and depth, and the concealed layer generates landscapes I have never seen.</p>
+
+    <h2>The living system — <em>One system, many bodies</em></h2>
+    <p>Ágoston Nagy builds works in which sound and object are not made to react to one another but resolved into a single system — a state he calls sonification. The system’s own data voiced rather than only drawn, the same process heard as it is seen.</p>
+    <p>The body that carries this is deliberately plural — from a browser screen, to an LED object, to an immersive environment — an array of processors, panels, projectors, and actuators wired into one distributed organism, into which the code is placed without my knowing in advance what the organism will do. I resist letting such work collapse into recording; when a first exhibition in Madrid would accept only video files, the constraint only clarified the commitment. The pieces are made to run, not to be replayed, and they are kept live, with their working code, rather than filed away as footage.</p>
+
+    <h2>Where it resolves — <em>Machine DNA</em></h2>
+    <p>All of it turns on the technical object — Gilbert Simondon’s proposition that a made thing possesses its own mode of existence, a life exceeding its maker’s intention — and on Gilbert Ryle’s ghost in the machine, inverted: the machine as an external reflection of us, held up until we are able to turn the reflection inward.</p>
+    <p>Machine DNA is the name for what this has become. A single kernel, a single genome, expressed across many bodies as one species rather than many copies. Its works break and scar, and the scars are gold and heritable — kintsugi, not reset. They witness, or they mirror, and they admit a viewer’s hand only where surrender and agency are themselves the subject. They age, seed, and die, so the work never hardens into a monument. It is not the generation of traits. It is acceptance, control, and agency, given a body and allowed to behave.</p>
+
+    <p class="note-box"><strong>Formerly Emergent DNA</strong> · begun December 2025 · documented on <a href="https://objkt.com" rel="noopener noreferrer">objkt</a> and <a href="https://medium.com/@markwalhimer/machine-dna-fa7bd78947f5" rel="noopener noreferrer">Medium</a></p>
+  </article>
+
+  <section class="glossary" aria-labelledby="key-terms">
+    <h2 id="key-terms">Key terms</h2>
+    <dl class="term">
+      <dt>Surrender Machines</dt>
+      <dd>An ongoing series of systems — image, text, and code — built to hold what we cannot, and to return it in a form we can recognize.</dd>
+    </dl>
+    <dl class="term">
+      <dt>Emergent DNA → Machine DNA</dt>
+      <dd>The framework beneath the work, begun December 2025 (first Emergent DNA, now Machine DNA). Not the familiar metaphor of code-as-genome, but a specific commitment: one kernel and one genome expressed across many bodies as a connected species that breaks, scars, learns, and dies.</dd>
+    </dl>
+    <dl class="term">
+      <dt>Invisible layer</dt>
+      <dd>A generative structure that produces the visible without appearing in it. Where it is conventionally worked in two-dimensional RGB as a flat screen convention, I remap it to XYZ, converting flat, invisible emotional data fields into real-time physical elevation and depth.</dd>
+    </dl>
+    <dl class="term">
+      <dt>Technical object</dt>
+      <dd>After Simondon: a made thing possessing its own mode of existence, a life beyond its maker’s intent — the premise the practice is built to honor, the artwork included.</dd>
+    </dl>
+  </section>
+
+  <section class="refs" aria-labelledby="references">
+    <h2 id="references">References</h2>
+    <h3>Artists</h3>
+    <ul>
+      <li><strong>Judy Pfaff</strong> — Installation entered rather than viewed</li>
+      <li><strong>Edward Kienholz</strong> — The environment as an emotional state</li>
+      <li><strong>Alice Aycock</strong> — Orthographic drawings of impossible machines</li>
+      <li><strong>Donald Lipski</strong> — Assemblage — the accumulation greater than its parts</li>
+      <li><strong>Vera Molnár</strong> — Origins of algorithmic form</li>
+      <li><strong>Ágoston Nagy</strong> — The unified audiovisual system · sonification</li>
+      <li><strong>Kim Asendorf</strong> — The pixel and the invisible layer</li>
+      <li><strong>Leander Herzog</strong> — Distributed authorship · Haystack</li>
+    </ul>
+    <h3>In thought</h3>
+    <ul>
+      <li><strong>Gilbert Simondon</strong> — The mode of existence of technical objects</li>
+      <li><strong>Gilbert Ryle</strong> — The ghost in the machine</li>
+    </ul>
+    <h3>With gratitude</h3>
+    <ul>
+      <li><strong>Doreen Ríos</strong> — Technological counterproduction</li>
+      <li><strong>Ariel Baron-Robbins</strong> — Founder, Loop Art Critique</li>
+      <li><strong>Dr. William Fogler</strong> — “Those objects define our lives.”</li>
+    </ul>
+  </section>
+
+  <p class="back" style="margin-top:28px;padding-top:0;border-top:none;font-size:11px;letter-spacing:0.06em;text-transform:none;color:var(--ink-soft);">
+    Mark Walhimer (b. 1964) · Digital installation · three.js · WebGL · GLSL
+  </p>
+
+  <p class="back">
+    <a href="/practice/index.html">← Practice</a>
+    &nbsp;·&nbsp;
+    <a href="/practice/artist-statement.html">Artist statement</a>
+    &nbsp;·&nbsp;
+    <a href="https://medium.com/@markwalhimer/machine-dna-fa7bd78947f5" rel="noopener noreferrer">Also on Medium</a>
+  </p>
+</main>
+
+<footer class="shell-footer">Mark Walhimer — Machine DNA</footer>
+<script>
+(function () {
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  var btn = nav.querySelector('.nav-toggle');
+  var panel = document.getElementById('site-nav-links');
+  if (!btn || !panel) return;
+  btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('nav-open');
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  panel.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('nav-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open menu');
+    });
+  });
+})();
+</script>
+</body>
+</html>
