@@ -8,7 +8,7 @@
 | Species | Invisible Layer |
 | Seed | 77823 (default; URL `?seed=`) |
 | Mode | **Live / surrender / rebirth** |
-| Bodies | browser · vol3d |
+| Bodies | browser · vol3d · LED |
 | Medium | Canvas2D + WebGL2 / JavaScript · Three.js RGB→XYZ |
 | Dependencies | None external (self-contained) |
 | Sound | Yes (MotionSoundscape sonification) |
@@ -22,6 +22,8 @@ Real-time animation using invisible layers: green scanners and red layers on a h
 `sketches/invisible-layer/invisible-layer-july-8-2026.html`
 
 ## Related
+
+[Invisible Layer July-12-2026](./invisible-layer-july-12-2026.md) — votive machine · emotions made visible · seeded rebirth · no scars.
 
 [Invisible Layer July-8-2026 · piano exp](./invisible-layer-july-8-2026-piano-exp.md) — sound-only · invisible layer · Salamander pentatonic · RGB→XYZ.
 
