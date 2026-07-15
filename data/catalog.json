@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-12",
+  "updated": "2026-07-14",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -56,9 +56,13 @@
             "sketches/invisible-layer/README.md",
             "sketches/invisible-layer/index.html",
             "sketches/invisible-layer/invisible-layer-july-12-2026.html",
+            "sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html",
+            "sketches/invisible-layer/invisible-layer-july-13-2026.html",
+            "sketches/invisible-layer/invisible-layer-july-14-2026.html",
             "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
             "sketches/invisible-layer/invisible-layer-july-8-2026.html",
             "sketches/invisible-layer/invisible-layer-june-7-2026-2.html",
+            "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d-landscape.html",
             "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html",
             "sketches/invisible-layer/invisible-layer-study-bloom-piano.html",
             "sketches/invisible-layer/invisible-layer-study-webgl.html",
@@ -67,6 +71,13 @@
             "sketches/invisible-layer/invisible-layer-woven-july-10-2026.html",
             "sketches/invisible-layer/js/forward-slice-export.mjs",
             "sketches/invisible-layer/js/three.min.js",
+            "sketches/invisible-layer/pixel-recipes/README.md",
+            "sketches/invisible-layer/pixel-recipes/assembly-rules.json",
+            "sketches/invisible-layer/pixel-recipes/channel-spec.json",
+            "sketches/invisible-layer/pixel-recipes/chunk-grid-study.html",
+            "sketches/invisible-layer/pixel-recipes/landscape-travel-study.html",
+            "sketches/invisible-layer/pixel-recipes/part-ids.json",
+            "sketches/invisible-layer/pixel-recipes/pixel-recipes.md",
             "sketches/invisible-layer/samples/salamander-pentatonic/A2.mp3",
             "sketches/invisible-layer/samples/salamander-pentatonic/A3.mp3",
             "sketches/invisible-layer/samples/salamander-pentatonic/A4.mp3",
@@ -709,24 +720,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-readme",
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-july-14-2026",
       "dublin_core": {
-        "title": "invisible-layer/README.md",
+        "title": "invisible-layer/invisible-layer-july-14-2026",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-readme",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-july-14-2026",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000292"
+        "catalog_number": "WS-000304"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-readme",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-july-14-2026",
         "type": "HumanMadeObject",
-        "_label": "invisible-layer/README.md",
+        "_label": "invisible-layer/invisible-layer-july-14-2026",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -741,12 +752,13 @@
         ],
         "sketch": {
           "series": "Invisible Layer",
-          "file": "invisible-layer/README.md"
+          "file": "invisible-layer/invisible-layer-july-14-2026.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/invisible-layer/README.md"
+          "sketches/invisible-layer/invisible-layer-july-14-2026.html",
+          "sketches/loop-snippets/js/three.min.js"
         ],
         "external_urls": []
       }
@@ -795,6 +807,92 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-readme",
+      "dublin_core": {
+        "title": "invisible-layer/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000292"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-readme",
+        "type": "HumanMadeObject",
+        "_label": "invisible-layer/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "invisible-layer/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/invisible-layer/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-14-2026",
+      "dublin_core": {
+        "title": "../catalog/invisible-layer/invisible-layer-july-14-2026.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-14-2026",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000305"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-invisible-layer-july-14-2026",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/invisible-layer/invisible-layer-july-14-2026.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "../catalog/invisible-layer/invisible-layer-july-14-2026.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/invisible-layer/invisible-layer-july-14-2026.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-8-2026",
       "dublin_core": {
         "title": "../catalog/invisible-layer/invisible-layer-july-8-2026.md",
@@ -838,24 +936,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-8-2026-piano-exp",
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
       "dublin_core": {
-        "title": "../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md",
+        "title": "invisible-layer/invisible-layer-study-webgl",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-8-2026-piano-exp",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000302"
+        "catalog_number": "WS-000290"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-invisible-layer-july-8-2026-piano-exp",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-study-webgl",
         "type": "HumanMadeObject",
-        "_label": "../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md",
+        "_label": "invisible-layer/invisible-layer-study-webgl",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -870,12 +968,13 @@
         ],
         "sketch": {
           "series": "Invisible Layer",
-          "file": "../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md"
+          "file": "invisible-layer/invisible-layer-study-webgl.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md"
+          "sketches/invisible-layer/invisible-layer-study-webgl.html",
+          "sketches/loop-snippets/centered-924-data.js"
         ],
         "external_urls": []
       }
@@ -919,6 +1018,49 @@
       "artifacts": {
         "repo_paths": [
           "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-8-2026-piano-exp",
+      "dublin_core": {
+        "title": "../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-8-2026-piano-exp",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000302"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-invisible-layer-july-8-2026-piano-exp",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md"
         ],
         "external_urls": []
       }
@@ -1093,50 +1235,6 @@
       "artifacts": {
         "repo_paths": [
           "catalog/invisible-layer/invisible-layer-june-7-2026.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
-      "dublin_core": {
-        "title": "invisible-layer/invisible-layer-study-webgl",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000290"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-study-webgl",
-        "type": "HumanMadeObject",
-        "_label": "invisible-layer/invisible-layer-study-webgl",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "invisible-layer/invisible-layer-study-webgl.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/invisible-layer/invisible-layer-study-webgl.html",
-          "sketches/loop-snippets/centered-924-data.js"
         ],
         "external_urls": []
       }
