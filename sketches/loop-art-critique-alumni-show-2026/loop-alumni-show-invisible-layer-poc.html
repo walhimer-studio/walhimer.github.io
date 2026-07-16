@@ -197,7 +197,7 @@ const Canvas2d = () => {
 
     for (const L of layers) {
       const c = SPECTRUM[L.hue % SPECTRUM.length];
-      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},0.12)`;
+      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},0.28)`;
       ctx.fillRect(L.x, L.y, L.w, L.h);
       L.x += sin(t * 0.0003 + L.hue) * 0.4;
       L.y += cos(t * 0.00027 + L.hue * 2) * 0.35;
@@ -214,7 +214,7 @@ const Canvas2d = () => {
       if (s.y < 0 || s.y > height) s.vy *= -1;
       const c = SPECTRUM[floor((t * 0.0002 + s.x * 0.01) % SPECTRUM.length)];
       const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size);
-      g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.55)`);
+      g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.82)`);
       g.addColorStop(1, 'rgba(255,255,255,0)');
       ctx.fillStyle = g;
       ctx.fillRect(s.x - s.size, s.y - s.size, s.size * 2, s.size * 2);
@@ -370,7 +370,7 @@ const VolLandscapePOC = () => {
   let renderer, scene, camera, terrain, terrainMat;
   let leftWall, rightWall, wallMats = [];
   let sliceScene, sliceCam, sliceMat, sliceRT;
-  let volTex = [null, null], volCur = 0;
+  let volTex = [null, null], volId = 0;
   let imgTex, motTex, motScratch, codeImgTex;
   let width, height, depth;
   let viewRot = { x: 0, y: -0.03, drag: false, px: 0, py: 0 };
@@ -461,25 +461,30 @@ const VolLandscapePOC = () => {
   };
 
   const updateWalk = (timeMs, dragging) => {
-    if (!walkOn) return;
     const dt = min(0.05, max(0.001, (updateWalk.lastMs ? (timeMs - updateWalk.lastMs) / 1000 : 0.016)));
     updateWalk.lastMs = timeMs;
 
     if (!dragging) {
       const pace = WALK_SPEED * (0.7 + 0.3 * sin(timeMs * 0.00019));
-      if (moveKeys.forward) walkZ += dt * pace * 1.3;
+      if (moveKeys.forward) walkZ += dt * pace * 1.35;
       else if (moveKeys.back) walkZ -= dt * pace * 0.85;
-      else walkZ += dt * pace;
+      else if (walkOn) walkZ += dt * pace;
     }
 
     if (terrainMat) terrainMat.uniforms.walkZ.value = walkZ;
     for (const m of wallMats) m.uniforms.walkZ.value = walkZ;
 
     const bob = sin(walkZ * 0.11) * 1.0 + sin(timeMs * 0.002) * 0.3;
-    camPos.set(sin(timeMs * 0.0001) * 1.8, EYE_BASE + bob, walkZ * 0.9);
+    const swayX = sin(timeMs * 0.0001) * 1.8;
+    camPos.y = EYE_BASE + bob;
+    camPos.z = walkZ * 0.9;
+    if (!moveKeys.left && !moveKeys.right) camPos.x = swayX;
+
     if (dragging) return;
-    viewRot.x = sin(timeMs * 0.00008) * 0.06 + sin(walkZ * 0.035) * 0.025;
-    viewRot.y = -0.03 + sin(timeMs * 0.00004) * 0.015;
+    if (walkOn) {
+      viewRot.x = sin(timeMs * 0.00008) * 0.06 + sin(walkZ * 0.035) * 0.025;
+      viewRot.y = -0.03 + sin(timeMs * 0.00004) * 0.015;
+    }
   };
 
   const nudgeAlongView = (delta) => {
@@ -496,6 +501,7 @@ const VolLandscapePOC = () => {
   const bindOrbit = () => {
     const el = renderer.domElement;
     el.addEventListener('pointerdown', (e) => {
+      el.focus({ preventScroll: true });
       viewRot.drag = true;
       viewState.dragging = true;
       viewRot.px = e.clientX;
@@ -601,7 +607,7 @@ const VolLandscapePOC = () => {
     if (volTex[0]) volTex[0].dispose();
     if (volTex[1]) volTex[1].dispose();
     volTex = [makeAtlas(width, height, depth), makeAtlas(width, height, depth)];
-    volCur = 0;
+    volId = 0;
 
     if (motTex) motTex.dispose();
     motTex = makeDataTex(width, height, new Uint8Array(width * height * 4));
@@ -619,7 +625,7 @@ const VolLandscapePOC = () => {
     terrainMat.uniforms.dims.value.set(width, height, depth);
     terrainMat.uniforms.img.value = imgTex;
     terrainMat.uniforms.mot.value = motTex;
-    terrainMat.uniforms.vol.value = volTex[volCur];
+    terrainMat.uniforms.vol.value = volTex[volId];
     terrainMat.uniforms.heightScale.value = heightScale;
 
     motScratch = document.createElement('canvas');
@@ -640,10 +646,23 @@ const VolLandscapePOC = () => {
     motTex.needsUpdate = true;
   };
 
-  const volStep = (time) => {
+  const copySliceToAtlas = (destTex, z) => {
     const gl = renderer.getContext();
+    renderer.initTexture(destTex);
+    const destProps = renderer.properties.get(destTex);
+    const rtProps = renderer.properties.get(sliceRT);
+    gl.bindTexture(gl.TEXTURE_2D, destProps.__webglTexture);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, rtProps.__webglFramebuffer);
+    gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, z * height, 0, 0, width, height);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  };
+
+  const volStep = (time) => {
     const ci = floor(time * 0.00035) % SPECTRUM.length;
-    sliceMat.uniforms.buf.value = volTex[volCur];
+    const volPrev = volId;
+    const volCur = volId ^= 1;
+
+    sliceMat.uniforms.buf.value = volTex[volPrev];
     sliceMat.uniforms.mot.value = motTex;
     sliceMat.uniforms.time.value = time * 0.001;
     sliceMat.uniforms.specA.value.set(...rgb01(SPECTRUM[ci]));
@@ -653,23 +672,20 @@ const VolLandscapePOC = () => {
     terrainMat.uniforms.specA.value.copy(sliceMat.uniforms.specA.value);
     terrainMat.uniforms.specB.value.copy(sliceMat.uniforms.specB.value);
 
-    const next = 1 - volCur;
+    renderer.setRenderTarget(sliceRT);
     for (let z = 0; z < depth; z++) {
       sliceMat.uniforms.uSlice.value = z;
-      renderer.setRenderTarget(sliceRT);
       renderer.render(sliceScene, sliceCam);
-      renderer.setRenderTarget(null);
-      gl.bindTexture(gl.TEXTURE_2D, volTex[next].__webglTexture);
-      gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, z * height, 0, 0, width, height);
+      copySliceToAtlas(volTex[volCur], z);
     }
-    volCur = next;
+    renderer.setRenderTarget(null);
     terrainMat.uniforms.vol.value = volTex[volCur];
   };
 
   const render = (timeMs, pixels, dragging) => {
     uploadMotion(pixels);
-    updateWalk(timeMs, dragging);
     applyManualMove(timeMs);
+    updateWalk(timeMs, dragging);
 
     camera.rotation.order = 'YXZ';
     camera.rotation.y = viewRot.x;
@@ -712,7 +728,10 @@ const VolLandscapePOC = () => {
     return walkOn;
   };
 
-  return { init, setup, render, setMoveKey, toggleWalk, nudgeAlongView: nudgeAlongView };
+  return {
+    init, setup, render, setMoveKey, toggleWalk, nudgeAlongView,
+    getCanvas: () => renderer?.domElement ?? null,
+  };
 };
 
 const c2d = Canvas2d();
@@ -751,15 +770,22 @@ const updateLife = (t) => {
 
 document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
-  if (k === 'arrowup') gpu.setMoveKey('forward', true);
-  if (k === 'arrowdown') gpu.setMoveKey('back', true);
-  if (k === 'arrowleft') gpu.setMoveKey('left', true);
-  if (k === 'arrowright') gpu.setMoveKey('right', true);
+  if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
+    e.preventDefault();
+    if (k === 'arrowup') gpu.setMoveKey('forward', true);
+    if (k === 'arrowdown') gpu.setMoveKey('back', true);
+    if (k === 'arrowleft') gpu.setMoveKey('left', true);
+    if (k === 'arrowright') gpu.setMoveKey('right', true);
+    return;
+  }
   if (k === 'w') gpu.toggleWalk();
   if (k === 'n') rebirth(performance.now());
 });
 document.addEventListener('keyup', (e) => {
   const k = e.key.toLowerCase();
+  if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
+    e.preventDefault();
+  }
   if (k === 'arrowup') gpu.setMoveKey('forward', false);
   if (k === 'arrowdown') gpu.setMoveKey('back', false);
   if (k === 'arrowleft') gpu.setMoveKey('left', false);
@@ -773,6 +799,8 @@ function boot() {
   c2d.setup();
   gpu.setup();
   rebirth(performance.now());
+  const canvas = gpu.getCanvas?.() || document.querySelector('canvas');
+  if (canvas) canvas.focus({ preventScroll: true });
   requestAnimationFrame(frame);
 }
 
