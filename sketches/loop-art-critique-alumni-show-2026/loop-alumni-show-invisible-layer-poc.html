@@ -61,6 +61,7 @@ const makeRng = (seed) => {
     },
     uniform(a, b) { return a + this.random() * (b - a); },
     randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+    choice(arr) { return arr[this.randint(0, arr.length - 1)]; },
     chance(p) { return this.random() < p; },
   };
 };
