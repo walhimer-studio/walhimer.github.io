@@ -34,7 +34,7 @@
 <body>
   <div id="hint">
     Loop Alumni Show POC · code on walls · walking landscape<br>
-    ↑↓←→ look · drag look · W auto walk · scroll zoom · N new seed rebirth
+    ↑↓ travel · ←→ strafe · drag look · W auto walk · scroll zoom · N new seed rebirth
   </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
   <div id="seed-hud">Loop Alumni Show — Invisible Layer · POC · 77823</div>
@@ -435,9 +435,10 @@ const VolLandscapePOC = () => {
   let walkZ = 0;
   let walkOn = true;
   let heightScale = 24;
-  const lookKeys = { up: false, down: false, left: false, right: false };
-  const LOOK_SPEED = 1.35;
+  const moveKeys = { forward: false, back: false, left: false, right: false };
+  const MANUAL_SPEED = 38;
   const fwd = new THREE.Vector3();
+  const right = new THREE.Vector3();
 
   const clampPos = () => {
     camPos.x = max(-LANE_HALF + 4, min(LANE_HALF - 4, camPos.x));
@@ -516,15 +517,19 @@ const VolLandscapePOC = () => {
     return mesh;
   };
 
-  const lookActive = () => lookKeys.up || lookKeys.down || lookKeys.left || lookKeys.right;
+  const moveActive = () => moveKeys.forward || moveKeys.back || moveKeys.left || moveKeys.right;
 
   const updateWalk = (timeMs, dragging) => {
     const dt = min(0.05, max(0.001, (updateWalk.lastMs ? (timeMs - updateWalk.lastMs) / 1000 : 0.016)));
     updateWalk.lastMs = timeMs;
 
-    if (!dragging && walkOn) {
-      const pace = WALK_SPEED * (0.7 + 0.3 * sin(timeMs * 0.00019));
-      walkZ += dt * pace;
+    if (!dragging) {
+      if (moveKeys.forward) walkZ += dt * MANUAL_SPEED;
+      else if (moveKeys.back) walkZ -= dt * MANUAL_SPEED * 0.85;
+      else if (walkOn) {
+        const pace = WALK_SPEED * (0.7 + 0.3 * sin(timeMs * 0.00019));
+        walkZ += dt * pace;
+      }
     }
 
     if (terrainMat) terrainMat.uniforms.walkZ.value = walkZ;
@@ -534,13 +539,34 @@ const VolLandscapePOC = () => {
     const swayX = sin(timeMs * 0.0001) * 1.8;
     camPos.y = EYE_BASE + bob;
     camPos.z = walkZ * 0.9;
-    if (!lookActive()) camPos.x = swayX;
+    if (!moveActive()) camPos.x = swayX;
 
-    if (dragging || lookActive()) return;
+    if (dragging || moveActive()) return;
     if (walkOn) {
       viewRot.x = sin(timeMs * 0.00008) * 0.06 + sin(walkZ * 0.035) * 0.025;
       viewRot.y = -0.03 + sin(timeMs * 0.00004) * 0.015;
     }
+  };
+
+  const applyManualMove = (timeMs) => {
+    if (!moveKeys.left && !moveKeys.right) return;
+
+    const dt = min(0.05, max(0.001, (applyManualMove.lastMs ? (timeMs - applyManualMove.lastMs) / 1000 : 0.016)));
+    applyManualMove.lastMs = timeMs;
+
+    camera.rotation.order = 'YXZ';
+    camera.rotation.y = viewRot.x;
+    camera.rotation.x = viewRot.y;
+    camera.rotation.z = 0;
+    camera.position.copy(camPos);
+    camera.updateMatrixWorld();
+    right.setFromMatrixColumn(camera.matrixWorld, 0);
+
+    let strafe = 0;
+    if (moveKeys.left) strafe -= MANUAL_SPEED * dt;
+    if (moveKeys.right) strafe += MANUAL_SPEED * dt;
+    camPos.addScaledVector(right, strafe);
+    clampPos();
   };
 
   const nudgeAlongView = (delta) => {
@@ -738,20 +764,9 @@ const VolLandscapePOC = () => {
     terrainMat.uniforms.vol.value = volTex[volCur];
   };
 
-  const applyArrowLook = (timeMs) => {
-    if (!lookActive()) return;
-    const dt = min(0.05, max(0.001, (applyArrowLook.lastMs ? (timeMs - applyArrowLook.lastMs) / 1000 : 0.016)));
-    applyArrowLook.lastMs = timeMs;
-    if (lookKeys.left) viewRot.x += LOOK_SPEED * dt;
-    if (lookKeys.right) viewRot.x -= LOOK_SPEED * dt;
-    if (lookKeys.up) viewRot.y += LOOK_SPEED * dt * 0.7;
-    if (lookKeys.down) viewRot.y -= LOOK_SPEED * dt * 0.7;
-    viewRot.y = max(-0.35, min(0.22, viewRot.y));
-  };
-
   const render = (timeMs, pixels, dragging) => {
     uploadMotion(pixels);
-    applyArrowLook(timeMs);
+    applyManualMove(timeMs);
     updateWalk(timeMs, dragging);
 
     camera.rotation.order = 'YXZ';
@@ -768,8 +783,8 @@ const VolLandscapePOC = () => {
     renderer.render(scene, camera);
   };
 
-  const setLookKey = (name, down) => {
-    if (name in lookKeys) lookKeys[name] = down;
+  const setMoveKey = (name, down) => {
+    if (name in moveKeys) moveKeys[name] = down;
   };
 
   const toggleWalk = () => {
@@ -793,7 +808,7 @@ const VolLandscapePOC = () => {
   };
 
   return {
-    init, setup, render, setLookKey, toggleWalk, nudgeAlongView,
+    init, setup, render, setMoveKey, toggleWalk, nudgeAlongView,
     applySeedProfile, refreshCodeArt,
     getCanvas: () => renderer?.domElement ?? null,
   };
@@ -857,10 +872,10 @@ document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
   if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
     e.preventDefault();
-    if (k === 'arrowup') gpu.setLookKey('up', true);
-    if (k === 'arrowdown') gpu.setLookKey('down', true);
-    if (k === 'arrowleft') gpu.setLookKey('left', true);
-    if (k === 'arrowright') gpu.setLookKey('right', true);
+    if (k === 'arrowup') gpu.setMoveKey('forward', true);
+    if (k === 'arrowdown') gpu.setMoveKey('back', true);
+    if (k === 'arrowleft') gpu.setMoveKey('left', true);
+    if (k === 'arrowright') gpu.setMoveKey('right', true);
     return;
   }
   if (k === 'w') gpu.toggleWalk();
@@ -874,10 +889,10 @@ document.addEventListener('keyup', (e) => {
   if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
     e.preventDefault();
   }
-  if (k === 'arrowup') gpu.setLookKey('up', false);
-  if (k === 'arrowdown') gpu.setLookKey('down', false);
-  if (k === 'arrowleft') gpu.setLookKey('left', false);
-  if (k === 'arrowright') gpu.setLookKey('right', false);
+  if (k === 'arrowup') gpu.setMoveKey('forward', false);
+  if (k === 'arrowdown') gpu.setMoveKey('back', false);
+  if (k === 'arrowleft') gpu.setMoveKey('left', false);
+  if (k === 'arrowright') gpu.setMoveKey('right', false);
 });
 
 function boot() {
