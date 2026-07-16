@@ -34,7 +34,7 @@
 <body>
   <div id="hint">
     Loop Alumni Show POC · code on walls · walking landscape<br>
-    ↑↓ pace · ←→ strafe · drag look · W walk · scroll zoom · N rebirth
+    ↑↓ pace · ←→ strafe · drag look · W walk · scroll zoom · N new seed rebirth
   </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
   <div id="seed-hud">Loop Alumni Show — Invisible Layer · POC · 77823</div>
@@ -100,6 +100,62 @@ const rebuildSpectrum = () => {
 
 resetPalFromBase();
 rebuildSpectrum();
+
+const rgbToHsl = (r, g, b) => {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) * 0.5;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h = 0;
+  if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+  else if (max === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return [h / 6, s, l];
+};
+
+const hslToRgb = (h, s, l) => {
+  if (s === 0) return [l, l, l];
+  const hue2rgb = (p, q, t) => {
+    let tt = t;
+    if (tt < 0) tt += 1;
+    if (tt > 1) tt -= 1;
+    if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+    if (tt < 1 / 2) return q;
+    if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+    return p;
+  };
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  return [hue2rgb(p, q, h + 1 / 3), hue2rgb(p, q, h), hue2rgb(p, q, h - 1 / 3)];
+};
+
+const hueRotateRgb = (rgb, deg) => {
+  const [h, s, l] = rgbToHsl(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
+  const nh = (h + deg / 360 + 1) % 1;
+  const ns = min(1, max(0.35, s * 1.05));
+  const [r, g, b] = hslToRgb(nh, ns, l);
+  return [floor(r * 255), floor(g * 255), floor(b * 255)];
+};
+
+const buildSeedProfile = (seed) => {
+  const r = makeRng(seed);
+  const hueShift = r.uniform(0, 360);
+  const palette = {};
+  const paletteIdentity = (seed >>> 0) === (DEFAULT_SEED >>> 0);
+  for (const [k, v] of Object.entries(BASE_PAL)) {
+    if (k === 'white' || paletteIdentity) palette[k] = v.slice();
+    else palette[k] = hueRotateRgb(v, hueShift + r.uniform(-24, 24));
+  }
+  return {
+    seed: seed >>> 0,
+    palette,
+    volDepth: r.choice([16, 20, 24, 28]),
+    heightScale: 18 + r.uniform(0, 1) * 22,
+    codeVeil: r.uniform(0.35, 0.62),
+  };
+};
 
 const rgb01 = (c) => [c[0] / 255, c[1] / 255, c[2] / 255];
 
@@ -728,8 +784,23 @@ const VolLandscapePOC = () => {
     return walkOn;
   };
 
+  const applySeedProfile = (prof) => {
+    volDepth = prof.volDepth;
+    heightScale = prof.heightScale;
+    if (sliceMat) sliceMat.uniforms.codeVeil.value = prof.codeVeil;
+    if (terrainMat) terrainMat.uniforms.heightScale.value = heightScale;
+  };
+
+  const refreshCodeArt = () => {
+    if (codeImgTex) codeImgTex.dispose();
+    codeImgTex = rasterizeCodeArtLayer(2048);
+    if (sliceMat) sliceMat.uniforms.codeImg.value = codeImgTex;
+    for (const m of wallMats) m.uniforms.codeImg.value = codeImgTex;
+  };
+
   return {
     init, setup, render, setMoveKey, toggleWalk, nudgeAlongView,
+    applySeedProfile, refreshCodeArt,
     getCanvas: () => renderer?.domElement ?? null,
   };
 };
@@ -743,15 +814,35 @@ let bornAt = performance.now();
 let lifePhase = 'live';
 let surrenderAt = 0;
 const lifebar = document.getElementById('lifebar');
+const seedHud = document.getElementById('seed-hud');
 
-const rebirth = (t) => {
+const updateSeedHud = () => {
+  const label = `Loop Alumni Show — Invisible Layer · POC · ${activeSeed >>> 0}`;
+  seedHud.textContent = label;
+  document.title = label;
+};
+
+const randomSeed = () => ((Math.random() * 0x100000000) >>> 0);
+
+const applySeed = (seed) => {
+  activeSeed = seed >>> 0;
+  const prof = buildSeedProfile(activeSeed);
+  orgRng = makeRng(activeSeed);
+  for (const [k, v] of Object.entries(prof.palette)) PAL[k] = v.slice();
+  rebuildSpectrum();
+  gpu.applySeedProfile(prof);
+  gpu.refreshCodeArt();
+  c2d.setup();
+  gpu.setup();
+  updateSeedHud();
+};
+
+const rebirth = (t, nextSeed) => {
+  applySeed(nextSeed ?? randomSeed());
   bornAt = t;
   lifePhase = 'live';
   surrenderAt = 0;
   lifebar.style.width = '0%';
-  orgRng = makeRng(activeSeed);
-  c2d.setup();
-  gpu.setup();
 };
 
 const updateLife = (t) => {
@@ -779,7 +870,10 @@ document.addEventListener('keydown', (e) => {
     return;
   }
   if (k === 'w') gpu.toggleWalk();
-  if (k === 'n') rebirth(performance.now());
+  if (k === 'n') {
+    if (e.repeat) return;
+    rebirth(performance.now());
+  }
 });
 document.addEventListener('keyup', (e) => {
   const k = e.key.toLowerCase();
@@ -793,12 +887,13 @@ document.addEventListener('keyup', (e) => {
 });
 
 function boot() {
-  orgRng = makeRng(activeSeed);
   c2d.init();
   gpu.init();
-  c2d.setup();
-  gpu.setup();
-  rebirth(performance.now());
+  applySeed(DEFAULT_SEED);
+  bornAt = performance.now();
+  lifePhase = 'live';
+  surrenderAt = 0;
+  lifebar.style.width = '0%';
   const canvas = gpu.getCanvas?.() || document.querySelector('canvas');
   if (canvas) canvas.focus({ preventScroll: true });
   requestAnimationFrame(frame);
