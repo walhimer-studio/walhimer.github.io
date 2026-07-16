@@ -33,8 +33,8 @@
 </head>
 <body>
   <div id="hint">
-    Loop Alumni Show POC · code on walls · walking landscape<br>
-    ↑↓ travel · ←→ strafe · drag look · W auto walk · scroll zoom · N new seed rebirth
+    Loop Alumni Show POC · invisible RGB→XYZ · code hallway · July-14 scale<br>
+    ↑↓ travel hallway · floor scrolls with your speed · ←→ strafe · drag look · W auto walk · N rebirth
   </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
   <div id="seed-hud">Loop Alumni Show — Invisible Layer · POC · 77823</div>
@@ -66,7 +66,7 @@ const makeRng = (seed) => {
   };
 };
 
-const { floor, min, max, sqrt, sin, cos } = Math;
+const { floor, min, max, sqrt, sin, cos, pow } = Math;
 const THREE = window.THREE;
 
 /** Snapshot this script while it executes — walls and volume read this text. */
@@ -152,9 +152,19 @@ const buildSeedProfile = (seed) => {
   return {
     seed: seed >>> 0,
     palette,
-    volDepth: r.choice([16, 20, 24, 28]),
-    heightScale: 18 + r.uniform(0, 1) * 22,
-    codeVeil: r.uniform(0.35, 0.62),
+    volDepth: r.choice([24, 28, 32, 40, 48]),
+    heightScale: 28 + r.uniform(0, 1) * 28,
+    codeVeil: r.uniform(0.42, 0.78),
+    canvas: {
+      cell: r.choice([8, 16, 32]),
+      grid: r.choice([8, 16, 32]) * r.choice([1, 2, 4]),
+      depthSpawn: r.uniform(0.06, 0.22),
+      scannerSpawn: r.uniform(0.1, 0.28),
+      layerSpawn: r.uniform(0.06, 0.22),
+      maxLayers: r.randint(3, 10),
+      depthCap: r.uniform(0.22, 0.55),
+      capMul: r.uniform(0.32, 0.62),
+    },
   };
 };
 
@@ -214,8 +224,112 @@ const rasterizeCodeArtLayer = (size = 2048) => {
 };
 
 const Canvas2d = () => {
-  let ctx, width, height;
-  let scanners = [], layers = [];
+  let ctx, width, height, scanners = [], layers = [], depthProbes = [];
+  let profile = {
+    cell: 16,
+    grid: 32,
+    depthSpawn: 0.09,
+    scannerSpawn: 0.14,
+    layerSpawn: 0.1,
+    maxLayers: 4,
+    depthCap: 0.35,
+    capMul: 0.4,
+  };
+
+  const setProfile = (p) => { profile = { ...profile, ...p }; };
+
+  const depthProbe = (x, y, size, life, b) => () => {
+    ctx.fillStyle = `rgba(0,0,${b},1)`;
+    ctx.fillRect(x, y, size, size);
+    return --life > 0;
+  };
+
+  const greenLevel = (time, opt) => {
+    if (!opt?.auto) return [1, 2, 4][opt?.mode ?? 0] ?? 1;
+    return [1, 2, 4][floor(time / 90000) % 3];
+  };
+
+  const scanner = (x, y, size, dir, speed, life, g) => {
+    const d = [...dir];
+    return () => {
+      ctx.fillStyle = `rgba(0,${g},0,1)`;
+      ctx.fillRect(x, y, size, size);
+      x += d[0] * speed;
+      y += d[1] * speed;
+      if (d[0]) {
+        if (x < 0 || x > width - size) {
+          x = x < 0 ? 0 : width - size;
+          y += size * d[0];
+          d[0] *= -1;
+        }
+        if (y < -size || y >= height) life = 0;
+      }
+      if (d[1]) {
+        if (y < 0 || y > height - size) {
+          y = y < 0 ? 0 : height - size;
+          x += size * d[1];
+          d[1] *= -1;
+        }
+        if (x < -size || x >= width) life = 0;
+      }
+      return --life > 0;
+    };
+  };
+
+  const layer = (x, y, w, h, grid, life, c) => {
+    const pts = [[x, y]];
+    let yp = y;
+    let xp = x + w;
+    const edgeX = () => {
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => a - b);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += rnd() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    };
+    const edgeY = (reverse) => {
+      const s = 1 + floor(rnd() * 3);
+      const ys = Array.from({ length: s }, () => floor(rnd() * (h - grid) / grid) * grid)
+        .sort((a, b) => (reverse ? b - a : a - b));
+      for (let i = 0; i < s; i++) {
+        pts.push([xp, y + ys[i]]);
+        xp += rnd() < 0.5 ? grid : -grid;
+        pts.push([xp, y + ys[i]]);
+      }
+    };
+    if (y !== 0) edgeX();
+    pts.push([x + w, yp]);
+    xp = x + w;
+    if (x + w !== width) edgeY(false);
+    pts.push([xp, y + h]);
+    yp = y + h;
+    if (y + h !== height) {
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => b - a);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += rnd() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    }
+    pts.push([x, yp]);
+    xp = x;
+    if (x !== 0) {
+      edgeY(true);
+      pts[0] = [xp, y];
+    }
+    return () => {
+      ctx.fillStyle = `rgba(${c},0,0,1)`;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.closePath();
+      ctx.fill();
+      return --life > 0;
+    };
+  };
 
   const init = () => {
     const c = document.createElement('canvas');
@@ -230,57 +344,69 @@ const Canvas2d = () => {
     height = max(64, floor(window.innerHeight));
     ctx.canvas.width = width;
     ctx.canvas.height = height;
-    scanners = [];
-    layers = [];
-    for (let i = 0; i < 12; i++) {
-      scanners.push({
-        x: rnd() * width, y: rnd() * height,
-        vx: (rnd() - 0.5) * 2.2, vy: (rnd() - 0.5) * 2.2,
-        size: 8 + rnd() * 24,
-      });
-    }
-    for (let i = 0; i < 8; i++) {
-      layers.push({
-        x: rnd() * width, y: rnd() * height,
-        w: 20 + rnd() * 80, h: 12 + rnd() * 40,
-        hue: floor(rnd() * 6),
-      });
-    }
   };
 
-  const draw = (t) => {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, width, height);
+  const draw = (time, options = { auto: true, mode: 0 }) => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.globalCompositeOperation = 'source-over';
+    scanners = scanners.filter((fn) => fn());
+    ctx.globalCompositeOperation = 'lighter';
+    layers = layers.filter((fn) => fn());
+    depthProbes = depthProbes.filter((fn) => fn());
 
-    for (const L of layers) {
-      const c = SPECTRUM[L.hue % SPECTRUM.length];
-      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},0.28)`;
-      ctx.fillRect(L.x, L.y, L.w, L.h);
-      L.x += sin(t * 0.0003 + L.hue) * 0.4;
-      L.y += cos(t * 0.00027 + L.hue * 2) * 0.35;
-      if (L.x < -L.w) L.x = width;
-      if (L.x > width) L.x = -L.w;
-      if (L.y < -L.h) L.y = height;
-      if (L.y > height) L.y = -L.h;
+    const cell = profile.cell;
+    const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * profile.capMul);
+
+    if (depthProbes.length < cap * profile.depthCap && rnd() < profile.depthSpawn) {
+      const x = floor(rnd() * floor((width - cell) / cell)) * cell;
+      const y = floor(rnd() * floor((height - cell) / cell)) * cell;
+      const b = pow(2, floor(rnd() * 4));
+      depthProbes.push(depthProbe(x, y, cell, (10 + floor(rnd() * 18)) * 32, b));
     }
 
-    for (const s of scanners) {
-      s.x += s.vx;
-      s.y += s.vy;
-      if (s.x < 0 || s.x > width) s.vx *= -1;
-      if (s.y < 0 || s.y > height) s.vy *= -1;
-      const c = SPECTRUM[floor((t * 0.0002 + s.x * 0.01) % SPECTRUM.length)];
-      const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size);
-      g.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},0.82)`);
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(s.x - s.size, s.y - s.size, s.size * 2, s.size * 2);
+    if (scanners.length < cap && rnd() < profile.scannerSpawn) {
+      const x = floor(rnd() * floor((width - cell) / cell)) * cell;
+      const y = floor(rnd() * floor((height - cell) / cell)) * cell;
+      const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+      const speed = pow(2, floor(rnd() * 2));
+      const stride = pow(2, floor(rnd() * 2));
+      const g = greenLevel(time, options);
+      const n = dir[0]
+        ? 1 + floor(rnd() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
+        : 1 + floor(rnd() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
+      const life = (14 + floor(rnd() * 20)) * 32;
+      for (let i = 0; i < n; i++) {
+        scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+      }
     }
 
+    const grid = profile.grid;
+    if (layers.length < profile.maxLayers && rnd() < profile.layerSpawn) {
+      const cols = floor(width / grid);
+      const rows = floor(height / grid);
+      const vert = rnd() < 0.5;
+      const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : width;
+      const h = vert ? height : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+      let lx = rnd() < 0.5 ? 0 : width - w;
+      let ly = rnd() < 0.5 ? 0 : height - h;
+      if (rnd() < 0.3) {
+        lx = floor(rnd() * floor((width - w) / grid)) * grid;
+        ly = floor(rnd() * floor((height - h) / grid)) * grid;
+      }
+      layers.push(layer(lx, ly, w, h, grid, (8 + floor(rnd() * 16)) * 32, pow(2, floor(rnd() * 6))));
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
     return ctx.getImageData(0, 0, width, height);
   };
 
-  return { init, setup, draw };
+  const reset = () => {
+    scanners = [];
+    layers = [];
+    depthProbes = [];
+  };
+
+  return { init, setup, draw, reset, setProfile };
 };
 
 const VERT = [
@@ -301,6 +427,7 @@ const SLICE_FRAG = [
   'uniform int doSpectrum;',
   'uniform vec3 specA, specB, specInk;',
   'uniform float specAlphaAB, specAlphaInk, paletteVeil, codeVeil;',
+  'uniform float walkZ, wallSide;',
   'varying vec2 vUv;',
   'vec2 atlasUV(vec2 uv, float z) { return vec2(uv.x, (z + uv.y) / dims.z); }',
   'vec3 sampleVol(vec2 uv, float dz) { return texture2D(buf, atlasUV(uv, uSlice + dz)).rgb; }',
@@ -319,8 +446,14 @@ const SLICE_FRAG = [
   '    if (mod(dr, 4.0) >= 2.0) oxy.x += 1.0 / dims.x;',
   '    if (mod(dr, 8.0) >= 4.0) oxy.y -= 1.0 / dims.y;',
   '    if (mod(dr, 16.0) >= 8.0) oxy.x -= 1.0 / dims.x;',
+  '    if (mod(dr, 32.0) >= 16.0) oxy.y += 2.0 / dims.y;',
+  '    if (mod(dr, 64.0) >= 32.0) oxy.x += 2.0 / dims.x;',
+  '    if (mod(dr, 128.0) >= 64.0) oxy.y -= 2.0 / dims.y;',
+  '    if (mod(dr, 256.0) >= 128.0) oxy.x -= 2.0 / dims.x;',
   '    if (mod(db, 2.0) >= 1.0) oz += 1.0;',
   '    if (mod(db, 4.0) >= 2.0) oz -= 1.0;',
+  '    if (mod(db, 8.0) >= 4.0) oz += 2.0;',
+  '    if (mod(db, 16.0) >= 8.0) oz -= 2.0;',
   '    col = sampleVol(uv + oxy, oz);',
   '  }',
   '  if (doSpectrum == 1) {',
@@ -329,7 +462,7 @@ const SLICE_FRAG = [
   '      vec4 tile = texture2D(img, bUv);',
   '      col = mix(col, tile.rgb, tile.a * paletteVeil);',
   '    }',
-  '    vec2 cUv = fract(uv * 0.42);',
+  '    vec2 cUv = fract(uv * 0.38 + vec2(wallSide * 0.07, walkZ * 0.00018));',
   '    vec4 code = texture2D(codeImg, cUv);',
   '    col = mix(col, code.rgb, code.a * codeVeil);',
   '    if (mod(dg, 4.0) >= 2.0) col = mix(col, mix(specA, specB, fract(time * 0.14)), specAlphaAB);',
@@ -356,82 +489,139 @@ const TERRAIN_VERT = [
   '  );',
   '  float h = motH(vMapUv) * heightScale;',
   '  h += motH(vMapUv + vec2(0.003, 0.0)) * heightScale * 0.18;',
+  '  h += motH(vMapUv + vec2(0.0, 0.003)) * heightScale * 0.18;',
   '  vec3 pos = vec3(position.x, position.y, h);',
   '  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);',
   '}',
 ].join('\n');
 
-const TERRAIN_FRAG = [
+const SURFACE_FRAG = [
   'precision highp float;',
-  'uniform sampler2D vol, img;',
-  'uniform vec3 dims;',
-  'uniform float time;',
-  'uniform int doSpectrum;',
-  'uniform vec3 specA, specB;',
-  'uniform float specAlphaAB, paletteVeil;',
+  'uniform sampler2D vol, img, mot, codeImg;',
+  'uniform vec3 dims, specA, specB, specInk;',
+  'uniform float time, walkZ, wallSide;',
+  'uniform int doRaster, doSpectrum;',
+  'uniform float specAlphaAB, specAlphaInk, paletteVeil, codeVeil;',
   'varying vec2 vMapUv;',
   'vec2 atlasUV(vec2 uv, float z) { return vec2(uv.x, (z + uv.y) / dims.z); }',
+  'vec3 readVol(vec2 uv, float zSlice) { return texture2D(vol, atlasUV(uv, zSlice)).rgb; }',
   'void main() {',
   '  vec2 uv = vMapUv;',
-  '  vec3 col = texture2D(vol, atlasUV(uv, dims.z * 0.42)).rgb;',
+  '  vec2 pos = floor(uv * dims.xy);',
+  '  float zSlice = dims.z * 0.42;',
+  '  vec3 col = readVol(uv, zSlice);',
+  '  vec4 m = texture2D(mot, uv);',
+  '  float dr = floor(m.r * 255.0 + 0.5);',
+  '  float dg = floor(m.g * 255.0 + 0.5);',
+  '  float db = floor(m.b * 255.0 + 0.5);',
+  '  vec2 oxy = vec2(0.0);',
+  '  float oz = 0.0;',
+  '  if (doRaster == 1) {',
+  '    if (mod(dr, 2.0) >= 1.0) oxy.y += 1.0 / dims.y;',
+  '    if (mod(dr, 4.0) >= 2.0) oxy.x += 1.0 / dims.x;',
+  '    if (mod(dr, 8.0) >= 4.0) oxy.y -= 1.0 / dims.y;',
+  '    if (mod(dr, 16.0) >= 8.0) oxy.x -= 1.0 / dims.x;',
+  '    if (mod(dr, 32.0) >= 16.0) oxy.y += 2.0 / dims.y;',
+  '    if (mod(dr, 64.0) >= 32.0) oxy.x += 2.0 / dims.x;',
+  '    if (mod(dr, 128.0) >= 64.0) oxy.y -= 2.0 / dims.y;',
+  '    if (mod(dr, 256.0) >= 128.0) oxy.x -= 2.0 / dims.x;',
+  '    if (mod(db, 2.0) >= 1.0) oz += 1.0;',
+  '    if (mod(db, 4.0) >= 2.0) oz -= 1.0;',
+  '    if (mod(db, 8.0) >= 4.0) oz += 2.0;',
+  '    if (mod(db, 16.0) >= 8.0) oz -= 2.0;',
+  '    col = readVol(uv + oxy, zSlice + oz);',
+  '  }',
   '  if (doSpectrum == 1) {',
-  '    vec2 bUv = mod(floor(uv * dims.xy), 16.0) / 16.0;',
-  '    vec4 tile = texture2D(img, bUv);',
-  '    col = mix(col, tile.rgb, tile.a * paletteVeil * 0.65);',
-  '    col = mix(col, mix(specA, specB, fract(time * 0.14)), specAlphaAB * 0.4);',
+  '    if (mod(dg, 2.0) >= 1.0) {',
+  '      vec2 bUv = mod(pos, 16.0) / 16.0;',
+  '      vec4 tile = texture2D(img, bUv);',
+  '      col = mix(col, tile.rgb, tile.a * paletteVeil);',
+  '    }',
+  '    vec2 cUv = fract(uv * 0.38 + vec2(wallSide * 0.07, walkZ * 0.00018));',
+  '    vec4 code = texture2D(codeImg, cUv);',
+  '    col = mix(col, code.rgb, code.a * codeVeil);',
+  '    if (mod(dg, 4.0) >= 2.0) col = mix(col, mix(specA, specB, fract(time * 0.14)), specAlphaAB);',
+  '    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk);',
   '  }',
   '  float ink = length(col - vec3(1.0));',
-  '  col = mix(vec3(0.985), col, clamp(0.08 + ink * 1.25, 0.0, 1.0));',
+  '  col = mix(vec3(0.985), col, clamp(0.05 + ink * 1.4, 0.0, 1.0));',
   '  gl_FragColor = vec4(col, 1.0);',
   '}',
 ].join('\n');
 
 const WALL_VERT = [
-  'varying vec2 vUv;',
+  'precision highp float;',
+  'uniform sampler2D mot;',
+  'uniform float walkZ, wallSide, pulseScale;',
+  'varying vec2 vMapUv;',
+  'float motH(vec2 uv) {',
+  '  vec4 m = texture2D(mot, uv);',
+  '  return (m.r * 0.35 + m.g * 0.85 + m.b * 1.0) / 255.0;',
+  '}',
   'void main() {',
-  '  vUv = uv;',
-  '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+  '  vMapUv = vec2(',
+  '    fract(uv.x * 1.55 + walkZ * 0.00038 + wallSide * 0.04),',
+  '    fract(uv.y * 2.35 - walkZ * 0.00112 + wallSide * 0.09)',
+  '  );',
+  '  float push = motH(vMapUv) * pulseScale;',
+  '  vec3 pos = position + vec3(wallSide * push, push * 0.14, sin(walkZ * 0.002 + uv.y * 6.28) * push * 0.08);',
+  '  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);',
   '}',
 ].join('\n');
 
-const WALL_FRAG = [
+const CEIL_VERT = [
   'precision highp float;',
-  'uniform sampler2D codeImg;',
-  'uniform float walkZ;',
-  'uniform float wallSide;',
-  'varying vec2 vUv;',
+  'uniform sampler2D mot;',
+  'uniform float walkZ, pulseScale;',
+  'varying vec2 vMapUv;',
+  'float motH(vec2 uv) {',
+  '  vec4 m = texture2D(mot, uv);',
+  '  return (m.r * 0.35 + m.g * 0.85 + m.b * 1.0) / 255.0;',
+  '}',
   'void main() {',
-  '  vec2 uv = vec2(vUv.x, fract(vUv.y * 2.8 - walkZ * 0.00115 + wallSide * 0.17));',
-  '  vec4 code = texture2D(codeImg, uv);',
-  '  vec3 base = vec3(0.99);',
-  '  vec3 col = mix(base, code.rgb, code.a * 0.92);',
-  '  float edge = smoothstep(0.0, 0.04, vUv.x) * smoothstep(1.0, 0.96, vUv.x);',
-  '  col = mix(vec3(0.97), col, edge);',
-  '  gl_FragColor = vec4(col, 1.0);',
+  '  vMapUv = vec2(',
+  '    fract(uv.x * 2.1 - walkZ * 0.00092),',
+  '    fract(uv.y * 1.65 - walkZ * 0.00062)',
+  '  );',
+  '  float push = motH(vMapUv) * pulseScale;',
+  '  vec3 pos = position + vec3(0.0, push * 0.28, sin(walkZ * 0.0018 + uv.x * 5.0) * push * 0.06);',
+  '  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);',
   '}',
 ].join('\n');
+
+const TERRAIN_FRAG = SURFACE_FRAG;
+const WALL_FRAG = SURFACE_FRAG;
+const CEIL_FRAG = SURFACE_FRAG;
 
 const VolLandscapePOC = () => {
-  let volDepth = 20;
+  let volDepth = 32;
   const MAX_ATLAS_H = 8192;
-  const TERRAIN_W = 300;
-  const TERRAIN_D = 300;
-  const TERRAIN_SEGS = 96;
-  const WALL_H = 72;
-  const WALL_LEN = 420;
-  const LANE_HALF = 26;
+  const TERRAIN_W = 1200;
+  const TERRAIN_D = 1200;
+  const TERRAIN_SEGS = 160;
+  const WALL_H = 96;
+  const WALL_LEN = 380;
+  const WALL_TILES = 14;
+  const WALL_TILE_BEHIND = 4;
+  const LANE_HALF = 28;
   const EYE_BASE = 7.5;
   const WALK_SPEED = 14;
-  const FAR = 640;
+  const FLOOR_SCROLL_BASE = 1.85;
+  const FAR = 2800;
 
   let renderer, scene, camera, terrain, terrainMat;
-  let leftWall, rightWall, wallMats = [];
+  let leftWalls = [], rightWalls = [], ceilTiles = [];
+  let leftWallMat, rightWallMat, ceilMat;
+  let surfaceMats = [];
+  let wallPulse = 7.5;
+  let ceilPulse = 2.2;
   let sliceScene, sliceCam, sliceMat, sliceRT;
   let volTex = [null, null], volId = 0;
   let imgTex, motTex, motScratch, codeImgTex;
   let width, height, depth;
   let viewRot = { x: 0, y: -0.03, drag: false, px: 0, py: 0 };
   const camPos = new THREE.Vector3();
+  let hallZ = 0;
   let walkZ = 0;
   let walkOn = true;
   let heightScale = 24;
@@ -498,26 +688,153 @@ const VolLandscapePOC = () => {
     stencilBuffer: false,
   });
 
-  const makeWall = (side) => {
-    const mat = new THREE.ShaderMaterial({
-      uniforms: {
-        codeImg: { value: codeImgTex },
-        walkZ: { value: 0 },
-        wallSide: { value: side },
-      },
-      vertexShader: WALL_VERT,
-      fragmentShader: WALL_FRAG,
-      side: THREE.DoubleSide,
-    });
-    wallMats.push(mat);
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(WALL_LEN, WALL_H, 1, 1), mat);
+  const tileMod = (z, len) => ((z % len) + len) % len;
+
+  const makeWallTile = (side, mat) => {
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(WALL_LEN, WALL_H, 1, 6), mat);
     mesh.position.set(side * LANE_HALF, WALL_H * 0.48, 0);
     mesh.rotation.y = side > 0 ? -Math.PI / 2 : Math.PI / 2;
     scene.add(mesh);
     return mesh;
   };
 
+  const makeCeilTile = (mat) => {
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(WALL_LEN, LANE_HALF * 2.05, 1, 1), mat);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(0, WALL_H * 0.98, 0);
+    scene.add(mesh);
+    return mesh;
+  };
+
+  const makeSurfaceUniforms = (wallSide = 0) => ({
+    vol: { value: null },
+    img: { value: null },
+    mot: { value: null },
+    codeImg: { value: codeImgTex },
+    dims: { value: new THREE.Vector3(1, 1, volDepth) },
+    time: { value: 0 },
+    walkZ: { value: 0 },
+    wallSide: { value: wallSide },
+    doRaster: { value: 1 },
+    doSpectrum: { value: 1 },
+    specA: { value: new THREE.Vector3() },
+    specB: { value: new THREE.Vector3() },
+    specInk: { value: new THREE.Vector3(...rgb01(PAL.blend)) },
+    specAlphaAB: { value: 0.28 },
+    specAlphaInk: { value: 0.38 },
+    paletteVeil: { value: 0.9 },
+    codeVeil: { value: 0.55 },
+  });
+
+  const buildHallTiles = () => {
+    leftWalls.length = 0;
+    rightWalls.length = 0;
+    ceilTiles.length = 0;
+    surfaceMats = [];
+
+    leftWallMat = new THREE.ShaderMaterial({
+      uniforms: { ...makeSurfaceUniforms(-1), pulseScale: { value: wallPulse } },
+      vertexShader: WALL_VERT,
+      fragmentShader: WALL_FRAG,
+      side: THREE.DoubleSide,
+    });
+    rightWallMat = new THREE.ShaderMaterial({
+      uniforms: { ...makeSurfaceUniforms(1), pulseScale: { value: wallPulse } },
+      vertexShader: WALL_VERT,
+      fragmentShader: WALL_FRAG,
+      side: THREE.DoubleSide,
+    });
+    ceilMat = new THREE.ShaderMaterial({
+      uniforms: { ...makeSurfaceUniforms(0), pulseScale: { value: ceilPulse } },
+      vertexShader: CEIL_VERT,
+      fragmentShader: CEIL_FRAG,
+      side: THREE.DoubleSide,
+    });
+    surfaceMats = [terrainMat, leftWallMat, rightWallMat, ceilMat].filter(Boolean);
+
+    for (let i = 0; i < WALL_TILES; i++) {
+      leftWalls.push(makeWallTile(-1, leftWallMat));
+      rightWalls.push(makeWallTile(1, rightWallMat));
+      ceilTiles.push(makeCeilTile(ceilMat));
+    }
+  };
+
   const moveActive = () => moveKeys.forward || moveKeys.back || moveKeys.left || moveKeys.right;
+
+  const floorScrollGain = (speed) => {
+    const ratio = min(3.2, max(0.35, speed / WALK_SPEED));
+    return FLOOR_SCROLL_BASE * (0.34 + 0.66 * ratio);
+  };
+
+  const syncSurfaceUniforms = (timeMs, volCur) => {
+    const ci = floor(timeMs * 0.00035) % SPECTRUM.length;
+    const t = timeMs * 0.001;
+    const specA = rgb01(SPECTRUM[ci]);
+    const specB = rgb01(SPECTRUM[(ci + 3) % SPECTRUM.length]);
+    const specInk = rgb01(PAL.blend);
+    for (const mat of surfaceMats) {
+      if (!mat) continue;
+      mat.uniforms.time.value = t;
+      mat.uniforms.walkZ.value = walkZ;
+      mat.uniforms.mot.value = motTex;
+      mat.uniforms.vol.value = volTex[volCur];
+      mat.uniforms.specA.value.set(...specA);
+      mat.uniforms.specB.value.set(...specB);
+      mat.uniforms.specInk.value.set(...specInk);
+    }
+    if (sliceMat) {
+      sliceMat.uniforms.time.value = t;
+      sliceMat.uniforms.walkZ.value = walkZ;
+      sliceMat.uniforms.specA.value.set(...specA);
+      sliceMat.uniforms.specB.value.set(...specB);
+      sliceMat.uniforms.specInk.value.set(...specInk);
+    }
+  };
+
+  const syncWalkUniforms = () => {
+    for (const mat of surfaceMats) {
+      if (mat?.uniforms?.walkZ) mat.uniforms.walkZ.value = walkZ;
+    }
+  };
+
+  const syncHallGeometry = () => {
+    if (!leftWalls.length) return;
+    const camZ = camPos.z;
+    const base = camZ - tileMod(camZ, WALL_LEN);
+    for (let i = 0; i < WALL_TILES; i++) {
+      const z = base + (i - WALL_TILE_BEHIND) * WALL_LEN;
+      leftWalls[i].position.z = z;
+      rightWalls[i].position.z = z;
+      ceilTiles[i].position.set(camPos.x * 0.06, WALL_H * 0.98, z);
+    }
+    if (terrain) terrain.position.set(camPos.x * 0.08, 0, camZ);
+  };
+
+  const applyTravel = (travel, speed = WALK_SPEED) => {
+    if (!travel) return;
+    hallZ += travel;
+    walkZ += travel * floorScrollGain(speed);
+    syncWalkUniforms();
+
+    camera.rotation.order = 'YXZ';
+    camera.rotation.y = viewRot.x;
+    camera.rotation.x = viewRot.y;
+    camera.rotation.z = 0;
+    camera.position.copy(camPos);
+    camera.updateMatrixWorld();
+    camera.getWorldDirection(fwd);
+    camPos.addScaledVector(fwd, travel);
+    clampPos();
+    syncHallGeometry();
+  };
+
+  const resetTravel = () => {
+    hallZ = 0;
+    walkZ = 0;
+    camPos.set(0, EYE_BASE, 0);
+    syncWalkUniforms();
+    syncHallGeometry();
+  };
 
   const updateWalk = (timeMs, dragging) => {
     const dt = min(0.05, max(0.001, (updateWalk.lastMs ? (timeMs - updateWalk.lastMs) / 1000 : 0.016)));
@@ -525,16 +842,14 @@ const VolLandscapePOC = () => {
 
     if (!dragging && !moveKeys.forward && !moveKeys.back && walkOn) {
       const pace = WALK_SPEED * (0.7 + 0.3 * sin(timeMs * 0.00019));
-      walkZ += dt * pace;
+      applyTravel(dt * pace, pace);
+    } else {
+      syncWalkUniforms();
     }
-
-    if (terrainMat) terrainMat.uniforms.walkZ.value = walkZ;
-    for (const m of wallMats) m.uniforms.walkZ.value = walkZ;
 
     const bob = sin(walkZ * 0.11) * 1.0 + sin(timeMs * 0.002) * 0.3;
     const swayX = sin(timeMs * 0.0001) * 1.8;
     camPos.y = EYE_BASE + bob;
-    if (!moveKeys.forward && !moveKeys.back) camPos.z = walkZ * 0.9;
     if (!moveActive()) camPos.x = swayX;
 
     if (dragging || moveActive()) return;
@@ -552,42 +867,36 @@ const VolLandscapePOC = () => {
     const dt = min(0.05, max(0.001, (applyManualMove.lastMs ? (timeMs - applyManualMove.lastMs) / 1000 : 0.016)));
     applyManualMove.lastMs = timeMs;
 
-    camera.rotation.order = 'YXZ';
-    camera.rotation.y = viewRot.x;
-    camera.rotation.x = viewRot.y;
-    camera.rotation.z = 0;
-    camera.position.copy(camPos);
-    camera.updateMatrixWorld();
+    if (travelOn) {
+      let travel = 0;
+      let speed = MANUAL_SPEED;
+      if (moveKeys.forward) travel += MANUAL_SPEED * dt;
+      if (moveKeys.back) {
+        travel -= MANUAL_SPEED * 0.85 * dt;
+        speed = MANUAL_SPEED * 0.85;
+      }
+      applyTravel(travel, speed);
+    }
 
     if (strafeOn) {
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = viewRot.x;
+      camera.rotation.x = viewRot.y;
+      camera.rotation.z = 0;
+      camera.position.copy(camPos);
+      camera.updateMatrixWorld();
       right.setFromMatrixColumn(camera.matrixWorld, 0);
       let strafe = 0;
       if (moveKeys.left) strafe -= MANUAL_SPEED * dt;
       if (moveKeys.right) strafe += MANUAL_SPEED * dt;
       camPos.addScaledVector(right, strafe);
+      clampPos();
     }
-
-    if (travelOn) {
-      camera.getWorldDirection(fwd);
-      let travel = 0;
-      if (moveKeys.forward) travel += MANUAL_SPEED * dt;
-      if (moveKeys.back) travel -= MANUAL_SPEED * 0.85 * dt;
-      camPos.addScaledVector(fwd, travel);
-      walkZ += travel;
-    }
-
-    clampPos();
   };
 
   const nudgeAlongView = (delta) => {
-    camera.rotation.order = 'YXZ';
-    camera.rotation.y = viewRot.x;
-    camera.rotation.x = viewRot.y;
-    camera.position.copy(camPos);
-    camera.updateMatrixWorld();
-    camera.getWorldDirection(fwd);
-    camPos.addScaledVector(fwd, delta);
-    clampPos();
+    const speed = min(MANUAL_SPEED, max(WALK_SPEED, Math.abs(delta) * 42));
+    applyTravel(delta, speed);
   };
 
   const bindOrbit = () => {
@@ -624,25 +933,15 @@ const VolLandscapePOC = () => {
     renderer.domElement.style.outline = 'none';
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xffffff, 40, FAR * 0.7);
+    scene.fog = new THREE.Fog(0xffffff, 140, FAR * 0.88);
     camera = new THREE.PerspectiveCamera(68, 1, 0.05, FAR);
 
     codeImgTex = rasterizeCodeArtLayer(2048);
 
     terrainMat = new THREE.ShaderMaterial({
       uniforms: {
-        mot: { value: null },
-        vol: { value: null },
-        img: { value: null },
-        dims: { value: new THREE.Vector3(1, 1, volDepth) },
-        walkZ: { value: 0 },
+        ...makeSurfaceUniforms(0),
         heightScale: { value: heightScale },
-        time: { value: 0 },
-        doSpectrum: { value: 1 },
-        specA: { value: new THREE.Vector3() },
-        specB: { value: new THREE.Vector3() },
-        specAlphaAB: { value: 0.22 },
-        paletteVeil: { value: 0.85 },
       },
       vertexShader: TERRAIN_VERT,
       fragmentShader: TERRAIN_FRAG,
@@ -656,8 +955,7 @@ const VolLandscapePOC = () => {
     terrain.rotation.x = -Math.PI / 2;
     scene.add(terrain);
 
-    leftWall = makeWall(-1);
-    rightWall = makeWall(1);
+    buildHallTiles();
 
     sliceScene = new THREE.Scene();
     sliceCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -677,8 +975,10 @@ const VolLandscapePOC = () => {
         specInk: { value: new THREE.Vector3(...rgb01(PAL.blend)) },
         specAlphaAB: { value: 0.22 },
         specAlphaInk: { value: 0.34 },
-        paletteVeil: { value: 0.85 },
-        codeVeil: { value: 0.48 },
+        paletteVeil: { value: 0.9 },
+        codeVeil: { value: 0.55 },
+        walkZ: { value: 0 },
+        wallSide: { value: 0 },
       },
       vertexShader: VERT,
       fragmentShader: SLICE_FRAG,
@@ -687,6 +987,7 @@ const VolLandscapePOC = () => {
     });
     sliceScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), sliceMat));
     bindOrbit();
+    syncHallGeometry();
   };
 
   const setup = () => {
@@ -714,11 +1015,15 @@ const VolLandscapePOC = () => {
     sliceMat.uniforms.mot.value = motTex;
     sliceMat.uniforms.codeImg.value = codeImgTex;
 
-    terrainMat.uniforms.dims.value.set(width, height, depth);
-    terrainMat.uniforms.img.value = imgTex;
-    terrainMat.uniforms.mot.value = motTex;
-    terrainMat.uniforms.vol.value = volTex[volId];
-    terrainMat.uniforms.heightScale.value = heightScale;
+    for (const mat of surfaceMats) {
+      if (!mat) continue;
+      mat.uniforms.dims.value.set(width, height, depth);
+      mat.uniforms.img.value = imgTex;
+      mat.uniforms.mot.value = motTex;
+      mat.uniforms.codeImg.value = codeImgTex;
+      mat.uniforms.vol.value = volTex[volId];
+    }
+    if (terrainMat) terrainMat.uniforms.heightScale.value = heightScale;
 
     motScratch = document.createElement('canvas');
   };
@@ -749,20 +1054,12 @@ const VolLandscapePOC = () => {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   };
 
-  const volStep = (time) => {
-    const ci = floor(time * 0.00035) % SPECTRUM.length;
+  const volStep = (timeMs) => {
     const volPrev = volId;
     const volCur = volId ^= 1;
 
     sliceMat.uniforms.buf.value = volTex[volPrev];
     sliceMat.uniforms.mot.value = motTex;
-    sliceMat.uniforms.time.value = time * 0.001;
-    sliceMat.uniforms.specA.value.set(...rgb01(SPECTRUM[ci]));
-    sliceMat.uniforms.specB.value.set(...rgb01(SPECTRUM[(ci + 3) % SPECTRUM.length]));
-
-    terrainMat.uniforms.time.value = time * 0.001;
-    terrainMat.uniforms.specA.value.copy(sliceMat.uniforms.specA.value);
-    terrainMat.uniforms.specB.value.copy(sliceMat.uniforms.specB.value);
 
     renderer.setRenderTarget(sliceRT);
     for (let z = 0; z < depth; z++) {
@@ -771,13 +1068,13 @@ const VolLandscapePOC = () => {
       copySliceToAtlas(volTex[volCur], z);
     }
     renderer.setRenderTarget(null);
-    terrainMat.uniforms.vol.value = volTex[volCur];
+    syncSurfaceUniforms(timeMs, volCur);
   };
 
   const render = (timeMs, pixels, dragging) => {
     uploadMotion(pixels);
-    applyManualMove(timeMs);
     updateWalk(timeMs, dragging);
+    applyManualMove(timeMs);
 
     camera.rotation.order = 'YXZ';
     camera.rotation.y = viewRot.x;
@@ -785,9 +1082,7 @@ const VolLandscapePOC = () => {
     camera.rotation.z = 0;
     camera.position.copy(camPos);
     clampPos();
-
-    leftWall.position.z = camPos.z;
-    rightWall.position.z = camPos.z;
+    syncHallGeometry();
 
     volStep(timeMs);
     renderer.render(scene, camera);
@@ -806,19 +1101,30 @@ const VolLandscapePOC = () => {
   const applySeedProfile = (prof) => {
     volDepth = prof.volDepth;
     heightScale = prof.heightScale;
+    wallPulse = max(5, heightScale * 0.24);
+    ceilPulse = max(1.5, heightScale * 0.08);
     if (sliceMat) sliceMat.uniforms.codeVeil.value = prof.codeVeil;
-    if (terrainMat) terrainMat.uniforms.heightScale.value = heightScale;
+    for (const mat of surfaceMats) {
+      if (!mat) continue;
+      mat.uniforms.codeVeil.value = prof.codeVeil;
+      if (mat.uniforms.heightScale) mat.uniforms.heightScale.value = heightScale;
+      if (mat.uniforms.pulseScale) {
+        mat.uniforms.pulseScale.value = mat === ceilMat ? ceilPulse : wallPulse;
+      }
+    }
   };
 
   const refreshCodeArt = () => {
     if (codeImgTex) codeImgTex.dispose();
     codeImgTex = rasterizeCodeArtLayer(2048);
     if (sliceMat) sliceMat.uniforms.codeImg.value = codeImgTex;
-    for (const m of wallMats) m.uniforms.codeImg.value = codeImgTex;
+    for (const mat of surfaceMats) {
+      if (mat) mat.uniforms.codeImg.value = codeImgTex;
+    }
   };
 
   return {
-    init, setup, render, setMoveKey, toggleWalk, nudgeAlongView,
+    init, setup, render, setMoveKey, toggleWalk, nudgeAlongView, resetTravel,
     applySeedProfile, refreshCodeArt,
     getCanvas: () => renderer?.domElement ?? null,
   };
@@ -849,6 +1155,8 @@ const applySeed = (seed) => {
   orgRng = makeRng(activeSeed);
   for (const [k, v] of Object.entries(prof.palette)) PAL[k] = v.slice();
   rebuildSpectrum();
+  c2d.setProfile(prof.canvas);
+  c2d.reset();
   gpu.applySeedProfile(prof);
   gpu.refreshCodeArt();
   c2d.setup();
@@ -858,6 +1166,7 @@ const applySeed = (seed) => {
 
 const rebirth = (t, nextSeed) => {
   applySeed(nextSeed ?? randomSeed());
+  gpu.resetTravel();
   bornAt = t;
   lifePhase = 'live';
   surrenderAt = 0;
@@ -918,9 +1227,11 @@ function boot() {
   requestAnimationFrame(frame);
 }
 
+const motionOpts = { auto: true, mode: 0 };
+
 function frame(t) {
   updateLife(t);
-  const pixels = c2d.draw(t);
+  const pixels = c2d.draw(t, motionOpts);
   gpu.render(t, pixels, viewState.dragging);
   requestAnimationFrame(frame);
 }
