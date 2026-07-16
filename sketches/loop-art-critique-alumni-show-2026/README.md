@@ -14,7 +14,7 @@ https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 |------|--------|------|
 | Surrender Machine — Loop 21 | Live | `sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html` |
 | Loop 21 surrender wall notes | Live | `sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md` |
-| **Loop Alumni Show — Invisible Layer** | **Concept** | [catalog concept](../../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md) |
+| **Loop Alumni Show — Invisible Layer** | **Concept / POC** | [catalog concept](../../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md) · [POC](loop-alumni-show-invisible-layer-poc.html) |
 
 ## Assets (in this folder)
 
