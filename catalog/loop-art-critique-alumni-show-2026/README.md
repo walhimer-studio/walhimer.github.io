@@ -22,11 +22,18 @@ https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 5. `python3 _scripts/refresh_catalog.py`
 6. `python3 _scripts/check_self_contained.py` (full repo, exit 0)
 
-## Machine DNA (fill in for new work)
+## Works
+
+| Work | Status | Catalog |
+|------|--------|---------|
+| Surrender Machine — Loop 21 | Live (July 3 opening) | `sketches/loop-art-critique-2026/loop-21-surrender-machine/` |
+| **Loop Alumni Show — Invisible Layer** | **Concept — pending approval** | [loop-alumni-show-invisible-layer-concept.md](./loop-alumni-show-invisible-layer-concept.md) |
+
+## Machine DNA (Loop Alumni Show — Invisible Layer)
 
 | Field | Value |
 |-------|--------|
-| Species | TBD |
-| Seed | TBD |
-| Mode | votive / witness · or surrender / mirror |
-| Bodies | browser · OF · PD · install · … |
+| Species | Invisible Layer |
+| Seed | 77823 (show default) |
+| Mode | live / participatory / surrender / rebirth |
+| Bodies | browser (Netlify display + phone) · ICA monitor |

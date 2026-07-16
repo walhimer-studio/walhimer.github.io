@@ -10,10 +10,11 @@ https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 
 ## Works (canonical paths — not in this folder)
 
-| Work | Path |
-|------|------|
-| Surrender Machine — Loop 21 | `sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html` |
-| Loop 21 surrender wall notes | `sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md` |
+| Work | Status | Path |
+|------|--------|------|
+| Surrender Machine — Loop 21 | Live | `sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html` |
+| Loop 21 surrender wall notes | Live | `sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md` |
+| **Loop Alumni Show — Invisible Layer** | **Concept** | [catalog concept](../../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md) |
 
 ## Assets (in this folder)
 
