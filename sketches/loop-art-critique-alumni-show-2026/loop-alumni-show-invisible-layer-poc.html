@@ -523,13 +523,9 @@ const VolLandscapePOC = () => {
     const dt = min(0.05, max(0.001, (updateWalk.lastMs ? (timeMs - updateWalk.lastMs) / 1000 : 0.016)));
     updateWalk.lastMs = timeMs;
 
-    if (!dragging) {
-      if (moveKeys.forward) walkZ += dt * MANUAL_SPEED;
-      else if (moveKeys.back) walkZ -= dt * MANUAL_SPEED * 0.85;
-      else if (walkOn) {
-        const pace = WALK_SPEED * (0.7 + 0.3 * sin(timeMs * 0.00019));
-        walkZ += dt * pace;
-      }
+    if (!dragging && !moveKeys.forward && !moveKeys.back && walkOn) {
+      const pace = WALK_SPEED * (0.7 + 0.3 * sin(timeMs * 0.00019));
+      walkZ += dt * pace;
     }
 
     if (terrainMat) terrainMat.uniforms.walkZ.value = walkZ;
@@ -538,7 +534,7 @@ const VolLandscapePOC = () => {
     const bob = sin(walkZ * 0.11) * 1.0 + sin(timeMs * 0.002) * 0.3;
     const swayX = sin(timeMs * 0.0001) * 1.8;
     camPos.y = EYE_BASE + bob;
-    camPos.z = walkZ * 0.9;
+    if (!moveKeys.forward && !moveKeys.back) camPos.z = walkZ * 0.9;
     if (!moveActive()) camPos.x = swayX;
 
     if (dragging || moveActive()) return;
@@ -549,7 +545,9 @@ const VolLandscapePOC = () => {
   };
 
   const applyManualMove = (timeMs) => {
-    if (!moveKeys.left && !moveKeys.right) return;
+    const strafeOn = moveKeys.left || moveKeys.right;
+    const travelOn = moveKeys.forward || moveKeys.back;
+    if (!strafeOn && !travelOn) return;
 
     const dt = min(0.05, max(0.001, (applyManualMove.lastMs ? (timeMs - applyManualMove.lastMs) / 1000 : 0.016)));
     applyManualMove.lastMs = timeMs;
@@ -560,12 +558,24 @@ const VolLandscapePOC = () => {
     camera.rotation.z = 0;
     camera.position.copy(camPos);
     camera.updateMatrixWorld();
-    right.setFromMatrixColumn(camera.matrixWorld, 0);
 
-    let strafe = 0;
-    if (moveKeys.left) strafe -= MANUAL_SPEED * dt;
-    if (moveKeys.right) strafe += MANUAL_SPEED * dt;
-    camPos.addScaledVector(right, strafe);
+    if (strafeOn) {
+      right.setFromMatrixColumn(camera.matrixWorld, 0);
+      let strafe = 0;
+      if (moveKeys.left) strafe -= MANUAL_SPEED * dt;
+      if (moveKeys.right) strafe += MANUAL_SPEED * dt;
+      camPos.addScaledVector(right, strafe);
+    }
+
+    if (travelOn) {
+      camera.getWorldDirection(fwd);
+      let travel = 0;
+      if (moveKeys.forward) travel += MANUAL_SPEED * dt;
+      if (moveKeys.back) travel -= MANUAL_SPEED * 0.85 * dt;
+      camPos.addScaledVector(fwd, travel);
+      walkZ += travel;
+    }
+
     clampPos();
   };
 
