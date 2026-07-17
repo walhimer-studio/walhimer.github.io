@@ -472,15 +472,13 @@ uniform int doRaster;
 uniform int doSpectrum;
 uniform vec3 specA, specB, specInk;
 uniform float specAlphaAB, specAlphaInk, paletteVeil, uSolidify;
-uniform vec2 uPan;
 in vec2 vUv;
 out vec4 frag;
 
 void main() {
-  vec2 sampleUv = vUv + uPan;
-  vec2 pos = floor(sampleUv * dims);
-  vec3 col = texture(buf, sampleUv).rgb;
-  vec4 m = texture(mot, sampleUv);
+  vec2 pos = floor(vUv * dims);
+  vec3 col = texture(buf, vUv).rgb;
+  vec4 m = texture(mot, vUv);
   float dr = floor(m.r * 255.0 + 0.5);
   float dg = floor(m.g * 255.0 + 0.5);
   vec2 o = vec2(0.0);
@@ -496,7 +494,7 @@ void main() {
     if (mod(dr, 128.0) >= 64.0) o -= vec2(0.0, 2.0 / dims.y);
     if (mod(dr, 256.0) >= 128.0) o -= vec2(2.0 / dims.x, 0.0);
     o *= motion;
-    col = texture(buf, sampleUv + o).rgb;
+    col = texture(buf, vUv + o).rgb;
   }
 
   if (doSpectrum == 1) {
@@ -513,7 +511,7 @@ void main() {
   }
 
   if (uSolidify > 0.001) {
-    vec3 freeze = texture(buf, sampleUv).rgb;
+    vec3 freeze = texture(buf, vUv).rgb;
     col = mix(col, freeze, uSolidify * 0.92);
     float bands = mix(48.0, 4.0, uSolidify);
     col = floor(col * bands) / bands;
@@ -678,7 +676,6 @@ void main() {
     gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaAB'), gpuTune.specAlphaAB);
     gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaInk'), gpuTune.specAlphaInk);
     gl.uniform1f(gl.getUniformLocation(fProg, 'uSolidify'), solidify ?? 0);
-    gl.uniform2f(gl.getUniformLocation(fProg, 'uPan'), panUv[0], -panUv[1]);
     quad(fProg, uOrthoFeedback);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -798,10 +795,17 @@ const seriesTitle = (seed) => `Invisible Layer June-7-2026 · ${seed >>> 0}`;
 const ViewCamera = () => {
   const pan = { x: 0, y: 0 };
   const keys = { up: false, down: false, left: false, right: false };
-  const SPEED = 180;
+  const SPEED = 160;
 
   const setKey = (name, down) => {
     if (name in keys) keys[name] = down;
+  };
+
+  const releaseAll = () => {
+    keys.up = false;
+    keys.down = false;
+    keys.left = false;
+    keys.right = false;
   };
 
   const update = (dt, solidify) => {
@@ -818,13 +822,10 @@ const ViewCamera = () => {
   const reset = () => {
     pan.x = 0;
     pan.y = 0;
-    keys.up = false;
-    keys.down = false;
-    keys.left = false;
-    keys.right = false;
+    releaseAll();
   };
 
-  return { setKey, update, uvOffset, reset };
+  return { setKey, update, uvOffset, getPan: () => pan, reset, releaseAll };
 };
 
 const viewCam = ViewCamera();
@@ -909,6 +910,8 @@ document.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowLeft') viewCam.setKey('left', false);
   if (e.key === 'ArrowRight') viewCam.setKey('right', false);
 });
+
+window.addEventListener('blur', () => viewCam.releaseAll());
 
 function setup() {
   c2d.setup();
