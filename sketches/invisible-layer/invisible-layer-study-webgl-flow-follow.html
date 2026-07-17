@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invisible Layer June-7-2026 flow follow · 77823</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 2;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.5);
+      pointer-events: none;
+      max-width: 340px;
+    }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
+    #seed-hud {
+      position: fixed; left: 10px; bottom: 8px; z-index: 2;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.45);
+      pointer-events: none;
+    }
+    #lifebar-wrap {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 3px; z-index: 2;
+      background: rgba(0, 0, 0, 0.07);
+    }
+    #lifebar {
+      height: 100%; width: 0%;
+      background: rgba(255, 16, 240, 0.55);
+      transition: width 0.12s linear;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">
+    WebGL2 ortho · flow camera follows line direction · embedded 924 palette<br>
+    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle · M mute · R record · N rebirth · ?seed=N
+  </div>
+  <div id="lifebar-wrap"><div id="lifebar"></div></div>
+  <div id="seed-hud">Invisible Layer June-7-2026 flow follow · 77823</div>
+  <script src="../loop-snippets/centered-924-data.js"></script>
+  <script>
+/**
+ * Invisible Layer June-7-2026 flow follow — same as study-webgl; camera pans with artwork flow.
+ * Invisible layer · G scanners · R layers → GPU; Canvas2D + WebGL2/JavaScript · WebGL feedback (ping-pong buffers).
+ */
+const { floor, min, max, sqrt, pow } = Math;
+const DEFAULT_SEED = 77823;
+const LIFESPAN_MS = 480000;
+const SURRENDER_MS = 4200;
+
+const makeRng = (seed) => {
+  let s = seed >>> 0;
+  return {
+    random() {
+      s = (s + 0x6d2b79f5) >>> 0;
+      let t = s;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    },
+    uniform(a, b) { return a + this.random() * (b - a); },
+    randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+    choice(arr) { return arr[this.randint(0, arr.length - 1)]; },
+    chance(p) { return this.random() < p; },
+  };
+};
+
+const parseInitialSeed = () => {
+  try {
+    const q = new URLSearchParams(location.search).get('seed');
+    if (q != null && q !== '') {
+      const n = Number(q) >>> 0;
+      if (Number.isFinite(n)) return n;
+    }
+  } catch (_) {}
+  return DEFAULT_SEED >>> 0;
+};
+
+const rgbToHsl = (r, g, b) => {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) * 0.5;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h = 0;
+  if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+  else if (max === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return [h / 6, s, l];
+};
+
+const hslToRgb = (h, s, l) => {
+  if (s === 0) return [l, l, l];
+  const hue2rgb = (p, q, t) => {
+    let tt = t;
+    if (tt < 0) tt += 1;
+    if (tt > 1) tt -= 1;
+    if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+    if (tt < 1 / 2) return q;
+    if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+    return p;
+  };
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  return [hue2rgb(p, q, h + 1 / 3), hue2rgb(p, q, h), hue2rgb(p, q, h - 1 / 3)];
+};
+
+const hueRotateRgb = (rgb, deg) => {
+  const [h, s, l] = rgbToHsl(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
+  const nh = (h + deg / 360 + 1) % 1;
+  const ns = min(1, max(0.35, s * 1.05));
+  return hslToRgb(nh, ns, min(0.92, max(0.38, l))).map((v) => floor(v * 255));
+};
+
+const shuffleInPlace = (arr, rng) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = rng.randint(0, i);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
+const CENTERED_REF = CENTERED_924_SRC;
+
+/** Fallbacks: fringes, arms, and core on 924_centered. */
+const BASE_PAL = {
+  white: [255, 255, 255],
+  pink: [248, 229, 231],
+  yellow: [255, 255, 226],
+  skyBlue: [199, 225, 250],
+  lavender: [163, 162, 230],
+  blend: [106, 93, 173],
+  peach: [174, 187, 222],
+  magenta: [105, 100, 180],
+  mint: [153, 165, 207],
+  violet: [105, 94, 173],
+};
+
+const PAL = {};
+
+const buildSeedProfile = (seed) => {
+  const r = makeRng(seed);
+  const r2 = makeRng(seed ^ 0x9e3779b9);
+  const r3 = makeRng(seed ^ 0x517cc1b7);
+  const hueShift = r.uniform(0, 360);
+  const palette = {};
+  for (const [k, v] of Object.entries(BASE_PAL)) {
+    if (k === 'white') {
+      palette[k] = v.slice();
+      continue;
+    }
+    palette[k] = hueRotateRgb(v, hueShift + r2.uniform(-24, 24));
+  }
+  const spectrumKeys = shuffleInPlace(Object.keys(BASE_PAL).filter((k) => k !== 'white'), r3);
+  const cell = r.choice([8, 16, 32]);
+  return {
+    seed: seed >>> 0,
+    hueShift,
+    palette,
+    spectrumKeys,
+    canvas: {
+      cell,
+      grid: cell * r.choice([1, 2, 4]),
+      scannerSpawn: r.uniform(0.08, 0.22),
+      layerSpawn: r.uniform(0.06, 0.18),
+      maxLayers: r.randint(2, 8),
+      capMul: r.uniform(0.28, 0.52),
+    },
+    gpu: {
+      specAlphaAB: r.uniform(0.12, 0.36),
+      specAlphaInk: r.uniform(0.2, 0.48),
+      paletteVeil: r.uniform(0.62, 0.94),
+    },
+    defaultMode: r.randint(0, 2),
+    autoMode: r.chance(0.62),
+  };
+};
+
+let activeSeed = parseInitialSeed();
+let seedProfile = null;
+let orgRng = makeRng(activeSeed);
+let lifeStart = 0;
+let lifePhase = 'live';
+let surrenderAt = 0;
+let solidifyK = 0;
+
+const SPECTRUM = [];
+
+const rebuildSpectrum = () => {
+  SPECTRUM.length = 0;
+  const keys = seedProfile?.spectrumKeys ?? Object.keys(BASE_PAL).filter((k) => k !== 'white');
+  for (const k of keys) SPECTRUM.push(PAL[k] ?? BASE_PAL[k]);
+};
+
+const applyPaletteFromProfile = (prof) => {
+  for (const [k, v] of Object.entries(BASE_PAL)) PAL[k] = (prof.palette[k] ?? v).slice();
+  rebuildSpectrum();
+};
+
+const applyCenteredSamples = (img, prof) => {
+  const c = document.createElement('canvas');
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0);
+  const get = (x, y) => {
+    const d = ctx.getImageData(min(w - 1, max(0, floor(x))), min(h - 1, max(0, floor(y))), 1, 1).data;
+    return [d[0], d[1], d[2]];
+  };
+  const onCross = (r, g, b) => r + g + b < 742;
+  const cx = floor(w * 0.5);
+  const cy = floor(h * 0.5);
+  const spanH = [];
+  for (let x = 0; x < w; x++) {
+    const [r, g, b] = get(x, cy);
+    if (onCross(r, g, b)) spanH.push(x);
+  }
+  const spanV = [];
+  for (let y = 0; y < h; y++) {
+    const [r, g, b] = get(cx, y);
+    if (onCross(r, g, b)) spanV.push(y);
+  }
+  const hs = prof?.hueShift ?? 0;
+  const rj = makeRng((prof?.seed ?? 0) ^ 0x9e3779b9);
+  const rot = (rgb) => hueRotateRgb(rgb, hs + rj.uniform(-14, 14));
+  if (spanH.length > 8 && spanV.length > 8) {
+    const pickH = (t) => get(spanH[floor((spanH.length - 1) * t)], cy);
+    const pickV = (t) => get(cx, spanV[floor((spanV.length - 1) * t)]);
+    PAL.pink = rot(pickH(0.03));
+    PAL.peach = rot(pickH(0.2));
+    PAL.magenta = rot(pickH(0.42));
+    PAL.blend = rot(get(cx, cy));
+    PAL.violet = rot(pickH(0.58));
+    PAL.yellow = rot(pickH(0.97));
+    PAL.skyBlue = rot(pickV(0.03));
+    PAL.mint = rot(pickV(0.2));
+    PAL.lavender = rot(pickV(0.97));
+    PAL.white = [255, 255, 255];
+    rebuildSpectrum();
+    return true;
+  }
+  if (prof) applyPaletteFromProfile(prof);
+  return false;
+};
+
+const rnd = () => orgRng.random();
+
+let centeredImg = null;
+
+const refreshSeedPalette = () => {
+  if (!seedProfile) return;
+  applyPaletteFromProfile(seedProfile);
+  if (centeredImg) applyCenteredSamples(centeredImg, seedProfile);
+  gpu.refreshPalette();
+};
+
+const loadCenteredArtwork = (onReady) => {
+  const img = new Image();
+  img.onload = () => {
+    centeredImg = img;
+    applyCenteredSamples(img, seedProfile);
+    onReady?.();
+  };
+  img.src = CENTERED_REF;
+};
+
+const rgb01 = (c) => [c[0] / 255, c[1] / 255, c[2] / 255];
+
+const Canvas2d = () => {
+  let ctx, width, height, scanners = [], layers = [];
+  let profile = {
+    cell: 16,
+    grid: 32,
+    scannerSpawn: 0.14,
+    layerSpawn: 0.1,
+    maxLayers: 4,
+    capMul: 0.4,
+  };
+
+  const setProfile = (p) => { profile = { ...profile, ...p }; };
+  const reset = () => { scanners = []; layers = []; };
+
+  const greenLevel = (time, opt) => {
+    if (!opt.auto) return [1, 2, 4][opt.mode] ?? 1;
+    return [1, 2, 4][floor(time / 90000) % 3];
+  };
+
+  const scanner = (x, y, size, dir, speed, life, g) => {
+    const d = [...dir];
+    const meta = { dir: d, speed };
+    const step = () => {
+      ctx.fillStyle = `rgba(0,${g},0,1)`;
+      ctx.fillRect(x, y, size, size);
+      x += d[0] * speed;
+      y += d[1] * speed;
+      if (d[0]) {
+        if (x < 0 || x > width - size) {
+          x = x < 0 ? 0 : width - size;
+          y += size * d[0];
+          d[0] *= -1;
+          meta.dir[0] *= -1;
+        }
+        if (y < -size || y >= height) life = 0;
+      }
+      if (d[1]) {
+        if (y < 0 || y > height - size) {
+          y = y < 0 ? 0 : height - size;
+          x += size * d[1];
+          d[1] *= -1;
+          meta.dir[1] *= -1;
+        }
+        if (x < -size || x >= width) life = 0;
+      }
+      return --life > 0;
+    };
+    return { meta, step };
+  };
+
+  const layer = (x, y, w, h, grid, life, c) => {
+    const pts = [[x, y]];
+    let yp = y;
+    let xp = x + w;
+
+    const edgeX = () => {
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => a - b);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += rnd() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    };
+    const edgeY = (reverse) => {
+      const s = 1 + floor(rnd() * 3);
+      const ys = Array.from({ length: s }, () => floor(rnd() * (h - grid) / grid) * grid)
+        .sort((a, b) => (reverse ? b - a : a - b));
+      for (let i = 0; i < s; i++) {
+        pts.push([xp, y + ys[i]]);
+        xp += rnd() < 0.5 ? grid : -grid;
+        pts.push([xp, y + ys[i]]);
+      }
+    };
+
+    if (y !== 0) edgeX();
+    pts.push([x + w, yp]);
+    xp = x + w;
+    if (x + w !== width) edgeY(false);
+    pts.push([xp, y + h]);
+    yp = y + h;
+    if (y + h !== height) {
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => b - a);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += rnd() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    }
+    pts.push([x, yp]);
+    xp = x;
+    if (x !== 0) {
+      edgeY(true);
+      pts[0] = [xp, y];
+    }
+
+    return () => {
+      ctx.fillStyle = `rgba(${c},0,0,1)`;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.closePath();
+      ctx.fill();
+      return --life > 0;
+    };
+  };
+
+  const init = () => {
+    const cvs = document.createElement('canvas');
+    ctx = cvs.getContext('2d', { willReadFrequently: true });
+  };
+
+  const setup = () => {
+    width = floor(window.innerWidth);
+    height = floor(window.innerHeight);
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+  };
+
+  const activeFlow = () => {
+    let sx = 0;
+    let sy = 0;
+    let sw = 0;
+    for (const s of scanners) {
+      sx += s.meta.dir[0] * s.meta.speed;
+      sy += s.meta.dir[1] * s.meta.speed;
+      sw += 1;
+    }
+    if (sw < 1) return { x: 0, y: 0, mag: 0 };
+    const x = sx / sw;
+    const y = sy / sw;
+    const mag = sqrt(x * x + y * y);
+    if (mag < 0.001) return { x: 0, y: 0, mag: 0 };
+    return { x: x / mag, y: y / mag, mag: min(1, mag / 3) };
+  };
+
+  const mergeFlow = (a, b) => {
+    const wx = a.x * a.mag;
+    const wy = a.y * a.mag;
+    const bx = b.x * b.mag;
+    const by = b.y * b.mag;
+    const x = wx + bx;
+    const y = wy + by;
+    const mag = sqrt(x * x + y * y);
+    if (mag < 0.001) return { x: 0, y: 0, mag: 0 };
+    return { x: x / mag, y: y / mag, mag: min(1, mag) };
+  };
+
+  const draw = (time, options) => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.globalCompositeOperation = 'source-over';
+    scanners = scanners.filter((s) => s.step());
+    ctx.globalCompositeOperation = 'lighter';
+    layers = layers.filter((fn) => fn());
+
+    const cell = profile.cell;
+    const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * profile.capMul);
+
+    if (lifePhase === 'live') {
+      if (scanners.length < cap && rnd() < profile.scannerSpawn) {
+        const x = floor(rnd() * floor((width - cell) / cell)) * cell;
+        const y = floor(rnd() * floor((height - cell) / cell)) * cell;
+        const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+        const speed = pow(2, floor(rnd() * 2));
+        const stride = pow(2, floor(rnd() * 2));
+        const g = greenLevel(time, options);
+        const n = dir[0]
+          ? 1 + floor(rnd() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
+          : 1 + floor(rnd() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
+        const life = (14 + floor(rnd() * 20)) * 32;
+        for (let i = 0; i < n; i++) {
+          scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+        }
+      }
+
+      const grid = profile.grid;
+      if (layers.length < profile.maxLayers && rnd() < profile.layerSpawn) {
+        const cols = floor(width / grid);
+        const rows = floor(height / grid);
+        const vert = rnd() < 0.5;
+        const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : width;
+        const h = vert ? height : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+        let lx = rnd() < 0.5 ? 0 : width - w;
+        let ly = rnd() < 0.5 ? 0 : height - h;
+        if (rnd() < 0.3) {
+          lx = floor(rnd() * floor((width - w) / grid)) * grid;
+          ly = floor(rnd() * floor((height - h) / grid)) * grid;
+        }
+        layers.push(layer(lx, ly, w, h, grid, (8 + floor(rnd() * 16)) * 32, pow(2, floor(rnd() * 6))));
+      }
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+    const pixels = ctx.getImageData(0, 0, width, height);
+    const flow = mergeFlow(activeFlow(), motionFlowFromPixels(pixels));
+    return { pixels, flow };
+  };
+
+  return { init, setup, draw, setProfile, reset };
+};
+
+const GL = () => {
+  let canvas, gl, width, height, scale;
+  let fbos = [], fboId = 0, imgTex, motTex, vBuf, fProg, dProg;
+  let uOrthoFeedback, uOrthoDisplay;
+  let gpuTune = { specAlphaAB: 0.24, specAlphaInk: 0.36, paletteVeil: 0.88 };
+
+  const orthoMat4 = () => new Float32Array([
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, -1, 0,
+    0, 0, 0, 1,
+  ]);
+
+  const VS = `#version 300 es
+uniform mat4 uOrtho;
+in vec3 pos;
+out vec2 vUv;
+void main() {
+  vUv = 0.5 * (pos.xy + 1.0);
+  gl_Position = uOrtho * vec4(pos.xy, 0.0, 1.0);
+}`;
+
+  const FS = `#version 300 es
+precision highp float;
+uniform sampler2D buf, img, mot;
+uniform float time;
+uniform vec2 dims;
+uniform int doRaster;
+uniform int doSpectrum;
+uniform vec3 specA, specB, specInk;
+uniform float specAlphaAB, specAlphaInk, paletteVeil, uSolidify;
+uniform vec2 uPan;
+in vec2 vUv;
+out vec4 frag;
+
+void main() {
+  vec2 pos = floor(vUv * dims);
+  vec3 col = texture(buf, vUv).rgb;
+  vec4 m = texture(mot, vUv);
+  float dr = floor(m.r * 255.0 + 0.5);
+  float dg = floor(m.g * 255.0 + 0.5);
+  vec2 o = vec2(0.0);
+  float motion = 1.0 - uSolidify;
+
+  if (doRaster == 1) {
+    if (mod(dr, 2.0) >= 1.0) o += vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 4.0) >= 2.0) o += vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 8.0) >= 4.0) o -= vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 16.0) >= 8.0) o -= vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 32.0) >= 16.0) o += vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 64.0) >= 32.0) o += vec2(2.0 / dims.x, 0.0);
+    if (mod(dr, 128.0) >= 64.0) o -= vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 256.0) >= 128.0) o -= vec2(2.0 / dims.x, 0.0);
+    o *= motion;
+    col = texture(buf, vUv + uPan + o).rgb;
+  }
+
+  if (doSpectrum == 1) {
+    if (mod(dg, 2.0) >= 1.0) {
+      vec2 bUv = mod(pos, 16.0) / 16.0;
+      vec4 tile = texture(img, bUv);
+      col = mix(col, tile.rgb, tile.a * paletteVeil * motion);
+    }
+    if (mod(dg, 4.0) >= 2.0) {
+      vec3 spec = mix(specA, specB, fract(time * 0.14));
+      col = mix(col, spec, specAlphaAB * motion);
+    }
+    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk * motion);
+  }
+
+  if (uSolidify > 0.001) {
+    vec3 freeze = texture(buf, vUv + uPan).rgb;
+    col = mix(col, freeze, uSolidify * 0.92);
+    float bands = mix(48.0, 4.0, uSolidify);
+    col = floor(col * bands) / bands;
+  }
+
+  frag = vec4(col, 1.0);
+}`;
+
+  const FS_BLIT = `#version 300 es
+precision highp float;
+uniform sampler2D buf;
+uniform vec2 uPan;
+in vec2 vUv;
+out vec4 frag;
+void main() {
+  frag = texture(buf, vec2(vUv.x, 1.0 - vUv.y) + uPan);
+}`;
+
+  const compile = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+    return s;
+  };
+
+  const link = (vs, fs) => {
+    const p = gl.createProgram();
+    gl.attachShader(p, vs);
+    gl.attachShader(p, fs);
+    gl.linkProgram(p);
+    return p;
+  };
+
+  const makeTex = (w, h, data) => {
+    const t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    return t;
+  };
+
+  const makeFbo = (w, h) => {
+    const tex = makeTex(w, h, null);
+    const f = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    return { fbo: f, tex };
+  };
+
+  const palette16 = () => {
+    const a = new Uint8Array(16 * 16 * 4);
+    for (let i = 0; i < 256; i++) {
+      const x = i % 16;
+      const y = floor(i / 16);
+      const grid = x % 4 === 0 || y % 4 === 0;
+      const c = grid
+        ? SPECTRUM[((x >> 2) + (y >> 2) * 2) % SPECTRUM.length]
+        : PAL.white;
+      const veil = grid ? 0.12 + (((x >> 2) + (y >> 2)) % 5) * 0.07 : 0;
+      a[i * 4] = c[0];
+      a[i * 4 + 1] = c[1];
+      a[i * 4 + 2] = c[2];
+      a[i * 4 + 3] = floor(veil * 255);
+    }
+    return a;
+  };
+
+  const quad = (prog, orthoLoc) => {
+    gl.useProgram(prog);
+    if (orthoLoc != null) gl.uniformMatrix4fv(orthoLoc, false, orthoMat4());
+    const loc = gl.getAttribLocation(prog, 'pos');
+    gl.enableVertexAttribArray(loc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+    gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+
+  const init = () => {
+    canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    gl = canvas.getContext('webgl2', { antialias: false, desynchronized: true });
+    if (!gl) throw new Error('WebGL2 required');
+    gl.disable(gl.BLEND);
+    gl.disable(gl.DEPTH_TEST);
+    vBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, 1, 0, -1, -1, 0, 1, 1, 0, 1, -1, 0]), gl.STATIC_DRAW);
+    fProg = link(compile(gl.VERTEX_SHADER, VS), compile(gl.FRAGMENT_SHADER, FS));
+    dProg = link(compile(gl.VERTEX_SHADER, VS), compile(gl.FRAGMENT_SHADER, FS_BLIT));
+    uOrthoFeedback = gl.getUniformLocation(fProg, 'uOrtho');
+    uOrthoDisplay = gl.getUniformLocation(dProg, 'uOrtho');
+  };
+
+  const setup = () => {
+    scale = min(window.devicePixelRatio || 1, 2);
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    width = floor(window.innerWidth);
+    height = floor(window.innerHeight);
+    canvas.width = floor(width * scale);
+    canvas.height = floor(height * scale);
+    fbos.forEach(({ fbo, tex }) => {
+      gl.deleteFramebuffer(fbo);
+      gl.deleteTexture(tex);
+    });
+    fbos = [makeFbo(width, height), makeFbo(width, height)];
+    fboId = 0;
+    if (imgTex) gl.deleteTexture(imgTex);
+    if (motTex) gl.deleteTexture(motTex);
+    imgTex = makeTex(16, 16, palette16());
+    motTex = makeTex(width, height, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[0].fbo);
+    gl.clearColor(1, 1, 1, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[1].fbo);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  };
+
+  const modeFlags = (mode) => {
+    if (mode === 1) return { raster: 1, spectrum: 0 };
+    if (mode === 2) return { raster: 0, spectrum: 1 };
+    return { raster: 1, spectrum: 1 };
+  };
+
+  const render = (time, pixels, options, solidify, panUv) => {
+    const prev = fboId;
+    const cur = fboId ^= 1;
+    const { raster, spectrum } = modeFlags(options.mode);
+
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels.data);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[cur].fbo);
+    gl.viewport(0, 0, width, height);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(fProg);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, fbos[prev].tex);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, imgTex);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'buf'), 0);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'img'), 1);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'mot'), 2);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'time'), time * 0.001);
+    gl.uniform2f(gl.getUniformLocation(fProg, 'dims'), width, height);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'doRaster'), raster);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'doSpectrum'), spectrum);
+    const ci = floor(time * 0.00035) % SPECTRUM.length;
+    const ca = rgb01(SPECTRUM[ci]);
+    const cb = rgb01(SPECTRUM[(ci + 3) % SPECTRUM.length]);
+    const ink = rgb01(PAL.blend);
+    gl.uniform3f(gl.getUniformLocation(fProg, 'specA'), ca[0], ca[1], ca[2]);
+    gl.uniform3f(gl.getUniformLocation(fProg, 'specB'), cb[0], cb[1], cb[2]);
+    gl.uniform3f(gl.getUniformLocation(fProg, 'specInk'), ink[0], ink[1], ink[2]);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'paletteVeil'), gpuTune.paletteVeil);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaAB'), gpuTune.specAlphaAB);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaInk'), gpuTune.specAlphaInk);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'uSolidify'), solidify ?? 0);
+    gl.uniform2f(gl.getUniformLocation(fProg, 'uPan'), panUv[0], -panUv[1]);
+    quad(fProg, uOrthoFeedback);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.useProgram(dProg);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, fbos[cur].tex);
+    gl.uniform1i(gl.getUniformLocation(dProg, 'buf'), 0);
+    gl.uniform2f(gl.getUniformLocation(dProg, 'uPan'), panUv[0], -panUv[1]);
+    quad(dProg, uOrthoDisplay);
+  };
+
+  const refreshPalette = () => {
+    if (!gl || !width) return;
+    if (imgTex) gl.deleteTexture(imgTex);
+    imgTex = makeTex(16, 16, palette16());
+  };
+
+  const applySeedProfile = (g) => {
+    gpuTune = { ...gpuTune, ...g };
+  };
+
+  return { init, setup, render, refreshPalette, applySeedProfile, getCanvas: () => canvas };
+};
+
+const MotionSoundscape = () => {
+  const MOTION_SAMPLE_MS = 48;
+  let ctx, master, ready = false, on = false;
+  let rGain, gGain, bGain, rOsc, rOsc2, gOsc, gOsc2, bOsc, rFilt, gFilt, bFilt;
+  let clickGain, lastAt = 0;
+  let recDest = null;
+  const smooth = { r: 0, g: 0, b: 0 };
+
+  const init = () => {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+
+    const chain = (type, freq, filtType, filtFreq, filtQ) => {
+      const osc = ctx.createOscillator();
+      const filt = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      filt.type = filtType;
+      filt.frequency.value = filtFreq;
+      if (filtQ) filt.Q.value = filtQ;
+      gain.gain.value = 0;
+      osc.connect(filt);
+      filt.connect(gain);
+      gain.connect(master);
+      osc.start();
+      return { osc, filt, gain };
+    };
+
+    const ra = chain('sawtooth', 72, 'bandpass', 220, 1.2);
+    const rb = chain('sawtooth', 74.5, 'bandpass', 220, 1.2);
+    rOsc = ra.osc;
+    rOsc2 = rb.osc;
+    rGain = ra.gain;
+    rFilt = ra.filt;
+    rb.gain.gain.value = 0;
+    rOsc2.disconnect();
+    rOsc2.connect(rFilt);
+
+    const ga = chain('sine', 330, 'bandpass', 900, 0.6);
+    const gb = chain('sine', 337, 'bandpass', 900, 0.6);
+    gOsc = ga.osc;
+    gOsc2 = gb.osc;
+    gGain = ga.gain;
+    gFilt = ga.filt;
+    gb.gain.gain.value = 0;
+    gOsc2.disconnect();
+    gOsc2.connect(gFilt);
+
+    const ba = chain('triangle', 55, 'lowpass', 140);
+    bOsc = ba.osc;
+    bGain = ba.gain;
+    bFilt = ba.filt;
+
+    clickGain = ctx.createGain();
+    clickGain.gain.value = 1;
+    clickGain.connect(master);
+    ready = true;
+  };
+
+  const resume = async () => {
+    init();
+    if (ctx.state === 'suspended') await ctx.resume();
+  };
+
+  const ensureOn = async () => {
+    await resume();
+    if (on) return true;
+    on = true;
+    master.gain.linearRampToValueAtTime(0.22, ctx.currentTime + 0.08);
+    return true;
+  };
+
+  const toggle = async () => {
+    await resume();
+    on = !on;
+    master.gain.linearRampToValueAtTime(on ? 0.22 : 0, ctx.currentTime + 0.08);
+    return on;
+  };
+
+  const motionEnergy = (pixels) => {
+    const d = pixels.data;
+    let r = 0, g = 0, b = 0, n = 0;
+    const stride = 4 * 24;
+    for (let i = 0; i < d.length; i += stride) {
+      r += d[i];
+      g += d[i + 1];
+      b += d[i + 2];
+      n++;
+    }
+    return { r: r / n / 255, g: g / n / 255, b: b / n / 255 };
+  };
+
+  const maybeClick = (rAmt) => {
+    if (!on || rAmt < 0.04 || rnd() > rAmt * 0.35) return;
+    const len = floor(ctx.sampleRate * 0.018);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (rnd() * 2 - 1) * pow(1 - i / len, 2.2);
+    const src = ctx.createBufferSource();
+    const env = ctx.createGain();
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 160 + rAmt * 400;
+    bp.Q.value = 2;
+    src.buffer = buf;
+    env.gain.value = 0.08 + rAmt * 0.2;
+    src.connect(bp);
+    bp.connect(env);
+    env.connect(clickGain);
+    src.start();
+  };
+
+  const update = (pixels, time) => {
+    if (!ready || !on) return;
+    if (time - lastAt < MOTION_SAMPLE_MS) return;
+    lastAt = time;
+
+    const raw = motionEnergy(pixels);
+    const k = 0.18;
+    smooth.r += (raw.r - smooth.r) * k;
+    smooth.g += (raw.g - smooth.g) * k;
+    smooth.b += (raw.b - smooth.b) * k;
+
+    const t = ctx.currentTime;
+    const ci = floor(time * 0.00035) % SPECTRUM.length;
+    const spec = SPECTRUM[ci];
+    const specHz = 220 + (spec[0] + spec[1] + spec[2]) / 765 * 280;
+
+    rGain.gain.linearRampToValueAtTime(pow(smooth.r, 0.7) * 0.42, t + 0.05);
+    rOsc.frequency.linearRampToValueAtTime(58 + smooth.r * 90, t + 0.05);
+    rOsc2.frequency.linearRampToValueAtTime(60 + smooth.r * 92, t + 0.05);
+    rFilt.frequency.linearRampToValueAtTime(140 + smooth.r * 520, t + 0.05);
+    maybeClick(smooth.r);
+
+    gGain.gain.linearRampToValueAtTime(pow(smooth.g, 0.65) * 0.38, t + 0.05);
+    gOsc.frequency.linearRampToValueAtTime(specHz * (0.9 + smooth.g * 0.5), t + 0.05);
+    gOsc2.frequency.linearRampToValueAtTime(specHz * (0.93 + smooth.g * 0.52), t + 0.05);
+    gFilt.frequency.linearRampToValueAtTime(500 + smooth.g * 1800, t + 0.05);
+
+    bGain.gain.linearRampToValueAtTime(pow(smooth.b, 0.75) * 0.45, t + 0.05);
+    bOsc.frequency.linearRampToValueAtTime(38 + smooth.b * 110, t + 0.05);
+    bFilt.frequency.linearRampToValueAtTime(90 + smooth.b * 220, t + 0.05);
+  };
+
+  const setMasterGain = (scale) => {
+    if (!ready) return;
+    master.gain.linearRampToValueAtTime(max(0, scale) * 0.22, ctx.currentTime + 0.06);
+  };
+
+  const getAudioStream = async () => {
+    await ensureOn();
+    if (!recDest) {
+      recDest = ctx.createMediaStreamDestination();
+      master.connect(recDest);
+    }
+    return recDest.stream;
+  };
+
+  return { resume, ensureOn, toggle, update, getAudioStream, setMasterGain, isOn: () => on };
+};
+
+const CanvasRecorder = (getCanvas, getAudioStream) => {
+  let recorder = null;
+  let chunks = [];
+  let active = false;
+
+  const pickMime = () => {
+    const types = [
+      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4',
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm',
+    ];
+    return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
+  };
+
+  const recExt = (mimeType) => (mimeType.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+  const setRecHint = (on) => {
+    const hint = document.getElementById('hint');
+    if (hint) hint.dataset.rec = on ? '1' : '';
+  };
+
+  const start = async () => {
+    if (active) return false;
+    const canvas = getCanvas();
+    if (!canvas?.captureStream) return false;
+
+    const mimeType = pickMime();
+    if (!mimeType) {
+      console.warn('MediaRecorder: no supported mp4/webm mime type');
+      return false;
+    }
+
+    const videoStream = canvas.captureStream(60);
+    const audioStream = await getAudioStream();
+    const stream = new MediaStream([
+      ...videoStream.getVideoTracks(),
+      ...audioStream.getAudioTracks(),
+    ]);
+    chunks = [];
+    recorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 16_000_000,
+    });
+    recorder.ondataavailable = (e) => {
+      if (e.data.size) chunks.push(e.data);
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: mimeType.split(';')[0] });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      a.href = url;
+      a.download = `invisible-layer-june-7-2026-flow-follow-${ts}.${recExt(mimeType)}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      stream.getTracks().forEach((t) => t.stop());
+      active = false;
+      setRecHint(false);
+    };
+
+    recorder.start(1000);
+    active = true;
+    setRecHint(true);
+    return true;
+  };
+
+  const stop = () => {
+    if (!active || !recorder) return;
+    if (recorder.state !== 'inactive') recorder.stop();
+    recorder = null;
+  };
+
+  const toggle = async () => {
+    if (active) {
+      stop();
+      return false;
+    }
+    return start();
+  };
+
+  return { toggle, isActive: () => active };
+};
+
+const c2d = Canvas2d();
+const gpu = GL();
+const snd = MotionSoundscape();
+const rec = CanvasRecorder(() => gpu.getCanvas(), () => snd.getAudioStream());
+const lifebar = document.getElementById('lifebar');
+const seedHud = document.getElementById('seed-hud');
+const options = { auto: true, mode: 0 };
+let showHint = true;
+
+const seriesTitle = (seed) => `Invisible Layer June-7-2026 flow follow · ${seed >>> 0}`;
+
+/** Dominant raster drift from hidden R channel (matches GPU bit offsets). */
+const motionFlowFromPixels = (pixels) => {
+  const { data, width, height } = pixels;
+  let sx = 0;
+  let sy = 0;
+  let sw = 0;
+  const step = 12;
+  for (let y = 0; y < height; y += step) {
+    for (let x = 0; x < width; x += step) {
+      const i = (y * width + x) * 4;
+      const dr = data[i];
+      const dg = data[i + 1];
+      if (dr < 8 && dg < 8) continue;
+      let dx = 0;
+      let dy = 0;
+      if (dr & 1) dy += 1;
+      if (dr & 2) dx += 1;
+      if (dr & 4) dy -= 1;
+      if (dr & 8) dx -= 1;
+      if (dr & 16) dy += 2;
+      if (dr & 32) dx += 2;
+      if (dr & 64) dy -= 2;
+      if (dr & 128) dx -= 2;
+      const wt = max(dr, dg);
+      sx += dx * wt;
+      sy += dy * wt;
+      sw += wt;
+    }
+  }
+  if (sw < 1) return { x: 0, y: 0, mag: 0 };
+  const x = sx / sw;
+  const y = sy / sw;
+  const mag = sqrt(x * x + y * y);
+  if (mag < 0.001) return { x: 0, y: 0, mag: 0 };
+  return { x: x / mag, y: y / mag, mag: min(1, mag / 4) };
+};
+
+const FlowCamera = () => {
+  const pan = { x: 0, y: 0 };
+  const vel = { x: 0, y: 0 };
+  let lastMs = 0;
+  const SMOOTH = 0.055;
+  const SPEED = 48;
+
+  const update = (flow, timeMs, solidify) => {
+    const dt = min(0.05, max(0.001, (timeMs - (lastMs || timeMs)) / 1000));
+    lastMs = timeMs;
+    const motion = 1 - solidify;
+    const targetX = flow.x * flow.mag;
+    const targetY = flow.y * flow.mag;
+    const pull = 1 - pow(1 - SMOOTH, dt * 60);
+    vel.x += (targetX - vel.x) * pull;
+    vel.y += (targetY - vel.y) * pull;
+    pan.x += vel.x * SPEED * dt * motion;
+    pan.y += vel.y * SPEED * dt * motion;
+  };
+
+  const uvOffset = (w, h) => [pan.x / w, pan.y / h];
+
+  const reset = () => {
+    pan.x = 0;
+    pan.y = 0;
+    vel.x = 0;
+    vel.y = 0;
+    lastMs = 0;
+  };
+
+  return { update, uvOffset, reset };
+};
+
+const flowCam = FlowCamera();
+
+const updateSeedHud = () => {
+  const label = seriesTitle(activeSeed);
+  seedHud.textContent = label;
+  document.title = label;
+};
+
+const applySeed = (seed) => {
+  activeSeed = seed >>> 0;
+  seedProfile = buildSeedProfile(activeSeed);
+  orgRng = makeRng(activeSeed);
+  applyPaletteFromProfile(seedProfile);
+  c2d.setProfile(seedProfile.canvas);
+  gpu.applySeedProfile(seedProfile.gpu);
+  options.mode = seedProfile.defaultMode;
+  options.auto = seedProfile.autoMode;
+  updateSeedHud();
+};
+
+const randomSeed = () => ((Math.random() * 0x100000000) >>> 0);
+
+const rebirth = (t, nextSeed) => {
+  applySeed(nextSeed ?? randomSeed());
+  c2d.reset();
+  gpu.setup();
+  refreshSeedPalette();
+  lifeStart = t;
+  lifePhase = 'live';
+  surrenderAt = 0;
+  solidifyK = 0;
+  lifebar.style.width = '0%';
+  snd.setMasterGain(1);
+  flowCam.reset();
+};
+
+const updateLife = (t) => {
+  if (!lifeStart) lifeStart = t;
+
+  if (lifePhase === 'live') {
+    solidifyK = 0;
+    const pct = min(100, ((t - lifeStart) / LIFESPAN_MS) * 100);
+    lifebar.style.width = `${pct.toFixed(2)}%`;
+    if (t - lifeStart >= LIFESPAN_MS) {
+      lifePhase = 'surrender';
+      surrenderAt = t;
+    }
+    return;
+  }
+
+  if (lifePhase === 'surrender') {
+    lifebar.style.width = '100%';
+    solidifyK = min(1, (t - surrenderAt) / SURRENDER_MS);
+    snd.setMasterGain(1 - solidifyK);
+    if (t - surrenderAt >= SURRENDER_MS) rebirth(t);
+  }
+};
+
+document.addEventListener('keydown', async (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'h') {
+    showHint = !showHint;
+    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
+  }
+  if (k === 'a') options.auto = !options.auto;
+  if (k === '1') { options.mode = 0; options.auto = false; }
+  if (k === '2') { options.mode = 1; options.auto = false; }
+  if (k === '3') { options.mode = 2; options.auto = false; }
+  if (k === 'm') await snd.toggle();
+  if (k === 'n') rebirth(performance.now());
+  if (k === 'r') { await snd.ensureOn(); await rec.toggle(); }
+});
+
+function setup() {
+  c2d.setup();
+  gpu.setup();
+}
+
+function frame(t) {
+  updateLife(t);
+  const { pixels, flow } = c2d.draw(t, options);
+  flowCam.update(flow, t, solidifyK);
+  gpu.render(t, pixels, options, solidifyK, flowCam.uvOffset(pixels.width, pixels.height));
+  snd.update(pixels, t);
+  requestAnimationFrame(frame);
+}
+
+c2d.init();
+gpu.init();
+applySeed(activeSeed);
+setup();
+loadCenteredArtwork(() => refreshSeedPalette());
+window.addEventListener('resize', setup);
+requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
