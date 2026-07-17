@@ -811,8 +811,8 @@ const ViewCamera = () => {
   const update = (dt, solidify) => {
     const motion = 1 - solidify;
     const s = SPEED * dt * motion;
-    if (keys.up) pan.y -= s;
-    if (keys.down) pan.y += s;
+    if (keys.up) pan.y += s;
+    if (keys.down) pan.y -= s;
     if (keys.left) pan.x -= s;
     if (keys.right) pan.x += s;
   };
