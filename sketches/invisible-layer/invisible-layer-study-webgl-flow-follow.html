@@ -38,7 +38,7 @@
 <body>
   <div id="hint">
     WebGL2 ortho · embedded 924 palette · static host OK<br>
-    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle · R record · N rebirth · ?seed=N
+    H hide · ↑↓←→ pan camera · 1 RS · 2 R-only · 3 S-only · A auto cycle · R record · N rebirth · ?seed=N
   </div>
   <div id="lifebar-wrap"><div id="lifebar"></div></div>
   <div id="seed-hud">Invisible Layer June-7-2026 · 77823</div>
@@ -472,13 +472,15 @@ uniform int doRaster;
 uniform int doSpectrum;
 uniform vec3 specA, specB, specInk;
 uniform float specAlphaAB, specAlphaInk, paletteVeil, uSolidify;
+uniform vec2 uPan;
 in vec2 vUv;
 out vec4 frag;
 
 void main() {
-  vec2 pos = floor(vUv * dims);
-  vec3 col = texture(buf, vUv).rgb;
-  vec4 m = texture(mot, vUv);
+  vec2 sampleUv = vUv + uPan;
+  vec2 pos = floor(sampleUv * dims);
+  vec3 col = texture(buf, sampleUv).rgb;
+  vec4 m = texture(mot, sampleUv);
   float dr = floor(m.r * 255.0 + 0.5);
   float dg = floor(m.g * 255.0 + 0.5);
   vec2 o = vec2(0.0);
@@ -494,7 +496,7 @@ void main() {
     if (mod(dr, 128.0) >= 64.0) o -= vec2(0.0, 2.0 / dims.y);
     if (mod(dr, 256.0) >= 128.0) o -= vec2(2.0 / dims.x, 0.0);
     o *= motion;
-    col = texture(buf, vUv + o).rgb;
+    col = texture(buf, sampleUv + o).rgb;
   }
 
   if (doSpectrum == 1) {
@@ -511,7 +513,7 @@ void main() {
   }
 
   if (uSolidify > 0.001) {
-    vec3 freeze = texture(buf, vUv).rgb;
+    vec3 freeze = texture(buf, sampleUv).rgb;
     col = mix(col, freeze, uSolidify * 0.92);
     float bands = mix(48.0, 4.0, uSolidify);
     col = floor(col * bands) / bands;
@@ -523,10 +525,11 @@ void main() {
   const FS_BLIT = `#version 300 es
 precision highp float;
 uniform sampler2D buf;
+uniform vec2 uPan;
 in vec2 vUv;
 out vec4 frag;
 void main() {
-  frag = texture(buf, vec2(vUv.x, 1.0 - vUv.y));
+  frag = texture(buf, vec2(vUv.x, 1.0 - vUv.y) + uPan);
 }`;
 
   const compile = (type, src) => {
@@ -639,7 +642,7 @@ void main() {
     return { raster: 1, spectrum: 1 };
   };
 
-  const render = (time, pixels, options, solidify) => {
+  const render = (time, pixels, options, solidify, panUv) => {
     const prev = fboId;
     const cur = fboId ^= 1;
     const { raster, spectrum } = modeFlags(options.mode);
@@ -675,6 +678,7 @@ void main() {
     gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaAB'), gpuTune.specAlphaAB);
     gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaInk'), gpuTune.specAlphaInk);
     gl.uniform1f(gl.getUniformLocation(fProg, 'uSolidify'), solidify ?? 0);
+    gl.uniform2f(gl.getUniformLocation(fProg, 'uPan'), panUv[0], -panUv[1]);
     quad(fProg, uOrthoFeedback);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -683,6 +687,7 @@ void main() {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, fbos[cur].tex);
     gl.uniform1i(gl.getUniformLocation(dProg, 'buf'), 0);
+    gl.uniform2f(gl.getUniformLocation(dProg, 'uPan'), panUv[0], -panUv[1]);
     quad(dProg, uOrthoDisplay);
   };
 
@@ -790,6 +795,41 @@ let showHint = true;
 
 const seriesTitle = (seed) => `Invisible Layer June-7-2026 · ${seed >>> 0}`;
 
+const ViewCamera = () => {
+  const pan = { x: 0, y: 0 };
+  const keys = { up: false, down: false, left: false, right: false };
+  const SPEED = 180;
+
+  const setKey = (name, down) => {
+    if (name in keys) keys[name] = down;
+  };
+
+  const update = (dt, solidify) => {
+    const motion = 1 - solidify;
+    const s = SPEED * dt * motion;
+    if (keys.up) pan.y -= s;
+    if (keys.down) pan.y += s;
+    if (keys.left) pan.x -= s;
+    if (keys.right) pan.x += s;
+  };
+
+  const uvOffset = (w, h) => [pan.x / w, pan.y / h];
+
+  const reset = () => {
+    pan.x = 0;
+    pan.y = 0;
+    keys.up = false;
+    keys.down = false;
+    keys.left = false;
+    keys.right = false;
+  };
+
+  return { setKey, update, uvOffset, reset };
+};
+
+const viewCam = ViewCamera();
+let frameLastMs = 0;
+
 const updateSeedHud = () => {
   const label = seriesTitle(activeSeed);
   seedHud.textContent = label;
@@ -820,6 +860,8 @@ const rebirth = (t, nextSeed) => {
   surrenderAt = 0;
   solidifyK = 0;
   lifebar.style.width = '0%';
+  viewCam.reset();
+  frameLastMs = 0;
 };
 
 const updateLife = (t) => {
@@ -845,6 +887,10 @@ const updateLife = (t) => {
 
 document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
+  if (e.key === 'ArrowUp') { viewCam.setKey('up', true); e.preventDefault(); }
+  if (e.key === 'ArrowDown') { viewCam.setKey('down', true); e.preventDefault(); }
+  if (e.key === 'ArrowLeft') { viewCam.setKey('left', true); e.preventDefault(); }
+  if (e.key === 'ArrowRight') { viewCam.setKey('right', true); e.preventDefault(); }
   if (k === 'h') {
     showHint = !showHint;
     document.getElementById('hint').style.opacity = showHint ? '1' : '0';
@@ -857,15 +903,25 @@ document.addEventListener('keydown', (e) => {
   if (k === 'r') rec.toggle();
 });
 
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'ArrowUp') viewCam.setKey('up', false);
+  if (e.key === 'ArrowDown') viewCam.setKey('down', false);
+  if (e.key === 'ArrowLeft') viewCam.setKey('left', false);
+  if (e.key === 'ArrowRight') viewCam.setKey('right', false);
+});
+
 function setup() {
   c2d.setup();
   gpu.setup();
 }
 
 function frame(t) {
+  const dt = min(0.05, max(0.001, (t - (frameLastMs || t)) / 1000));
+  frameLastMs = t;
   updateLife(t);
+  viewCam.update(dt, solidifyK);
   const pixels = c2d.draw(t, options);
-  gpu.render(t, pixels, options, solidifyK);
+  gpu.render(t, pixels, options, solidifyK, viewCam.uvOffset(pixels.width, pixels.height));
   requestAnimationFrame(frame);
 }
 
