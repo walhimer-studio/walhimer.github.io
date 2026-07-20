@@ -69,7 +69,8 @@ def load_or_bootstrap_catalog(from_artworks: bool) -> dict:
     return json.loads(CATALOG.read_text(encoding="utf-8"))
 
 
-def refresh_catalog(from_artworks: bool = False) -> None:
+def compute_catalog(from_artworks: bool = False) -> tuple[dict, dict]:
+    """Build the catalog manifest without writing to disk."""
     catalog = load_or_bootstrap_catalog(from_artworks)
     catalog.pop("soundscapes", None)
     catalog.pop("installations", None)
@@ -105,9 +106,6 @@ def refresh_catalog(from_artworks: bool = False) -> None:
 
     attach_artifacts_to_works(ROOT, catalog["works"])
 
-    # Soundscape rows are not persisted; derive from works (site.surfaces / site.soundscape).
-    ss = soundscapes_summary(catalog["works"], catalog.get("canonical_base", CANONICAL))
-
     catalog["updated"] = date.today().isoformat()
     catalog["version"] = max(int(catalog.get("version") or 1), 2)
     catalog["profile"] = (
@@ -117,7 +115,6 @@ def refresh_catalog(from_artworks: bool = False) -> None:
         "Soundscape list is derived from works, not stored separately."
     )
 
-    # Stable key order for humans (works[] is large - keep it last).
     ordered = {
         "version": catalog["version"],
         "updated": catalog["updated"],
@@ -125,6 +122,17 @@ def refresh_catalog(from_artworks: bool = False) -> None:
         "canonical_base": catalog.get("canonical_base", CANONICAL),
         "works": catalog["works"],
     }
+    stats = {
+        "installation_paths": len(inst),
+        "sketch_series": len(sketch_series),
+        "works": len(catalog["works"]),
+    }
+    return ordered, stats
+
+
+def refresh_catalog(from_artworks: bool = False) -> None:
+    ordered, stats = compute_catalog(from_artworks=from_artworks)
+    ss = soundscapes_summary(ordered["works"], ordered.get("canonical_base", CANONICAL))
 
     CATALOG.parent.mkdir(parents=True, exist_ok=True)
     CATALOG.write_text(
@@ -133,9 +141,9 @@ def refresh_catalog(from_artworks: bool = False) -> None:
     )
     print(
         f"Wrote {CATALOG.relative_to(ROOT)}: "
-        f"{len(inst)} installation paths, "
-        f"{len(sketch_series)} sketch series, "
-        f"{len(catalog['works'])} works "
+        f"{stats['installation_paths']} installation paths, "
+        f"{stats['sketch_series']} sketch series, "
+        f"{stats['works']} works "
         f"(derived soundscape rows: {len(ss['entries'])}, not stored in JSON)"
     )
 

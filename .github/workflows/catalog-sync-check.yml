@@ -1,0 +1,15 @@
+name: Catalog sync check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: catalog.json must match SERIES refresh output
+        run: python3 _scripts/check_catalog_sync.py

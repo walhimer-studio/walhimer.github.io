@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-15",
+  "updated": "2026-07-20",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Invisible Layer",
-          "file": "invisible-layer/index.html"
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-alumni-show-2026/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,51 +53,13 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/invisible-layer/README.md",
-            "sketches/invisible-layer/index.html",
-            "sketches/invisible-layer/invisible-layer-july-12-2026.html",
-            "sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html",
-            "sketches/invisible-layer/invisible-layer-july-13-2026.html",
-            "sketches/invisible-layer/invisible-layer-july-14-2026.html",
-            "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
-            "sketches/invisible-layer/invisible-layer-july-8-2026.html",
-            "sketches/invisible-layer/invisible-layer-june-7-2026-2.html",
-            "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d-landscape.html",
-            "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html",
-            "sketches/invisible-layer/invisible-layer-study-bloom-piano.html",
-            "sketches/invisible-layer/invisible-layer-study-webgl.html",
-            "sketches/invisible-layer/invisible-layer-vol3d.html",
-            "sketches/invisible-layer/invisible-layer-words-july-10-2026.html",
-            "sketches/invisible-layer/invisible-layer-woven-july-10-2026.html",
-            "sketches/invisible-layer/js/forward-slice-export.mjs",
-            "sketches/invisible-layer/js/three.min.js",
-            "sketches/invisible-layer/pixel-recipes/README.md",
-            "sketches/invisible-layer/pixel-recipes/assembly-rules.json",
-            "sketches/invisible-layer/pixel-recipes/channel-spec.json",
-            "sketches/invisible-layer/pixel-recipes/chunk-grid-study.html",
-            "sketches/invisible-layer/pixel-recipes/landscape-travel-study.html",
-            "sketches/invisible-layer/pixel-recipes/part-ids.json",
-            "sketches/invisible-layer/pixel-recipes/pixel-recipes.md",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C6.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds6.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs6.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/README.md"
+            "sketches/loop-art-critique-alumni-show-2026/README.md",
+            "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+            "sketches/loop-art-critique-alumni-show-2026/compose-offer.html",
+            "sketches/loop-art-critique-alumni-show-2026/compose-rgb-xyz.mjs",
+            "sketches/loop-art-critique-alumni-show-2026/compose.html",
+            "sketches/loop-art-critique-alumni-show-2026/index.html",
+            "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html"
           ],
           "external_urls": []
         },
@@ -720,6 +682,278 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-readme",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000184"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-alumni-show-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
+      "dublin_core": {
+        "title": "../catalog/loop-art-critique-alumni-show-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000258"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-catalog-loop-art-critique-alumni-show",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/loop-art-critique-alumni-show-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "../catalog/loop-art-critique-alumni-show-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/loop-art-critique-alumni-show-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-assets-family-reunion-poster",
+      "dublin_core": {
+        "title": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:family-reunion-poster",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000236"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-family-reunion-poster",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-2026-loop-21-surrender-machine-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-2026/loop-21-surrender-machine/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/canvas-recorder.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/journey.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/void-scene.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel-engine.mjs",
+          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel.mjs"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-2026-loop-21-surrender-wall",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-21-surrender-wall",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000235"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-loop-21-surrender-wall",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 July 2026",
+          "file": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
+      "dublin_core": {
+        "title": "invisible-layer/invisible-layer-study-webgl",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000290"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-study-webgl",
+        "type": "HumanMadeObject",
+        "_label": "invisible-layer/invisible-layer-study-webgl",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "invisible-layer/invisible-layer-study-webgl.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/invisible-layer/invisible-layer-study-webgl.html",
+          "sketches/loop-snippets/centered-924-data.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-july-14-2026",
       "dublin_core": {
         "title": "invisible-layer/invisible-layer-july-14-2026",
@@ -850,6 +1084,103 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "invisible-layer/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/invisible-layer/.DS_Store",
+          "sketches/invisible-layer/README.md",
+          "sketches/invisible-layer/index.html",
+          "sketches/invisible-layer/invisible-layer-july-12-2026.html",
+          "sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html",
+          "sketches/invisible-layer/invisible-layer-july-13-2026.html",
+          "sketches/invisible-layer/invisible-layer-july-14-2026.html",
+          "sketches/invisible-layer/invisible-layer-july-16-2026-follow.html",
+          "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
+          "sketches/invisible-layer/invisible-layer-july-8-2026.html",
+          "sketches/invisible-layer/invisible-layer-june-7-2026-2.html",
+          "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d-landscape.html",
+          "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html",
+          "sketches/invisible-layer/invisible-layer-study-bloom-piano.html",
+          "sketches/invisible-layer/invisible-layer-study-webgl.html",
+          "sketches/invisible-layer/invisible-layer-vol3d.html",
+          "sketches/invisible-layer/invisible-layer-words-july-10-2026.html",
+          "sketches/invisible-layer/invisible-layer-woven-july-10-2026.html",
+          "sketches/invisible-layer/js/forward-slice-export.mjs",
+          "sketches/invisible-layer/js/three.min.js",
+          "sketches/invisible-layer/pixel-recipes/README.md",
+          "sketches/invisible-layer/pixel-recipes/assembly-rules.json",
+          "sketches/invisible-layer/pixel-recipes/channel-spec.json",
+          "sketches/invisible-layer/pixel-recipes/chunk-grid-study.html",
+          "sketches/invisible-layer/pixel-recipes/landscape-travel-study.html",
+          "sketches/invisible-layer/pixel-recipes/part-ids.json",
+          "sketches/invisible-layer/pixel-recipes/pixel-recipes.md",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C6.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds6.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs6.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-14-2026",
       "dublin_core": {
         "title": "../catalog/invisible-layer/invisible-layer-july-14-2026.md",
@@ -931,50 +1262,6 @@
       "artifacts": {
         "repo_paths": [
           "catalog/invisible-layer/invisible-layer-july-8-2026.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
-      "dublin_core": {
-        "title": "invisible-layer/invisible-layer-study-webgl",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000290"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-study-webgl",
-        "type": "HumanMadeObject",
-        "_label": "invisible-layer/invisible-layer-study-webgl",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "invisible-layer/invisible-layer-study-webgl.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/invisible-layer/invisible-layer-study-webgl.html",
-          "sketches/loop-snippets/centered-924-data.js"
         ],
         "external_urls": []
       }
@@ -5324,6 +5611,230 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Technical:technical-index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical",
+          "file": "technical/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/technical/index.html",
+          "sketches/technical/technical-drawing-chronicle/assets/technical-021-teia-878978.png",
+          "sketches/technical/technical-drawing-chronicle/index.html",
+          "sketches/technical/technical-drawing-fxhash.html",
+          "sketches/technical/technical-drawing-with-elevation-record.html",
+          "sketches/technical/technical-drawing-with-elevation.html",
+          "sketches/technical/technical-drawing.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-with-elevation-record",
+      "dublin_core": {
+        "title": "technical/technical-drawing-with-elevation-record",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical:technical-technical-drawing-with-elevation-record",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000306"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical-technical-technical-drawing-with-elevation-record",
+        "type": "HumanMadeObject",
+        "_label": "technical/technical-drawing-with-elevation-record",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical",
+          "file": "technical/technical-drawing-with-elevation-record.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/technical/technical-drawing-with-elevation-record.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Technical:catalog-technical-readme",
+      "dublin_core": {
+        "title": "../catalog/technical/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical:catalog-technical-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000286"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical-catalog-technical-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/technical/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical",
+          "file": "../catalog/technical/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/technical/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-fxhash",
+      "dublin_core": {
+        "title": "technical-drawing-fxhash",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing:technical-drawing-fxhash",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000020"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing-technical-drawing-fxhash",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-fxhash",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical",
+          "file": "technical/technical-drawing-fxhash.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/technical/technical-drawing-fxhash.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-chronicle-index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical",
+          "file": "technical/technical-drawing-chronicle/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/technical/technical-drawing-chronicle/assets/technical-021-teia-878978.png",
+          "sketches/technical/technical-drawing-chronicle/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Machine DNA · Loop workspace (project: Machine Aesthetic):catalog-loop-machine-aesthetic-readme",
       "dublin_core": {
         "title": "../catalog/loop-machine-aesthetic/README.md",
@@ -8763,291 +9274,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 July 2026",
-          "file": "loop-art-critique-alumni-show-2026/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-alumni-show-2026/README.md",
-          "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
-          "sketches/loop-art-critique-alumni-show-2026/compose-offer.html",
-          "sketches/loop-art-critique-alumni-show-2026/compose-rgb-xyz.mjs",
-          "sketches/loop-art-critique-alumni-show-2026/compose.html",
-          "sketches/loop-art-critique-alumni-show-2026/index.html",
-          "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
-      "dublin_core": {
-        "title": "../catalog/loop-art-critique-alumni-show-2026/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000258"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-catalog-loop-art-critique-alumni-show",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/loop-art-critique-alumni-show-2026/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 July 2026",
-          "file": "../catalog/loop-art-critique-alumni-show-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/loop-art-critique-alumni-show-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-readme",
-      "dublin_core": {
-        "title": "loop-art-critique-2026/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000184"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
-        "type": "HumanMadeObject",
-        "_label": "loop-art-critique-2026/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 July 2026",
-          "file": "loop-art-critique-alumni-show-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-alumni-show-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-alumni-show-2026-assets-family-reunion-poster",
-      "dublin_core": {
-        "title": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:family-reunion-poster",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000236"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-family-reunion-poster",
-        "type": "HumanMadeObject",
-        "_label": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 July 2026",
-          "file": "loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-2026-loop-21-surrender-machine-index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 July 2026",
-          "file": "loop-art-critique-2026/loop-21-surrender-machine/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-2026/loop-21-surrender-machine/canvas-recorder.mjs",
-          "sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html",
-          "sketches/loop-art-critique-2026/loop-21-surrender-machine/journey.mjs",
-          "sketches/loop-art-critique-2026/loop-21-surrender-machine/void-scene.mjs",
-          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel-engine.mjs",
-          "sketches/loop-art-critique-2026/loop-21-surrender-machine/vol-travel.mjs"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-art-critique-2026-loop-21-surrender-wall",
-      "dublin_core": {
-        "title": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 July 2026:loop-21-surrender-wall",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000235"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 July 2026-loop-21-surrender-wall",
-        "type": "HumanMadeObject",
-        "_label": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 July 2026",
-          "file": "loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:ACTZ — Myths & Legends June 2026:actz-june-myths-legends-2026-gravity-sliders",
       "dublin_core": {
         "title": "actz-june-myths-legends-2026/gravity-sliders",
@@ -9689,185 +9915,6 @@
         "external_urls": [
           "https://mark-walhimer.com/sketches/light-art.html"
         ]
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Technical:catalog-technical-readme",
-      "dublin_core": {
-        "title": "../catalog/technical/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical:catalog-technical-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000286"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical-catalog-technical-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/technical/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Technical",
-          "file": "../catalog/technical/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/technical/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-fxhash",
-      "dublin_core": {
-        "title": "technical-drawing-fxhash",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing:technical-drawing-fxhash",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000020"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing-technical-drawing-fxhash",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-fxhash",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Technical",
-          "file": "technical/technical-drawing-fxhash.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/js/p5-1.9.0.min.js",
-          "sketches/technical/technical-drawing-fxhash.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-chronicle-index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Technical",
-          "file": "technical/technical-drawing-chronicle/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/technical/technical-drawing-chronicle/assets/technical-021-teia-878978.png",
-          "sketches/technical/technical-drawing-chronicle/index.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Technical:technical-index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Technical",
-          "file": "technical/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/technical/index.html",
-          "sketches/technical/technical-drawing-chronicle/assets/technical-021-teia-878978.png",
-          "sketches/technical/technical-drawing-chronicle/index.html",
-          "sketches/technical/technical-drawing-fxhash.html",
-          "sketches/technical/technical-drawing-with-elevation.html",
-          "sketches/technical/technical-drawing.html"
-        ],
-        "external_urls": []
       }
     },
     {

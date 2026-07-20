@@ -6,16 +6,22 @@ cd "$ROOT_DIR"
 
 MSG="${1:-Publish catalog updates}"
 
-echo "1/6 Layout guard..."
+echo "1/7 Layout guard..."
 python3 _scripts/check_repo_layout.py
 
-echo "2/6 Self-contained guard (all published HTML)..."
+echo "2/7 Self-contained guard (all published HTML)..."
 python3 _scripts/check_self_contained.py
 
-echo "3/6 Refresh catalog..."
+echo "3/7 Reorder series by catalog index mtime..."
+python3 _scripts/reorder_series_by_index_mtime.py
+
+echo "4/7 Refresh catalog..."
 python3 _scripts/refresh_catalog.py
 
-echo "4/6 Stage changes..."
+echo "5/7 Catalog sync guard..."
+python3 _scripts/check_catalog_sync.py
+
+echo "6/7 Stage changes..."
 git add -A
 
 if git diff --cached --quiet; then
@@ -23,10 +29,10 @@ if git diff --cached --quiet; then
   exit 0
 fi
 
-echo "5/6 Commit..."
+echo "7/7 Commit..."
 git commit -m "$MSG"
 
-echo "6/6 Push..."
+echo "Push..."
 git push origin main
 
 echo "Done."
