@@ -6,6 +6,8 @@
 <title>Technical 020 — elevation · piano · record</title>
 <!-- Salamander Grand Piano samples (CC BY 3.0, Alexander Holm / FreePats) — same as Bloom -->
 <script src="../js/p5-1.9.0.min.js"></script>
+<script src="../js/ffmpeg/ffmpeg.js"></script>
+<script src="../js/ffmpeg/util.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1020,15 +1022,68 @@ function draw() {
     else hint.textContent = "Record · R";
   }
 
+  var FFMPEG_BASE = new URL("../js/ffmpeg/", window.location.href);
+  var ffmpegLoadPromise = null;
+  var ffmpegInstance = null;
+
   function pickMime(hasAudio) {
     var list = hasAudio
-      ? ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm", "video/mp4"]
-      : ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4"];
+      ? [
+          "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+          "video/mp4;codecs=avc1,mp4a.40.2",
+          "video/mp4",
+          "video/webm;codecs=vp9,opus",
+          "video/webm;codecs=vp8,opus",
+          "video/webm"
+        ]
+      : [
+          "video/mp4;codecs=avc1.42E01E",
+          "video/mp4",
+          "video/webm;codecs=vp9",
+          "video/webm;codecs=vp8",
+          "video/webm"
+        ];
     return list.find(function (t) { return MediaRecorder.isTypeSupported(t); }) || "";
   }
 
-  function recExt(mimeType) {
-    return mimeType.indexOf("video/mp4") === 0 ? "mp4" : "webm";
+  function isMp4Mime(mimeType) {
+    return mimeType.indexOf("video/mp4") === 0;
+  }
+
+  async function loadFfmpeg() {
+    if (ffmpegInstance && ffmpegInstance.loaded) return ffmpegInstance;
+    if (!ffmpegLoadPromise) {
+      ffmpegLoadPromise = (async function () {
+        if (!self.FFmpegWASM || !self.FFmpegUtil) {
+          throw new Error("ffmpeg scripts not loaded");
+        }
+        var FFmpeg = self.FFmpegWASM.FFmpeg;
+        var toBlobURL = self.FFmpegUtil.toBlobURL;
+        var ffmpeg = new FFmpeg();
+        await ffmpeg.load({
+          coreURL: await toBlobURL(new URL("ffmpeg-core.js", FFMPEG_BASE).href, "text/javascript"),
+          wasmURL: await toBlobURL(new URL("ffmpeg-core.wasm", FFMPEG_BASE).href, "application/wasm")
+        });
+        ffmpegInstance = ffmpeg;
+        return ffmpeg;
+      })();
+    }
+    return ffmpegLoadPromise;
+  }
+
+  async function transcodeWebmToMp4(webmBlob) {
+    var fetchFile = self.FFmpegUtil.fetchFile;
+    var ffmpeg = await loadFfmpeg();
+    await ffmpeg.writeFile("input.webm", await fetchFile(webmBlob));
+    await ffmpeg.exec([
+      "-i", "input.webm",
+      "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-pix_fmt", "yuv420p",
+      "-c:a", "aac", "-b:a", "192k",
+      "-movflags", "+faststart",
+      "output.mp4"
+    ]);
+    var data = await ffmpeg.readFile("output.mp4");
+    return new Blob([data.buffer], { type: "video/mp4" });
   }
 
   function stopAudioTracks() {
@@ -1042,16 +1097,45 @@ function draw() {
     videoStream = null;
   }
 
-  function downloadBlob(blob, mimeType) {
+  function downloadMp4(blob) {
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     var ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
     a.href = url;
-    a.download = "technical-drawing-with-elevation-" + ts + "." + recExt(mimeType);
+    a.download = "technical-drawing-with-elevation-" + ts + ".mp4";
     document.body.appendChild(a);
     a.click();
     a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  async function finishRecording(mime) {
+    busy = true;
+    setRecHint("busy", "Saving…");
+    try {
+      if (!chunks.length) {
+        console.warn("Record: no captured data");
+        throw new Error("no captured data");
+      }
+      var blob = new Blob(chunks, { type: mime.split(";")[0] });
+      if (!isMp4Mime(mime)) {
+        setRecHint("busy", "MP4…");
+        blob = await transcodeWebmToMp4(blob);
+      }
+      downloadMp4(blob);
+      setRecHint("idle");
+    } catch (err) {
+      console.warn("Record save failed", err);
+      setRecHint("idle", "Record failed · R");
+    } finally {
+      stopAudioTracks();
+      cleanupVideoStream();
+      recorder = null;
+      chunks = [];
+      recording = false;
+      busy = false;
+      window.__tdRecording = false;
+    }
   }
 
   async function prepareSketchForRecord() {
@@ -1140,22 +1224,9 @@ function draw() {
         stopRecording();
       };
       recorder.onstop = function () {
-        var mime = activeMime;
-        if (chunks.length) {
-          downloadBlob(new Blob(chunks, { type: mime.split(";")[0] }), mime);
-        } else {
-          console.warn("Record: no captured data");
-          fail("Record failed · R");
-          return;
-        }
-        stopAudioTracks();
-        cleanupVideoStream();
-        recorder = null;
-        chunks = [];
-        recording = false;
-        busy = false;
-        window.__tdRecording = false;
-        setRecHint("idle");
+        finishRecording(activeMime).catch(function (err) {
+          console.warn("Record finish failed", err);
+        });
       };
 
       await waitFrames(2);

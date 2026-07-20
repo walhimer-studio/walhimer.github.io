@@ -5611,6 +5611,52 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-with-elevation-record",
+      "dublin_core": {
+        "title": "technical/technical-drawing-with-elevation-record",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical:technical-technical-drawing-with-elevation-record",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000306"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical-technical-technical-drawing-with-elevation-record",
+        "type": "HumanMadeObject",
+        "_label": "technical/technical-drawing-with-elevation-record",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Technical",
+          "file": "technical/technical-drawing-with-elevation-record.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/ffmpeg/ffmpeg.js",
+          "sketches/js/ffmpeg/util.js",
+          "sketches/js/p5-1.9.0.min.js",
+          "sketches/technical/technical-drawing-with-elevation-record.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Technical:technical-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
@@ -5655,50 +5701,6 @@
           "sketches/technical/technical-drawing-with-elevation-record.html",
           "sketches/technical/technical-drawing-with-elevation.html",
           "sketches/technical/technical-drawing.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Technical:technical-technical-drawing-with-elevation-record",
-      "dublin_core": {
-        "title": "technical/technical-drawing-with-elevation-record",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical:technical-technical-drawing-with-elevation-record",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000306"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical-technical-technical-drawing-with-elevation-record",
-        "type": "HumanMadeObject",
-        "_label": "technical/technical-drawing-with-elevation-record",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Technical",
-          "file": "technical/technical-drawing-with-elevation-record.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/js/p5-1.9.0.min.js",
-          "sketches/technical/technical-drawing-with-elevation-record.html"
         ],
         "external_urls": []
       }
