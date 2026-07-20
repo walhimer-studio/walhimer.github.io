@@ -79,18 +79,29 @@
     top: 12px;
     left: 12px;
     z-index: 20;
+    font: inherit;
     font-size: 10px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgba(255,255,255,0.38);
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
     padding: 6px 8px;
     border-radius: 4px;
     border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.35);
+  }
+  #record-hint:hover {
+    color: rgba(255,255,255,0.72);
+    border-color: rgba(255,255,255,0.18);
   }
   #record-hint[data-rec="1"] {
     color: rgba(255,120,120,0.92);
     border-color: rgba(255,120,120,0.35);
+  }
+  #record-hint[data-busy="1"] {
+    color: rgba(255,255,255,0.55);
+    cursor: wait;
   }
   #record-hint[data-rec="1"]::after {
     content: ' · REC';
@@ -99,7 +110,7 @@
 </head>
 <body>
 
-<div id="record-hint">R · record</div>
+<div id="record-hint" type="button">Record · R</div>
 <div id="piano-hint">Click · piano loads</div>
 <div id="piano-progress-wrap"><div id="progress-bar"></div></div>
 <div id="emergent-dna-wrap" aria-label="Note sequence">
@@ -327,7 +338,7 @@ const techWords = [
 ];
 
 function setup() {
-  let canvas = createCanvas(windowWidth, windowHeight);
+  canvas = createCanvas(windowWidth, windowHeight);
   canvas.parent('canvas-container');
   pixelDensity(2);
   textFont('Courier New, Courier, monospace');
@@ -966,7 +977,7 @@ function draw() {
       lifePhase = 'dead';
       renderDrawingSteps(0);
       drawHud();
-      noLoop();
+      if (!window.__tdRecording) noLoop();
     }
     return;
   }
@@ -975,173 +986,195 @@ function draw() {
 
 <script>
 (function () {
+  window.__tdRecording = false;
   var recorder = null;
   var chunks = [];
   var recording = false;
-  var captureStream = null;
+  var busy = false;
+  var activeMime = "";
+  var videoStream = null;
+  var audioStream = null;
 
   function getRecordCanvas() {
     if (typeof canvas !== "undefined" && canvas && canvas.elt) return canvas.elt;
     return document.querySelector("#canvas-container canvas");
   }
 
-  function ensureSketchRunning() {
-    if (typeof lifePhase !== "undefined" && (lifePhase === "dead" || !drawQueue.length)) {
-      if (typeof generateNew === "function") generateNew();
-    } else if (typeof loop === "function") {
-      loop();
-    }
+  function waitFrames(n) {
+    return new Promise(function (resolve) {
+      function step() {
+        if (--n <= 0) resolve();
+        else requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
   }
 
-  function mimeCandidates(hasAudio) {
-    if (hasAudio) {
-      return [
-        "video/webm;codecs=vp9,opus",
-        "video/webm;codecs=vp8,opus",
-        "video/webm",
-        "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
-        "video/mp4;codecs=avc1,mp4a.40.2",
-        "video/mp4"
-      ];
-    }
-    return [
-      "video/webm;codecs=vp9",
-      "video/webm;codecs=vp8",
-      "video/webm",
-      "video/mp4;codecs=avc1.42E01E",
-      "video/mp4"
-    ];
+  function setRecHint(state, msg) {
+    var hint = document.getElementById("record-hint");
+    if (!hint) return;
+    hint.dataset.rec = state === "rec" ? "1" : "";
+    hint.dataset.busy = state === "busy" ? "1" : "";
+    if (msg) hint.textContent = msg;
+    else if (state === "rec") hint.textContent = "Stop · R";
+    else hint.textContent = "Record · R";
   }
 
   function pickMime(hasAudio) {
-    return mimeCandidates(hasAudio).find(function (t) {
-      return MediaRecorder.isTypeSupported(t);
-    }) || "";
+    var list = hasAudio
+      ? ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm", "video/mp4"]
+      : ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4"];
+    return list.find(function (t) { return MediaRecorder.isTypeSupported(t); }) || "";
   }
 
   function recExt(mimeType) {
     return mimeType.indexOf("video/mp4") === 0 ? "mp4" : "webm";
   }
 
-  function setRecHint(on) {
-    var hint = document.getElementById("record-hint");
-    if (hint) hint.dataset.rec = on ? "1" : "";
-  }
-
-  function releaseCaptureStream() {
-    if (captureStream) {
-      captureStream.getTracks().forEach(function (t) { t.stop(); });
-      captureStream = null;
+  function stopAudioTracks() {
+    if (audioStream) {
+      audioStream.getAudioTracks().forEach(function (t) { t.stop(); });
+      audioStream = null;
     }
   }
 
-  function buildRecorder(stream, mimeType) {
-    return new MediaRecorder(stream, {
-      mimeType: mimeType,
-      videoBitsPerSecond: 16000000
-    });
+  function cleanupVideoStream() {
+    videoStream = null;
+  }
+
+  function downloadBlob(blob, mimeType) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    a.href = url;
+    a.download = "technical-drawing-with-elevation-" + ts + "." + recExt(mimeType);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  async function prepareSketchForRecord() {
+    if (typeof loadAudio === "function") await loadAudio();
+    if (typeof actx !== "undefined" && actx && actx.state === "suspended") await actx.resume();
+    if (typeof generateNew === "function") generateNew();
+    if (typeof loop === "function") loop();
+    await waitFrames(3);
   }
 
   async function startRecording() {
-    if (recording) return false;
-
-    ensureSketchRunning();
-
-    var canvasEl = getRecordCanvas();
-    if (!canvasEl || !canvasEl.captureStream) {
-      console.warn("Record: canvas captureStream unavailable");
+    if (recording || busy) return false;
+    if (typeof MediaRecorder === "undefined") {
+      setRecHint("idle", "Record unsupported");
       return false;
     }
 
-    try {
-      if (typeof loadAudio === "function") {
-        await loadAudio();
-      }
-    } catch (err) {
-      console.warn("Record: piano load failed", err);
-    }
-    if (typeof actx !== "undefined" && actx && actx.state === "suspended") {
-      await actx.resume();
-    }
+    busy = true;
+    window.__tdRecording = true;
+    setRecHint("busy", "Preparing…");
 
-    var videoStream = canvasEl.captureStream(60);
-    var audioStream = null;
-    try {
-      if (typeof getAudioStream === "function") {
-        audioStream = await getAudioStream();
-      }
-    } catch (err) {
-      console.warn("Record: audio stream failed", err);
-    }
-
-    var hasAudio = !!(audioStream && audioStream.getAudioTracks().length);
-    var mimeType = pickMime(hasAudio);
-    if (!mimeType) {
-      console.warn("MediaRecorder: no supported mime type");
-      releaseCaptureStream();
-      videoStream.getTracks().forEach(function (t) { t.stop(); });
-      return false;
-    }
-
-    var tracks = videoStream.getVideoTracks().slice();
-    if (hasAudio) tracks = tracks.concat(audioStream.getAudioTracks());
-    captureStream = new MediaStream(tracks);
-
-    chunks = [];
-    try {
-      recorder = buildRecorder(captureStream, mimeType);
-    } catch (err) {
-      mimeType = pickMime(false);
-      if (!mimeType) {
-        console.warn("MediaRecorder init failed", err);
-        releaseCaptureStream();
-        return false;
-      }
-      captureStream = new MediaStream(videoStream.getVideoTracks());
-      try {
-        recorder = buildRecorder(captureStream, mimeType);
-      } catch (err2) {
-        console.warn("MediaRecorder init failed", err2);
-        releaseCaptureStream();
-        return false;
-      }
-    }
-
-    recorder.ondataavailable = function (e) {
-      if (e.data && e.data.size) chunks.push(e.data);
-    };
-    recorder.onerror = function (e) {
-      console.warn("MediaRecorder error", e);
-      stopRecording();
-    };
-    recorder.onstop = function () {
-      if (chunks.length) {
-        var blob = new Blob(chunks, { type: mimeType.split(";")[0] });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        var ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-        a.href = url;
-        a.download = "technical-drawing-with-elevation-" + ts + "." + recExt(mimeType);
-        a.click();
-        URL.revokeObjectURL(url);
-      } else {
-        console.warn("Record: no captured data");
-      }
-      releaseCaptureStream();
-      recording = false;
-      setRecHint(false);
+    function fail(msg) {
+      stopAudioTracks();
+      cleanupVideoStream();
       recorder = null;
-      chunks = [];
-    };
+      recording = false;
+      busy = false;
+      window.__tdRecording = false;
+      setRecHint("idle", msg || "Record · R");
+      return false;
+    }
 
-    recorder.start(1000);
-    recording = true;
-    setRecHint(true);
-    return true;
+    try {
+      await prepareSketchForRecord();
+
+      var canvasEl = getRecordCanvas();
+      if (!canvasEl || !canvasEl.captureStream) {
+        console.warn("Record: canvas captureStream unavailable");
+        return fail("Record · R");
+      }
+
+      cleanupVideoStream();
+      videoStream = canvasEl.captureStream(30);
+
+      audioStream = null;
+      try {
+        if (typeof getAudioStream === "function") audioStream = await getAudioStream();
+      } catch (err) {
+        console.warn("Record: audio stream failed", err);
+      }
+
+      var hasAudio = !!(audioStream && audioStream.getAudioTracks().length);
+      activeMime = pickMime(hasAudio);
+      if (!activeMime && hasAudio) activeMime = pickMime(false);
+      if (!activeMime) {
+        console.warn("MediaRecorder: no supported mime type");
+        return fail("Record · R");
+      }
+
+      var tracks = videoStream.getVideoTracks().slice();
+      if (hasAudio && audioStream) tracks = tracks.concat(audioStream.getAudioTracks());
+
+      chunks = [];
+      try {
+        recorder = new MediaRecorder(new MediaStream(tracks), {
+          mimeType: activeMime,
+          videoBitsPerSecond: 12000000
+        });
+      } catch (err) {
+        if (hasAudio) {
+          activeMime = pickMime(false);
+          recorder = new MediaRecorder(new MediaStream(videoStream.getVideoTracks()), {
+            mimeType: activeMime,
+            videoBitsPerSecond: 12000000
+          });
+        } else {
+          throw err;
+        }
+      }
+
+      recorder.ondataavailable = function (e) {
+        if (e.data && e.data.size) chunks.push(e.data);
+      };
+      recorder.onerror = function (e) {
+        console.warn("MediaRecorder error", e);
+        stopRecording();
+      };
+      recorder.onstop = function () {
+        var mime = activeMime;
+        if (chunks.length) {
+          downloadBlob(new Blob(chunks, { type: mime.split(";")[0] }), mime);
+        } else {
+          console.warn("Record: no captured data");
+          fail("Record failed · R");
+          return;
+        }
+        stopAudioTracks();
+        cleanupVideoStream();
+        recorder = null;
+        chunks = [];
+        recording = false;
+        busy = false;
+        window.__tdRecording = false;
+        setRecHint("idle");
+      };
+
+      await waitFrames(2);
+      recorder.start(250);
+      recording = true;
+      busy = false;
+      setRecHint("rec");
+      return true;
+    } catch (err) {
+      console.warn("Record start failed", err);
+      return fail("Record · R");
+    }
   }
 
   function stopRecording() {
-    if (!recording || !recorder) return;
+    if (!recorder || !recording) return;
+    try {
+      if (recorder.state === "recording" && recorder.requestData) recorder.requestData();
+    } catch (err) {}
     if (recorder.state !== "inactive") recorder.stop();
   }
 
@@ -1153,14 +1186,19 @@ function draw() {
     return startRecording();
   }
 
+  var hint = document.getElementById("record-hint");
+  if (hint) {
+    hint.addEventListener("click", function () {
+      toggleRecording().catch(function (err) { console.warn("Record toggle failed", err); });
+    });
+  }
+
   document.addEventListener("keydown", function (e) {
     if (e.repeat) return;
     if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
     if (e.key === "r" || e.key === "R") {
       e.preventDefault();
-      toggleRecording().catch(function (err) {
-        console.warn("Record toggle failed", err);
-      });
+      toggleRecording().catch(function (err) { console.warn("Record toggle failed", err); });
     }
   });
 })();
