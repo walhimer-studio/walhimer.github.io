@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-20",
+  "updated": "2026-07-21",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -2012,6 +2012,63 @@
           "sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/samples/salamander/pentatonic/wav-v8/C6v8.wav"
         ],
         "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):machine-aesthetic-machine-dna",
+      "dublin_core": {
+        "title": "../machine aesthetic/machine-dna",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):machine-aesthetic-machine-dna",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000308"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submis",
+        "type": "HumanMadeObject",
+        "_label": "../machine aesthetic/machine-dna",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)",
+          "file": "../machine aesthetic/machine-dna.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "machine aesthetic/machine-dna.html"
+        ],
+        "external_urls": [
+          "https://cwandt.com",
+          "https://entangled.tools",
+          "https://ertdfgcvb.xyz",
+          "https://fictiv.com",
+          "https://fonts.googleapis.com",
+          "https://mark-walhimer.com",
+          "https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html",
+          "https://patricktresset.com",
+          "https://sendcutsend.com",
+          "https://sougwen.com",
+          "https://spogel.xyz",
+          "https://wennew-atelier.xyz",
+          "https://zimoun.net"
+        ]
       }
     },
     {
