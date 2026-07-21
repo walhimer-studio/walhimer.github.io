@@ -10395,6 +10395,50 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
+      "dublin_core": {
+        "title": "loop-snippets/surrender-machines-record",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000307"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-surrender-machines-record",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/surrender-machines-record",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/surrender-machines-record.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/js/p5-1.11.2.min.js",
+          "sketches/loop-snippets/surrender-machines-record.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-three",
       "dublin_core": {
         "title": "loop-snippets/surrender-machines-three",
