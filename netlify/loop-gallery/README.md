@@ -14,6 +14,12 @@ npx netlify dev
 
 Open `http://localhost:8888/?room=test`
 
+**GitHub Pages (no Netlify functions — local mode only):**
+
+`https://mark-walhimer.com/netlify/loop-gallery/public/?room=test`
+
+Shorter redirect: `https://mark-walhimer.com/netlify/loop-gallery/?room=test`
+
 ## JPEG rules
 
 | Rule | Value |
