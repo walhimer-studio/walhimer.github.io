@@ -51,6 +51,8 @@ Invite link: `https://YOUR-SITE.netlify.app/?room=alumni-2026`
 | Drag | Look |
 | Scroll | Forward/back |
 | W | Toggle auto-walk |
+| R | Record hallway to MP4 (or WebM fallback) · motion soundscape audio |
+| M | Toggle motion soundscape mute |
 | Choose JPEG + Hang left/right | Place in nearest empty slot |
 
 ## Firebase (optional, multi-user sync)

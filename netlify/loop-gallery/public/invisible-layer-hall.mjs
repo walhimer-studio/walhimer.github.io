@@ -545,7 +545,7 @@ const MotionSoundscape = () => {
   return { resume, ensureOn, toggle, update, getAudioStream, setMasterGain, isOn: () => on };
 };
 
-const CanvasRecorder = (getCanvas, getAudioStream) => {
+const CanvasRecorder = (getCanvas, getAudioStream, filePrefix = 'loop-gallery') => {
   let recorder = null;
   let chunks = [];
   let active = false;
@@ -601,7 +601,7 @@ const CanvasRecorder = (getCanvas, getAudioStream) => {
       const a = document.createElement('a');
       const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       a.href = url;
-      a.download = `loop-alumni-show-invisible-layer-poc-${ts}.${recExt(mimeType)}`;
+      a.download = `${filePrefix}-${ts}.${recExt(mimeType)}`;
       a.click();
       URL.revokeObjectURL(url);
       stream.getTracks().forEach((t) => t.stop());
@@ -1358,7 +1358,10 @@ const VolLandscapePOC = () => {
 
   const c2d = Canvas2d();
   const gpu = VolLandscapePOC();
+  const snd = MotionSoundscape();
   const viewState = { dragging: false };
+  const recPrefix = options.recordingPrefix || 'loop-gallery';
+  let rec = null;
 
   const applySeed = (seed) => {
     const prof = buildSeedProfile(seed >>> 0);
@@ -1380,6 +1383,7 @@ const VolLandscapePOC = () => {
   applySeed(options.seed ?? DEFAULT_SEED);
 
   const canvas = gpu.getCanvas();
+  rec = CanvasRecorder(() => gpu.getCanvas(), () => snd.getAudioStream(), recPrefix);
   if (canvas?.parentNode) canvas.parentNode.removeChild(canvas);
   if (mountBefore?.parentNode) mountBefore.parentNode.insertBefore(canvas, mountBefore);
   else if (!canvas.parentNode) document.body.appendChild(canvas);
@@ -1395,6 +1399,7 @@ const VolLandscapePOC = () => {
     if (!running) return;
     const pixels = c2d.draw(t, motionOpts);
     gpu.render(t, pixels, viewState.dragging);
+    snd.update(pixels, t);
     options.onFrame?.(t);
     requestAnimationFrame(frame);
   };
@@ -1407,6 +1412,12 @@ const VolLandscapePOC = () => {
     setMoveKey: (n, d) => gpu.setMoveKey(n, d),
     toggleWalk: () => gpu.toggleWalk(),
     nudgeAlongView: (d) => gpu.nudgeAlongView(d),
+    toggleRecord: async () => {
+      await snd.ensureOn();
+      return rec.toggle();
+    },
+    toggleMute: () => snd.toggle(),
+    isRecording: () => rec.isActive(),
     stop: () => { running = false; window.removeEventListener('resize', onResize); },
     gpu,
     c2d,

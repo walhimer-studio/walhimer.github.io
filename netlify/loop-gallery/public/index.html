@@ -13,6 +13,10 @@
       color: rgba(90, 120, 140, 0.55);
       pointer-events: none; max-width: 440px;
     }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
     #panel {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
       padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
@@ -43,7 +47,7 @@
 <body>
   <div id="hint">
     Loop gallery · invisible layer hallway · code walls · hung JPEG slots<br>
-    ↑↓ travel · ←→ strafe · drag look · scroll · W walk<br>
+    ↑↓ travel · ←→ strafe · drag look · scroll · W walk · R record MP4 · M mute<br>
     JPEG 500 KB–2 MB · max width 1/100 wall · min height ⅓ wall · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
   </div>
@@ -405,6 +409,10 @@ document.addEventListener('keydown', (e) => {
   if (k === 'arrowleft') { hall.setMoveKey('left', true); e.preventDefault(); }
   if (k === 'arrowright') { hall.setMoveKey('right', true); e.preventDefault(); }
   if (k === 'w') hall.toggleWalk();
+  if (k === 'm') hall.toggleMute();
+  if (k === 'r') {
+    hall.toggleRecord().then((on) => setStatus(on ? 'Recording MP4… (R to stop)' : 'Recording saved'));
+  }
   if (k === 'backspace' && isModerator) deleteNearestSlot();
 });
 document.addEventListener('keyup', (e) => {
@@ -422,6 +430,7 @@ async function boot() {
   hall = await createInvisibleLayerHall({
     insertBefore: panel,
     seed: 77823,
+    recordingPrefix: `loop-gallery-${ROOM_ID}`,
     onFrame: () => updateFrameVisibility(),
   });
   hall.getScene().add(frameGroup);
