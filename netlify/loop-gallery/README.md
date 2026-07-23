@@ -1,0 +1,129 @@
+# Loop Gallery (Netlify)
+
+Participatory **looping gallery hallway**: visitors walk a white corridor and **hang JPEGs on wall slots**. One artwork per slot (no overlap). Max **5 uploads per device** (local) and per **IP** when Firebase + service account are configured.
+
+Based on the scale and walk model of [Loop Alumni Show — Invisible Layer POC](https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html). This deploy is a **gallery layer** — not a copy of the full invisible-layer shader hallway.
+
+## Local dev
+
+```bash
+cd netlify/loop-gallery
+npm install --prefix netlify/functions
+npx netlify dev
+```
+
+Open `http://localhost:8888/?room=test`
+
+## JPEG rules
+
+| Rule | Value |
+|------|--------|
+| File size | **500 KB – 2 MB** (original upload) |
+| Max on wall | 100% wall height (`96` units), **1/100 wall length** width (`3.8` units max) |
+| Min on wall | ⅓ wall height (`32` units) |
+| Aspect | Must fit inside max box while meeting minimums |
+
+Exports are re-encoded to stay under 2 MB when possible.
+
+## Moderation
+
+Set Netlify env **`GALLERY_MOD_TOKEN`** (secret string).
+
+Moderator URL: `https://YOUR-SITE.netlify.app/?room=alumni-2026&mod=YOUR_SECRET`
+
+- **Remove nearest** button (or **Backspace**) deletes the closest hung slot
+- Firebase mode: `/.netlify/functions/gallery-delete` removes Firestore doc + Storage object
+- Requires `FIREBASE_SERVICE_ACCOUNT_JSON` for server delete
+
+## Deploy
+
+1. Netlify site → **Base directory**: `netlify/loop-gallery`
+2. Build command / publish dir from `netlify.toml`
+3. Set environment variables (see below)
+
+Invite link: `https://YOUR-SITE.netlify.app/?room=alumni-2026`
+
+## Controls
+
+| Input | Action |
+|-------|--------|
+| ↑↓ ←→ | Move |
+| Drag | Look |
+| Scroll | Forward/back |
+| W | Toggle auto-walk |
+| Choose JPEG + Hang left/right | Place in nearest empty slot |
+
+## Firebase (optional, multi-user sync)
+
+### Netlify env (client config)
+
+- `FIREBASE_API_KEY`
+- `FIREBASE_AUTH_DOMAIN`
+- `FIREBASE_DATABASE_URL`
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_STORAGE_BUCKET`
+- `FIREBASE_MESSAGING_SENDER_ID`
+- `FIREBASE_APP_ID`
+- `FIREBASE_GALLERY_ROOT` (optional, default `loopGallery`)
+- `GALLERY_MOD_TOKEN` — secret for `?mod=` moderation URLs
+
+### Server IP limit (5 uploads)
+
+- `FIREBASE_SERVICE_ACCOUNT_JSON` — full service account JSON string
+
+Function: `/.netlify/functions/gallery-limit`
+
+### Firestore layout
+
+```
+loopGallery/rooms/{roomId}/slots/{slotId}  → side, worldZ, aspect, url
+loopGalleryRooms/{roomId}/limits/{ipHash}    → count
+```
+
+### Storage layout
+
+```
+loopGallery/rooms/{roomId}/images/{slotId}.jpg
+```
+
+Without Firebase, the gallery runs in **local mode** (localStorage + object URLs).
+
+## Rules
+
+- **Slot grid** every 18 units along Z — left (`L`) and right (`R`)
+- **One JPEG per slot** — cannot cover another work
+- **Max 5 uploads** per browser (localStorage) and per IP (when server limit is wired)
+
+### Example Firestore / Storage rules (adjust project id)
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /loopGallery/rooms/{roomId}/slots/{slotId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasAll(['side','worldZ','aspect','url'])
+        && request.resource.data.url is string
+        && request.resource.data.side in ['L','R'];
+      allow delete: if false;
+    }
+    match /loopGalleryRooms/{roomId}/limits/{ipHash} {
+      allow read, write: if false;
+    }
+  }
+}
+```
+
+Storage: allow public read on `loopGallery/rooms/{roomId}/images/{file}`; writes only via authenticated admin (Netlify function uses service account).
+
+## Files
+
+| Path | Purpose |
+|------|---------|
+| `public/index.html` | Invisible layer hallway + hung frames + upload UI |
+| `public/invisible-layer-hall.mjs` | Full invisible layer shader engine (from Alumni POC) |
+| `public/gallery-sync.mjs` | Optional Firebase sync + moderation helpers |
+| `netlify/functions/firebase-config.mjs` | Client Firebase config |
+| `netlify/functions/gallery-limit.mjs` | IP upload counter |
+| `netlify/functions/gallery-mod-check.mjs` | Validates moderation token |
+| `netlify/functions/gallery-delete.mjs` | Moderator slot delete (Firestore + Storage) |

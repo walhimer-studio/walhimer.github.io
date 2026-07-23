@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Loop Gallery — invisible layer hallway</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 3;
+      font: 11px/1.45 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.55);
+      pointer-events: none; max-width: 440px;
+    }
+    #panel {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+      padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+      background: rgba(255, 255, 255, 0.94);
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      font: 12px/1.4 system-ui, sans-serif;
+      display: grid; gap: 8px;
+    }
+    #panel .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    #panel button, #panel label.btn {
+      appearance: none; border: 1px solid rgba(0,0,0,0.15);
+      background: #fff; border-radius: 999px; padding: 8px 14px;
+      font: inherit; cursor: pointer;
+    }
+    #panel button.primary { background: #111; color: #fff; border-color: #111; }
+    #panel button.danger { background: #8b1a1a; color: #fff; border-color: #8b1a1a; }
+    #panel button:disabled { opacity: 0.45; cursor: not-allowed; }
+    #status { color: rgba(0,0,0,0.55); flex: 1; min-width: 160px; }
+    #preview { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; display: none; border: 1px solid rgba(0,0,0,0.1); }
+    #fileInput { display: none; }
+    #modBadge {
+      display: none; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: #8b1a1a; border: 1px solid rgba(139,26,26,0.35); border-radius: 999px; padding: 4px 10px;
+    }
+    #modBadge.on { display: inline-block; }
+  </style>
+</head>
+<body>
+  <div id="hint">
+    Loop gallery · invisible layer hallway · code walls · hung JPEG slots<br>
+    ↑↓ travel · ←→ strafe · drag look · scroll · W walk<br>
+    JPEG 500 KB–2 MB · max width 1/100 wall · min height ⅓ wall · max 5 uploads<br>
+    Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
+  </div>
+  <div id="panel">
+    <div class="row">
+      <label class="btn" for="fileInput">Choose JPEG</label>
+      <input id="fileInput" type="file" accept="image/jpeg,image/jpg" />
+      <img id="preview" alt="" />
+      <button type="button" id="hangLeft" disabled>Hang left wall</button>
+      <button type="button" id="hangRight" class="primary" disabled>Hang right wall</button>
+      <button type="button" id="deleteNearest" class="danger" hidden>Remove nearest</button>
+      <span id="modBadge">Moderator</span>
+      <span id="status">Loading…</span>
+    </div>
+  </div>
+  <script src="js/three.min.js"></script>
+  <script type="module">
+import { createInvisibleLayerHall } from './invisible-layer-hall.mjs';
+import {
+  initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
+} from './gallery-sync.mjs';
+
+const THREE = window.THREE;
+const params = new URLSearchParams(location.search);
+const ROOM_ID = (params.get('room') || 'default').replace(/[^\w-]/g, '') || 'default';
+const MOD_TOKEN = params.get('mod') || '';
+const MAX_UPLOADS = 5;
+const MIN_BYTES = 500 * 1024;
+const MAX_BYTES = 2 * 1024 * 1024;
+const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
+const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
+
+// July-14 hallway scale (Invisible Layer POC)
+const WALL_LEN = 380;
+const LANE_HALF = 28;
+const WALL_H = 96;
+const FRAME_MAX_H = WALL_H;
+const FRAME_MAX_W = WALL_LEN / 100;
+const FRAME_MIN_H = WALL_H / 3;
+const FRAME_Y = WALL_H * 0.48;
+const SLOT_SPACING = 18;
+const WALL_INSET = 0.35;
+const VIEW_AHEAD = 420;
+
+const statusEl = document.getElementById('status');
+const fileInput = document.getElementById('fileInput');
+const previewEl = document.getElementById('preview');
+const hangLeft = document.getElementById('hangLeft');
+const hangRight = document.getElementById('hangRight');
+const deleteNearest = document.getElementById('deleteNearest');
+const modBadge = document.getElementById('modBadge');
+
+let uploadCount = 0;
+let pendingFile = null;
+let pendingMeta = null;
+let firebaseSync = null;
+let hall = null;
+let isModerator = false;
+
+const slots = new Map();
+const frameGroup = new THREE.Group();
+const textureLoader = new THREE.TextureLoader();
+
+function setStatus(msg) { statusEl.textContent = msg; }
+
+function formatKb(n) {
+  return `${(n / 1024).toFixed(n >= 10240 ? 0 : 1)} KB`;
+}
+
+function computeFrameSize(aspect) {
+  if (!aspect || !Number.isFinite(aspect)) return null;
+  let h = FRAME_MAX_H;
+  let w = h * aspect;
+  if (w > FRAME_MAX_W) {
+    w = FRAME_MAX_W;
+    h = w / aspect;
+  }
+  if (h < FRAME_MIN_H || w > FRAME_MAX_W + 0.001) return null;
+  return { frameW: w, frameH: h, aspect };
+}
+
+function loadLocalCount() {
+  try { uploadCount = parseInt(localStorage.getItem(LOCAL_KEY) || '0', 10) || 0; } catch (_) { uploadCount = 0; }
+}
+
+function saveLocalCount() {
+  try { localStorage.setItem(LOCAL_KEY, String(uploadCount)); } catch (_) {}
+}
+
+function loadLocalSlots() {
+  try {
+    const raw = localStorage.getItem(SLOTS_KEY);
+    if (!raw) return;
+    JSON.parse(raw).forEach((s) => addFrame(s, false));
+  } catch (_) {}
+}
+
+function saveLocalSlots() {
+  try {
+    const arr = [...slots.values()].map(({ slotId, side, worldZ, url, aspect, frameW, frameH }) =>
+      ({ slotId, side, worldZ, url, aspect, frameW, frameH }));
+    localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
+  } catch (_) {}
+}
+
+function snapSlotZ(z) {
+  return Math.round(z / SLOT_SPACING) * SLOT_SPACING;
+}
+
+function slotId(side, worldZ) {
+  return `${side}-${worldZ}`;
+}
+
+function camZ() {
+  return hall?.getCamPos()?.z ?? 0;
+}
+
+function findNearestEmpty(side, refZ) {
+  const base = snapSlotZ(refZ);
+  for (let d = 0; d <= 40; d++) {
+    for (const dz of (d === 0 ? [0] : [d, -d])) {
+      const z = base + dz * SLOT_SPACING;
+      const id = slotId(side, z);
+      if (!slots.has(id)) return { slotId: id, side, worldZ: z };
+    }
+  }
+  return null;
+}
+
+function findNearestSlot(refZ) {
+  let best = null;
+  let bestD = Infinity;
+  for (const s of slots.values()) {
+    const d = Math.abs(s.worldZ - refZ);
+    if (d < bestD) { bestD = d; best = s; }
+  }
+  return best;
+}
+
+function makeFrameMesh(side, worldZ, frameW, frameH, texture) {
+  const holder = new THREE.Group();
+  holder.userData.slotId = null;
+
+  const x = side * (LANE_HALF - WALL_INSET);
+  const rotY = side > 0 ? -Math.PI / 2 : Math.PI / 2;
+
+  const backing = new THREE.Mesh(
+    new THREE.PlaneGeometry(frameW + 0.28, frameH + 0.28),
+    new THREE.MeshBasicMaterial({ color: 0xffffff })
+  );
+  backing.position.set(x + side * -0.02, FRAME_Y, worldZ);
+  backing.rotation.y = rotY;
+  holder.add(backing);
+
+  const mat = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false, side: THREE.DoubleSide });
+  if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
+  else if (THREE.sRGBEncoding) texture.encoding = THREE.sRGBEncoding;
+  const art = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), mat);
+  art.position.set(x, FRAME_Y, worldZ);
+  art.rotation.y = rotY;
+  holder.add(art);
+
+  const border = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.PlaneGeometry(frameW + 0.18, frameH + 0.18)),
+    new THREE.LineBasicMaterial({ color: 0x222222 })
+  );
+  border.position.copy(art.position);
+  border.rotation.copy(art.rotation);
+  holder.add(border);
+
+  return { group: holder, art, texture, frameW, frameH };
+}
+
+function addFrame(data, persist = true) {
+  if (slots.has(data.slotId)) return false;
+  const side = data.side === 'L' ? -1 : 1;
+  const frameW = data.frameW ?? FRAME_MAX_W * 0.12;
+  const frameH = data.frameH ?? frameW / (data.aspect || 1);
+  const tex = textureLoader.load(data.url, () => {
+    if ('colorSpace' in tex && THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+    else if (THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+  });
+  const built = makeFrameMesh(side, data.worldZ, frameW, frameH, tex);
+  built.group.userData.slotId = data.slotId;
+  frameGroup.add(built.group);
+  slots.set(data.slotId, { ...data, side: data.side, ...built });
+  if (persist) saveLocalSlots();
+  return true;
+}
+
+function removeFrame(slotId) {
+  const s = slots.get(slotId);
+  if (!s) return;
+  frameGroup.remove(s.group);
+  s.texture?.dispose();
+  if (s.url?.startsWith('blob:')) URL.revokeObjectURL(s.url);
+  slots.delete(slotId);
+  saveLocalSlots();
+}
+
+function updateFrameVisibility() {
+  const cz = camZ();
+  frameGroup.children.forEach((g) => {
+    const s = slots.get(g.userData.slotId);
+    if (!s) return;
+    g.visible = Math.abs(s.worldZ - cz) < VIEW_AHEAD;
+  });
+}
+
+async function prepareJPEG(file) {
+  if (!/^image\/jpe?g$/i.test(file.type)) {
+    throw new Error('JPEG only');
+  }
+  if (file.size < MIN_BYTES) {
+    throw new Error(`Too small — minimum ${formatKb(MIN_BYTES)} (got ${formatKb(file.size)})`);
+  }
+  if (file.size > MAX_BYTES) {
+    throw new Error(`Too large — maximum ${formatKb(MAX_BYTES)} (got ${formatKb(file.size)})`);
+  }
+
+  const bmp = await createImageBitmap(file);
+  const aspect = bmp.width / bmp.height;
+  const frame = computeFrameSize(aspect);
+  if (!frame) {
+    bmp.close();
+    throw new Error(
+      `Aspect does not fit wall slot (max width ${FRAME_MAX_W.toFixed(1)}u = 1/100 wall, min height ${FRAME_MIN_H.toFixed(0)}u = ⅓ wall)`
+    );
+  }
+
+  const pxPerUnit = 2.4;
+  let tw = Math.min(2048, Math.round(frame.frameW * pxPerUnit));
+  let th = Math.min(2048, Math.round(frame.frameH * pxPerUnit));
+  const scale = Math.min(1, tw / bmp.width, th / bmp.height);
+  tw = Math.max(1, Math.round(bmp.width * scale));
+  th = Math.max(1, Math.round(bmp.height * scale));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = tw;
+  canvas.height = th;
+  canvas.getContext('2d').drawImage(bmp, 0, 0, tw, th);
+  bmp.close();
+
+  let quality = 0.9;
+  let blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', quality));
+  while (blob && blob.size > MAX_BYTES && quality > 0.45) {
+    quality -= 0.06;
+    blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', quality));
+  }
+  if (!blob) throw new Error('Could not encode JPEG');
+  if (blob.size > MAX_BYTES) {
+    throw new Error(`Export still over ${formatKb(MAX_BYTES)} after compression`);
+  }
+
+  const previewUrl = canvas.toDataURL('image/jpeg', Math.min(0.82, quality));
+  const outFile = new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
+  return { file: outFile, previewUrl, ...frame, bytes: blob.size };
+}
+
+function updateUploadUI() {
+  const remaining = Math.max(0, MAX_UPLOADS - uploadCount);
+  const canHang = pendingFile && pendingMeta && remaining > 0;
+  hangLeft.disabled = !canHang;
+  hangRight.disabled = !canHang;
+  deleteNearest.hidden = !isModerator;
+  modBadge.classList.toggle('on', isModerator);
+  const sync = firebaseSync?.mode === 'firebase' ? ' · synced' : ' · local';
+  const mod = isModerator ? ' · mod' : '';
+  setStatus(`${remaining} of ${MAX_UPLOADS} uploads left · room ${ROOM_ID}${sync}${mod}`);
+}
+
+fileInput.addEventListener('change', async () => {
+  const file = fileInput.files?.[0];
+  if (!file) return;
+  pendingFile = null;
+  pendingMeta = null;
+  previewEl.style.display = 'none';
+  try {
+    const prep = await prepareJPEG(file);
+    pendingFile = prep.file;
+    pendingMeta = prep;
+    previewEl.src = prep.previewUrl;
+    previewEl.style.display = 'block';
+    setStatus(`Ready · ${formatKb(prep.bytes)} · frame ${prep.frameW.toFixed(1)}×${prep.frameH.toFixed(1)} wall units`);
+  } catch (err) {
+    setStatus(err.message || 'Invalid JPEG');
+    fileInput.value = '';
+  }
+  updateUploadUI();
+});
+
+async function hang(sideLabel) {
+  if (!pendingFile || !pendingMeta || uploadCount >= MAX_UPLOADS) return;
+  const slot = findNearestEmpty(sideLabel, camZ());
+  if (!slot) {
+    setStatus('No empty frame nearby — keep walking');
+    return;
+  }
+
+  let url;
+  if (firebaseSync?.mode === 'firebase') {
+    const lim = await commitUploadLimit(ROOM_ID);
+    if (!lim.allowed) {
+      setStatus(lim.error || 'Upload limit reached on this network');
+      return;
+    }
+    url = await firebaseSync.uploadJPEG(pendingFile, slot.slotId, slot.side, slot.worldZ, pendingMeta);
+  } else {
+    url = URL.createObjectURL(pendingFile);
+  }
+
+  addFrame({
+    slotId: slot.slotId,
+    side: slot.side,
+    worldZ: slot.worldZ,
+    url,
+    aspect: pendingMeta.aspect,
+    frameW: pendingMeta.frameW,
+    frameH: pendingMeta.frameH,
+  });
+
+  uploadCount += 1;
+  saveLocalCount();
+  pendingFile = null;
+  pendingMeta = null;
+  fileInput.value = '';
+  previewEl.style.display = 'none';
+  updateUploadUI();
+  setStatus(`Hung on ${sideLabel} wall · slot ${slot.slotId}`);
+}
+
+async function deleteNearestSlot() {
+  if (!isModerator) return;
+  const target = findNearestSlot(camZ());
+  if (!target) {
+    setStatus('No hung work nearby');
+    return;
+  }
+  if (firebaseSync?.mode === 'firebase' && firebaseSync.deleteSlot) {
+    const res = await firebaseSync.deleteSlot(target.slotId, MOD_TOKEN);
+    if (res.error) {
+      setStatus(res.error);
+      return;
+    }
+  }
+  removeFrame(target.slotId);
+  setStatus(`Removed slot ${target.slotId}`);
+}
+
+hangLeft.addEventListener('click', () => hang('L'));
+hangRight.addEventListener('click', () => hang('R'));
+deleteNearest.addEventListener('click', () => deleteNearestSlot());
+
+document.addEventListener('keydown', (e) => {
+  if (!hall) return;
+  const k = e.key.toLowerCase();
+  if (k === 'arrowup') { hall.setMoveKey('forward', true); e.preventDefault(); }
+  if (k === 'arrowdown') { hall.setMoveKey('back', true); e.preventDefault(); }
+  if (k === 'arrowleft') { hall.setMoveKey('left', true); e.preventDefault(); }
+  if (k === 'arrowright') { hall.setMoveKey('right', true); e.preventDefault(); }
+  if (k === 'w') hall.toggleWalk();
+  if (k === 'backspace' && isModerator) deleteNearestSlot();
+});
+document.addEventListener('keyup', (e) => {
+  if (!hall) return;
+  const k = e.key.toLowerCase();
+  if (k === 'arrowup') hall.setMoveKey('forward', false);
+  if (k === 'arrowdown') hall.setMoveKey('back', false);
+  if (k === 'arrowleft') hall.setMoveKey('left', false);
+  if (k === 'arrowright') hall.setMoveKey('right', false);
+});
+
+async function boot() {
+  loadLocalCount();
+  const panel = document.getElementById('panel');
+  hall = await createInvisibleLayerHall({
+    insertBefore: panel,
+    seed: 77823,
+    onFrame: () => updateFrameVisibility(),
+  });
+  hall.getScene().add(frameGroup);
+  loadLocalSlots();
+  updateFrameVisibility();
+
+  if (MOD_TOKEN) {
+    try {
+      const mod = await checkModerator(MOD_TOKEN);
+      isModerator = !!mod.ok;
+    } catch (_) { isModerator = false; }
+  }
+
+  try {
+    const lim = await checkUploadLimit(ROOM_ID);
+    if (lim.mode === 'firebase' && typeof lim.count === 'number') {
+      uploadCount = Math.max(uploadCount, lim.count);
+      saveLocalCount();
+    }
+    firebaseSync = await initGallerySync(
+      ROOM_ID,
+      (data) => addFrame(data, true),
+      (id) => removeFrame(id)
+    );
+  } catch (_) {
+    firebaseSync = { mode: 'local' };
+  }
+
+  updateUploadUI();
+  hall.getCanvas()?.focus({ preventScroll: true });
+}
+
+boot().catch((err) => {
+  console.error(err);
+  setStatus(err.message || 'Failed to start gallery');
+});
+  </script>
+</body>
+</html>

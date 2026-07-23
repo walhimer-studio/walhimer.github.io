@@ -17,3 +17,6 @@ node_modules/
 sketches/loop-machine-aesthetic/ghost_dense_77823_room.glb
 sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.glb
 sketches/2026-lumen-prize-machine-aesthetic/ghost_dense_77823_room.glb
+
+# Local Netlify folder
+.netlify
