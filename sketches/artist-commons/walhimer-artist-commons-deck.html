@@ -110,6 +110,10 @@ body{
 .fallback.hidden{display:none}
 .fallback .fb-label{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent)}
 .fallback .fb-title{font-weight:200;font-size:clamp(26px,4vw,48px);line-height:1.1}
+.fallback .fb-hint{
+  font-family:var(--mono);font-size:clamp(11px,1.15vw,13px);letter-spacing:.05em;
+  color:var(--muted);max-width:56ch;line-height:1.75;margin-top:20px;
+}
 .fallback .fb-url{font-family:var(--mono);font-size:13px;color:var(--muted);word-break:break-all;max-width:70ch}
 .fallback .fb-load{
   pointer-events:auto;cursor:pointer;font-family:var(--mono);font-size:12px;
@@ -211,6 +215,7 @@ body{
     <div class="stage">
       <div class="fallback">
         <div class="fb-title">Invisible Layer &mdash; interactive</div>
+        <div class="fb-hint">&uarr; &darr; forward / back &nbsp;·&nbsp; &larr; &rarr; left / right &nbsp;·&nbsp; drag to look &nbsp;·&nbsp; scroll zoom &nbsp;·&nbsp; M mute &nbsp;·&nbsp; R record &nbsp;·&nbsp; N new seed</div>
       </div>
     </div>
     <div class="cap">
