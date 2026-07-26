@@ -5822,6 +5822,62 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-walhimer-artist-commons-deck",
+      "dublin_core": {
+        "title": "artist-commons/walhimer-artist-commons-deck",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:ArtistCommons:artist-commons-walhimer-artist-commons-deck",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000309"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/ArtistCommons-artist-commons-walhimer-artist-commons-deck",
+        "type": "HumanMadeObject",
+        "_label": "artist-commons/walhimer-artist-commons-deck",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "ArtistCommons",
+          "file": "artist-commons/walhimer-artist-commons-deck.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/artist-commons/surrender-machine-88.jpg",
+          "sketches/artist-commons/walhimer-artist-commons-deck.html"
+        ],
+        "external_urls": [
+          "https://entangled.tools",
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com",
+          "https://kimasendorf.com",
+          "https://mark-walhimer.com/installations/surrender-machines.html",
+          "https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html",
+          "https://mark-walhimer.com/sketches/artist-commons/walhimer-artist-commons-deck.html",
+          "https://mark-walhimer.com/sketches/bloom/bloom-four-walls.html",
+          "https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/surrender-machines.html",
+          "https://objkt.com/tokens/KT19QSrGDEaFVxBoAFEReLMiwaBDhq791YnE/89",
+          "https://zimoun.net"
+        ]
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-readme",
       "dublin_core": {
         "title": "loop-art-critique-2026/README.md",
@@ -5862,62 +5918,6 @@
           "sketches/artist-commons/README.md"
         ],
         "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-walhimer-artist-commons-deck",
-      "dublin_core": {
-        "title": "artist-commons/walhimer-artist-commons-deck",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:ArtistCommons:artist-commons-walhimer-artist-commons-deck",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000309"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/ArtistCommons-artist-commons-walhimer-artist-commons-deck",
-        "type": "HumanMadeObject",
-        "_label": "artist-commons/walhimer-artist-commons-deck",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "ArtistCommons",
-          "file": "artist-commons/walhimer-artist-commons-deck.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/artist-commons/walhimer-artist-commons-deck.html"
-        ],
-        "external_urls": [
-          "https://entangled.tools",
-          "https://fonts.googleapis.com",
-          "https://fonts.gstatic.com",
-          "https://kimasendorf.com",
-          "https://mark-walhimer.com",
-          "https://mark-walhimer.com/installations/surrender-machines.html",
-          "https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html",
-          "https://mark-walhimer.com/sketches/artist-commons/walhimer-artist-commons-deck.html",
-          "https://mark-walhimer.com/sketches/bloom/bloom-four-walls.html",
-          "https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/surrender-machines.html",
-          "https://objkt.com/tokens/KT19QSrGDEaFVxBoAFEReLMiwaBDhq791YnE/89",
-          "https://zimoun.net"
-        ]
       }
     },
     {
@@ -5968,6 +5968,7 @@
         "repo_paths": [
           "sketches/artist-commons/README.md",
           "sketches/artist-commons/index.html",
+          "sketches/artist-commons/surrender-machine-88.jpg",
           "sketches/artist-commons/walhimer-artist-commons-deck.html"
         ],
         "external_urls": []
