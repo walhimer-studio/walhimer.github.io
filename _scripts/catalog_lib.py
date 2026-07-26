@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -17,6 +18,33 @@ LOCAL_ATTR_RE = re.compile(
     r"""(?:src|href)\s*=\s*["']([^"'#?]+)["']""",
     re.I,
 )
+
+# Cached git-tracked paths for one process (refresh / CI check). None = not a git work tree.
+_GIT_TRACKED: set[str] | None | bool = False
+
+
+def git_tracked_paths(root: Path) -> set[str] | None:
+    """Return repo-relative tracked paths, or None if git is unavailable."""
+    global _GIT_TRACKED
+    if _GIT_TRACKED is not False:
+        return _GIT_TRACKED  # type: ignore[return-value]
+    proc = subprocess.run(
+        ["git", "-C", str(root), "ls-files", "-z"],
+        capture_output=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        _GIT_TRACKED = None
+        return None
+    _GIT_TRACKED = {p.decode() for p in proc.stdout.split(b"\0") if p}
+    return _GIT_TRACKED
+
+
+def _skip_artifact_path(rel: str) -> bool:
+    parts = Path(rel).parts
+    if ".DS_Store" in parts or "node_modules" in parts or ".git" in parts:
+        return True
+    return False
 
 
 def extract_bracket_array(html: str, marker: str) -> str:
@@ -392,11 +420,15 @@ def merge_catalog_works(old_works: list[dict], new_works: list[dict]) -> list[di
 def collect_artifacts(root: Path, entry_rel: str) -> dict:
     """
     Repo-relative paths that belong to this entry (HTML + local JS/CSS/images).
-    Narrative bundles: sketches/foo/index.html includes every file under sketches/foo/.
+    Narrative bundles: sketches/foo/index.html includes tracked files under sketches/foo/.
+
+    Prefer git-tracked paths so local junk (node_modules, .DS_Store, WIP HTML) does not
+    make data/catalog.json diverge from a clean CI checkout.
     """
     entry_rel = entry_rel.replace("\\", "/")
     out: dict = {"repo_paths": [], "external_urls": []}
     full = root / entry_rel
+    tracked = git_tracked_paths(root)
     if not full.exists():
         out["repo_paths"] = [entry_rel]
         return out
@@ -404,12 +436,28 @@ def collect_artifacts(root: Path, entry_rel: str) -> dict:
     p = Path(entry_rel)
     # Whole subtree for .../something/index.html (e.g. tezos-early-works)
     if p.name == "index.html" and len(p.parts) >= 3:
+        folder_rel = p.parent.as_posix()
+        if tracked is not None:
+            prefix = folder_rel + "/"
+            acc = sorted(
+                rp
+                for rp in tracked
+                if rp == folder_rel or rp.startswith(prefix)
+            )
+            if entry_rel not in acc:
+                acc = sorted(set(acc) | {entry_rel})
+            out["repo_paths"] = acc
+            return out
         folder = root / p.parent
         if folder.is_dir():
-            acc: list[str] = []
+            acc = []
             for f in sorted(folder.rglob("*")):
-                if f.is_file():
-                    acc.append(f.relative_to(root).as_posix())
+                if not f.is_file():
+                    continue
+                rp = f.relative_to(root).as_posix()
+                if _skip_artifact_path(rp):
+                    continue
+                acc.append(rp)
             out["repo_paths"] = acc
             return out
 
@@ -444,6 +492,10 @@ def collect_artifacts(root: Path, entry_rel: str) -> dict:
             continue
         if cand.is_file():
             rp = cand.relative_to(root).as_posix()
+            if _skip_artifact_path(rp):
+                continue
+            if tracked is not None and rp not in tracked:
+                continue
             if rp not in seen:
                 seen.add(rp)
                 paths.append(rp)
