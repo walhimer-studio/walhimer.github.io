@@ -497,6 +497,15 @@ function setInteract(on){
   slides.forEach(s=>s.classList.toggle('interact',interactOn && s.classList.contains('active') && !!s.dataset.src));
 }
 
+function liveInteractActive(){
+  return interactOn && !!slides[i].dataset.src;
+}
+
+function focusLiveFrame(s){
+  const f=s.querySelector('.stage iframe');
+  if(f) f.focus();
+}
+
 function show(n){
   const prev=slides[i];
   if(prev && prev.dataset.src) unload(prev);
@@ -513,8 +522,10 @@ function show(n){
   if(s.dataset.autorun){
     loadLive(s);
     setInteract(true);
+    requestAnimationFrame(()=>focusLiveFrame(s));
+  } else {
+    deck.focus({preventScroll:true});
   }
-  deck.focus({preventScroll:true});
 }
 
 function next(){show(i+1)}
@@ -524,13 +535,16 @@ function toggleInteract(){
   setInteract(!interactOn);
   if(interactOn){
     loadLive(slides[i]);
-    const f=slides[i].querySelector('.stage iframe');
-    if(f) f.focus();
+    focusLiveFrame(slides[i]);
   } else deck.focus({preventScroll:true});
 }
 
 document.addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
+  if(liveInteractActive()){
+    const artKeys=['arrowright','arrowleft','arrowup','arrowdown',' ','pageup','pagedown','n','r','m','t','l'];
+    if(artKeys.includes(k)) return;
+  }
   if(['arrowright',' ','pagedown','arrowdown'].includes(k)){e.preventDefault();next();hideHint();}
   else if(['arrowleft','pageup','arrowup'].includes(k)){e.preventDefault();prev();hideHint();}
   else if(k==='home'){show(0)}
@@ -549,6 +563,7 @@ document.querySelectorAll('.fb-load').forEach(b=>{
 document.getElementById('deck').addEventListener('click',e=>{
   if(e.target.closest('.fb-load')||e.target.closest('a')||e.target.closest('.nav')) return;
   const s=slides[i];
+  if(s.classList.contains('bare')||liveInteractActive()) return;
   if(s.dataset.src && e.target.closest('.stage')) return;
   next(); hideHint();
 });
