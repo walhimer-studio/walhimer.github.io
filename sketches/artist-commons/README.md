@@ -13,6 +13,7 @@ https://mark-walhimer.com/sketches/artist-commons/index.html
 | File | Live URL |
 |------|----------|
 | `walhimer-artist-commons-deck.html` | https://mark-walhimer.com/sketches/artist-commons/walhimer-artist-commons-deck.html |
+| `surrender-machine-88.jpg` | Still for slide 5 (Surrender Machine 88) |
 
 ## External
 
