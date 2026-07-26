@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-21",
+  "updated": "2026-07-26",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -8738,24 +8738,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:ArtistCommons:catalog-artist-commons-readme",
+      "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-readme",
       "dublin_core": {
-        "title": "../catalog/artist-commons/README.md",
+        "title": "loop-art-critique-2026/README.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:ArtistCommons:catalog-artist-commons-readme",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000254"
+        "catalog_number": "WS-000184"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/ArtistCommons-catalog-artist-commons-readme",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
         "type": "HumanMadeObject",
-        "_label": "../catalog/artist-commons/README.md",
+        "_label": "loop-art-critique-2026/README.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -8770,12 +8770,12 @@
         ],
         "sketch": {
           "series": "ArtistCommons",
-          "file": "../catalog/artist-commons/README.md"
+          "file": "artist-commons/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/artist-commons/README.md"
+          "sketches/artist-commons/README.md"
         ],
         "external_urls": []
       }
@@ -8827,30 +8827,31 @@
       "artifacts": {
         "repo_paths": [
           "sketches/artist-commons/README.md",
-          "sketches/artist-commons/index.html"
+          "sketches/artist-commons/index.html",
+          "sketches/artist-commons/walhimer-artist-commons-deck.html"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-readme",
+      "id": "urn:walhimer:sketch:ArtistCommons:artist-commons-walhimer-artist-commons-deck",
       "dublin_core": {
-        "title": "loop-art-critique-2026/README.md",
+        "title": "artist-commons/walhimer-artist-commons-deck",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:readme",
+        "identifier": "urn:walhimer:sketch:ArtistCommons:artist-commons-walhimer-artist-commons-deck",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000184"
+        "catalog_number": "WS-000309"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-readme",
+        "id": "https://mark-walhimer.com/#work/ArtistCommons-artist-commons-walhimer-artist-commons-deck",
         "type": "HumanMadeObject",
-        "_label": "loop-art-critique-2026/README.md",
+        "_label": "artist-commons/walhimer-artist-commons-deck",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -8865,12 +8866,67 @@
         ],
         "sketch": {
           "series": "ArtistCommons",
-          "file": "artist-commons/README.md"
+          "file": "artist-commons/walhimer-artist-commons-deck.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/artist-commons/README.md"
+          "sketches/artist-commons/walhimer-artist-commons-deck.html"
+        ],
+        "external_urls": [
+          "https://entangled.tools",
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com",
+          "https://kimasendorf.com",
+          "https://mark-walhimer.com",
+          "https://mark-walhimer.com/installations/surrender-machines.html",
+          "https://mark-walhimer.com/sketches/April%2025/loop-art-critique-combined.html",
+          "https://mark-walhimer.com/sketches/bloom/bloom-four-walls.html",
+          "https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/surrender-machines.html",
+          "https://objkt.com/tokens/KT19QSrGDEaFVxBoAFEReLMiwaBDhq791YnE/89",
+          "https://zimoun.net"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:ArtistCommons:catalog-artist-commons-readme",
+      "dublin_core": {
+        "title": "../catalog/artist-commons/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:ArtistCommons:catalog-artist-commons-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000254"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/ArtistCommons-catalog-artist-commons-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/artist-commons/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "ArtistCommons",
+          "file": "../catalog/artist-commons/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/artist-commons/README.md"
         ],
         "external_urls": []
       }
@@ -10452,50 +10508,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
-      "dublin_core": {
-        "title": "loop-snippets/surrender-machines-record",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000307"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-surrender-machines-record",
-        "type": "HumanMadeObject",
-        "_label": "loop-snippets/surrender-machines-record",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/surrender-machines-record.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/js/p5-1.11.2.min.js",
-          "sketches/loop-snippets/surrender-machines-record.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-three",
       "dublin_core": {
         "title": "loop-snippets/surrender-machines-three",
@@ -10633,6 +10645,50 @@
           "sketches/loop-snippets/ghost_dense_77823_gravity_sliders.html",
           "sketches/loop-snippets/js/OrbitControls.js",
           "sketches/loop-snippets/js/three.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
+      "dublin_core": {
+        "title": "loop-snippets/surrender-machines-record",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000307"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-surrender-machines-record",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/surrender-machines-record",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/surrender-machines-record.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/js/p5-1.11.2.min.js",
+          "sketches/loop-snippets/surrender-machines-record.html"
         ],
         "external_urls": []
       }

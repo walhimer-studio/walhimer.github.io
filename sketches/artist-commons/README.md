@@ -8,6 +8,12 @@ Mac + gigabit switch + Pi LED / touch object pipeline. PoC video and documentati
 
 https://mark-walhimer.com/sketches/artist-commons/index.html
 
+## Works
+
+| File | Live URL |
+|------|----------|
+| `walhimer-artist-commons-deck.html` | https://mark-walhimer.com/sketches/artist-commons/walhimer-artist-commons-deck.html |
+
 ## External
 
 | Link | URL |
