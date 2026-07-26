@@ -99,7 +99,8 @@ body{
 
 /* ── WORK (LIVE) SLIDES ── */
 .stage{position:absolute;inset:0;background:#000;z-index:1}
-.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none}
+.slide.interact .stage iframe{pointer-events:auto}
 .fallback{
   position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:22px;text-align:center;
@@ -187,7 +188,7 @@ body{
 </style>
 </head>
 <body>
-<div id="deck">
+<div id="deck" tabindex="-1">
 
 <section class="slide" data-run="cold open" data-src="https://mark-walhimer.com/installations/surrender-machines.html"
     data-note="Open cold, no title. Press L to load live. Let it run 10–15s before you speak. Then: your mother's Alzheimer's, her aggression, the therapist saying 'surrender.' You tried to build a machine to surrender FOR you — and hit the wall that is the whole piece: a machine can't surrender. Only a human can press the button. Anger / ego / attachment; at 65% it self-destructs. Don't over-explain — this is the hook, not the thesis."
@@ -437,7 +438,7 @@ body{
 <button class="nav next" aria-label="Next slide">&#8250;</button>
 
 <div id="hint">
-  <b>&larr; &rarr;</b> move &nbsp;·&nbsp; <b>L</b> load live &nbsp;·&nbsp; <b>C</b> caption &nbsp;·&nbsp; <b>N</b> notes &nbsp;·&nbsp; <b>F</b> fullscreen
+  <b>&larr; &rarr;</b> move &nbsp;·&nbsp; <b>L</b> load live &nbsp;·&nbsp; <b>I</b> interact &nbsp;·&nbsp; <b>C</b> caption &nbsp;·&nbsp; <b>N</b> notes &nbsp;·&nbsp; <b>F</b> fullscreen
 </div>
 
 <div id="notes">
@@ -454,7 +455,8 @@ const slides=[...document.querySelectorAll('.slide')];
 const meter=document.getElementById('meter');
 const hint=document.getElementById('hint');
 const notes=document.getElementById('notes');
-let i=0, capsOn=true, notesOn=false;
+let i=0, capsOn=true, notesOn=false, interactOn=false;
+const deck=document.getElementById('deck');
 const N=slides.length;
 slides.forEach((s,k)=>{const c=s.querySelector(".count"); if(c) c.innerHTML="<b>"+String(k+1).padStart(2,"0")+"</b> / "+String(N).padStart(2,"0");});
 
@@ -485,10 +487,18 @@ function unload(s){
   if(f){f.remove(); const fb=stage.querySelector('.fallback'); if(fb) fb.classList.remove('hidden');}
 }
 
+function setInteract(on){
+  interactOn=!!on;
+  slides.forEach(s=>s.classList.toggle('interact',interactOn && s.classList.contains('active') && !!s.dataset.src));
+}
+
 function show(n){
   const prev=slides[i];
   if(prev && prev.dataset.src) unload(prev);
-  i=Math.max(0,Math.min(slides.length-1,n));
+  setInteract(false);
+  if(n<0) i=slides.length-1;
+  else if(n>=slides.length) i=0;
+  else i=n;
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));
   const s=slides[i];
   meter.style.width=((i+1)/slides.length*100)+'%';
@@ -496,10 +506,20 @@ function show(n){
   // apply caption visibility
   const cap=s.querySelector('.cap'); if(cap) cap.classList.toggle('hidden',!capsOn);
   if(s.dataset.autorun) loadLive(s);
+  deck.focus({preventScroll:true});
 }
 
 function next(){show(i+1)}
 function prev(){show(i-1)}
+function toggleInteract(){
+  if(!slides[i].dataset.src) return;
+  setInteract(!interactOn);
+  if(interactOn){
+    loadLive(slides[i]);
+    const f=slides[i].querySelector('.stage iframe');
+    if(f) f.focus();
+  } else deck.focus({preventScroll:true});
+}
 
 document.addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
@@ -508,6 +528,7 @@ document.addEventListener('keydown',e=>{
   else if(k==='home'){show(0)}
   else if(k==='end'){show(slides.length-1)}
   else if(k==='l'){loadLive(slides[i])}
+  else if(k==='i'){toggleInteract();}
   else if(k==='c'){capsOn=!capsOn; const cap=slides[i].querySelector('.cap'); if(cap) cap.classList.toggle('hidden',!capsOn);}
   else if(k==='n'||k==='s'){notesOn=!notesOn; notes.classList.toggle('show',notesOn);}
   else if(k==='f'){toggleFS();}
@@ -518,7 +539,7 @@ document.querySelectorAll('.fb-load').forEach(b=>{
   b.addEventListener('click',e=>{e.stopPropagation(); loadLive(b.closest('.slide'));});
 });
 document.getElementById('deck').addEventListener('click',e=>{
-  if(e.target.closest('.fallback')||e.target.closest('a')||e.target.closest('.cap')) return;
+  if(e.target.closest('.fb-load')||e.target.closest('a')) return;
   next(); hideHint();
 });
 document.querySelector('.nav.prev').addEventListener('click',e=>{e.stopPropagation();prev();hideHint();});
