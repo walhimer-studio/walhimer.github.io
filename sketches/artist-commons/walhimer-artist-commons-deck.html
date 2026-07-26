@@ -510,7 +510,10 @@ function show(n){
   setNote(s);
   // apply caption visibility
   const cap=s.querySelector('.cap'); if(cap) cap.classList.toggle('hidden',!capsOn);
-  if(s.dataset.autorun) loadLive(s);
+  if(s.dataset.autorun){
+    loadLive(s);
+    setInteract(true);
+  }
   deck.focus({preventScroll:true});
 }
 
@@ -544,7 +547,9 @@ document.querySelectorAll('.fb-load').forEach(b=>{
   b.addEventListener('click',e=>{e.stopPropagation(); loadLive(b.closest('.slide'));});
 });
 document.getElementById('deck').addEventListener('click',e=>{
-  if(e.target.closest('.fb-load')||e.target.closest('a')) return;
+  if(e.target.closest('.fb-load')||e.target.closest('a')||e.target.closest('.nav')) return;
+  const s=slides[i];
+  if(s.dataset.src && e.target.closest('.stage')) return;
   next(); hideHint();
 });
 document.querySelector('.nav.prev').addEventListener('click',e=>{e.stopPropagation();prev();hideHint();});
