@@ -38,6 +38,8 @@ body{
   padding:0;
 }
 .slide.active{opacity:1;visibility:visible;z-index:2}
+.slide.bare .topbar,.slide.bare .cap{display:none}
+.slide.bare .fallback{opacity:0;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.slide{transition:none}}
 
 /* chrome: top label + counter */
@@ -213,6 +215,15 @@ body{
     <div class="cap">
       <div class="cap-title">Adjust anger, ego, attachment. You decide when to surrender.</div>
       <div class="cap-meta">Surrender Machines · interactive · press the SURRENDER button when ready</div>
+    </div>
+  </section>
+
+<section class="slide bare" data-run="surrender machines" data-src="https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/surrender-machines.html" data-autorun="1"
+    data-note="Auto-loads on entry — full-screen live piece, no overlay text."
+    data-time="~2 min">
+    <div class="topbar"><span class="run"></span><span class="count"></span></div>
+    <div class="stage">
+      <div class="fallback"></div>
     </div>
   </section>
 
