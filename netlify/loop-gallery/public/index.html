@@ -48,13 +48,13 @@
   <div id="hint">
     Loop gallery · invisible layer hallway · code walls · hung JPEG slots<br>
     ↑↓ travel · ←→ strafe · drag look · scroll · W walk · R record MP4 · M mute<br>
-    JPEG 500 KB–2 MB · max width 1/100 wall · min height ⅓ wall · max 5 uploads<br>
+    Any image · cropped to wall slot · max 2 MB export · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
   </div>
   <div id="panel">
     <div class="row">
-      <label class="btn" for="fileInput">Choose JPEG</label>
-      <input id="fileInput" type="file" accept="image/jpeg,image/jpg" />
+      <label class="btn" for="fileInput">Choose image</label>
+      <input id="fileInput" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
       <img id="preview" alt="" />
       <button type="button" id="hangLeft" disabled>Hang left wall</button>
       <button type="button" id="hangRight" class="primary" disabled>Hang right wall</button>
@@ -75,7 +75,6 @@ const params = new URLSearchParams(location.search);
 const ROOM_ID = (params.get('room') || 'default').replace(/[^\w-]/g, '') || 'default';
 const MOD_TOKEN = params.get('mod') || '';
 const MAX_UPLOADS = 5;
-const MIN_BYTES = 500 * 1024;
 const MAX_BYTES = 2 * 1024 * 1024;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
 const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
@@ -117,16 +116,20 @@ function formatKb(n) {
   return `${(n / 1024).toFixed(n >= 10240 ? 0 : 1)} KB`;
 }
 
-function computeFrameSize(aspect) {
-  if (!aspect || !Number.isFinite(aspect)) return null;
-  let h = FRAME_MAX_H;
-  let w = h * aspect;
-  if (w > FRAME_MAX_W) {
-    w = FRAME_MAX_W;
-    h = w / aspect;
+function wallSlotFrame() {
+  return { frameW: FRAME_MAX_W, frameH: FRAME_MAX_H, aspect: FRAME_MAX_W / FRAME_MAX_H };
+}
+
+function coverCropRect(srcW, srcH, targetAspect) {
+  const srcAspect = srcW / srcH;
+  if (srcAspect > targetAspect) {
+    const sh = srcH;
+    const sw = sh * targetAspect;
+    return { sx: (srcW - sw) / 2, sy: 0, sw, sh };
   }
-  if (h < FRAME_MIN_H || w > FRAME_MAX_W + 0.001) return null;
-  return { frameW: w, frameH: h, aspect };
+  const sw = srcW;
+  const sh = sw / targetAspect;
+  return { sx: 0, sy: (srcH - sh) / 2, sw, sh };
 }
 
 function loadLocalCount() {
@@ -258,37 +261,34 @@ function updateFrameVisibility() {
 }
 
 async function prepareJPEG(file) {
-  if (!/^image\/jpe?g$/i.test(file.type)) {
-    throw new Error('JPEG only');
+  const nameOk = /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
+  if (file.type && !/^image\//i.test(file.type) && !nameOk) {
+    throw new Error('Image file only');
   }
-  if (file.size < MIN_BYTES) {
-    throw new Error(`Too small — minimum ${formatKb(MIN_BYTES)} (got ${formatKb(file.size)})`);
-  }
-  if (file.size > MAX_BYTES) {
-    throw new Error(`Too large — maximum ${formatKb(MAX_BYTES)} (got ${formatKb(file.size)})`);
+  if (file.size > MAX_BYTES * 4) {
+    throw new Error(`Too large — pick an image under ${formatKb(MAX_BYTES * 4)}`);
   }
 
-  const bmp = await createImageBitmap(file);
-  const aspect = bmp.width / bmp.height;
-  const frame = computeFrameSize(aspect);
-  if (!frame) {
-    bmp.close();
-    throw new Error(
-      `Aspect does not fit wall slot (max width ${FRAME_MAX_W.toFixed(1)}u = 1/100 wall, min height ${FRAME_MIN_H.toFixed(0)}u = ⅓ wall)`
-    );
+  let bmp;
+  try {
+    bmp = await createImageBitmap(file);
+  } catch (_) {
+    throw new Error('Could not read image — try JPG or PNG');
   }
+
+  const frame = wallSlotFrame();
+  const crop = coverCropRect(bmp.width, bmp.height, frame.frameW / frame.frameH);
 
   const pxPerUnit = 2.4;
   let tw = Math.min(2048, Math.round(frame.frameW * pxPerUnit));
   let th = Math.min(2048, Math.round(frame.frameH * pxPerUnit));
-  const scale = Math.min(1, tw / bmp.width, th / bmp.height);
-  tw = Math.max(1, Math.round(bmp.width * scale));
-  th = Math.max(1, Math.round(bmp.height * scale));
 
   const canvas = document.createElement('canvas');
   canvas.width = tw;
   canvas.height = th;
-  canvas.getContext('2d').drawImage(bmp, 0, 0, tw, th);
+  canvas.getContext('2d').drawImage(
+    bmp, crop.sx, crop.sy, crop.sw, crop.sh, 0, 0, tw, th
+  );
   bmp.close();
 
   let quality = 0.9;
@@ -304,7 +304,7 @@ async function prepareJPEG(file) {
 
   const previewUrl = canvas.toDataURL('image/jpeg', Math.min(0.82, quality));
   const outFile = new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
-  return { file: outFile, previewUrl, ...frame, bytes: blob.size };
+  return { file: outFile, previewUrl, ...frame, bytes: blob.size, aspect: frame.aspect };
 }
 
 function updateUploadUI() {
@@ -328,6 +328,9 @@ fileInput.addEventListener('change', async () => {
   pendingFile = null;
   pendingMeta = null;
   previewEl.style.display = 'none';
+  hangLeft.disabled = true;
+  hangRight.disabled = true;
+  setStatus('Reading image…');
   try {
     const prep = await prepareJPEG(file);
     pendingFile = prep.file;
@@ -335,11 +338,11 @@ fileInput.addEventListener('change', async () => {
     previewEl.src = prep.previewUrl;
     previewEl.style.display = 'block';
     setStatus(`Ready · ${formatKb(prep.bytes)} · frame ${prep.frameW.toFixed(1)}×${prep.frameH.toFixed(1)} wall units`);
+    updateUploadUI();
   } catch (err) {
-    setStatus(err.message || 'Invalid JPEG');
+    setStatus(err.message || 'Invalid image');
     fileInput.value = '';
   }
-  updateUploadUI();
 });
 
 async function hang(sideLabel) {
