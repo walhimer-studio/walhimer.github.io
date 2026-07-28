@@ -72,6 +72,27 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   // loopGallery/{roomId}/slots/{slotId} — valid col/doc/col/doc path
   const slotsCol = fs.collection(db, galleryRoot, roomId, 'slots');
 
+  function slotPayload(slotId, data) {
+    const m = /^W-(\d+)-(\d+)$/.exec(slotId || '');
+    return {
+      slotId,
+      side: data.side,
+      worldZ: data.worldZ,
+      url: data.url,
+      storagePath: data.storagePath,
+      aspect: data.aspect,
+      frameW: data.frameW,
+      frameH: data.frameH,
+      col: m ? +m[1] : undefined,
+      row: m ? +m[2] : undefined,
+    };
+  }
+
+  const existing = await fs.getDocs(slotsCol);
+  existing.forEach((docSnap) => {
+    onRemoteSlot(slotPayload(docSnap.id, docSnap.data()));
+  });
+
   fs.onSnapshot(slotsCol, (snap) => {
     snap.docChanges().forEach((change) => {
       const data = change.doc.data();
@@ -80,16 +101,7 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
         onRemoteRemove(slotId);
         return;
       }
-      onRemoteSlot({
-        slotId,
-        side: data.side,
-        worldZ: data.worldZ,
-        url: data.url,
-        storagePath: data.storagePath,
-        aspect: data.aspect,
-        frameW: data.frameW,
-        frameH: data.frameH,
-      });
+      onRemoteSlot(slotPayload(slotId, data));
     });
   });
 

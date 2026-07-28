@@ -6,7 +6,7 @@
   <title>Loop Gallery — Family Reunion Friday 2</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
-    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; z-index: 2; }
     #hint {
       position: fixed; left: 10px; top: 10px; z-index: 3;
       font: 11px/1.45 ui-monospace, monospace;
@@ -49,14 +49,48 @@
       color: #333; cursor: pointer; touch-action: manipulation;
     }
     #panPad .spacer { visibility: hidden; pointer-events: none; }
+    #qrOverlay {
+      position: fixed; top: 12px; right: 12px; z-index: 5;
+      background: rgba(255,255,255,0.96); border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 12px; padding: 12px 14px; max-width: 220px;
+      font: 11px/1.45 system-ui, sans-serif; color: #333;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+    }
+    #qrOverlay h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
+    #qrCanvas { display: block; width: 168px; height: 168px; image-rendering: pixelated; }
+    #qrOverlay .phoneUrl {
+      margin: 8px 0 0; word-break: break-all; color: rgba(0,0,0,0.55); font-family: ui-monospace, monospace; font-size: 10px;
+    }
+    #urlBar {
+      position: fixed; left: 10px; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 5;
+      max-width: min(520px, calc(100vw - 24px)); font: 10px/1.5 ui-monospace, monospace;
+      color: rgba(60, 80, 95, 0.75); background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 8px 10px;
+    }
+    #urlBar div + div { margin-top: 4px; }
+    #urlBar strong { color: rgba(20, 30, 40, 0.85); }
+    body.view-wall #panel { display: none; }
+    body.view-wall #urlBar { bottom: calc(12px + env(safe-area-inset-bottom)); }
+    body.view-wall #panPad { bottom: calc(12px + env(safe-area-inset-bottom)); right: 240px; }
+    body.view-phone #qrOverlay { display: none; }
   </style>
 </head>
 <body>
   <div id="hint">
     Loop Gallery · Family Reunion Friday 2 · static white wall<br>
-    ↑ forward · ↓ back · ← → left / right · drag wall · on-screen arrows<br>
+    ↑ forward · ↓ back · ← → · drag · scroll / trackpad · on-screen arrows<br>
     Any image · full picture on wall · max 2 MB export · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
+  </div>
+  <div id="qrOverlay">
+    <h2>Scan · hang on wall</h2>
+    <canvas id="qrCanvas" width="168" height="168" aria-label="QR code for phone upload"></canvas>
+    <p class="phoneUrl" id="phoneUrlText"></p>
+  </div>
+  <div id="urlBar" aria-label="Gallery URLs">
+    <div><strong>Wall</strong> (projector / monitor): <span id="wallUrlText"></span></div>
+    <div><strong>Phone</strong> (upload from pocket): <span id="phoneUrlBar"></span></div>
+    <div id="urlBarSync"></div>
   </div>
   <div id="panPad" aria-label="Pan wall">
     <span class="spacer"></span>
@@ -77,6 +111,7 @@
       <span id="status">Loading…</span>
     </div>
   </div>
+  <script src="js/qrcode.min.js"></script>
   <script src="js/three.min.js"></script>
   <script type="module">
 import { createWhiteWallScene } from './white-wall.mjs';
@@ -89,6 +124,11 @@ const params = new URLSearchParams(location.search);
 const DEFAULT_ROOM = 'family-reunion-friday-2';
 const ROOM_ID = (params.get('room') || DEFAULT_ROOM).replace(/[^\w-]/g, '') || DEFAULT_ROOM;
 const MOD_TOKEN = params.get('mod') || '';
+const VIEW = (params.get('view') || 'phone').toLowerCase() === 'wall' ? 'wall' : 'phone';
+const PAGE_BASE = `${location.origin}${location.pathname}`;
+const WALL_URL = `${PAGE_BASE}?view=wall&room=${ROOM_ID}`;
+const PHONE_URL = `${PAGE_BASE}?view=phone&room=${ROOM_ID}`;
+document.body.classList.add(`view-${VIEW}`);
 const MAX_UPLOADS = 5;
 const MAX_BYTES = 2 * 1024 * 1024;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
@@ -174,6 +214,36 @@ async function loadSlotTexture(data) {
 
 function setStatus(msg) { statusEl.textContent = msg; }
 
+function drawQrCode(canvas, text) {
+  if (typeof qrcode !== 'function') return;
+  const qr = qrcode(0, 'M');
+  qr.addData(text);
+  qr.make();
+  const n = qr.getModuleCount();
+  const size = canvas.width;
+  const cell = size / n;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#000000';
+  for (let r = 0; r < n; r += 1) {
+    for (let c = 0; c < n; c += 1) {
+      if (qr.isDark(r, c)) ctx.fillRect(c * cell, r * cell, cell, cell);
+    }
+  }
+}
+
+function setupUrlsAndQr() {
+  const wallEl = document.getElementById('wallUrlText');
+  const phoneBarEl = document.getElementById('phoneUrlBar');
+  const phoneQrEl = document.getElementById('phoneUrlText');
+  if (wallEl) wallEl.textContent = WALL_URL;
+  if (phoneBarEl) phoneBarEl.textContent = PHONE_URL;
+  if (phoneQrEl) phoneQrEl.textContent = PHONE_URL;
+  const canvas = document.getElementById('qrCanvas');
+  if (canvas) drawQrCode(canvas, PHONE_URL);
+}
+
 function formatKb(n) {
   return `${(n / 1024).toFixed(n >= 10240 ? 0 : 1)} KB`;
 }
@@ -222,10 +292,11 @@ function saveLocalCount() {
 }
 
 function loadLocalSlots() {
+  if (firebaseSync?.mode === 'firebase') return;
   try {
     const raw = localStorage.getItem(SLOTS_KEY);
     if (!raw) return;
-    JSON.parse(raw).forEach((s) => addFrame(s, false));
+    JSON.parse(raw).forEach((s) => addFrame(s, false, true));
   } catch (_) {}
 }
 
@@ -322,6 +393,7 @@ function addFrame(data, persist = true, quiet = false) {
       frameH: built.frameH,
     });
     if (persist) saveLocalSlots();
+    updateUploadUI();
     return true;
   }).catch((err) => {
     console.error(err);
@@ -338,6 +410,7 @@ function removeFrame(slotId) {
   if (s.url?.startsWith('blob:')) URL.revokeObjectURL(s.url);
   slots.delete(slotId);
   saveLocalSlots();
+  updateUploadUI();
 }
 
 async function prepareJPEG(file) {
@@ -399,6 +472,10 @@ function updateUploadUI() {
     ? ` · synced${firebaseSync.configSource ? ` (${firebaseSync.configSource})` : ''}`
     : ` · local${firebaseSync?.error ? ` · ${firebaseSync.error}` : ''}`;
   const mod = isModerator ? ' · mod' : '';
+  const wallLine = `${slots.size} on wall · room ${ROOM_ID}${sync}${mod}`;
+  const urlBarSync = document.getElementById('urlBarSync');
+  if (urlBarSync) urlBarSync.textContent = wallLine;
+  if (VIEW === 'wall') return;
   const hint = remaining > 0 && !pendingFile ? ' · choose image first' : '';
   setStatus(`${remaining} of ${MAX_UPLOADS} uploads left · room ${ROOM_ID}${sync}${mod}${hint}`);
 }
@@ -576,6 +653,7 @@ bindPanButton(document.getElementById('panLeft'), 'left');
 bindPanButton(document.getElementById('panRight'), 'right');
 
 async function boot() {
+  setupUrlsAndQr();
   loadLocalCount();
   const panel = document.getElementById('panel');
   wallScene = createWhiteWallScene({ insertBefore: panel });
@@ -587,7 +665,6 @@ async function boot() {
   GRID_ROWS = wallScene.layout.ROWS;
 
   wallScene.getScene().add(frameGroup);
-  loadLocalSlots();
 
   if (MOD_TOKEN) {
     try {
@@ -610,6 +687,8 @@ async function boot() {
   } catch (_) {
     firebaseSync = { mode: 'local' };
   }
+
+  loadLocalSlots();
 
   updateUploadUI();
   wallScene.getCanvas()?.focus({ preventScroll: true });

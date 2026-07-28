@@ -106,12 +106,13 @@ export function createWhiteWallScene(opts = {}) {
   }
 
   renderer.domElement.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0) return;
+    if (e.button !== 0 && e.button !== 1) return;
     dragActive = true;
     dragLastX = e.clientX;
     dragLastY = e.clientY;
     renderer.domElement.setPointerCapture(e.pointerId);
     renderer.domElement.focus({ preventScroll: true });
+    e.preventDefault();
   });
   renderer.domElement.addEventListener('pointermove', (e) => {
     if (!dragActive) return;
@@ -124,6 +125,13 @@ export function createWhiteWallScene(opts = {}) {
     try { renderer.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
   });
   renderer.domElement.addEventListener('pointercancel', () => { dragActive = false; });
+
+  document.addEventListener('wheel', (e) => {
+    const t = e.target;
+    if (t && (t.closest('#panel') || t.closest('#panPad') || t.closest('#qrOverlay') || t.closest('#urlBar'))) return;
+    e.preventDefault();
+    panByPixels(-e.deltaX, -e.deltaY);
+  }, { passive: false });
 
   function resize() {
     camera.aspect = window.innerWidth / window.innerHeight;

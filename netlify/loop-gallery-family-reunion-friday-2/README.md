@@ -12,6 +12,19 @@ https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/
 
 Default Firebase room: **`family-reunion-friday-2`** (override with `?room=other-name`).
 
+## Two URLs (same room, different screens)
+
+| Screen | URL |
+|--------|-----|
+| **Wall** (projector / monitor — shows gallery + QR) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/?view=wall` |
+| **Phone** (participants upload images) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/?view=phone` |
+
+Both use room **`family-reunion-friday-2`** by default. Add `&room=your-name` to both URLs if you need a fresh wall.
+
+**Wall view** hides the upload panel and shows a **QR code** (top-right) linking to the phone URL. **Phone view** shows Choose image / Hang on wall.
+
+Images persist via **Firebase** (Firestore + Storage) when rules are set — refresh reloads all hung work for that room.
+
 ## Firebase rules (required for sync)
 
 Project: [loop-gallery-family-reunion-3](https://console.firebase.google.com/project/loop-gallery-family-reunion-3)
