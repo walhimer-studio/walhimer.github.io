@@ -14,12 +14,13 @@
       pointer-events: none; max-width: 440px;
     }
     #panel {
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
       padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
-      background: rgba(255, 255, 255, 0.94);
-      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.98);
+      border-top: 1px solid rgba(0, 0, 0, 0.12);
       font: 12px/1.4 system-ui, sans-serif;
       display: grid; gap: 8px;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
     }
     #panel .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
     #panel button, #panel label.btn {
@@ -39,8 +40,8 @@
     }
     #modBadge.on { display: inline-block; }
     #panPad {
-      position: fixed; right: 12px; bottom: calc(96px + env(safe-area-inset-bottom));
-      z-index: 4; display: grid; grid-template-columns: 44px 44px 44px; gap: 6px;
+      position: fixed; right: 12px; bottom: calc(118px + env(safe-area-inset-bottom));
+      z-index: 20; display: grid; grid-template-columns: 44px 44px 44px; gap: 6px;
       pointer-events: auto;
     }
     #panPad button {
@@ -49,6 +50,7 @@
       color: #333; cursor: pointer; touch-action: manipulation;
     }
     #panPad .spacer { visibility: hidden; pointer-events: none; }
+    #zoomIn, #zoomOut { font-size: 22px; font-weight: 600; line-height: 1; }
     #qrOverlay {
       position: fixed; top: 12px; right: 12px; z-index: 5;
       background: rgba(255,255,255,0.96); border: 1px solid rgba(0,0,0,0.1);
@@ -62,25 +64,25 @@
       margin: 8px 0 0; word-break: break-all; color: rgba(0,0,0,0.55); font-family: ui-monospace, monospace; font-size: 10px;
     }
     #urlBar {
-      position: fixed; left: 10px; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 5;
-      max-width: min(520px, calc(100vw - 24px)); font: 10px/1.5 ui-monospace, monospace;
-      color: rgba(60, 80, 95, 0.75); background: rgba(255,255,255,0.9);
+      position: fixed; left: 10px; top: 10px; z-index: 5;
+      max-width: min(420px, calc(100vw - 240px));
+      font: 10px/1.5 ui-monospace, monospace;
+      color: rgba(60, 80, 95, 0.75); background: rgba(255,255,255,0.92);
       border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; padding: 8px 10px;
     }
     #urlBar div + div { margin-top: 4px; }
     #urlBar strong { color: rgba(20, 30, 40, 0.85); }
-    body.view-wall #panel { display: none; }
-    body.view-wall #urlBar { bottom: calc(12px + env(safe-area-inset-bottom)); }
-    body.view-wall #panPad { bottom: calc(12px + env(safe-area-inset-bottom)); right: 240px; }
+    body.view-wall #hint { max-width: calc(100vw - 260px); }
     body.view-phone #qrOverlay { display: none; }
+    body.view-phone #urlBar { display: none; }
+    body.view-phone #hint { top: 10px; }
   </style>
 </head>
 <body>
   <div id="hint">
-    Loop Gallery · Family Reunion Friday 2 · static white wall<br>
-    ↑↓←→ pan · scroll zoom · drag orbit · right-drag pan<br>
-    Any image · full picture on wall · max 2 MB export · max 5 uploads<br>
-    Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
+    Loop Gallery · Family Reunion Friday 2<br>
+    <span id="hintControls">Drag wall · scroll or +/− zoom · arrows pan</span><br>
+    Choose image → Hang on wall · max 5 uploads · max 2 MB
   </div>
   <div id="qrOverlay">
     <h2>Scan · hang on wall</h2>
@@ -93,9 +95,9 @@
     <div id="urlBarSync"></div>
   </div>
   <div id="panPad" aria-label="Pan wall">
-    <span class="spacer"></span>
+    <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
     <button type="button" id="panUp" aria-label="Forward">↑</button>
-    <span class="spacer"></span>
+    <button type="button" id="zoomOut" aria-label="Zoom out">−</button>
     <button type="button" id="panLeft" aria-label="Left">←</button>
     <button type="button" id="panDown" aria-label="Back">↓</button>
     <button type="button" id="panRight" aria-label="Right">→</button>
@@ -125,7 +127,10 @@ const params = new URLSearchParams(location.search);
 const DEFAULT_ROOM = 'family-reunion-friday-2';
 const ROOM_ID = (params.get('room') || DEFAULT_ROOM).replace(/[^\w-]/g, '') || DEFAULT_ROOM;
 const MOD_TOKEN = params.get('mod') || '';
-const VIEW = params.get('view')?.toLowerCase() === 'phone' ? 'phone' : 'wall';
+const VIEW_PARAM = params.get('view')?.toLowerCase();
+const IS_MOBILE = window.matchMedia('(max-width: 768px)').matches
+  || /iPhone|iPad|Android/i.test(navigator.userAgent);
+const VIEW = VIEW_PARAM === 'wall' ? 'wall' : (VIEW_PARAM === 'phone' ? 'phone' : (IS_MOBILE ? 'phone' : 'wall'));
 const PAGE_BASE = `${location.origin}${location.pathname}`;
 const WALL_URL = `${PAGE_BASE}?view=wall&room=${ROOM_ID}`;
 const PHONE_URL = `${PAGE_BASE}?view=phone&room=${ROOM_ID}`;
@@ -661,6 +666,8 @@ bindPanButton(document.getElementById('panUp'), 'forward');
 bindPanButton(document.getElementById('panDown'), 'back');
 bindPanButton(document.getElementById('panLeft'), 'left');
 bindPanButton(document.getElementById('panRight'), 'right');
+document.getElementById('zoomIn')?.addEventListener('click', () => wallScene?.zoomBy?.(0.88));
+document.getElementById('zoomOut')?.addEventListener('click', () => wallScene?.zoomBy?.(1.14));
 
 async function boot() {
   setupUrlsAndQr();
