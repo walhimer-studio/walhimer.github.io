@@ -38,14 +38,33 @@
       color: #8b1a1a; border: 1px solid rgba(139,26,26,0.35); border-radius: 999px; padding: 4px 10px;
     }
     #modBadge.on { display: inline-block; }
+    #panPad {
+      position: fixed; right: 12px; bottom: calc(96px + env(safe-area-inset-bottom));
+      z-index: 4; display: grid; grid-template-columns: 44px 44px 44px; gap: 6px;
+      pointer-events: auto;
+    }
+    #panPad button {
+      appearance: none; border: 1px solid rgba(0,0,0,0.12); background: rgba(255,255,255,0.92);
+      border-radius: 10px; width: 44px; height: 44px; font: 18px/1 system-ui, sans-serif;
+      color: #333; cursor: pointer; touch-action: manipulation;
+    }
+    #panPad .spacer { visibility: hidden; pointer-events: none; }
   </style>
 </head>
 <body>
   <div id="hint">
     Loop Gallery · Family Reunion Friday 2 · static white wall<br>
-    ↑↓ forward / back · ←→ left / right · drag wall to pan<br>
+    ↑ forward · ↓ back · ← → left / right · drag wall · on-screen arrows<br>
     Any image · full picture on wall · max 2 MB export · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
+  </div>
+  <div id="panPad" aria-label="Pan wall">
+    <span class="spacer"></span>
+    <button type="button" id="panUp" aria-label="Forward">↑</button>
+    <span class="spacer"></span>
+    <button type="button" id="panLeft" aria-label="Left">←</button>
+    <button type="button" id="panDown" aria-label="Back">↓</button>
+    <button type="button" id="panRight" aria-label="Right">→</button>
   </div>
   <div id="panel">
     <div class="row">
@@ -105,28 +124,52 @@ function applyTextureColorSpace(tex) {
 }
 
 async function loadArtTexture(url) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    if (!url.startsWith('data:') && !url.startsWith('blob:')) img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const tex = new THREE.Texture(img);
-      tex.needsUpdate = true;
-      applyTextureColorSpace(tex);
-      resolve(tex);
-    };
-    img.onerror = () => reject(new Error('Could not load wall texture'));
-    img.src = url;
-  });
+  async function attempt(src, useCors) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      if (useCors && !src.startsWith('data:') && !src.startsWith('blob:')) {
+        img.crossOrigin = 'anonymous';
+      }
+      img.onload = () => {
+        const tex = new THREE.Texture(img);
+        tex.needsUpdate = true;
+        applyTextureColorSpace(tex);
+        resolve(tex);
+      };
+      img.onerror = () => reject(new Error('image load failed'));
+      img.src = src;
+    });
+  }
+  try {
+    return await attempt(url, true);
+  } catch (_) {
+    if (!url.startsWith('data:') && !url.startsWith('blob:')) {
+      return attempt(url, false);
+    }
+    throw new Error('Could not load wall texture');
+  }
 }
 
-async function resolveTextureUrl(data) {
-  if (data.url?.startsWith('data:') || data.url?.startsWith('blob:')) return data.url;
+async function loadSlotTexture(data) {
+  const tries = [];
+  if (data.previewUrl?.startsWith('data:')) tries.push(data.previewUrl);
   if (firebaseSync?.objectUrlForSlot) {
-    try {
-      return await firebaseSync.objectUrlForSlot(data);
-    } catch (_) { /* fall through to download URL */ }
+    tries.push(async () => firebaseSync.objectUrlForSlot(data));
   }
-  return data.url;
+  if (data.url?.startsWith('data:') || data.url?.startsWith('blob:')) tries.push(data.url);
+  if (typeof data.url === 'string' && data.url.startsWith('http')) tries.push(data.url);
+
+  let lastErr;
+  for (const item of tries) {
+    try {
+      const src = typeof item === 'function' ? await item() : item;
+      if (!src) continue;
+      return await loadArtTexture(src);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error('Could not load wall texture');
 }
 
 function setStatus(msg) { statusEl.textContent = msg; }
@@ -188,8 +231,10 @@ function loadLocalSlots() {
 
 function saveLocalSlots() {
   try {
-    const arr = [...slots.values()].map(({ slotId, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH }) =>
-      ({ slotId, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH }));
+    const arr = [...slots.values()].map(({ slotId, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH }) => {
+      const cleanUrl = url?.startsWith('blob:') || url?.startsWith('data:') ? undefined : url;
+      return { slotId, side, worldZ, col, row, url: cleanUrl, storagePath, aspect, frameW, frameH };
+    });
     localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
   } catch (_) {}
 }
@@ -250,22 +295,26 @@ function makeFrameMesh(col, row, frameW, frameH, texture) {
   return { group: holder, art, texture, frameW, frameH };
 }
 
-function addFrame(data, persist = true) {
+function addFrame(data, persist = true, quiet = false) {
   if (slots.has(data.slotId)) return Promise.resolve(false);
   const { col, row } = parseCell(data);
   const frameW = data.frameW ?? FRAME_MAX_W;
   const frameH = data.frameH ?? FRAME_MAX_H;
 
-  return resolveTextureUrl(data).then((texUrl) => loadArtTexture(texUrl)).then((tex) => {
+  return loadSlotTexture(data).then((tex) => {
     const built = makeFrameMesh(col, row, frameW, frameH, tex);
     built.group.userData.slotId = data.slotId;
     frameGroup.add(built.group);
+    const storedUrl = data.remoteUrl && !data.remoteUrl.startsWith('blob:')
+      ? data.remoteUrl
+      : (data.url?.startsWith('data:') ? undefined : data.url);
     slots.set(data.slotId, {
       ...data,
       side: data.side || 'L',
       col,
       row,
-      url: data.remoteUrl || data.url,
+      url: storedUrl,
+      previewUrl: data.previewUrl,
       group: built.group,
       art: built.art,
       texture: built.texture,
@@ -276,7 +325,7 @@ function addFrame(data, persist = true) {
     return true;
   }).catch((err) => {
     console.error(err);
-    setStatus(err.message || 'Could not show image on wall');
+    if (!quiet) setStatus(err.message || 'Could not show image on wall');
     return false;
   });
 }
@@ -302,9 +351,13 @@ async function prepareJPEG(file) {
 
   let bmp;
   try {
-    bmp = await createImageBitmap(file);
+    bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
   } catch (_) {
-    throw new Error('Could not read image — try JPG or PNG');
+    try {
+      bmp = await createImageBitmap(file);
+    } catch (_2) {
+      throw new Error('Could not read image — try JPG or PNG');
+    }
   }
 
   const aspect = bmp.width / bmp.height;
@@ -410,6 +463,7 @@ async function hang() {
       worldZ: slot.worldZ,
       col: slot.col,
       row: slot.row,
+      previewUrl: pendingMeta.previewUrl,
       url: pendingMeta.previewUrl,
       remoteUrl,
       storagePath: firebaseSync?.mode === 'firebase'
@@ -442,6 +496,7 @@ async function hang() {
           worldZ: slot.worldZ,
           col: slot.col,
           row: slot.row,
+          previewUrl: pendingMeta.previewUrl,
           url: pendingMeta.previewUrl,
           remoteUrl: localUrl,
           aspect: pendingMeta.aspect,
@@ -505,6 +560,21 @@ document.addEventListener('keyup', (e) => {
   if (k === 'arrowright') wallScene.setMoveKey('right', false);
 });
 
+function bindPanButton(el, key) {
+  if (!el) return;
+  const on = () => wallScene?.setMoveKey(key, true);
+  const off = () => wallScene?.setMoveKey(key, false);
+  el.addEventListener('pointerdown', (e) => { e.preventDefault(); on(); });
+  el.addEventListener('pointerup', off);
+  el.addEventListener('pointerleave', off);
+  el.addEventListener('pointercancel', off);
+}
+
+bindPanButton(document.getElementById('panUp'), 'forward');
+bindPanButton(document.getElementById('panDown'), 'back');
+bindPanButton(document.getElementById('panLeft'), 'left');
+bindPanButton(document.getElementById('panRight'), 'right');
+
 async function boot() {
   loadLocalCount();
   const panel = document.getElementById('panel');
@@ -534,7 +604,7 @@ async function boot() {
     }
     firebaseSync = await initGallerySync(
       ROOM_ID,
-      (data) => { void addFrame(data, true); },
+      (data) => { void addFrame(data, true, true); },
       (id) => removeFrame(id)
     );
   } catch (_) {
