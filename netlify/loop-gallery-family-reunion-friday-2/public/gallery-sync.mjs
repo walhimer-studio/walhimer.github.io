@@ -74,12 +74,14 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
 
   function slotPayload(slotId, data) {
     const m = /^W-(\d+)-(\d+)$/.exec(slotId || '');
+    const storagePath = data.storagePath
+      || `${galleryRoot}/rooms/${roomId}/images/${slotId}.jpg`;
     return {
       slotId,
       side: data.side,
       worldZ: data.worldZ,
       url: data.url,
-      storagePath: data.storagePath,
+      storagePath,
       aspect: data.aspect,
       frameW: data.frameW,
       frameH: data.frameH,

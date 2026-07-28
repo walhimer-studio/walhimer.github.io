@@ -1,9 +1,9 @@
 /**
- * Static white wall + floor — pan view with arrows / drag (no corridor walk).
+ * White wall gallery — OrbitControls zoom / orbit / pan.
  */
 export function createWhiteWallScene(opts = {}) {
   const THREE = window.THREE;
-  if (!THREE) throw new Error('THREE required on window');
+  if (!THREE?.OrbitControls) throw new Error('THREE.OrbitControls required (js/OrbitControls.js)');
 
   const WALL_W = 120;
   const WALL_H = 72;
@@ -11,16 +11,12 @@ export function createWhiteWallScene(opts = {}) {
   const ROWS = 5;
   const CELL_W = WALL_W / COLS;
   const CELL_H = WALL_H / ROWS;
-  const CAM_Z = 88;
-  const PAN_SPEED = 0.45;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
   const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 400);
-  let viewPanX = 0;
-  let viewPanY = 0;
-  const keys = { forward: false, back: false, left: false, right: false };
+  camera.position.set(0, 0, 88);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -52,101 +48,56 @@ export function createWhiteWallScene(opts = {}) {
   );
   scene.add(wallFrame);
 
-  function panLimits() {
-    const vFov = (camera.fov * Math.PI) / 180;
-    const visibleH = 2 * Math.tan(vFov / 2) * CAM_Z;
-    const visibleW = visibleH * camera.aspect;
-    const margin = 4;
-    return {
-      maxX: Math.max(0, WALL_W / 2 - visibleW / 2 + margin),
-      maxY: Math.max(0, WALL_H / 2 - visibleH / 2 + margin),
-    };
-  }
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 0, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.07;
+  controls.screenSpacePanning = true;
+  controls.minDistance = 28;
+  controls.maxDistance = 160;
+  controls.minPolarAngle = 0.35;
+  controls.maxPolarAngle = Math.PI / 2 + 0.05;
+  controls.minAzimuthAngle = -0.75;
+  controls.maxAzimuthAngle = 0.75;
+  controls.mouseButtons = {
+    LEFT: THREE.MOUSE.ROTATE,
+    MIDDLE: THREE.MOUSE.DOLLY,
+    RIGHT: THREE.MOUSE.PAN,
+  };
+  controls.update();
 
-  function clampPan() {
-    const { maxX, maxY } = panLimits();
-    viewPanX = Math.max(-maxX, Math.min(maxX, viewPanX));
-    viewPanY = Math.max(-maxY, Math.min(maxY, viewPanY));
-  }
-
-  function applyCamera() {
-    clampPan();
-    camera.position.set(viewPanX, viewPanY + 2, CAM_Z);
-    camera.lookAt(viewPanX, viewPanY, 0);
-  }
-
-  applyCamera();
+  const keys = { forward: false, back: false, left: false, right: false };
 
   function setMoveKey(name, on) {
     if (name in keys) keys[name] = on;
   }
 
   function getViewPan() {
-    return { x: viewPanX, y: viewPanY };
+    return { x: controls.target.x, y: controls.target.y };
   }
 
   function focusCell(col, row) {
     const { x, y } = cellCenter(col, row);
-    viewPanX = x;
-    viewPanY = y;
-    applyCamera();
+    controls.target.set(x, y, 0);
+    controls.update();
   }
-
-  let dragActive = false;
-  let dragLastX = 0;
-  let dragLastY = 0;
-
-  function panByPixels(dx, dy) {
-    const vFov = (camera.fov * Math.PI) / 180;
-    const visibleH = 2 * Math.tan(vFov / 2) * CAM_Z;
-    const visibleW = visibleH * camera.aspect;
-    viewPanX -= (dx / window.innerWidth) * visibleW;
-    viewPanY += (dy / window.innerHeight) * visibleH;
-    applyCamera();
-  }
-
-  renderer.domElement.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 && e.button !== 1) return;
-    dragActive = true;
-    dragLastX = e.clientX;
-    dragLastY = e.clientY;
-    renderer.domElement.setPointerCapture(e.pointerId);
-    renderer.domElement.focus({ preventScroll: true });
-    e.preventDefault();
-  });
-  renderer.domElement.addEventListener('pointermove', (e) => {
-    if (!dragActive) return;
-    panByPixels(e.clientX - dragLastX, e.clientY - dragLastY);
-    dragLastX = e.clientX;
-    dragLastY = e.clientY;
-  });
-  renderer.domElement.addEventListener('pointerup', (e) => {
-    dragActive = false;
-    try { renderer.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
-  });
-  renderer.domElement.addEventListener('pointercancel', () => { dragActive = false; });
-
-  document.addEventListener('wheel', (e) => {
-    const t = e.target;
-    if (t && (t.closest('#panel') || t.closest('#panPad') || t.closest('#qrOverlay') || t.closest('#urlBar'))) return;
-    e.preventDefault();
-    panByPixels(-e.deltaX, -e.deltaY);
-  }, { passive: false });
 
   function resize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    applyCamera();
+    controls.update();
   }
   window.addEventListener('resize', resize);
 
   function tick() {
-    if (keys.forward) viewPanY += PAN_SPEED;
-    if (keys.back) viewPanY -= PAN_SPEED;
-    if (keys.left) viewPanX -= PAN_SPEED;
-    if (keys.right) viewPanX += PAN_SPEED;
-    if (keys.forward || keys.back || keys.left || keys.right) applyCamera();
+    const dist = camera.position.distanceTo(controls.target);
+    const step = 0.35 * (dist / 88);
+    if (keys.forward) controls.target.y += step;
+    if (keys.back) controls.target.y -= step;
+    if (keys.left) controls.target.x -= step;
+    if (keys.right) controls.target.x += step;
+    controls.update();
     renderer.render(scene, camera);
     requestAnimationFrame(tick);
   }
@@ -161,8 +112,8 @@ export function createWhiteWallScene(opts = {}) {
   }
 
   function findNextEmpty(occupied) {
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
+    for (let row = 0; row < ROWS; row += 1) {
+      for (let col = 0; col < COLS; col += 1) {
         const id = slotIdForCell(col, row);
         if (!occupied.has(id)) {
           return {

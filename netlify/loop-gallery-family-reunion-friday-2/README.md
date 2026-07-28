@@ -16,10 +16,10 @@ Default Firebase room: **`family-reunion-friday-2`** (override with `?room=other
 
 | Screen | URL |
 |--------|-----|
-| **Wall** (projector / monitor — shows gallery + QR) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/?view=wall` |
+| **Wall** (projector / monitor — shows gallery + QR) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/` or `?view=wall` |
 | **Phone** (participants upload images) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/?view=phone` |
 
-Both use room **`family-reunion-friday-2`** by default. Add `&room=your-name` to both URLs if you need a fresh wall.
+Default (no `view=` param) opens **wall** view with QR. Phone link is embedded in the QR and `?view=phone`.
 
 **Wall view** hides the upload panel and shows a **QR code** (top-right) linking to the phone URL. **Phone view** shows Choose image / Hang on wall.
 

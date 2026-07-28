@@ -57,7 +57,7 @@
       box-shadow: 0 8px 28px rgba(0,0,0,0.08);
     }
     #qrOverlay h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
-    #qrCanvas { display: block; width: 168px; height: 168px; image-rendering: pixelated; }
+    #qrCanvas { display: block; width: 200px; height: 200px; image-rendering: pixelated; border: 2px solid #111; }
     #qrOverlay .phoneUrl {
       margin: 8px 0 0; word-break: break-all; color: rgba(0,0,0,0.55); font-family: ui-monospace, monospace; font-size: 10px;
     }
@@ -78,13 +78,13 @@
 <body>
   <div id="hint">
     Loop Gallery · Family Reunion Friday 2 · static white wall<br>
-    ↑ forward · ↓ back · ← → · drag · scroll / trackpad · on-screen arrows<br>
+    ↑↓←→ pan · scroll zoom · drag orbit · right-drag pan<br>
     Any image · full picture on wall · max 2 MB export · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
   </div>
   <div id="qrOverlay">
     <h2>Scan · hang on wall</h2>
-    <canvas id="qrCanvas" width="168" height="168" aria-label="QR code for phone upload"></canvas>
+    <canvas id="qrCanvas" width="200" height="200" aria-label="QR code for phone upload"></canvas>
     <p class="phoneUrl" id="phoneUrlText"></p>
   </div>
   <div id="urlBar" aria-label="Gallery URLs">
@@ -113,6 +113,7 @@
   </div>
   <script src="js/qrcode.min.js"></script>
   <script src="js/three.min.js"></script>
+  <script src="js/OrbitControls.js"></script>
   <script type="module">
 import { createWhiteWallScene } from './white-wall.mjs';
 import {
@@ -124,7 +125,7 @@ const params = new URLSearchParams(location.search);
 const DEFAULT_ROOM = 'family-reunion-friday-2';
 const ROOM_ID = (params.get('room') || DEFAULT_ROOM).replace(/[^\w-]/g, '') || DEFAULT_ROOM;
 const MOD_TOKEN = params.get('mod') || '';
-const VIEW = (params.get('view') || 'phone').toLowerCase() === 'wall' ? 'wall' : 'phone';
+const VIEW = params.get('view')?.toLowerCase() === 'phone' ? 'phone' : 'wall';
 const PAGE_BASE = `${location.origin}${location.pathname}`;
 const WALL_URL = `${PAGE_BASE}?view=wall&room=${ROOM_ID}`;
 const PHONE_URL = `${PAGE_BASE}?view=phone&room=${ROOM_ID}`;
@@ -164,59 +165,64 @@ function applyTextureColorSpace(tex) {
 }
 
 async function loadArtTexture(url) {
-  async function attempt(src, useCors) {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      if (useCors && !src.startsWith('data:') && !src.startsWith('blob:')) {
-        img.crossOrigin = 'anonymous';
-      }
-      img.onload = () => {
-        const tex = new THREE.Texture(img);
-        tex.needsUpdate = true;
-        applyTextureColorSpace(tex);
-        resolve(tex);
-      };
-      img.onerror = () => reject(new Error('image load failed'));
-      img.src = src;
-    });
+  if (!url?.startsWith('data:') && !url?.startsWith('blob:')) {
+    throw new Error('Texture must load from data or blob URL');
   }
-  try {
-    return await attempt(url, true);
-  } catch (_) {
-    if (!url.startsWith('data:') && !url.startsWith('blob:')) {
-      return attempt(url, false);
-    }
-    throw new Error('Could not load wall texture');
-  }
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const tex = new THREE.Texture(img);
+      tex.needsUpdate = true;
+      applyTextureColorSpace(tex);
+      resolve(tex);
+    };
+    img.onerror = () => reject(new Error('Could not decode wall image'));
+    img.src = url;
+  });
 }
 
 async function loadSlotTexture(data) {
-  const tries = [];
-  if (data.previewUrl?.startsWith('data:')) tries.push(data.previewUrl);
-  if (firebaseSync?.objectUrlForSlot) {
-    tries.push(async () => firebaseSync.objectUrlForSlot(data));
+  const blobUrls = [];
+  async function fromBlobUrl(blobUrl) {
+    blobUrls.push(blobUrl);
+    return loadArtTexture(blobUrl);
   }
-  if (data.url?.startsWith('data:') || data.url?.startsWith('blob:')) tries.push(data.url);
-  if (typeof data.url === 'string' && data.url.startsWith('http')) tries.push(data.url);
 
-  let lastErr;
-  for (const item of tries) {
-    try {
-      const src = typeof item === 'function' ? await item() : item;
-      if (!src) continue;
-      return await loadArtTexture(src);
-    } catch (err) {
-      lastErr = err;
+  try {
+    if (data.previewUrl?.startsWith('data:')) {
+      return await loadArtTexture(data.previewUrl);
     }
+    if (firebaseSync?.objectUrlForSlot && (data.storagePath || data.slotId)) {
+      const payload = {
+        ...data,
+        storagePath: data.storagePath
+          || `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${data.slotId}.jpg`,
+      };
+      const blobUrl = await firebaseSync.objectUrlForSlot(payload);
+      return await fromBlobUrl(blobUrl);
+    }
+    if (data.url?.startsWith('data:')) return await loadArtTexture(data.url);
+    if (data.url?.startsWith('blob:')) return await fromBlobUrl(data.url);
+  } catch (err) {
+    console.warn('loadSlotTexture', data.slotId, err);
   }
-  throw lastErr || new Error('Could not load wall texture');
+  throw new Error('Could not load image — Firebase Storage read may be blocked');
 }
 
 function setStatus(msg) { statusEl.textContent = msg; }
 
 function drawQrCode(canvas, text) {
-  if (typeof qrcode !== 'function') return;
-  const qr = qrcode(0, 'M');
+  const gen = window.qrcode;
+  if (typeof gen !== 'function') {
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000';
+    ctx.font = '12px system-ui';
+    ctx.fillText('QR unavailable', 12, 24);
+    return;
+  }
+  const qr = gen(0, 'M');
   qr.addData(text);
   qr.make();
   const n = qr.getModuleCount();
@@ -385,6 +391,10 @@ function addFrame(data, persist = true, quiet = false) {
       col,
       row,
       url: storedUrl,
+      storagePath: data.storagePath
+        || (firebaseSync?.mode === 'firebase' && firebaseSync.galleryRoot
+          ? `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${data.slotId}.jpg`
+          : data.storagePath),
       previewUrl: data.previewUrl,
       group: built.group,
       art: built.art,
@@ -470,7 +480,7 @@ function updateUploadUI() {
   modBadge.classList.toggle('on', isModerator);
   const sync = firebaseSync?.mode === 'firebase'
     ? ` · synced${firebaseSync.configSource ? ` (${firebaseSync.configSource})` : ''}`
-    : ` · local${firebaseSync?.error ? ` · ${firebaseSync.error}` : ''}`;
+    : ` · local only — refresh loses images${firebaseSync?.error ? ` · ${firebaseSync.error}` : ''}`;
   const mod = isModerator ? ' · mod' : '';
   const wallLine = `${slots.size} on wall · room ${ROOM_ID}${sync}${mod}`;
   const urlBarSync = document.getElementById('urlBarSync');
