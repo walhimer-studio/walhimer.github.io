@@ -85,6 +85,7 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
         side: data.side,
         worldZ: data.worldZ,
         url: data.url,
+        storagePath: data.storagePath,
         aspect: data.aspect,
         frameW: data.frameW,
         frameH: data.frameH,
@@ -104,9 +105,18 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       frameW: meta.frameW,
       frameH: meta.frameH,
       url,
+      storagePath: path,
       createdAt: fs.serverTimestamp(),
     });
-    return url;
+    return { url, storagePath: path };
+  }
+
+  async function objectUrlForSlot(data) {
+    const path = data.storagePath
+      || `${galleryRoot}/rooms/${roomId}/images/${data.slotId}.jpg`;
+    const ref = st.ref(storage, path);
+    const bytes = await st.getBytes(ref);
+    return URL.createObjectURL(new Blob([bytes], { type: 'image/jpeg' }));
   }
 
   async function deleteSlot(slotId, modToken) {
@@ -118,7 +128,7 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
     return res.json();
   }
 
-  return { mode: 'firebase', galleryRoot, uploadJPEG, deleteSlot, configSource: cfg.source };
+  return { mode: 'firebase', galleryRoot, uploadJPEG, deleteSlot, objectUrlForSlot, configSource: cfg.source };
   } catch (err) {
     return { mode: 'local', error: err?.message || 'firebase init failed' };
   }

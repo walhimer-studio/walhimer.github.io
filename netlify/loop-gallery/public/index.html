@@ -109,6 +109,37 @@ let isModerator = false;
 const slots = new Map();
 const frameGroup = new THREE.Group();
 const textureLoader = new THREE.TextureLoader();
+textureLoader.setCrossOrigin('anonymous');
+
+function applyTextureColorSpace(tex) {
+  if ('colorSpace' in tex && THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
+  else if (THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+}
+
+async function loadArtTexture(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    if (!url.startsWith('data:') && !url.startsWith('blob:')) img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const tex = new THREE.Texture(img);
+      tex.needsUpdate = true;
+      applyTextureColorSpace(tex);
+      resolve(tex);
+    };
+    img.onerror = () => reject(new Error('Could not load wall texture'));
+    img.src = url;
+  });
+}
+
+async function resolveTextureUrl(data) {
+  if (data.url?.startsWith('data:') || data.url?.startsWith('blob:')) return data.url;
+  if (firebaseSync?.objectUrlForSlot) {
+    try {
+      return await firebaseSync.objectUrlForSlot(data);
+    } catch (_) { /* fall through to download URL */ }
+  }
+  return data.url;
+}
 
 function setStatus(msg) { statusEl.textContent = msg; }
 
@@ -150,8 +181,8 @@ function loadLocalSlots() {
 
 function saveLocalSlots() {
   try {
-    const arr = [...slots.values()].map(({ slotId, side, worldZ, url, aspect, frameW, frameH }) =>
-      ({ slotId, side, worldZ, url, aspect, frameW, frameH }));
+    const arr = [...slots.values()].map(({ slotId, side, worldZ, url, storagePath, aspect, frameW, frameH }) =>
+      ({ slotId, side, worldZ, url, storagePath, aspect, frameW, frameH }));
     localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
   } catch (_) {}
 }
@@ -206,11 +237,11 @@ function makeFrameMesh(side, worldZ, frameW, frameH, texture) {
   holder.add(backing);
 
   const mat = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false, side: THREE.DoubleSide });
-  if ('colorSpace' in texture && THREE.SRGBColorSpace) texture.colorSpace = THREE.SRGBColorSpace;
-  else if (THREE.sRGBEncoding) texture.encoding = THREE.sRGBEncoding;
+  applyTextureColorSpace(texture);
   const art = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), mat);
   art.position.set(x, FRAME_Y, worldZ);
   art.rotation.y = rotY;
+  art.renderOrder = 2;
   holder.add(art);
 
   const border = new THREE.LineSegments(
@@ -219,26 +250,39 @@ function makeFrameMesh(side, worldZ, frameW, frameH, texture) {
   );
   border.position.copy(art.position);
   border.rotation.copy(art.rotation);
+  border.renderOrder = 3;
   holder.add(border);
 
   return { group: holder, art, texture, frameW, frameH };
 }
 
 function addFrame(data, persist = true) {
-  if (slots.has(data.slotId)) return false;
+  if (slots.has(data.slotId)) return Promise.resolve(false);
   const side = data.side === 'L' ? -1 : 1;
-  const frameW = data.frameW ?? FRAME_MAX_W * 0.12;
-  const frameH = data.frameH ?? frameW / (data.aspect || 1);
-  const tex = textureLoader.load(data.url, () => {
-    if ('colorSpace' in tex && THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
-    else if (THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+  const frameW = data.frameW ?? FRAME_MAX_W;
+  const frameH = data.frameH ?? FRAME_MAX_H;
+
+  return resolveTextureUrl(data).then((texUrl) => loadArtTexture(texUrl)).then((tex) => {
+    const built = makeFrameMesh(side, data.worldZ, frameW, frameH, tex);
+    built.group.userData.slotId = data.slotId;
+    frameGroup.add(built.group);
+    slots.set(data.slotId, {
+      ...data,
+      side: data.side,
+      url: data.remoteUrl || data.url,
+      group: built.group,
+      art: built.art,
+      texture: built.texture,
+      frameW: built.frameW,
+      frameH: built.frameH,
+    });
+    if (persist) saveLocalSlots();
+    return true;
+  }).catch((err) => {
+    console.error(err);
+    setStatus(err.message || 'Could not show image on wall');
+    return false;
   });
-  const built = makeFrameMesh(side, data.worldZ, frameW, frameH, tex);
-  built.group.userData.slotId = data.slotId;
-  frameGroup.add(built.group);
-  slots.set(data.slotId, { ...data, side: data.side, ...built });
-  if (persist) saveLocalSlots();
-  return true;
 }
 
 function removeFrame(slotId) {
@@ -279,7 +323,7 @@ async function prepareJPEG(file) {
   const frame = wallSlotFrame();
   const crop = coverCropRect(bmp.width, bmp.height, frame.frameW / frame.frameH);
 
-  const pxPerUnit = 2.4;
+  const pxPerUnit = 24;
   let tw = Math.min(2048, Math.round(frame.frameW * pxPerUnit));
   let th = Math.min(2048, Math.round(frame.frameH * pxPerUnit));
 
@@ -353,27 +397,35 @@ async function hang(sideLabel) {
     return;
   }
 
-  let url;
+  let remoteUrl;
   if (firebaseSync?.mode === 'firebase') {
     const lim = await commitUploadLimit(ROOM_ID);
     if (!lim.allowed) {
       setStatus(lim.error || 'Upload limit reached on this network');
       return;
     }
-    url = await firebaseSync.uploadJPEG(pendingFile, slot.slotId, slot.side, slot.worldZ, pendingMeta);
+    const uploaded = await firebaseSync.uploadJPEG(
+      pendingFile, slot.slotId, slot.side, slot.worldZ, pendingMeta
+    );
+    remoteUrl = uploaded.url;
   } else {
-    url = URL.createObjectURL(pendingFile);
+    remoteUrl = URL.createObjectURL(pendingFile);
   }
 
-  addFrame({
+  const hung = await addFrame({
     slotId: slot.slotId,
     side: slot.side,
     worldZ: slot.worldZ,
-    url,
+    url: pendingMeta.previewUrl,
+    remoteUrl,
+    storagePath: firebaseSync?.mode === 'firebase'
+      ? `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${slot.slotId}.jpg`
+      : undefined,
     aspect: pendingMeta.aspect,
     frameW: pendingMeta.frameW,
     frameH: pendingMeta.frameH,
   });
+  if (!hung) return;
 
   uploadCount += 1;
   saveLocalCount();
@@ -458,7 +510,7 @@ async function boot() {
     }
     firebaseSync = await initGallerySync(
       ROOM_ID,
-      (data) => addFrame(data, true),
+      (data) => { void addFrame(data, true); },
       (id) => removeFrame(id)
     );
   } catch (_) {
