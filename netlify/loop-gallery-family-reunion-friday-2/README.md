@@ -12,6 +12,51 @@ https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/
 
 Default Firebase room: **`family-reunion-friday-2`** (override with `?room=other-name`).
 
+## Firebase rules (required for sync)
+
+Project: [loop-gallery-family-reunion-3](https://console.firebase.google.com/project/loop-gallery-family-reunion-3)
+
+If hang shows **Missing or insufficient permissions**, paste both rule sets below and click **Publish**.
+
+**Firestore → Rules**
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /loopGallery/{roomId}/slots/{slotId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasAll(['side','worldZ','aspect','url'])
+        && request.resource.data.url is string
+        && request.resource.data.side in ['L','R'];
+      allow delete: if false;
+    }
+    match /loopGalleryRooms/{roomId}/limits/{ipHash} {
+      allow read, write: if false;
+    }
+  }
+}
+```
+
+**Important:** path is `loopGallery/{roomId}/slots/` — **not** `loopGallery/rooms/{roomId}/slots/`.
+
+**Storage → Rules**
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /loopGallery/rooms/{roomId}/images/{file} {
+      allow read: if true;
+      allow write: if request.resource.size < 3 * 1024 * 1024
+        && request.resource.contentType.matches('image/jpeg');
+    }
+  }
+}
+```
+
+Without these rules, images may still appear **on your device only** (local fallback), but other phones will not sync.
+
 ## Netlify deploy (optional)
 
 | Setting | Value |

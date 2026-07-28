@@ -96,18 +96,32 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   async function uploadJPEG(file, slotId, side, worldZ, meta) {
     const path = `${galleryRoot}/rooms/${roomId}/images/${slotId}.jpg`;
     const ref = st.ref(storage, path);
-    await st.uploadBytes(ref, file, { contentType: 'image/jpeg' });
+    try {
+      await st.uploadBytes(ref, file, { contentType: 'image/jpeg' });
+    } catch (err) {
+      throw new Error(
+        `Storage blocked (${err?.code || err?.message || 'permission-denied'}). `
+        + 'Firebase Console → Storage → Rules: allow write on loopGallery/rooms/{roomId}/images/{file}.'
+      );
+    }
     const url = await st.getDownloadURL(ref);
-    await fs.setDoc(fs.doc(slotsCol, slotId), {
-      side,
-      worldZ,
-      aspect: meta.aspect,
-      frameW: meta.frameW,
-      frameH: meta.frameH,
-      url,
-      storagePath: path,
-      createdAt: fs.serverTimestamp(),
-    });
+    try {
+      await fs.setDoc(fs.doc(slotsCol, slotId), {
+        side,
+        worldZ,
+        aspect: meta.aspect,
+        frameW: meta.frameW,
+        frameH: meta.frameH,
+        url,
+        storagePath: path,
+        createdAt: fs.serverTimestamp(),
+      });
+    } catch (err) {
+      throw new Error(
+        `Firestore blocked (${err?.code || err?.message || 'permission-denied'}). `
+        + 'Firebase Console → Firestore → Rules: path must be loopGallery/{roomId}/slots/{slotId} (no /rooms/).'
+      );
+    }
     return { url, storagePath: path };
   }
 

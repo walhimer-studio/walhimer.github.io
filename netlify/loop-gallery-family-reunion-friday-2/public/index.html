@@ -429,7 +429,36 @@ async function hang() {
     setStatus(`Hung on wall · slot ${slot.slotId}`);
   } catch (err) {
     console.error(err);
-    setStatus(err?.message || 'Could not hang image — check Firebase rules or try again');
+    const msg = err?.message || 'Could not hang image';
+    if (firebaseSync?.mode === 'firebase') {
+      try {
+        const localUrl = URL.createObjectURL(pendingFile);
+        const hung = await addFrame({
+          slotId: slot.slotId,
+          side: slot.side,
+          worldZ: slot.worldZ,
+          col: slot.col,
+          row: slot.row,
+          url: pendingMeta.previewUrl,
+          remoteUrl: localUrl,
+          aspect: pendingMeta.aspect,
+          frameW: pendingMeta.frameW,
+          frameH: pendingMeta.frameH,
+        });
+        if (hung) {
+          uploadCount += 1;
+          saveLocalCount();
+          pendingFile = null;
+          pendingMeta = null;
+          fileInput.value = '';
+          previewEl.style.display = 'none';
+          updateUploadUI();
+          setStatus(`Hung on your screen only — fix Firebase rules for sync. ${msg}`);
+          return;
+        }
+      } catch (_) { /* keep original error */ }
+    }
+    setStatus(msg);
   }
 }
 
