@@ -43,6 +43,7 @@
 <body>
   <div id="hint">
     Loop Gallery · Family Reunion Friday 2 · static white wall<br>
+    ↑↓ forward / back · ←→ left / right · drag wall to pan<br>
     Any image · full picture on wall · max 2 MB export · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
   </div>
@@ -208,11 +209,12 @@ function findNextEmpty() {
 }
 
 function findNearestSlot() {
+  const pan = wallScene?.getViewPan?.() || { x: 0, y: 0 };
   let best = null;
   let bestD = Infinity;
   for (const s of slots.values()) {
     const { x, y } = wallScene.cellCenter(s.col, s.row);
-    const d = x * x + y * y;
+    const d = (x - pan.x) ** 2 + (y - pan.y) ** 2;
     if (d < bestD) { bestD = d; best = s; }
   }
   return best;
@@ -419,6 +421,7 @@ async function hang() {
     });
     if (!hung) return;
 
+    wallScene?.focusCell?.(slot.col, slot.row);
     uploadCount += 1;
     saveLocalCount();
     pendingFile = null;
@@ -446,6 +449,7 @@ async function hang() {
           frameH: pendingMeta.frameH,
         });
         if (hung) {
+          wallScene?.focusCell?.(slot.col, slot.row);
           uploadCount += 1;
           saveLocalCount();
           pendingFile = null;
@@ -484,7 +488,21 @@ hangWall.addEventListener('click', () => { void hang(); });
 deleteNearest.addEventListener('click', () => deleteNearestSlot());
 
 document.addEventListener('keydown', (e) => {
+  if (!wallScene) return;
+  const k = e.key.toLowerCase();
+  if (k === 'arrowup') { wallScene.setMoveKey('forward', true); e.preventDefault(); }
+  if (k === 'arrowdown') { wallScene.setMoveKey('back', true); e.preventDefault(); }
+  if (k === 'arrowleft') { wallScene.setMoveKey('left', true); e.preventDefault(); }
+  if (k === 'arrowright') { wallScene.setMoveKey('right', true); e.preventDefault(); }
   if (e.key === 'Backspace' && isModerator) deleteNearestSlot();
+});
+document.addEventListener('keyup', (e) => {
+  if (!wallScene) return;
+  const k = e.key.toLowerCase();
+  if (k === 'arrowup') wallScene.setMoveKey('forward', false);
+  if (k === 'arrowdown') wallScene.setMoveKey('back', false);
+  if (k === 'arrowleft') wallScene.setMoveKey('left', false);
+  if (k === 'arrowright') wallScene.setMoveKey('right', false);
 });
 
 async function boot() {
@@ -524,6 +542,7 @@ async function boot() {
   }
 
   updateUploadUI();
+  wallScene.getCanvas()?.focus({ preventScroll: true });
 }
 
 boot().catch((err) => {

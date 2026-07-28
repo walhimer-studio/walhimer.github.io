@@ -1,5 +1,5 @@
 /**
- * Static white wall + floor — no walk, no corridor.
+ * Static white wall + floor — pan view with arrows / drag (no corridor walk).
  */
 export function createWhiteWallScene(opts = {}) {
   const THREE = window.THREE;
@@ -11,18 +11,22 @@ export function createWhiteWallScene(opts = {}) {
   const ROWS = 5;
   const CELL_W = WALL_W / COLS;
   const CELL_H = WALL_H / ROWS;
+  const CAM_Z = 88;
+  const PAN_SPEED = 0.45;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
   const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 400);
-  camera.position.set(0, 2, 88);
-  camera.lookAt(0, 0, 0);
+  let viewPanX = 0;
+  let viewPanY = 0;
+  const keys = { forward: false, back: false, left: false, right: false };
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.domElement.style.display = 'block';
+  renderer.domElement.tabIndex = 0;
 
   const host = opts.insertBefore?.parentElement || document.body;
   if (opts.insertBefore) host.insertBefore(renderer.domElement, opts.insertBefore);
@@ -48,18 +52,97 @@ export function createWhiteWallScene(opts = {}) {
   );
   scene.add(wallFrame);
 
+  function panLimits() {
+    const vFov = (camera.fov * Math.PI) / 180;
+    const visibleH = 2 * Math.tan(vFov / 2) * CAM_Z;
+    const visibleW = visibleH * camera.aspect;
+    const margin = 4;
+    return {
+      maxX: Math.max(0, WALL_W / 2 - visibleW / 2 + margin),
+      maxY: Math.max(0, WALL_H / 2 - visibleH / 2 + margin),
+    };
+  }
+
+  function clampPan() {
+    const { maxX, maxY } = panLimits();
+    viewPanX = Math.max(-maxX, Math.min(maxX, viewPanX));
+    viewPanY = Math.max(-maxY, Math.min(maxY, viewPanY));
+  }
+
+  function applyCamera() {
+    clampPan();
+    camera.position.set(viewPanX, viewPanY + 2, CAM_Z);
+    camera.lookAt(viewPanX, viewPanY, 0);
+  }
+
+  applyCamera();
+
+  function setMoveKey(name, on) {
+    if (name in keys) keys[name] = on;
+  }
+
+  function getViewPan() {
+    return { x: viewPanX, y: viewPanY };
+  }
+
+  function focusCell(col, row) {
+    const { x, y } = cellCenter(col, row);
+    viewPanX = x;
+    viewPanY = y;
+    applyCamera();
+  }
+
+  let dragActive = false;
+  let dragLastX = 0;
+  let dragLastY = 0;
+
+  function panByPixels(dx, dy) {
+    const vFov = (camera.fov * Math.PI) / 180;
+    const visibleH = 2 * Math.tan(vFov / 2) * CAM_Z;
+    const visibleW = visibleH * camera.aspect;
+    viewPanX -= (dx / window.innerWidth) * visibleW;
+    viewPanY += (dy / window.innerHeight) * visibleH;
+    applyCamera();
+  }
+
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    dragActive = true;
+    dragLastX = e.clientX;
+    dragLastY = e.clientY;
+    renderer.domElement.setPointerCapture(e.pointerId);
+    renderer.domElement.focus({ preventScroll: true });
+  });
+  renderer.domElement.addEventListener('pointermove', (e) => {
+    if (!dragActive) return;
+    panByPixels(e.clientX - dragLastX, e.clientY - dragLastY);
+    dragLastX = e.clientX;
+    dragLastY = e.clientY;
+  });
+  renderer.domElement.addEventListener('pointerup', (e) => {
+    dragActive = false;
+    try { renderer.domElement.releasePointerCapture(e.pointerId); } catch (_) {}
+  });
+  renderer.domElement.addEventListener('pointercancel', () => { dragActive = false; });
+
   function resize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    applyCamera();
   }
   window.addEventListener('resize', resize);
 
-  function render() {
+  function tick() {
+    if (keys.forward) viewPanY += PAN_SPEED;
+    if (keys.back) viewPanY -= PAN_SPEED;
+    if (keys.left) viewPanX -= PAN_SPEED;
+    if (keys.right) viewPanX += PAN_SPEED;
+    if (keys.forward || keys.back || keys.left || keys.right) applyCamera();
     renderer.render(scene, camera);
-    requestAnimationFrame(render);
+    requestAnimationFrame(tick);
   }
-  render();
+  tick();
 
   function gridIndex(col, row) {
     return col + row * COLS;
@@ -76,7 +159,6 @@ export function createWhiteWallScene(opts = {}) {
         if (!occupied.has(id)) {
           return {
             slotId: id,
-            // Firestore rules allow L/R only — W-* slotId is the grid key
             side: 'L',
             worldZ: gridIndex(col, row),
             col,
@@ -106,6 +188,9 @@ export function createWhiteWallScene(opts = {}) {
   return {
     getScene: () => scene,
     getCanvas: () => renderer.domElement,
+    setMoveKey,
+    getViewPan,
+    focusCell,
     findNextEmpty,
     cellCenter,
     maxFrameSize,
