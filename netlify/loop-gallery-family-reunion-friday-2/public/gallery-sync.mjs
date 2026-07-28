@@ -82,6 +82,7 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       worldZ: data.worldZ,
       url: data.url,
       storagePath,
+      thumbData: data.thumbData,
       aspect: data.aspect,
       frameW: data.frameW,
       frameH: data.frameH,
@@ -109,37 +110,53 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
 
   async function uploadJPEG(file, slotId, side, worldZ, meta) {
     const path = `${galleryRoot}/rooms/${roomId}/images/${slotId}.jpg`;
-    const ref = st.ref(storage, path);
+    const docData = {
+      side,
+      worldZ,
+      aspect: meta.aspect,
+      frameW: meta.frameW,
+      frameH: meta.frameH,
+      storagePath: path,
+      createdAt: fs.serverTimestamp(),
+    };
+    let usedThumb = false;
+
     try {
+      const ref = st.ref(storage, path);
       await st.uploadBytes(ref, file, { contentType: 'image/jpeg' });
-    } catch (err) {
-      throw new Error(
-        `Storage blocked (${err?.code || err?.message || 'permission-denied'}). `
-        + 'Firebase Console → Storage → Rules: allow write on loopGallery/rooms/{roomId}/images/{file}.'
-      );
+      docData.url = await st.getDownloadURL(ref);
+    } catch (storageErr) {
+      const thumb = meta.previewUrl;
+      if (!thumb?.startsWith('data:image/')) {
+        throw new Error(
+          `Storage blocked (${storageErr?.code || 'permission-denied'}). `
+          + 'No thumbnail for Firestore fallback.'
+        );
+      }
+      if (thumb.length > 900000) {
+        throw new Error(
+          'Storage blocked and image too large for Firestore fallback — '
+          + 'publish Storage write rules in Firebase Console.'
+        );
+      }
+      docData.url = 'inline';
+      docData.thumbData = thumb;
+      usedThumb = true;
     }
-    const url = await st.getDownloadURL(ref);
+
     try {
-      await fs.setDoc(fs.doc(slotsCol, slotId), {
-        side,
-        worldZ,
-        aspect: meta.aspect,
-        frameW: meta.frameW,
-        frameH: meta.frameH,
-        url,
-        storagePath: path,
-        createdAt: fs.serverTimestamp(),
-      });
+      await fs.setDoc(fs.doc(slotsCol, slotId), docData);
     } catch (err) {
       throw new Error(
         `Firestore blocked (${err?.code || err?.message || 'permission-denied'}). `
-        + 'Firebase Console → Firestore → Rules: path must be loopGallery/{roomId}/slots/{slotId} (no /rooms/).'
+        + 'Path: loopGallery/{roomId}/slots/{slotId}'
       );
     }
-    return { url, storagePath: path };
+    return { url: docData.url, storagePath: path, thumbData: docData.thumbData, usedThumb };
   }
 
   async function objectUrlForSlot(data) {
+    if (data.thumbData?.startsWith('data:image/')) return data.thumbData;
     const path = data.storagePath
       || `${galleryRoot}/rooms/${roomId}/images/${data.slotId}.jpg`;
     const ref = st.ref(storage, path);

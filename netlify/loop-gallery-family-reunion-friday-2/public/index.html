@@ -139,6 +139,7 @@ const MAX_UPLOADS = 5;
 const MAX_BYTES = 2 * 1024 * 1024;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
 const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
+const PREVIEW_KEY = `loopGallery:${ROOM_ID}:previews`;
 
 const statusEl = document.getElementById('status');
 const fileInput = document.getElementById('fileInput');
@@ -187,31 +188,30 @@ async function loadArtTexture(url) {
 }
 
 async function loadSlotTexture(data) {
-  const blobUrls = [];
-  async function fromBlobUrl(blobUrl) {
-    blobUrls.push(blobUrl);
-    return loadArtTexture(blobUrl);
+  if (data.thumbData?.startsWith('data:image/')) {
+    return loadArtTexture(data.thumbData);
   }
-
-  try {
-    if (data.previewUrl?.startsWith('data:')) {
-      return await loadArtTexture(data.previewUrl);
-    }
-    if (firebaseSync?.objectUrlForSlot && (data.storagePath || data.slotId)) {
-      const payload = {
-        ...data,
-        storagePath: data.storagePath
-          || `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${data.slotId}.jpg`,
-      };
+  const cached = loadCachedPreview(data.slotId);
+  if (cached) {
+    try { return await loadArtTexture(cached); } catch (_) {}
+  }
+  if (data.previewUrl?.startsWith('data:')) {
+    return loadArtTexture(data.previewUrl);
+  }
+  if (firebaseSync?.objectUrlForSlot && (data.storagePath || data.slotId)) {
+    const payload = {
+      ...data,
+      storagePath: data.storagePath
+        || `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${data.slotId}.jpg`,
+    };
+    try {
       const blobUrl = await firebaseSync.objectUrlForSlot(payload);
-      return await fromBlobUrl(blobUrl);
+      return loadArtTexture(blobUrl);
+    } catch (err) {
+      console.warn('Storage read failed', data.slotId, err);
     }
-    if (data.url?.startsWith('data:')) return await loadArtTexture(data.url);
-    if (data.url?.startsWith('blob:')) return await fromBlobUrl(data.url);
-  } catch (err) {
-    console.warn('loadSlotTexture', data.slotId, err);
   }
-  throw new Error('Could not load image — Firebase Storage read may be blocked');
+  throw new Error('Could not load image from cloud');
 }
 
 function setStatus(msg) { statusEl.textContent = msg; }
@@ -302,12 +302,33 @@ function saveLocalCount() {
   try { localStorage.setItem(LOCAL_KEY, String(uploadCount)); } catch (_) {}
 }
 
+function loadCachedPreview(slotId) {
+  try {
+    const map = JSON.parse(localStorage.getItem(PREVIEW_KEY) || '{}');
+    return map[slotId];
+  } catch (_) {
+    return null;
+  }
+}
+
+function saveCachedPreview(slotId, previewUrl) {
+  if (!previewUrl?.startsWith('data:image/')) return;
+  try {
+    const map = JSON.parse(localStorage.getItem(PREVIEW_KEY) || '{}');
+    map[slotId] = previewUrl;
+    localStorage.setItem(PREVIEW_KEY, JSON.stringify(map));
+  } catch (_) {}
+}
+
 function loadLocalSlots() {
-  if (firebaseSync?.mode === 'firebase') return;
   try {
     const raw = localStorage.getItem(SLOTS_KEY);
     if (!raw) return;
-    JSON.parse(raw).forEach((s) => addFrame(s, false, true));
+    JSON.parse(raw).forEach((s) => {
+      const thumb = loadCachedPreview(s.slotId);
+      if (thumb) s.thumbData = thumb;
+      addFrame(s, false, true);
+    });
   } catch (_) {}
 }
 
@@ -395,11 +416,12 @@ function addFrame(data, persist = true, quiet = false) {
       side: data.side || 'L',
       col,
       row,
+      thumbData: data.thumbData,
       url: storedUrl,
       storagePath: data.storagePath
         || (firebaseSync?.mode === 'firebase' && firebaseSync.galleryRoot
           ? `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${data.slotId}.jpg`
-          : data.storagePath),
+          : undefined),
       previewUrl: data.previewUrl,
       group: built.group,
       art: built.art,
@@ -408,6 +430,9 @@ function addFrame(data, persist = true, quiet = false) {
       frameH: built.frameH,
     });
     if (persist) saveLocalSlots();
+    if (data.previewUrl?.startsWith('data:') || data.thumbData?.startsWith('data:')) {
+      saveCachedPreview(data.slotId, data.thumbData || data.previewUrl);
+    }
     updateUploadUI();
     return true;
   }).catch((err) => {
@@ -535,16 +560,18 @@ async function hang() {
   setStatus('Hanging…');
   try {
     let remoteUrl;
+    let uploaded = null;
     if (firebaseSync?.mode === 'firebase') {
       const lim = await commitUploadLimit(ROOM_ID);
       if (!lim.allowed) {
         setStatus(lim.error || 'Upload limit reached on this network');
         return;
       }
-      const uploaded = await firebaseSync.uploadJPEG(
+      uploaded = await firebaseSync.uploadJPEG(
         pendingFile, slot.slotId, slot.side, slot.worldZ, pendingMeta
       );
       remoteUrl = uploaded.url;
+      if (uploaded.thumbData) pendingMeta.previewUrl = uploaded.thumbData;
     } else {
       remoteUrl = URL.createObjectURL(pendingFile);
     }
@@ -557,6 +584,7 @@ async function hang() {
       row: slot.row,
       previewUrl: pendingMeta.previewUrl,
       url: pendingMeta.previewUrl,
+      thumbData: pendingMeta.previewUrl,
       remoteUrl,
       storagePath: firebaseSync?.mode === 'firebase'
         ? `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${slot.slotId}.jpg`
@@ -575,41 +603,13 @@ async function hang() {
     fileInput.value = '';
     previewEl.style.display = 'none';
     updateUploadUI();
-    setStatus(`Hung on wall · slot ${slot.slotId}`);
+    const syncNote = firebaseSync?.mode === 'firebase'
+      ? (uploaded?.usedThumb ? ' · synced via Firestore' : ' · synced to cloud')
+      : ' · local only';
+    setStatus(`Hung on wall · slot ${slot.slotId}${syncNote}`);
   } catch (err) {
     console.error(err);
-    const msg = err?.message || 'Could not hang image';
-    if (firebaseSync?.mode === 'firebase') {
-      try {
-        const localUrl = URL.createObjectURL(pendingFile);
-        const hung = await addFrame({
-          slotId: slot.slotId,
-          side: slot.side,
-          worldZ: slot.worldZ,
-          col: slot.col,
-          row: slot.row,
-          previewUrl: pendingMeta.previewUrl,
-          url: pendingMeta.previewUrl,
-          remoteUrl: localUrl,
-          aspect: pendingMeta.aspect,
-          frameW: pendingMeta.frameW,
-          frameH: pendingMeta.frameH,
-        });
-        if (hung) {
-          wallScene?.focusCell?.(slot.col, slot.row);
-          uploadCount += 1;
-          saveLocalCount();
-          pendingFile = null;
-          pendingMeta = null;
-          fileInput.value = '';
-          previewEl.style.display = 'none';
-          updateUploadUI();
-          setStatus(`Hung on your screen only — fix Firebase rules for sync. ${msg}`);
-          return;
-        }
-      } catch (_) { /* keep original error */ }
-    }
-    setStatus(msg);
+    setStatus(err?.message || 'Could not hang — not saved to cloud');
   }
 }
 
