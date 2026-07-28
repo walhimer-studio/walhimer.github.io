@@ -4,6 +4,34 @@ Participatory **looping gallery hallway**: visitors walk a white corridor and **
 
 Based on the scale and walk model of [Loop Alumni Show — Invisible Layer POC](https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html). This deploy is a **gallery layer** — not a copy of the full invisible-layer shader hallway.
 
+## Family Reunion Friday — simple path (no Netlify required)
+
+Firebase does **not** plug into Netlify automatically. If Netlify is blocking you, skip it for Friday:
+
+1. **Firebase Console** — project [`loop-gallery-family-reunion-3`](https://console.firebase.google.com/u/0/project/loop-gallery-family-reunion-3/overview)
+   - Register **Web app** (`</>`) — not Firebase Hosting
+   - Enable **Firestore**, **Storage**, **Realtime Database** (RTDB URL needed in config)
+   - Paste **Firestore + Storage rules** below
+2. **Write config file** (once):
+
+```bash
+node netlify/loop-gallery/scripts/write-firebase-config.mjs
+```
+
+Paste the six values from Firebase → Project settings → Your apps → Web config.
+
+Or copy `public/firebase-config.example.mjs` → `public/firebase-config.mjs` and edit by hand.
+
+3. **Commit + push** `public/firebase-config.mjs` (web keys are public; secured by rules — never commit service account JSON)
+
+4. **Open** (same URL you already use):
+
+`https://mark-walhimer.com/netlify/loop-gallery/public/?room=family-reunion-friday`
+
+Status bar should say **`· synced (module)`** — two browsers, same room, hung squares appear on both.
+
+**Without Netlify:** per-browser upload cap still works; server IP limit and moderator delete are optional later.
+
 ## Local dev
 
 ```bash
@@ -43,9 +71,14 @@ Moderator URL: `https://YOUR-SITE.netlify.app/?room=alumni-2026&mod=YOUR_SECRET`
 
 ## Deploy
 
-1. Netlify site → **Base directory**: `netlify/loop-gallery`
-2. Build command / publish dir from `netlify.toml`
-3. Set environment variables (see below)
+1. Netlify → **New site** → GitHub → `walhimer-studio/walhimer.github.io`
+2. **Site configuration → Build & deploy → Build settings**
+3. **Base directory:** `netlify/loop-gallery` *(required — do not publish repo root)*
+4. Leave publish/functions to `netlify.toml` (`public` + `netlify/functions`)
+5. Set environment variables (see below)
+6. Deploy
+
+If deploy fails with `Invalid filename … # …`, the base directory is wrong (Netlify is publishing the whole repo).
 
 Invite link: `https://YOUR-SITE.netlify.app/?room=alumni-2026`
 

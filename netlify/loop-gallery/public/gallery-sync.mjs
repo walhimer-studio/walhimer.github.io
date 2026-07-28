@@ -1,11 +1,65 @@
 /**
  * Optional Firebase sync for loop gallery.
- * Loads only when /.netlify/functions/firebase-config returns config.
+ * Config sources (first match wins):
+ *   1. window.__LOOP_GALLERY_FIREBASE__ = { firebaseConfig, galleryRoot? }
+ *   2. Netlify function /.netlify/functions/firebase-config
+ *   3. ./firebase-config.mjs (GitHub Pages / mark-walhimer.com — no Netlify required)
  */
+async function loadGalleryFirebaseConfig() {
+  if (window.__LOOP_GALLERY_FIREBASE__?.firebaseConfig) {
+    return {
+      firebaseConfig: window.__LOOP_GALLERY_FIREBASE__.firebaseConfig,
+      galleryRoot: window.__LOOP_GALLERY_FIREBASE__.galleryRoot || 'loopGallery',
+      source: 'inline',
+    };
+  }
+
+  try {
+    const res = await fetch('/.netlify/functions/firebase-config');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.firebaseConfig) {
+        return {
+          firebaseConfig: data.firebaseConfig,
+          galleryRoot: data.galleryRoot || 'loopGallery',
+          source: 'netlify',
+        };
+      }
+    }
+  } catch (_) { /* not on Netlify */ }
+
+  try {
+    const mod = await import('./firebase-config.mjs');
+    if (mod.firebaseConfig) {
+      return {
+        firebaseConfig: mod.firebaseConfig,
+        galleryRoot: mod.galleryRoot || 'loopGallery',
+        source: 'module',
+      };
+    }
+  } catch (_) { /* copy firebase-config.example.mjs → firebase-config.mjs */ }
+
+  return null;
+}
+
+async function postNetlifyFunction(path, body) {
+  try {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) return { mode: 'local', allowed: true };
+    return res.json();
+  } catch (_) {
+    return { mode: 'local', allowed: true };
+  }
+}
+
 export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
-  const res = await fetch('/.netlify/functions/firebase-config');
-  if (!res.ok) return { mode: 'local' };
-  const { firebaseConfig, galleryRoot } = await res.json();
+  const cfg = await loadGalleryFirebaseConfig();
+  if (!cfg) return { mode: 'local' };
+  const { firebaseConfig, galleryRoot } = cfg;
 
   const fb = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js');
   const fs = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js');
@@ -62,33 +116,28 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
     return res.json();
   }
 
-  return { mode: 'firebase', galleryRoot, uploadJPEG, deleteSlot };
+  return { mode: 'firebase', galleryRoot, uploadJPEG, deleteSlot, configSource: cfg.source };
 }
 
 export async function checkUploadLimit(roomId) {
-  const res = await fetch('/.netlify/functions/gallery-limit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ roomId, action: 'check' }),
-  });
-  return res.json();
+  return postNetlifyFunction('/.netlify/functions/gallery-limit', { roomId, action: 'check' });
 }
 
 export async function commitUploadLimit(roomId) {
-  const res = await fetch('/.netlify/functions/gallery-limit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ roomId, action: 'commit' }),
-  });
-  return res.json();
+  return postNetlifyFunction('/.netlify/functions/gallery-limit', { roomId, action: 'commit' });
 }
 
 export async function checkModerator(token) {
   if (!token) return { ok: false };
-  const res = await fetch('/.netlify/functions/gallery-mod-check', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token }),
-  });
-  return res.json();
+  try {
+    const res = await fetch('/.netlify/functions/gallery-mod-check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    });
+    if (!res.ok) return { ok: false };
+    return res.json();
+  } catch (_) {
+    return { ok: false };
+  }
 }

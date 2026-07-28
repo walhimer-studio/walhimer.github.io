@@ -314,7 +314,7 @@ function updateUploadUI() {
   hangRight.disabled = !canHang;
   deleteNearest.hidden = !isModerator;
   modBadge.classList.toggle('on', isModerator);
-  const sync = firebaseSync?.mode === 'firebase' ? ' · synced' : ' · local';
+  const sync = firebaseSync?.mode === 'firebase' ? ` · synced${firebaseSync.configSource ? ` (${firebaseSync.configSource})` : ''}` : ' · local';
   const mod = isModerator ? ' · mod' : '';
   setStatus(`${remaining} of ${MAX_UPLOADS} uploads left · room ${ROOM_ID}${sync}${mod}`);
 }
