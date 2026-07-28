@@ -1,0 +1,29 @@
+[build]
+  command = "npm install --prefix netlify/functions 2>/dev/null || true"
+  publish = "public"
+  functions = "netlify/functions"
+
+[dev]
+  publish = "public"
+  functions = "netlify/functions"
+  port = 8888
+
+[[redirects]]
+  from = "/api/firebase-config"
+  to = "/.netlify/functions/firebase-config"
+  status = 200
+
+[[redirects]]
+  from = "/api/gallery-limit"
+  to = "/.netlify/functions/gallery-limit"
+  status = 200
+
+[[redirects]]
+  from = "/api/gallery-mod-check"
+  to = "/.netlify/functions/gallery-mod-check"
+  status = 200
+
+[[redirects]]
+  from = "/api/gallery-delete"
+  to = "/.netlify/functions/gallery-delete"
+  status = 200
