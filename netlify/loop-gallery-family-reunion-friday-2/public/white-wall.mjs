@@ -76,7 +76,8 @@ export function createWhiteWallScene(opts = {}) {
         if (!occupied.has(id)) {
           return {
             slotId: id,
-            side: 'W',
+            // Firestore rules allow L/R only — W-* slotId is the grid key
+            side: 'L',
             worldZ: gridIndex(col, row),
             col,
             row,

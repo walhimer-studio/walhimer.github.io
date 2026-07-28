@@ -260,7 +260,7 @@ function addFrame(data, persist = true) {
     frameGroup.add(built.group);
     slots.set(data.slotId, {
       ...data,
-      side: data.side || 'W',
+      side: data.side || 'L',
       col,
       row,
       url: data.remoteUrl || data.url,
@@ -371,53 +371,66 @@ fileInput.addEventListener('change', async () => {
 });
 
 async function hang() {
-  if (!pendingFile || !pendingMeta || uploadCount >= MAX_UPLOADS) return;
+  if (!pendingFile || !pendingMeta) {
+    setStatus('Choose an image first');
+    return;
+  }
+  if (uploadCount >= MAX_UPLOADS) {
+    setStatus('Upload limit reached — 5 per browser for this room');
+    return;
+  }
   const slot = findNextEmpty();
   if (!slot) {
     setStatus('Wall is full — moderator can remove a piece');
     return;
   }
 
-  let remoteUrl;
-  if (firebaseSync?.mode === 'firebase') {
-    const lim = await commitUploadLimit(ROOM_ID);
-    if (!lim.allowed) {
-      setStatus(lim.error || 'Upload limit reached on this network');
-      return;
+  setStatus('Hanging…');
+  try {
+    let remoteUrl;
+    if (firebaseSync?.mode === 'firebase') {
+      const lim = await commitUploadLimit(ROOM_ID);
+      if (!lim.allowed) {
+        setStatus(lim.error || 'Upload limit reached on this network');
+        return;
+      }
+      const uploaded = await firebaseSync.uploadJPEG(
+        pendingFile, slot.slotId, slot.side, slot.worldZ, pendingMeta
+      );
+      remoteUrl = uploaded.url;
+    } else {
+      remoteUrl = URL.createObjectURL(pendingFile);
     }
-    const uploaded = await firebaseSync.uploadJPEG(
-      pendingFile, slot.slotId, slot.side, slot.worldZ, pendingMeta
-    );
-    remoteUrl = uploaded.url;
-  } else {
-    remoteUrl = URL.createObjectURL(pendingFile);
+
+    const hung = await addFrame({
+      slotId: slot.slotId,
+      side: slot.side,
+      worldZ: slot.worldZ,
+      col: slot.col,
+      row: slot.row,
+      url: pendingMeta.previewUrl,
+      remoteUrl,
+      storagePath: firebaseSync?.mode === 'firebase'
+        ? `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${slot.slotId}.jpg`
+        : undefined,
+      aspect: pendingMeta.aspect,
+      frameW: pendingMeta.frameW,
+      frameH: pendingMeta.frameH,
+    });
+    if (!hung) return;
+
+    uploadCount += 1;
+    saveLocalCount();
+    pendingFile = null;
+    pendingMeta = null;
+    fileInput.value = '';
+    previewEl.style.display = 'none';
+    updateUploadUI();
+    setStatus(`Hung on wall · slot ${slot.slotId}`);
+  } catch (err) {
+    console.error(err);
+    setStatus(err?.message || 'Could not hang image — check Firebase rules or try again');
   }
-
-  const hung = await addFrame({
-    slotId: slot.slotId,
-    side: slot.side,
-    worldZ: slot.worldZ,
-    col: slot.col,
-    row: slot.row,
-    url: pendingMeta.previewUrl,
-    remoteUrl,
-    storagePath: firebaseSync?.mode === 'firebase'
-      ? `${firebaseSync.galleryRoot}/rooms/${ROOM_ID}/images/${slot.slotId}.jpg`
-      : undefined,
-    aspect: pendingMeta.aspect,
-    frameW: pendingMeta.frameW,
-    frameH: pendingMeta.frameH,
-  });
-  if (!hung) return;
-
-  uploadCount += 1;
-  saveLocalCount();
-  pendingFile = null;
-  pendingMeta = null;
-  fileInput.value = '';
-  previewEl.style.display = 'none';
-  updateUploadUI();
-  setStatus(`Hung on wall · slot ${slot.slotId}`);
 }
 
 async function deleteNearestSlot() {
@@ -438,7 +451,7 @@ async function deleteNearestSlot() {
   setStatus(`Removed slot ${target.slotId}`);
 }
 
-hangWall.addEventListener('click', () => hang());
+hangWall.addEventListener('click', () => { void hang(); });
 deleteNearest.addEventListener('click', () => deleteNearestSlot());
 
 document.addEventListener('keydown', (e) => {
