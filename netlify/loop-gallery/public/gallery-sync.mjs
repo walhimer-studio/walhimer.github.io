@@ -58,9 +58,10 @@ async function postNetlifyFunction(path, body) {
 
 export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   const cfg = await loadGalleryFirebaseConfig();
-  if (!cfg) return { mode: 'local' };
+  if (!cfg) return { mode: 'local', error: 'missing firebase-config.mjs' };
   const { firebaseConfig, galleryRoot } = cfg;
 
+  try {
   const fb = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js');
   const fs = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js');
   const st = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js');
@@ -68,7 +69,8 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   const app = fb.initializeApp(firebaseConfig);
   const db = fs.getFirestore(app);
   const storage = st.getStorage(app);
-  const slotsCol = fs.collection(db, `${galleryRoot}/rooms/${roomId}/slots`);
+  // loopGallery/{roomId}/slots/{slotId} — valid col/doc/col/doc path
+  const slotsCol = fs.collection(db, galleryRoot, roomId, 'slots');
 
   fs.onSnapshot(slotsCol, (snap) => {
     snap.docChanges().forEach((change) => {
@@ -117,6 +119,9 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   }
 
   return { mode: 'firebase', galleryRoot, uploadJPEG, deleteSlot, configSource: cfg.source };
+  } catch (err) {
+    return { mode: 'local', error: err?.message || 'firebase init failed' };
+  }
 }
 
 export async function checkUploadLimit(roomId) {

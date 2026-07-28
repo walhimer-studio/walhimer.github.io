@@ -43,7 +43,7 @@ export default async (req) => {
 
   const galleryRoot = process.env.FIREBASE_GALLERY_ROOT || 'loopGallery';
   const db = getFirestore(app);
-  const slotRef = db.doc(`${galleryRoot}/rooms/${roomId}/slots/${slotId}`);
+  const slotRef = db.doc(`${galleryRoot}/${roomId}/slots/${slotId}`);
   const snap = await slotRef.get();
   if (!snap.exists) {
     return new Response(JSON.stringify({ ok: true, missing: true }), {

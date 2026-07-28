@@ -117,7 +117,7 @@ Function: `/.netlify/functions/gallery-limit`
 ### Firestore layout
 
 ```
-loopGallery/rooms/{roomId}/slots/{slotId}  → side, worldZ, aspect, url
+loopGallery/{roomId}/slots/{slotId}  → side, worldZ, aspect, url
 loopGalleryRooms/{roomId}/limits/{ipHash}    → count
 ```
 
@@ -141,7 +141,7 @@ Without Firebase, the gallery runs in **local mode** (localStorage + object URLs
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /loopGallery/rooms/{roomId}/slots/{slotId} {
+    match /loopGallery/{roomId}/slots/{slotId} {
       allow read: if true;
       allow create, update: if request.resource.data.keys().hasAll(['side','worldZ','aspect','url'])
         && request.resource.data.url is string
