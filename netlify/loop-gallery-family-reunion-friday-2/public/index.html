@@ -13,10 +13,6 @@
       color: rgba(90, 120, 140, 0.55);
       pointer-events: none; max-width: 440px;
     }
-    #hint[data-rec="1"]::after {
-      content: ' · REC';
-      color: rgba(220, 50, 70, 0.9);
-    }
     #panel {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
       padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
@@ -46,8 +42,7 @@
 </head>
 <body>
   <div id="hint">
-    Loop Gallery · Family Reunion Friday 2 · invisible layer hallway · hung images<br>
-    ↑↓ travel · ←→ strafe · drag look · scroll · W walk · R record MP4 · M mute<br>
+    Loop Gallery · Family Reunion Friday 2 · static white wall<br>
     Any image · full picture on wall · max 2 MB export · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
   </div>
@@ -56,8 +51,7 @@
       <label class="btn" for="fileInput">Choose image</label>
       <input id="fileInput" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
       <img id="preview" alt="" />
-      <button type="button" id="hangLeft" disabled>Hang left wall</button>
-      <button type="button" id="hangRight" class="primary" disabled>Hang right wall</button>
+      <button type="button" id="hangWall" class="primary" disabled>Hang on wall</button>
       <button type="button" id="deleteNearest" class="danger" hidden>Remove nearest</button>
       <span id="modBadge">Moderator</span>
       <span id="status">Loading…</span>
@@ -65,7 +59,7 @@
   </div>
   <script src="js/three.min.js"></script>
   <script type="module">
-import { createInvisibleLayerHall } from './invisible-layer-hall.mjs';
+import { createWhiteWallScene } from './white-wall.mjs';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs';
@@ -80,23 +74,10 @@ const MAX_BYTES = 2 * 1024 * 1024;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
 const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
 
-// July-14 hallway scale (Invisible Layer POC)
-const WALL_LEN = 380;
-const LANE_HALF = 28;
-const WALL_H = 96;
-const FRAME_MAX_H = WALL_H;
-const FRAME_MAX_W = WALL_LEN / 6;
-const FRAME_MIN_H = WALL_H / 4;
-const FRAME_Y = WALL_H * 0.48;
-const SLOT_SPACING = 18;
-const WALL_INSET = 0.35;
-const VIEW_AHEAD = 420;
-
 const statusEl = document.getElementById('status');
 const fileInput = document.getElementById('fileInput');
 const previewEl = document.getElementById('preview');
-const hangLeft = document.getElementById('hangLeft');
-const hangRight = document.getElementById('hangRight');
+const hangWall = document.getElementById('hangWall');
 const deleteNearest = document.getElementById('deleteNearest');
 const modBadge = document.getElementById('modBadge');
 
@@ -104,8 +85,13 @@ let uploadCount = 0;
 let pendingFile = null;
 let pendingMeta = null;
 let firebaseSync = null;
-let hall = null;
+let wallScene = null;
 let isModerator = false;
+let FRAME_MAX_W = 18;
+let FRAME_MAX_H = 13;
+let FRAME_MIN_H = 5;
+let GRID_COLS = 8;
+let GRID_ROWS = 5;
 
 const slots = new Map();
 const frameGroup = new THREE.Group();
@@ -201,66 +187,53 @@ function loadLocalSlots() {
 
 function saveLocalSlots() {
   try {
-    const arr = [...slots.values()].map(({ slotId, side, worldZ, url, storagePath, aspect, frameW, frameH }) =>
-      ({ slotId, side, worldZ, url, storagePath, aspect, frameW, frameH }));
+    const arr = [...slots.values()].map(({ slotId, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH }) =>
+      ({ slotId, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH }));
     localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
   } catch (_) {}
 }
 
-function snapSlotZ(z) {
-  return Math.round(z / SLOT_SPACING) * SLOT_SPACING;
+function parseCell(data) {
+  if (data.col != null && data.row != null) return { col: data.col, row: data.row };
+  const m = /^W-(\d+)-(\d+)$/.exec(data.slotId || '');
+  if (m) return { col: +m[1], row: +m[2] };
+  const idx = typeof data.worldZ === 'number'
+    ? Math.abs(Math.round(data.worldZ)) % (GRID_COLS * GRID_ROWS)
+    : slots.size % (GRID_COLS * GRID_ROWS);
+  return { col: idx % GRID_COLS, row: Math.floor(idx / GRID_COLS) };
 }
 
-function slotId(side, worldZ) {
-  return `${side}-${worldZ}`;
+function findNextEmpty() {
+  return wallScene?.findNextEmpty(slots) ?? null;
 }
 
-function camZ() {
-  return hall?.getCamPos()?.z ?? 0;
-}
-
-function findNearestEmpty(side, refZ) {
-  const base = snapSlotZ(refZ);
-  for (let d = 0; d <= 40; d++) {
-    for (const dz of (d === 0 ? [0] : [d, -d])) {
-      const z = base + dz * SLOT_SPACING;
-      const id = slotId(side, z);
-      if (!slots.has(id)) return { slotId: id, side, worldZ: z };
-    }
-  }
-  return null;
-}
-
-function findNearestSlot(refZ) {
+function findNearestSlot() {
   let best = null;
   let bestD = Infinity;
   for (const s of slots.values()) {
-    const d = Math.abs(s.worldZ - refZ);
+    const { x, y } = wallScene.cellCenter(s.col, s.row);
+    const d = x * x + y * y;
     if (d < bestD) { bestD = d; best = s; }
   }
   return best;
 }
 
-function makeFrameMesh(side, worldZ, frameW, frameH, texture) {
+function makeFrameMesh(col, row, frameW, frameH, texture) {
+  const { x, y } = wallScene.cellCenter(col, row);
   const holder = new THREE.Group();
   holder.userData.slotId = null;
-
-  const x = side * (LANE_HALF - WALL_INSET);
-  const rotY = side > 0 ? -Math.PI / 2 : Math.PI / 2;
 
   const backing = new THREE.Mesh(
     new THREE.PlaneGeometry(frameW + 0.28, frameH + 0.28),
     new THREE.MeshBasicMaterial({ color: 0xffffff })
   );
-  backing.position.set(x + side * -0.02, FRAME_Y, worldZ);
-  backing.rotation.y = rotY;
+  backing.position.set(x, y, 0.02);
   holder.add(backing);
 
   const mat = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false, side: THREE.DoubleSide });
   applyTextureColorSpace(texture);
   const art = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), mat);
-  art.position.set(x, FRAME_Y, worldZ);
-  art.rotation.y = rotY;
+  art.position.set(x, y, 0.04);
   art.renderOrder = 2;
   holder.add(art);
 
@@ -269,7 +242,6 @@ function makeFrameMesh(side, worldZ, frameW, frameH, texture) {
     new THREE.LineBasicMaterial({ color: 0x222222 })
   );
   border.position.copy(art.position);
-  border.rotation.copy(art.rotation);
   border.renderOrder = 3;
   holder.add(border);
 
@@ -278,17 +250,19 @@ function makeFrameMesh(side, worldZ, frameW, frameH, texture) {
 
 function addFrame(data, persist = true) {
   if (slots.has(data.slotId)) return Promise.resolve(false);
-  const side = data.side === 'L' ? -1 : 1;
+  const { col, row } = parseCell(data);
   const frameW = data.frameW ?? FRAME_MAX_W;
   const frameH = data.frameH ?? FRAME_MAX_H;
 
   return resolveTextureUrl(data).then((texUrl) => loadArtTexture(texUrl)).then((tex) => {
-    const built = makeFrameMesh(side, data.worldZ, frameW, frameH, tex);
+    const built = makeFrameMesh(col, row, frameW, frameH, tex);
     built.group.userData.slotId = data.slotId;
     frameGroup.add(built.group);
     slots.set(data.slotId, {
       ...data,
-      side: data.side,
+      side: data.side || 'W',
+      col,
+      row,
       url: data.remoteUrl || data.url,
       group: built.group,
       art: built.art,
@@ -313,15 +287,6 @@ function removeFrame(slotId) {
   if (s.url?.startsWith('blob:')) URL.revokeObjectURL(s.url);
   slots.delete(slotId);
   saveLocalSlots();
-}
-
-function updateFrameVisibility() {
-  const cz = camZ();
-  frameGroup.children.forEach((g) => {
-    const s = slots.get(g.userData.slotId);
-    if (!s) return;
-    g.visible = Math.abs(s.worldZ - cz) < VIEW_AHEAD;
-  });
 }
 
 async function prepareJPEG(file) {
@@ -372,15 +337,14 @@ async function prepareJPEG(file) {
 function updateUploadUI() {
   const remaining = Math.max(0, MAX_UPLOADS - uploadCount);
   const canHang = pendingFile && pendingMeta && remaining > 0;
-  hangLeft.disabled = !canHang;
-  hangRight.disabled = !canHang;
+  hangWall.disabled = !canHang;
   deleteNearest.hidden = !isModerator;
   modBadge.classList.toggle('on', isModerator);
   const sync = firebaseSync?.mode === 'firebase'
     ? ` · synced${firebaseSync.configSource ? ` (${firebaseSync.configSource})` : ''}`
     : ` · local${firebaseSync?.error ? ` · ${firebaseSync.error}` : ''}`;
   const mod = isModerator ? ' · mod' : '';
-  const hint = remaining > 0 && !pendingFile ? ' · choose JPEG first' : '';
+  const hint = remaining > 0 && !pendingFile ? ' · choose image first' : '';
   setStatus(`${remaining} of ${MAX_UPLOADS} uploads left · room ${ROOM_ID}${sync}${mod}${hint}`);
 }
 
@@ -390,8 +354,7 @@ fileInput.addEventListener('change', async () => {
   pendingFile = null;
   pendingMeta = null;
   previewEl.style.display = 'none';
-  hangLeft.disabled = true;
-  hangRight.disabled = true;
+  hangWall.disabled = true;
   setStatus('Reading image…');
   try {
     const prep = await prepareJPEG(file);
@@ -407,11 +370,11 @@ fileInput.addEventListener('change', async () => {
   }
 });
 
-async function hang(sideLabel) {
+async function hang() {
   if (!pendingFile || !pendingMeta || uploadCount >= MAX_UPLOADS) return;
-  const slot = findNearestEmpty(sideLabel, camZ());
+  const slot = findNextEmpty();
   if (!slot) {
-    setStatus('No empty frame nearby — keep walking');
+    setStatus('Wall is full — moderator can remove a piece');
     return;
   }
 
@@ -434,6 +397,8 @@ async function hang(sideLabel) {
     slotId: slot.slotId,
     side: slot.side,
     worldZ: slot.worldZ,
+    col: slot.col,
+    row: slot.row,
     url: pendingMeta.previewUrl,
     remoteUrl,
     storagePath: firebaseSync?.mode === 'firebase'
@@ -452,14 +417,14 @@ async function hang(sideLabel) {
   fileInput.value = '';
   previewEl.style.display = 'none';
   updateUploadUI();
-  setStatus(`Hung on ${sideLabel} wall · slot ${slot.slotId}`);
+  setStatus(`Hung on wall · slot ${slot.slotId}`);
 }
 
 async function deleteNearestSlot() {
   if (!isModerator) return;
-  const target = findNearestSlot(camZ());
+  const target = findNearestSlot();
   if (!target) {
-    setStatus('No hung work nearby');
+    setStatus('Nothing on wall to remove');
     return;
   }
   if (firebaseSync?.mode === 'firebase' && firebaseSync.deleteSlot) {
@@ -473,45 +438,26 @@ async function deleteNearestSlot() {
   setStatus(`Removed slot ${target.slotId}`);
 }
 
-hangLeft.addEventListener('click', () => hang('L'));
-hangRight.addEventListener('click', () => hang('R'));
+hangWall.addEventListener('click', () => hang());
 deleteNearest.addEventListener('click', () => deleteNearestSlot());
 
 document.addEventListener('keydown', (e) => {
-  if (!hall) return;
-  const k = e.key.toLowerCase();
-  if (k === 'arrowup') { hall.setMoveKey('forward', true); e.preventDefault(); }
-  if (k === 'arrowdown') { hall.setMoveKey('back', true); e.preventDefault(); }
-  if (k === 'arrowleft') { hall.setMoveKey('left', true); e.preventDefault(); }
-  if (k === 'arrowright') { hall.setMoveKey('right', true); e.preventDefault(); }
-  if (k === 'w') hall.toggleWalk();
-  if (k === 'm') hall.toggleMute();
-  if (k === 'r') {
-    hall.toggleRecord().then((on) => setStatus(on ? 'Recording MP4… (R to stop)' : 'Recording saved'));
-  }
-  if (k === 'backspace' && isModerator) deleteNearestSlot();
-});
-document.addEventListener('keyup', (e) => {
-  if (!hall) return;
-  const k = e.key.toLowerCase();
-  if (k === 'arrowup') hall.setMoveKey('forward', false);
-  if (k === 'arrowdown') hall.setMoveKey('back', false);
-  if (k === 'arrowleft') hall.setMoveKey('left', false);
-  if (k === 'arrowright') hall.setMoveKey('right', false);
+  if (e.key === 'Backspace' && isModerator) deleteNearestSlot();
 });
 
 async function boot() {
   loadLocalCount();
   const panel = document.getElementById('panel');
-  hall = await createInvisibleLayerHall({
-    insertBefore: panel,
-    seed: 77823,
-    recordingPrefix: `loop-gallery-${ROOM_ID}`,
-    onFrame: () => updateFrameVisibility(),
-  });
-  hall.getScene().add(frameGroup);
+  wallScene = createWhiteWallScene({ insertBefore: panel });
+  const { frameMaxW, frameMaxH, frameMinH } = wallScene.maxFrameSize();
+  FRAME_MAX_W = frameMaxW;
+  FRAME_MAX_H = frameMaxH;
+  FRAME_MIN_H = frameMinH;
+  GRID_COLS = wallScene.layout.COLS;
+  GRID_ROWS = wallScene.layout.ROWS;
+
+  wallScene.getScene().add(frameGroup);
   loadLocalSlots();
-  updateFrameVisibility();
 
   if (MOD_TOKEN) {
     try {
@@ -536,7 +482,6 @@ async function boot() {
   }
 
   updateUploadUI();
-  hall.getCanvas()?.focus({ preventScroll: true });
 }
 
 boot().catch((err) => {
