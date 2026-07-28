@@ -48,7 +48,7 @@
   <div id="hint">
     Loop gallery · invisible layer hallway · code walls · hung JPEG slots<br>
     ↑↓ travel · ←→ strafe · drag look · scroll · W walk · R record MP4 · M mute<br>
-    Any image · cropped to wall slot · max 2 MB export · max 5 uploads<br>
+    Any image · full picture on wall · max 2 MB export · max 5 uploads<br>
     Moderator: add <code>?mod=TOKEN</code> to URL for remove-nearest
   </div>
   <div id="panel">
@@ -84,8 +84,8 @@ const WALL_LEN = 380;
 const LANE_HALF = 28;
 const WALL_H = 96;
 const FRAME_MAX_H = WALL_H;
-const FRAME_MAX_W = WALL_LEN / 100;
-const FRAME_MIN_H = WALL_H / 3;
+const FRAME_MAX_W = WALL_LEN / 6;
+const FRAME_MIN_H = WALL_H / 4;
 const FRAME_Y = WALL_H * 0.48;
 const SLOT_SPACING = 18;
 const WALL_INSET = 0.35;
@@ -147,20 +147,39 @@ function formatKb(n) {
   return `${(n / 1024).toFixed(n >= 10240 ? 0 : 1)} KB`;
 }
 
-function wallSlotFrame() {
-  return { frameW: FRAME_MAX_W, frameH: FRAME_MAX_H, aspect: FRAME_MAX_W / FRAME_MAX_H };
+function fitFrameToWall(imageAspect) {
+  if (!imageAspect || !Number.isFinite(imageAspect)) imageAspect = 1;
+  let frameW;
+  let frameH;
+  if (imageAspect > FRAME_MAX_W / FRAME_MAX_H) {
+    frameW = FRAME_MAX_W;
+    frameH = FRAME_MAX_W / imageAspect;
+  } else {
+    frameH = FRAME_MAX_H;
+    frameW = FRAME_MAX_H * imageAspect;
+  }
+  if (frameH < FRAME_MIN_H) {
+    frameH = FRAME_MIN_H;
+    frameW = FRAME_MIN_H * imageAspect;
+  }
+  if (frameW > FRAME_MAX_W) {
+    frameW = FRAME_MAX_W;
+    frameH = FRAME_MAX_W / imageAspect;
+  }
+  if (frameH > FRAME_MAX_H) {
+    frameH = FRAME_MAX_H;
+    frameW = FRAME_MAX_H * imageAspect;
+  }
+  return { frameW, frameH, aspect: imageAspect };
 }
 
-function coverCropRect(srcW, srcH, targetAspect) {
-  const srcAspect = srcW / srcH;
-  if (srcAspect > targetAspect) {
-    const sh = srcH;
-    const sw = sh * targetAspect;
-    return { sx: (srcW - sw) / 2, sy: 0, sw, sh };
-  }
-  const sw = srcW;
-  const sh = sw / targetAspect;
-  return { sx: 0, sy: (srcH - sh) / 2, sw, sh };
+function containDraw(ctx, bmp, tw, th) {
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, tw, th);
+  const scale = Math.min(tw / bmp.width, th / bmp.height);
+  const dw = bmp.width * scale;
+  const dh = bmp.height * scale;
+  ctx.drawImage(bmp, (tw - dw) / 2, (th - dh) / 2, dw, dh);
 }
 
 function loadLocalCount() {
@@ -320,8 +339,8 @@ async function prepareJPEG(file) {
     throw new Error('Could not read image — try JPG or PNG');
   }
 
-  const frame = wallSlotFrame();
-  const crop = coverCropRect(bmp.width, bmp.height, frame.frameW / frame.frameH);
+  const aspect = bmp.width / bmp.height;
+  const frame = fitFrameToWall(aspect);
 
   const pxPerUnit = 24;
   let tw = Math.min(2048, Math.round(frame.frameW * pxPerUnit));
@@ -330,9 +349,7 @@ async function prepareJPEG(file) {
   const canvas = document.createElement('canvas');
   canvas.width = tw;
   canvas.height = th;
-  canvas.getContext('2d').drawImage(
-    bmp, crop.sx, crop.sy, crop.sw, crop.sh, 0, 0, tw, th
-  );
+  containDraw(canvas.getContext('2d'), bmp, tw, th);
   bmp.close();
 
   let quality = 0.9;
