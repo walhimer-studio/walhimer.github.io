@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Face signal study — Mark Walhimer</title>
+  <script src="../sketches/js/p5-1.11.2.min.js"></script>
+  <script src="../sketches/js/ml5-1.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #f8f7f5;
+      font-family: ui-monospace, "DM Mono", monospace;
+    }
+    body > canvas {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+    video {
+      display: none !important;
+      visibility: hidden !important;
+      position: fixed;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #ui {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+    #gate {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(248, 247, 245, 0.94);
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    #gate.hidden { display: none; }
+    #gate p {
+      margin: 0 0 14px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: none;
+      color: rgba(20, 18, 16, 0.55);
+      text-align: center;
+      line-height: 1.65;
+      max-width: 22em;
+    }
+    #gate-btn {
+      pointer-events: auto;
+      cursor: pointer;
+      padding: 11px 16px;
+      border: 1px solid rgba(20, 18, 16, 0.22);
+      border-radius: 6px;
+      background: #fff;
+      font: inherit;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #141210;
+    }
+    #gate-btn:hover { border-color: rgba(20, 18, 16, 0.4); }
+    #cam-btn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 6;
+      pointer-events: auto;
+      cursor: pointer;
+      padding: 10px 14px;
+      border: 1px solid rgba(20, 18, 16, 0.18);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.92);
+      font: inherit;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #141210;
+    }
+    #cam-btn.hidden { display: none; }
+    #hint {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      max-width: min(92vw, 26em);
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(20, 18, 16, 0.55);
+    }
+    #live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(20, 18, 16, 0.45);
+    }
+    #live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(160, 160, 160, 0.5);
+    }
+    #live[data-on="1"] #live-dot {
+      background: #c44;
+      box-shadow: 0 0 8px rgba(200, 60, 60, 0.55);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    #panel {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      width: min(92vw, 280px);
+      padding: 12px 14px;
+      border: 1px solid rgba(20, 18, 16, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      font-size: 10px;
+      line-height: 1.45;
+      color: rgba(20, 18, 16, 0.72);
+    }
+    #panel h2 {
+      margin: 0 0 10px;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(20, 18, 16, 0.45);
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 72px 1fr 32px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+    .row label { color: rgba(20, 18, 16, 0.55); }
+    .bar-wrap {
+      height: 6px;
+      background: rgba(20, 18, 16, 0.07);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #74b4dc, #eca018);
+      border-radius: 3px;
+      transition: width 0.06s linear;
+    }
+    .val {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: rgba(20, 18, 16, 0.4);
+    }
+    #status {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(20, 18, 16, 0.08);
+      font-size: 9px;
+      color: rgba(20, 18, 16, 0.42);
+      line-height: 1.55;
+    }
+    #face-tag {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(20, 18, 16, 0.22);
+      pointer-events: none;
+    }
+    #record-panel {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      width: min(92vw, 240px);
+      padding: 12px 14px;
+      border: 1px solid rgba(20, 18, 16, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.88);
+      font-size: 10px;
+      line-height: 1.45;
+      color: rgba(20, 18, 16, 0.72);
+      pointer-events: auto;
+    }
+    #record-panel h2 {
+      margin: 0 0 8px;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(20, 18, 16, 0.45);
+    }
+    #rec-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 9px;
+      color: rgba(20, 18, 16, 0.45);
+    }
+    #rec-state[data-on="1"] { color: #a33; }
+    #rec-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(160, 160, 160, 0.5);
+    }
+    #rec-state[data-on="1"] #rec-dot {
+      background: #c44;
+      animation: pulse 1s ease-in-out infinite;
+    }
+    #rec-label {
+      font-size: 12px;
+      color: #141210;
+      margin-bottom: 6px;
+    }
+    #rec-count { color: rgba(20, 18, 16, 0.45); margin-bottom: 8px; }
+    #rec-keys {
+      font-size: 9px;
+      line-height: 1.6;
+      color: rgba(20, 18, 16, 0.42);
+    }
+    .rec-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .rec-actions button {
+      flex: 1;
+      cursor: pointer;
+      padding: 8px 10px;
+      border: 1px solid rgba(20, 18, 16, 0.18);
+      border-radius: 6px;
+      background: #fff;
+      font: inherit;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #141210;
+    }
+    .rec-actions button:hover { border-color: rgba(20, 18, 16, 0.35); }
+  </style>
+</head>
+<body>
+  <div id="gate" aria-hidden="false">
+    <p id="gate-msg"><strong>Camera needed.</strong><br />Cursor’s preview often blocks the webcam.<br />Open in Chrome or Safari:<br /><span id="gate-url">http://localhost:8080/drafts/face-signal-study.html</span></p>
+    <button type="button" id="gate-btn">Enable camera</button>
+  </div>
+  <button type="button" id="cam-btn" class="hidden">Enable camera</button>
+  <div id="ui">
+    <div id="hint">
+      Face signal study · v1 · record<br />
+      Camera on · background removed · move head · smile · label moods.
+      <div id="live" data-on="0"><span id="live-dot"></span><span id="live-text">Camera off</span></div>
+    </div>
+    <div id="face-tag" aria-live="polite">No face</div>
+    <aside id="panel">
+      <h2>Signals</h2>
+      <div class="row"><label>Smile</label><div class="bar-wrap"><div class="bar" id="bar-smile"></div></div><span class="val" id="val-smile">—</span></div>
+      <div class="row"><label>Mouth</label><div class="bar-wrap"><div class="bar" id="bar-mouth"></div></div><span class="val" id="val-mouth">—</span></div>
+      <div class="row"><label>Brow</label><div class="bar-wrap"><div class="bar" id="bar-brow"></div></div><span class="val" id="val-brow">—</span></div>
+      <div class="row"><label>Tilt</label><div class="bar-wrap"><div class="bar" id="bar-tilt"></div></div><span class="val" id="val-tilt">—</span></div>
+      <div class="row"><label>Yaw</label><div class="bar-wrap"><div class="bar" id="bar-yaw"></div></div><span class="val" id="val-yaw">—</span></div>
+      <div id="status">Loading segmentation model…</div>
+    </aside>
+    <aside id="record-panel">
+      <h2>Record</h2>
+      <div id="rec-state" data-on="0"><span id="rec-dot"></span><span id="rec-text">Idle</span></div>
+      <div id="rec-label">Label · neutral</div>
+      <div id="rec-count">0 samples</div>
+      <div id="rec-keys">
+        <strong>R</strong> record · <strong>E</strong> export JSON · <strong>S</strong> save PNG<br />
+        <strong>1</strong> neutral · <strong>2</strong> happy · <strong>3</strong> sad<br />
+        <strong>4</strong> think · <strong>5</strong> surprise<br />
+        <strong>I</strong> swap mask if inverted
+      </div>
+      <div class="rec-actions">
+        <button type="button" id="btn-record">Record</button>
+        <button type="button" id="btn-export">Export</button>
+        <button type="button" id="btn-still">Save still</button>
+      </div>
+      <p class="hint" style="margin:8px 0 0;font-size:9px;color:rgba(20,18,16,0.42);">
+        Save still → <code id="still-name">neutral.png</code> in Downloads. Move to <code>drafts/face-signal-sessions/</code>.
+      </p>
+    </aside>
+  </div>
+
+  <script>
+    const LM = {
+      NOSE: 1,
+      FOREHEAD: 10,
+      L_EYE: 33,
+      R_EYE: 263,
+      L_MOUTH: 61,
+      R_MOUTH: 291,
+      LIP_TOP: 13,
+      LIP_BOT: 14,
+      CHIN: 152,
+      L_BROW: 107,
+      R_BROW: 336,
+    };
+
+    const RECORD_LM = [1, 10, 13, 14, 33, 61, 107, 152, 263, 291, 336];
+    const LABELS = ['neutral', 'happy', 'sad', 'think', 'surprise'];
+    const RECORD_MS = 125;
+
+    const CAM_W = 640;
+    const CAM_H = 480;
+    const SMOOTH = 0.22;
+    const NEUTRAL_DECAY = 0.88;
+
+    let cam;
+    let faceMesh;
+    let bodySegmentation;
+    let segmentation = null;
+    let facePredictions = [];
+    let cameraReady = false;
+    let meshReady = false;
+    let segReady = false;
+    let starting = false;
+    let cutoutLayer;
+    let personMaskMode = null;
+    let maskUserOverride = null;
+
+    let recording = false;
+    let recordLabel = 'neutral';
+    let recordSessionStart = 0;
+    let lastRecordMs = 0;
+    const recordSamples = [];
+    const recordMarkers = [];
+
+    const raw = { smile: 0, mouth: 0, brow: 0, tilt: 0.5, yaw: 0.5 };
+    const sig = { smile: 0, mouth: 0, brow: 0, tilt: 0.5, yaw: 0.5 };
+
+    const mouthWMin = { v: null };
+    const mouthWMax = { v: null };
+    const lipMin = { v: null };
+    const lipMax = { v: null };
+    const browMin = { v: null };
+    const browMax = { v: null };
+
+    function preload() {
+      bodySegmentation = ml5.bodySegmentation('SelfieSegmentation', { maskType: 'person' });
+    }
+
+    function normPoint(p) {
+      if (!p) return null;
+      const x = p.x;
+      const y = p.y;
+      if (x >= 0 && x <= 1.001 && y >= 0 && y <= 1.001) {
+        return { x: x * CAM_W, y: y * CAM_H };
+      }
+      return { x, y };
+    }
+
+    function kp(predictions, idx) {
+      if (!predictions || !predictions.length) return null;
+      const points = predictions[0].keypoints || [];
+      if (points.length <= idx) return null;
+      return normPoint(points[idx]);
+    }
+
+    function faceHeight(predictions) {
+      const top = kp(predictions, LM.FOREHEAD);
+      const chin = kp(predictions, LM.LIP_BOT);
+      const le = kp(predictions, LM.L_EYE);
+      const re = kp(predictions, LM.R_EYE);
+      if (chin && top) return Math.max(12, Math.abs(chin.y - top.y));
+      if (le && re) return Math.max(12, Math.abs(re.y - le.y) * 2.4);
+      return 48;
+    }
+
+    function clamp01(v) {
+      return Math.max(0, Math.min(1, v));
+    }
+
+    function trackRange(minRef, maxRef, value, relax) {
+      if (minRef.v == null) {
+        minRef.v = value;
+        maxRef.v = value;
+      }
+      minRef.v = Math.min(minRef.v, value);
+      maxRef.v = Math.max(maxRef.v, value);
+      minRef.v += relax;
+      maxRef.v -= relax;
+      if (maxRef.v - minRef.v < 0.02) {
+        const mid = (minRef.v + maxRef.v) * 0.5;
+        minRef.v = mid - 0.01;
+        maxRef.v = mid + 0.01;
+      }
+      return clamp01((value - minRef.v) / (maxRef.v - minRef.v));
+    }
+
+    function computeRawSignals(predictions) {
+      if (!predictions || !predictions.length) return false;
+
+      const fh = faceHeight(predictions);
+      const lM = kp(predictions, LM.L_MOUTH);
+      const rM = kp(predictions, LM.R_MOUTH);
+      const lipT = kp(predictions, LM.LIP_TOP);
+      const lipB = kp(predictions, LM.LIP_BOT);
+      const lEye = kp(predictions, LM.L_EYE);
+      const rEye = kp(predictions, LM.R_EYE);
+      const lBrow = kp(predictions, LM.L_BROW);
+      const rBrow = kp(predictions, LM.R_BROW);
+
+      if (!lM || !rM || !lipT || !lipB || !lEye || !rEye) return false;
+
+      raw.smile = trackRange(mouthWMin, mouthWMax, Math.hypot(lM.x - rM.x, lM.y - rM.y) / fh, 0.00008);
+      raw.mouth = trackRange(lipMin, lipMax, Math.hypot(lipT.x - lipB.x, lipT.y - lipB.y) / fh, 0.00006);
+
+      if (lBrow && rBrow) {
+        const eyeY = (lEye.y + rEye.y) * 0.5;
+        const browY = (lBrow.y + rBrow.y) * 0.5;
+        raw.brow = trackRange(browMin, browMax, (eyeY - browY) / fh, 0.00004);
+      }
+
+      const tiltRad = Math.atan2(rEye.y - lEye.y, rEye.x - lEye.x);
+      raw.tilt = clamp01((tiltRad + 0.45) / 0.9);
+
+      const nose = kp(predictions, LM.NOSE);
+      if (nose) {
+        const eyeMidX = (lEye.x + rEye.x) * 0.5;
+        const eyeDist = Math.max(8, Math.hypot(rEye.x - lEye.x, rEye.y - lEye.y));
+        raw.yaw = clamp01((nose.x - eyeMidX) / eyeDist * 0.85 + 0.5);
+      }
+
+      return true;
+    }
+
+    function smoothSignals(hasFace) {
+      if (!hasFace) {
+        sig.smile *= NEUTRAL_DECAY;
+        sig.mouth *= NEUTRAL_DECAY;
+        sig.brow *= NEUTRAL_DECAY;
+        sig.tilt += (0.5 - sig.tilt) * (1 - NEUTRAL_DECAY);
+        sig.yaw += (0.5 - sig.yaw) * (1 - NEUTRAL_DECAY);
+        return;
+      }
+      sig.smile += (raw.smile - sig.smile) * SMOOTH;
+      sig.mouth += (raw.mouth - sig.mouth) * SMOOTH;
+      sig.brow += (raw.brow - sig.brow) * SMOOTH;
+      sig.tilt += (raw.tilt - sig.tilt) * SMOOTH;
+      sig.yaw += (raw.yaw - sig.yaw) * SMOOTH;
+    }
+
+    function normLandmark01(predictions, idx) {
+      const p = kp(predictions, idx);
+      if (!p) return null;
+      return [+(p.x / CAM_W).toFixed(4), +(p.y / CAM_H).toFixed(4)];
+    }
+
+    function captureLandmarks(predictions) {
+      const lm = {};
+      for (const id of RECORD_LM) {
+        const pt = normLandmark01(predictions, id);
+        if (pt) lm[String(id)] = pt;
+      }
+      return lm;
+    }
+
+    function roundSig(obj) {
+      const out = {};
+      for (const k of Object.keys(obj)) out[k] = +obj[k].toFixed(4);
+      return out;
+    }
+
+    function setRecordLabel(label) {
+      if (!LABELS.includes(label)) return;
+      recordLabel = label;
+      const el = document.getElementById('rec-label');
+      if (el) el.textContent = 'Label · ' + label;
+      const stillName = document.getElementById('still-name');
+      if (stillName) stillName.textContent = label + '.png';
+      if (recording) {
+        recordMarkers.push({
+          t: Date.now() - recordSessionStart,
+          label,
+        });
+      }
+    }
+
+    function updateRecordUi() {
+      const state = document.getElementById('rec-state');
+      const text = document.getElementById('rec-text');
+      const count = document.getElementById('rec-count');
+      const btn = document.getElementById('btn-record');
+      if (state) state.dataset.on = recording ? '1' : '0';
+      if (text) text.textContent = recording ? 'Recording' : 'Idle';
+      if (count) count.textContent = recordSamples.length + ' samples';
+      if (btn) btn.textContent = recording ? 'Stop' : 'Record';
+    }
+
+    function toggleRecording() {
+      if (!cameraReady || !meshReady) {
+        setStatus('Start camera before recording.');
+        return;
+      }
+      recording = !recording;
+      if (recording) {
+        recordSessionStart = Date.now();
+        lastRecordMs = 0;
+        recordMarkers.push({ t: 0, label: recordLabel });
+        setStatus('Recording geometry · no photos stored.');
+      } else {
+        setStatus('Stopped · ' + recordSamples.length + ' samples · E to export.');
+      }
+      updateRecordUi();
+    }
+
+    function maybeRecordSample(hasFace) {
+      if (!recording || !hasFace) return;
+      const now = Date.now();
+      if (now - lastRecordMs < RECORD_MS) return;
+      lastRecordMs = now;
+      recordSamples.push({
+        t: now - recordSessionStart,
+        label: recordLabel,
+        signals: roundSig(sig),
+        raw: roundSig(raw),
+        lm: captureLandmarks(facePredictions),
+      });
+      updateRecordUi();
+    }
+
+    function exportSession() {
+      if (!recordSamples.length) {
+        setStatus('Nothing to export — record first (R).');
+        return;
+      }
+      const payload = {
+        version: 1,
+        created: new Date().toISOString(),
+        note: 'Face geometry only — no images. For expression / head-pose twin rig.',
+        cam: { w: CAM_W, h: CAM_H },
+        labels: LABELS,
+        landmarkIds: LM,
+        recordLandmarks: RECORD_LM,
+        markers: recordMarkers,
+        samples: recordSamples,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      a.href = URL.createObjectURL(blob);
+      a.download = 'face-signal-session-' + stamp + '.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      setStatus('Exported ' + recordSamples.length + ' samples.');
+    }
+
+    function saveStillPng() {
+      if (!cameraReady || !segReady) {
+        setStatus('Start camera and wait for cutout before saving still.');
+        return;
+      }
+      if (!cutoutLayer) {
+        setStatus('Cutout not ready — wait a moment, then try again.');
+        return;
+      }
+      if (!facePredictions?.length) {
+        setStatus('No face detected — look straight at camera, then save again.');
+        return;
+      }
+      const label = recordLabel;
+      const pg = createGraphics(CAM_W, CAM_H);
+      pg.background(0, 0, 0);
+      pg.image(cutoutLayer, 0, 0);
+      pg.save(label + '.png');
+      setStatus('Saved ' + label + '.png → move to drafts/face-signal-sessions/');
+    }
+
+    function updatePanel(hasFace) {
+      const tag = document.getElementById('face-tag');
+      if (tag) {
+        if (!cameraReady) tag.textContent = '';
+        else if (!segReady) tag.textContent = 'Loading…';
+        else tag.textContent = hasFace ? '' : 'No face';
+      }
+
+      for (const [key, val] of [
+        ['smile', sig.smile],
+        ['mouth', sig.mouth],
+        ['brow', sig.brow],
+        ['tilt', sig.tilt],
+        ['yaw', sig.yaw],
+      ]) {
+        const bar = document.getElementById('bar-' + key);
+        const label = document.getElementById('val-' + key);
+        const pct = (val * 100).toFixed(0);
+        if (bar) bar.style.width = pct + '%';
+        if (label) label.textContent = hasFace ? pct : '—';
+      }
+    }
+
+    function setLive(on) {
+      const live = document.getElementById('live');
+      const text = document.getElementById('live-text');
+      if (live) live.dataset.on = on ? '1' : '0';
+      if (text) text.textContent = on ? 'Camera live' : 'Camera off';
+    }
+
+    function setStatus(msg) {
+      const el = document.getElementById('status');
+      if (el) el.textContent = msg;
+    }
+
+    function hideGate() {
+      const gate = document.getElementById('gate');
+      if (gate) {
+        gate.classList.add('hidden');
+        gate.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    function showGate(msg) {
+      const gate = document.getElementById('gate');
+      const gateMsg = document.getElementById('gate-msg');
+      if (gate) {
+        gate.classList.remove('hidden');
+        gate.setAttribute('aria-hidden', 'false');
+      }
+      if (gateMsg && msg) gateMsg.innerHTML = msg;
+    }
+
+    function updateOpenUrl() {
+      const el = document.getElementById('gate-url');
+      if (!el) return;
+      if (location.protocol === 'file:') {
+        el.textContent = 'http://localhost:8080/drafts/face-signal-study.html';
+      } else {
+        el.textContent = location.href;
+      }
+    }
+
+    function cameraContextHint() {
+      if (location.protocol === 'file:') {
+        return 'Opened as file:// — camera blocked. Use the localhost URL below in Chrome or Safari.';
+      }
+      if (/vscode-webview|cursor/i.test(navigator.userAgent)) {
+        return 'Embedded preview — camera usually blocked. Copy the URL into Chrome or Safari.';
+      }
+      return 'Allow camera when the browser asks.';
+    }
+
+    function initDetectors() {
+      if (!meshReady) {
+        faceMesh = ml5.faceMesh({ maxFaces: 1, refineLandmarks: true }, () => {
+          meshReady = true;
+          faceMesh.detectStart(cam, (results) => {
+            facePredictions = results || [];
+          });
+        });
+      }
+      if (!segReady && bodySegmentation) {
+        bodySegmentation.detectStart(cam, (result) => {
+          segmentation = result;
+          if (!segReady) {
+            segReady = true;
+            setStatus('Background removed · frames stay in your browser.');
+          }
+        });
+      }
+    }
+
+    function bindCameraButtons() {
+      document.getElementById('gate-btn')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        startCamera();
+      });
+      document.getElementById('cam-btn')?.addEventListener('click', startCamera);
+    }
+
+    function showCamButton(show) {
+      const btn = document.getElementById('cam-btn');
+      if (btn) btn.classList.toggle('hidden', !show);
+    }
+
+    function startCamera() {
+      if (cameraReady || starting) return;
+
+      if (location.protocol === 'file:') {
+        setStatus('Camera blocked on file:// — open the localhost URL in Chrome or Safari.');
+        showGate(
+          '<strong>file:// blocks camera.</strong><br />In terminal:<br /><code>python3 -m http.server 8080</code><br />Then open:<br /><span id="gate-url">http://localhost:8080/drafts/face-signal-study.html</span>'
+        );
+        updateOpenUrl();
+        return;
+      }
+
+      starting = true;
+      setStatus('Requesting camera… allow access if prompted.');
+      showCamButton(false);
+
+      cam = createCapture(VIDEO, () => {
+        starting = false;
+        cameraReady = true;
+        setLive(true);
+        hideGate();
+        showCamButton(false);
+        initDetectors();
+        personMaskMode = null;
+        maskUserOverride = null;
+        setStatus('Camera on · loading segmentation…');
+      });
+      cam.size(CAM_W, CAM_H);
+      cam.hide();
+
+      setTimeout(() => {
+        if (cameraReady || !starting) return;
+        starting = false;
+        setLive(false);
+        showCamButton(true);
+        setStatus('Camera did not start — try Chrome or Safari outside Cursor.');
+        showGate(
+          '<strong>Camera blocked in this view.</strong><br />Open in Chrome or Safari:<br /><span id="gate-url">' +
+            location.href +
+            '</span>'
+        );
+        updateOpenUrl();
+      }, 8000);
+    }
+
+    function ensureCutoutLayer() {
+      if (!cutoutLayer || cutoutLayer.width !== CAM_W || cutoutLayer.height !== CAM_H) {
+        cutoutLayer = createGraphics(CAM_W, CAM_H);
+        cutoutLayer.pixelDensity(1);
+      }
+    }
+
+    function faceBoundsPx(predictions) {
+      if (!predictions?.length) return null;
+      const points = predictions[0].keypoints || [];
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+      for (const p of points) {
+        const n = normPoint(p);
+        if (!n) continue;
+        minX = Math.min(minX, n.x);
+        minY = Math.min(minY, n.y);
+        maxX = Math.max(maxX, n.x);
+        maxY = Math.max(maxY, n.y);
+      }
+      if (!isFinite(minX)) return null;
+      const w = maxX - minX;
+      const h = maxY - minY;
+      const pad = 0.12;
+      return {
+        x0: Math.max(0, minX - w * pad),
+        y0: Math.max(0, minY - h * pad),
+        x1: Math.min(CAM_W - 1, maxX + w * pad),
+        y1: Math.min(CAM_H - 1, maxY + h * pad),
+      };
+    }
+
+    function maskValueAt(mask, cx, cy) {
+      const mw = mask.width;
+      const mh = mask.height;
+      const mx = Math.min(mw - 1, Math.max(0, Math.floor(cx * mw / CAM_W)));
+      const my = Math.min(mh - 1, Math.max(0, Math.floor(cy * mh / CAM_H)));
+      const idx = 4 * (mx + my * mw);
+      let v = mask.pixels[idx + 3];
+      if (v === 0) v = mask.pixels[idx];
+      return v;
+    }
+
+    function calibratePersonMaskFromFace(mask, predictions) {
+      if (personMaskMode || maskUserOverride) return;
+      const bounds = faceBoundsPx(predictions);
+      if (!bounds) return;
+
+      mask.loadPixels();
+      if (!mask.pixels?.length) return;
+
+      let inSum = 0;
+      let inN = 0;
+      let outSum = 0;
+      let outN = 0;
+
+      for (let y = 0; y < CAM_H; y += 4) {
+        for (let x = 0; x < CAM_W; x += 4) {
+          const v = maskValueAt(mask, x, y);
+          const inside =
+            x >= bounds.x0 && x <= bounds.x1 && y >= bounds.y0 && y <= bounds.y1;
+          if (inside) {
+            inSum += v;
+            inN++;
+          } else {
+            outSum += v;
+            outN++;
+          }
+        }
+      }
+      if (!inN || !outN) return;
+
+      const inMean = inSum / inN;
+      const outMean = outSum / outN;
+      personMaskMode = inMean >= outMean ? 'direct' : 'invert';
+      setStatus('Background removed · mask calibrated to your face.');
+    }
+
+    function getPersonMaskMode(mask, predictions) {
+      if (maskUserOverride) return maskUserOverride;
+      if (predictions?.length) calibratePersonMaskFromFace(mask, predictions);
+      return personMaskMode || 'invert';
+    }
+
+    function toggleMaskOverride() {
+      if (maskUserOverride === null) {
+        maskUserOverride = getPersonMaskMode(segmentation?.mask, facePredictions) === 'direct' ? 'invert' : 'direct';
+      } else {
+        maskUserOverride = maskUserOverride === 'direct' ? 'invert' : 'direct';
+      }
+      setStatus('Mask swapped · ' + maskUserOverride + '. Press I again if needed.');
+    }
+
+    function samplePersonAlpha(mask, x, y, predictions) {
+      let v = maskValueAt(mask, x, y);
+      if (getPersonMaskMode(mask, predictions) === 'invert') v = 255 - v;
+      return v;
+    }
+
+    function drawCutout() {
+      if (!segmentation?.mask || !cam) return;
+
+      const vid = cam.elt;
+      if (!vid || vid.readyState < 2) return;
+
+      cam.loadPixels();
+      if (!cam.pixels || cam.pixels.length < CAM_W * CAM_H * 4) return;
+
+      const mask = segmentation.mask;
+      mask.loadPixels();
+      if (!mask.pixels || mask.pixels.length < 4) return;
+
+      ensureCutoutLayer();
+      cutoutLayer.loadPixels();
+
+      const hasFace = facePredictions?.length > 0;
+
+      for (let y = 0; y < CAM_H; y++) {
+        for (let x = 0; x < CAM_W; x++) {
+          const idx = 4 * (x + y * CAM_W);
+          const sx = CAM_W - 1 - x;
+          const sidx = 4 * (sx + y * CAM_W);
+          const alpha = hasFace ? samplePersonAlpha(mask, sx, y, facePredictions) : 0;
+
+          if (alpha > 48) {
+            cutoutLayer.pixels[idx] = cam.pixels[sidx];
+            cutoutLayer.pixels[idx + 1] = cam.pixels[sidx + 1];
+            cutoutLayer.pixels[idx + 2] = cam.pixels[sidx + 2];
+            cutoutLayer.pixels[idx + 3] = 255;
+          } else {
+            cutoutLayer.pixels[idx] = 0;
+            cutoutLayer.pixels[idx + 1] = 0;
+            cutoutLayer.pixels[idx + 2] = 0;
+            cutoutLayer.pixels[idx + 3] = 0;
+          }
+        }
+      }
+      cutoutLayer.updatePixels();
+
+      const fit = Math.min((width * 0.72) / CAM_W, (height * 0.82) / CAM_H);
+      push();
+      translate(width * 0.5, height * 0.5);
+      imageMode(CENTER);
+      image(cutoutLayer, 0, 0, CAM_W * fit, CAM_H * fit);
+      pop();
+    }
+
+    function setup() {
+      const canvas = createCanvas(windowWidth, windowHeight);
+      canvas.parent(document.body);
+      pixelDensity(Math.min(2, window.devicePixelRatio || 1));
+
+      updateOpenUrl();
+      bindCameraButtons();
+      document.getElementById('btn-record')?.addEventListener('click', toggleRecording);
+      document.getElementById('btn-export')?.addEventListener('click', exportSession);
+      document.getElementById('btn-still')?.addEventListener('click', saveStillPng);
+      updateRecordUi();
+      setStatus(cameraContextHint());
+
+      if (location.protocol !== 'file:') {
+        startCamera();
+      } else {
+        showCamButton(true);
+      }
+    }
+
+    function draw() {
+      background(248, 247, 245);
+
+      const hasFace = computeRawSignals(facePredictions);
+      smoothSignals(hasFace);
+      updatePanel(hasFace);
+      maybeRecordSample(hasFace);
+
+      if (cameraReady && segReady) {
+        drawCutout();
+      } else if (cameraReady && !segReady) {
+        setStatus('Camera on · loading segmentation…');
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+    function keyPressed() {
+      const k = key;
+      if (k === 'r' || k === 'R') toggleRecording();
+      if (k === 'e' || k === 'E') exportSession();
+      if (k === 's' || k === 'S') saveStillPng();
+      if (k === '1') setRecordLabel('neutral');
+      if (k === '2') setRecordLabel('happy');
+      if (k === '3') setRecordLabel('sad');
+      if (k === '4') setRecordLabel('think');
+      if (k === '5') setRecordLabel('surprise');
+      if (k === 'i' || k === 'I') toggleMaskOverride();
+    }
+  </script>
+</body>
+</html>

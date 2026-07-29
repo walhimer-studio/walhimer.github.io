@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Face signal replay — Mark Walhimer</title>
+  <script src="../sketches/js/p5-1.11.2.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #f8f7f5;
+      font-family: ui-monospace, "DM Mono", monospace;
+    }
+    body > canvas { display: block; position: fixed; inset: 0; z-index: 0; }
+    #ui {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+    #panel {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      width: min(92vw, 320px);
+      padding: 12px 14px;
+      border: 1px solid rgba(20, 18, 16, 0.1);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      font-size: 10px;
+      line-height: 1.55;
+      color: rgba(20, 18, 16, 0.72);
+      pointer-events: auto;
+    }
+    #panel h1 {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: #141210;
+    }
+    #file-input {
+      display: block;
+      width: 100%;
+      margin: 8px 0 10px;
+      font: inherit;
+      font-size: 10px;
+    }
+    #meta { color: rgba(20, 18, 16, 0.45); margin-bottom: 8px; }
+    #label-now {
+      font-size: 13px;
+      color: #141210;
+      margin-bottom: 6px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 52px 1fr 28px;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .bar-wrap {
+      height: 5px;
+      background: rgba(20, 18, 16, 0.07);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .bar {
+      height: 100%;
+      background: linear-gradient(90deg, #74b4dc, #eca018);
+      border-radius: 3px;
+    }
+    #keys {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(20, 18, 16, 0.08);
+      font-size: 9px;
+      color: rgba(20, 18, 16, 0.42);
+    }
+    #empty {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(20, 18, 16, 0.2);
+    }
+    #empty.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="empty">Load a JSON session</div>
+  <div id="ui">
+    <aside id="panel">
+      <h1>Face signal replay</h1>
+      <label for="file-input">Open exported JSON (happy.json, sad.json, …)</label>
+      <input type="file" id="file-input" accept=".json,application/json" />
+      <div id="meta">No file loaded</div>
+      <div id="label-now">—</div>
+      <div class="row"><span>Smile</span><div class="bar-wrap"><div class="bar" id="b-smile"></div></div><span id="v-smile">—</span></div>
+      <div class="row"><span>Mouth</span><div class="bar-wrap"><div class="bar" id="b-mouth"></div></div><span id="v-mouth">—</span></div>
+      <div class="row"><span>Brow</span><div class="bar-wrap"><div class="bar" id="b-brow"></div></div><span id="v-brow">—</span></div>
+      <div class="row"><span>Tilt</span><div class="bar-wrap"><div class="bar" id="b-tilt"></div></div><span id="v-tilt">—</span></div>
+      <div class="row"><span>Yaw</span><div class="bar-wrap"><div class="bar" id="b-yaw"></div></div><span id="v-yaw">—</span></div>
+      <div id="keys">
+        <strong>Space</strong> play / pause · <strong>L</strong> loop<br />
+        <strong>← →</strong> scrub · drag on canvas to orbit
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    let session = null;
+    let playT = 0;
+    let playing = false;
+    let loopOn = true;
+    let duration = 0;
+    let orbitYaw = 0.35;
+    let orbitPitch = 0.1;
+
+    const LM_EDGES = [
+      [10, 336], [10, 107], [336, 263], [107, 33], [33, 263],
+      [33, 1], [263, 1], [1, 13], [13, 14], [14, 152],
+      [61, 291], [61, 13], [291, 13],
+    ];
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function lerpSig(a, b, t) {
+      return {
+        smile: lerp(a.smile, b.smile, t),
+        mouth: lerp(a.mouth ?? 0, b.mouth ?? 0, t),
+        brow: lerp(a.brow, b.brow, t),
+        tilt: lerp(a.tilt ?? 0.5, b.tilt ?? 0.5, t),
+        yaw: lerp(a.yaw ?? 0.5, b.yaw ?? 0.5, t),
+      };
+    }
+
+    function lerpLm(a, b, t) {
+      const out = {};
+      const keys = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
+      for (const k of keys) {
+        if (!a?.[k] || !b?.[k]) {
+          out[k] = a?.[k] || b?.[k];
+          continue;
+        }
+        out[k] = [
+          lerp(a[k][0], b[k][0], t),
+          lerp(a[k][1], b[k][1], t),
+        ];
+      }
+      return out;
+    }
+
+    function frameAtTime(t) {
+      const samples = session?.samples || [];
+      if (!samples.length) return null;
+      if (t <= samples[0].t) return { signals: samples[0].signals, lm: samples[0].lm, label: samples[0].label };
+      if (t >= samples[samples.length - 1].t) {
+        const s = samples[samples.length - 1];
+        return { signals: s.signals, lm: s.lm, label: s.label };
+      }
+      for (let i = 0; i < samples.length - 1; i++) {
+        const a = samples[i];
+        const b = samples[i + 1];
+        if (t >= a.t && t <= b.t) {
+          const u = (t - a.t) / Math.max(1, b.t - a.t);
+          return {
+            signals: lerpSig(a.signals, b.signals, u),
+            lm: lerpLm(a.lm, b.lm, u),
+            label: u < 0.5 ? a.label : b.label,
+          };
+        }
+      }
+      return null;
+    }
+
+    function updateBars(sig) {
+      if (!sig) return;
+      for (const [key, el] of [
+        ['smile', 'smile'], ['mouth', 'mouth'], ['brow', 'brow'], ['tilt', 'tilt'], ['yaw', 'yaw'],
+      ]) {
+        const pct = Math.round((sig[key] ?? 0) * 100);
+        const bar = document.getElementById('b-' + key);
+        const val = document.getElementById('v-' + key);
+        if (bar) bar.style.width = pct + '%';
+        if (val) val.textContent = String(pct);
+      }
+    }
+
+    function loadSession(data, fileName) {
+      if (!data?.samples?.length) {
+        document.getElementById('meta').textContent = 'Invalid file — no samples array.';
+        return;
+      }
+      session = data;
+      duration = data.samples[data.samples.length - 1].t;
+      playT = 0;
+      playing = true;
+      document.getElementById('empty').classList.add('hidden');
+      const labels = [...new Set(data.samples.map((s) => s.label))].join(', ');
+      document.getElementById('meta').textContent =
+        (fileName || 'session') + ' · ' + data.samples.length + ' samples · ' + (duration / 1000).toFixed(1) + 's · ' + labels;
+    }
+
+    document.getElementById('file-input').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          loadSession(JSON.parse(reader.result), file.name);
+        } catch (err) {
+          document.getElementById('meta').textContent = 'Could not parse JSON — ' + err.message;
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function setup() {
+      const c = createCanvas(windowWidth, windowHeight, WEBGL);
+      c.parent(document.body);
+      pixelDensity(Math.min(2, window.devicePixelRatio || 1));
+    }
+
+    function drawWireHead(sig) {
+      const smile = sig.smile;
+      const mouth = sig.mouth;
+      const brow = sig.brow;
+      const tilt = (sig.tilt - 0.5) * 0.7;
+      const yaw = (sig.yaw - 0.5) * 0.9;
+
+      push();
+      rotateY(yaw + orbitYaw);
+      rotateX(orbitPitch);
+      rotateZ(tilt);
+
+      stroke(44, 48, 52, 230);
+      strokeWeight(1.8);
+      noFill();
+
+      const headR = 42;
+      circle(0, -78, headR * 2);
+
+      const mouthY = -62 + mouth * 14;
+      const cornerY = mouthY - smile * 11;
+      const cornerX = 14 + smile * 5;
+      line(-cornerX, cornerY, cornerX, cornerY);
+      if (mouth > 0.06) line(-cornerX * 0.55, mouthY, cornerX * 0.55, mouthY);
+
+      const browY = -98 - brow * 11;
+      line(-20, browY, 20, browY);
+
+      line(0, -36, 0, 30);
+      line(-34, -8, 34, -8);
+      line(-34, -8, -48, 38);
+      line(34, -8, 48, 38);
+      line(0, 30, -16, 98);
+      line(0, 30, 16, 98);
+      pop();
+    }
+
+    function drawLandmarkMesh(lm, camW, camH) {
+      if (!lm) return;
+      const cx = 0;
+      const cy = 20;
+      const scale = min(width, height) * 0.00085;
+
+      push();
+      translate(cx, cy - 40, -20);
+      rotateY(orbitYaw);
+      rotateX(orbitPitch);
+      stroke(116, 180, 220, 160);
+      strokeWeight(1.2);
+      noFill();
+
+      const pts = {};
+      for (const [id, xy] of Object.entries(lm)) {
+        const px = (xy[0] - 0.5) * camW * scale;
+        const py = (xy[1] - 0.5) * camH * scale;
+        pts[id] = createVector(px, py, 0);
+      }
+
+      for (const [a, b] of LM_EDGES) {
+        const va = pts[String(a)];
+        const vb = pts[String(b)];
+        if (va && vb) line(va.x, va.y, va.z, vb.x, vb.y, vb.z);
+      }
+      pop();
+    }
+
+    function draw() {
+      background(248, 247, 245);
+      orbitControl({ enableZoom: true, enablePan: false });
+
+      if (!session) return;
+
+      if (playing) playT += deltaTime;
+      if (duration > 0 && playT > duration) {
+        if (loopOn) playT = 0;
+        else {
+          playT = duration;
+          playing = false;
+        }
+      }
+
+      const frame = frameAtTime(playT);
+      if (!frame) return;
+
+      document.getElementById('label-now').textContent =
+        frame.label + ' · ' + (playT / 1000).toFixed(1) + 's';
+
+      updateBars(frame.signals);
+
+      const camW = session.cam?.w || 640;
+      const camH = session.cam?.h || 480;
+
+      push();
+      scale(1.15);
+      drawWireHead(frame.signals);
+      drawLandmarkMesh(frame.lm, camW, camH);
+      pop();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+    function keyPressed() {
+      if (!session) return;
+      if (key === ' ') {
+        playing = !playing;
+        return false;
+      }
+      if (key === 'l' || key === 'L') {
+        loopOn = !loopOn;
+        return false;
+      }
+      if (keyCode === LEFT_ARROW) {
+        playT = max(0, playT - 250);
+        return false;
+      }
+      if (keyCode === RIGHT_ARROW) {
+        playT = min(duration, playT + 250);
+        return false;
+      }
+    }
+  </script>
+</body>
+</html>

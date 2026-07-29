@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "title": "Digital twin — emotion image map",
+  "created": "2026-07-29",
+  "author": "Mark Walhimer",
+  "note": "Maps each named emotion to its visible PNG and optional motion JSON. JSON holds geometry only — no photos inside.",
+  "pages": {
+    "capture": "drafts/face-signal-study.html",
+    "portraitReplay": "drafts/face-signal-portrait-replay.html",
+    "wireReplay": "drafts/face-signal-replay.html"
+  },
+  "stack": {
+    "html": "Self-contained pages under drafts/ (p5 + ml5 vendored locally)",
+    "ml": "ml5.js face mesh + selfie segmentation (MediaPipe via ml5)",
+    "runtime": "Browser + localhost http.server — camera requires http(s)",
+    "tooling": "Cursor IDE for iteration; Python helper for PNG edge cleanup"
+  },
+  "emotions": {
+    "neutral": {
+      "key": 1,
+      "label": "neutral",
+      "image": "neutral.png",
+      "session": "neutral.json",
+      "anchor_ms": 12359
+    },
+    "happy": {
+      "key": 2,
+      "label": "happy",
+      "image": "happy.png",
+      "session": "happy.json",
+      "anchor_ms": 8351
+    },
+    "sad": {
+      "key": 3,
+      "label": "sad",
+      "image": "sad.png",
+      "session": "sad.json",
+      "anchor_ms": 21344
+    },
+    "think": {
+      "key": 4,
+      "label": "think",
+      "image": "think.png",
+      "session": "think.json",
+      "anchor_ms": 536
+    },
+    "surprise": {
+      "key": 5,
+      "label": "surprise",
+      "image": "surprise.png",
+      "session": "surprise.json",
+      "anchor_ms": 5863
+    }
+  },
+  "signals": ["smile", "mouth", "brow", "tilt", "yaw"],
+  "replayMode": "crossfade"
+}

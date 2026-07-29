@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "note": "Straight-ahead frame hints — yaw near center. Scrub JSON replay to these times when capturing mood PNGs.",
+  "anchors": {
+    "neutral": {
+      "t_ms": 12359,
+      "yaw": 0.4945,
+      "smile": 0.8882,
+      "mouth": 0.0666,
+      "brow": 0.5667
+    },
+    "happy": {
+      "t_ms": 8351,
+      "yaw": 0.5008,
+      "smile": 0.9311,
+      "mouth": 0.6903,
+      "brow": 0.3508
+    },
+    "sad": {
+      "t_ms": 21344,
+      "yaw": 0.4937,
+      "smile": 0.9812,
+      "mouth": 0.0777,
+      "brow": 0.0985
+    },
+    "think": {
+      "t_ms": 536,
+      "yaw": 0.484,
+      "smile": 0.2659,
+      "mouth": 0.008,
+      "brow": 0.6926
+    },
+    "surprise": {
+      "t_ms": 5863,
+      "yaw": 0.5057,
+      "smile": 0.7991,
+      "mouth": 0.0998,
+      "brow": 0.5498
+    }
+  }
+}
