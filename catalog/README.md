@@ -60,6 +60,7 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 
 | Folder | Description |
 |--------|-------------|
+| [digital-twin/](./digital-twin/) | digital twin |
 | [loop-art-critique-alumni-show-2026/](./loop-art-critique-alumni-show-2026/) | loop art critique alumni show 2026 |
 | [invisible-layer/](./invisible-layer/) | invisible layer |
 | [the-wrong-biennale/the-wrong-eclipse-august-2026/](./the-wrong-biennale/the-wrong-eclipse-august-2026/) | The Wrong Biennale — The Wrong Eclipse · August 2026 · *Holes in the Sky* |

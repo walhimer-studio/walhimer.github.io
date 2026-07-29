@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "title": "Digital twin — emotion image map",
+  "description": "Maps each named emotion to a visible PNG and optional motion JSON. Proof of concept for landscape inhabitants that react to visitor camera input via ml5.",
+  "created": "2026-07-29",
+  "author": "Mark Walhimer",
+  "documentation": "catalog/digital-twin/README.md",
+  "note": "JSON holds geometry only — no photos inside. PNGs are the visible face per mood.",
+  "pages": {
+    "capture": "sketches/digital-twin/face-signal-study.html",
+    "portraitReplay": "sketches/digital-twin/face-signal-portrait-replay.html",
+    "wireReplay": "sketches/digital-twin/face-signal-replay.html"
+  },
+  "stack": {
+    "markdown": "catalog/digital-twin/README.md",
+    "json": "sketches/digital-twin/sessions/*.json, emotion-map.json",
+    "html": "Self-contained pages under sketches/digital-twin/ (p5 + ml5 vendored locally)",
+    "javascript": "p5.js — draw, WebGL crossfade, UI",
+    "ml": "ml5.js — face mesh + selfie segmentation (MediaPipe via ml5)",
+    "cursor": "Cursor IDE — build and iteration environment",
+    "runtime": "Browser + localhost http.server — camera requires http(s)"
+  },
+  "emotions": {
+    "neutral": {
+      "key": 1,
+      "label": "neutral",
+      "image": "neutral.png",
+      "session": "neutral.json",
+      "anchor_ms": 12359
+    },
+    "happy": {
+      "key": 2,
+      "label": "happy",
+      "image": "happy.png",
+      "session": "happy.json",
+      "anchor_ms": 8351
+    },
+    "sad": {
+      "key": 3,
+      "label": "sad",
+      "image": "sad.png",
+      "session": "sad.json",
+      "anchor_ms": 21344
+    },
+    "think": {
+      "key": 4,
+      "label": "think",
+      "image": "think.png",
+      "session": "think.json",
+      "anchor_ms": 536
+    },
+    "surprise": {
+      "key": 5,
+      "label": "surprise",
+      "image": "surprise.png",
+      "session": "surprise.json",
+      "anchor_ms": 5863
+    }
+  },
+  "signals": ["smile", "mouth", "brow", "tilt", "yaw"],
+  "replayMode": "crossfade"
+}

@@ -1,6 +1,10 @@
 # Face signal sessions
 
-Recorded from `drafts/face-signal-study.html` (geometry only — no images in JSON).
+Digital twin POC — **mapping images to emotions** via JSON + PNG.
+
+**Doc:** [`../../catalog/digital-twin/README.md`](../../catalog/digital-twin/README.md) · **Index:** [`emotion-map.json`](emotion-map.json)
+
+Recorded from `sketches/digital-twin/face-signal-study.html` (geometry only — no images in JSON).
 
 ## The workflow (5 moods → 5 images)
 
@@ -35,4 +39,4 @@ Scrub JSON replay in `face-signal-replay.html` to those times when capturing scr
 | `mood-anchors.json` | Straight-ahead frame hints |
 | `*.png` | One portrait per mood (the visible face) |
 
-Replay: `http://localhost:8080/drafts/face-signal-portrait-replay.html`
+Replay: `https://mark-walhimer.com/sketches/digital-twin/face-signal-portrait-replay.html`

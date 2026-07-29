@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Face signal study — Mark Walhimer</title>
-  <script src="../sketches/js/p5-1.11.2.min.js"></script>
-  <script src="../sketches/js/ml5-1.min.js"></script>
+  <script src="../js/p5-1.11.2.min.js"></script>
+  <script src="../js/ml5-1.min.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -267,7 +267,7 @@
 </head>
 <body>
   <div id="gate" aria-hidden="false">
-    <p id="gate-msg"><strong>Camera needed.</strong><br />Cursor’s preview often blocks the webcam.<br />Open in Chrome or Safari:<br /><span id="gate-url">http://localhost:8080/drafts/face-signal-study.html</span></p>
+    <p id="gate-msg"><strong>Camera needed.</strong><br />Cursor’s preview often blocks the webcam.<br />Open in Chrome or Safari:<br /><span id="gate-url">http://localhost:8080/sketches/digital-twin/face-signal-study.html</span></p>
     <button type="button" id="gate-btn">Enable camera</button>
   </div>
   <button type="button" id="cam-btn" class="hidden">Enable camera</button>
@@ -304,7 +304,7 @@
         <button type="button" id="btn-still">Save still</button>
       </div>
       <p class="hint" style="margin:8px 0 0;font-size:9px;color:rgba(20,18,16,0.42);">
-        Save still → <code id="still-name">neutral.png</code> in Downloads. Move to <code>drafts/face-signal-sessions/</code>.
+        Save still → <code id="still-name">neutral.png</code> in Downloads. Move to <code>sketches/digital-twin/sessions/</code>.
       </p>
     </aside>
   </div>
@@ -591,7 +591,7 @@
       pg.background(0, 0, 0);
       pg.image(cutoutLayer, 0, 0);
       pg.save(label + '.png');
-      setStatus('Saved ' + label + '.png → move to drafts/face-signal-sessions/');
+      setStatus('Saved ' + label + '.png → move to sketches/digital-twin/sessions/');
     }
 
     function updatePanel(hasFace) {
@@ -651,7 +651,7 @@
       const el = document.getElementById('gate-url');
       if (!el) return;
       if (location.protocol === 'file:') {
-        el.textContent = 'http://localhost:8080/drafts/face-signal-study.html';
+        el.textContent = 'http://localhost:8080/sketches/digital-twin/face-signal-study.html';
       } else {
         el.textContent = location.href;
       }
@@ -706,7 +706,7 @@
       if (location.protocol === 'file:') {
         setStatus('Camera blocked on file:// — open the localhost URL in Chrome or Safari.');
         showGate(
-          '<strong>file:// blocks camera.</strong><br />In terminal:<br /><code>python3 -m http.server 8080</code><br />Then open:<br /><span id="gate-url">http://localhost:8080/drafts/face-signal-study.html</span>'
+          '<strong>file:// blocks camera.</strong><br />In terminal:<br /><code>python3 -m http.server 8080</code><br />Then open:<br /><span id="gate-url">http://localhost:8080/sketches/digital-twin/face-signal-study.html</span>'
         );
         updateOpenUrl();
         return;
