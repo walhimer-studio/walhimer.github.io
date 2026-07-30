@@ -25,7 +25,8 @@ echo "6/8 Catalog sync guard..."
 python3 _scripts/check_catalog_sync.py
 
 echo "7/8 Stage changes..."
-git add -A
+git add data/catalog.json sketches/index.html sketches/catalog-work.html
+git add -u
 
 if git diff --cached --quiet; then
   echo "No changes to commit."
