@@ -12,7 +12,7 @@ https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 
 | Deploy | URL |
 |--------|-----|
-| Bloom four walls + Firebase | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-wall/public/ |
+| Bloom four walls + Firebase | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/ |
 | Flat wall (earlier) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/ |
 
 Firebase project: `loop-gallery-family-reunion-3` · room: `family-reunion-friday-2`

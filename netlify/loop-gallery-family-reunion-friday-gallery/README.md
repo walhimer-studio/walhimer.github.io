@@ -1,14 +1,14 @@
-# Loop Gallery — Family Reunion Friday Wall
+# Loop Gallery — Family Reunion Friday Gallery
 
 Copy of [`loop-gallery-family-reunion-friday-2/`](../loop-gallery-family-reunion-friday-2/) with the **Bloom / Release four-wall room** instead of the flat white wall.
 
 ## Live URL (GitHub Pages)
 
-https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-wall/public/
+https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/
 
 Shorter redirect:
 
-https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-wall/
+https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/
 
 Default Firebase room: **`family-reunion-friday-2`** (same project + room as Friday 2 — override with `?room=other-name`).
 
@@ -16,8 +16,8 @@ Default Firebase room: **`family-reunion-friday-2`** (same project + room as Fri
 
 | Screen | URL |
 |--------|-----|
-| **Wall** (projector / monitor — Bloom room + QR) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-wall/public/` or `?view=wall` |
-| **Phone** (participants upload images) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-wall/public/?view=phone` |
+| **Wall** (projector / monitor — Bloom room + QR) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/` or `?view=wall` |
+| **Phone** (participants upload images) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/?view=phone` |
 
 **Wall view** shows the four-wall Bloom room (generative blooms + life bar), visitor JPEGs on all four walls, and a **QR code** for phone upload.
 
@@ -36,5 +36,5 @@ Firebase rules: see [Friday 2 README](../loop-gallery-family-reunion-friday-2/RE
 
 | Setting | Value |
 |---------|--------|
-| Base directory | `netlify/loop-gallery-family-reunion-friday-wall` |
+| Base directory | `netlify/loop-gallery-family-reunion-friday-gallery` |
 | Publish / functions | from `netlify.toml` |

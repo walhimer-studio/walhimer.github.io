@@ -53,6 +53,11 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
+            "sketches/loop-art-critique-alumni-show-2026/README.md",
+            "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+            "sketches/loop-art-critique-alumni-show-2026/compose-offer.html",
+            "sketches/loop-art-critique-alumni-show-2026/compose-rgb-xyz.mjs",
+            "sketches/loop-art-critique-alumni-show-2026/compose.html",
             "sketches/loop-art-critique-alumni-show-2026/index.html",
             "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html"
           ],
@@ -677,6 +682,49 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
+      "dublin_core": {
+        "title": "../loop-art-critique-alumni-show-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000321"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-loop-art-critique-alumni-show-2026-",
+        "type": "HumanMadeObject",
+        "_label": "../loop-art-critique-alumni-show-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 · July 2026",
+          "file": "loop-art-critique-alumni-show-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-concept",
       "dublin_core": {
         "title": "../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md",
@@ -802,49 +850,6 @@
         "repo_paths": [
           "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html",
           "sketches/loop-snippets/js/three.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
-      "dublin_core": {
-        "title": "../loop-art-critique-alumni-show-2026/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000321"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-loop-art-critique-alumni-show-2026-",
-        "type": "HumanMadeObject",
-        "_label": "../loop-art-critique-alumni-show-2026/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 · July 2026",
-          "file": "loop-art-critique-alumni-show-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-alumni-show-2026/README.md"
         ],
         "external_urls": []
       }

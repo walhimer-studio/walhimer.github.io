@@ -18,5 +18,6 @@ EOF
 chmod +x "$HOOK"
 echo "Installed pre-commit hook: $HOOK"
 echo "Runs:"
+echo "  python3 _scripts/check_catalog_mirror.py"
 echo "  python3 _scripts/check_self_contained.py"
 echo "  python3 _scripts/check_catalog_sync.py"
