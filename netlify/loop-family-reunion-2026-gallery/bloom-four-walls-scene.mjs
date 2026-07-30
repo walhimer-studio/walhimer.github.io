@@ -9,6 +9,7 @@ import {
   shuffleNotePool,
   formatMachineDnaLine,
 } from './co-create-machine-dna.mjs';
+import { createBloomPentatonicPiano } from './bloom-pentatonic-piano.mjs';
 
 export function createBloomFourWallsScene(opts = {}) {
   const THREE = window.THREE;
@@ -135,6 +136,12 @@ export function createBloomFourWallsScene(opts = {}) {
     label: opts.dnaLabel ?? 'co-create',
     lifespanSeconds: TOTAL_LIFE / 1000,
   });
+  const piano = opts.piano ?? createBloomPentatonicPiano({ baseUrl: opts.pianoSampleBase ?? './samples/' });
+  let pianoLoadPromise = null;
+  function ensurePiano() {
+    if (!pianoLoadPromise) pianoLoadPromise = piano.loadAudio(opts.onPianoLoadProgress);
+    return pianoLoadPromise;
+  }
   const rng = new Rand(machineDna.seed);
   let noteAssignments = shuffleNotePool(rng);
   let blooms = [];
@@ -163,7 +170,11 @@ export function createBloomFourWallsScene(opts = {}) {
     const elapsed = t - startTime;
     if (BLOOMS_ENABLED) {
       if (spawnCount < TOTAL_BLOOMS && t > nextSpawn) {
-        blooms.push(new Bloom(rng, noteAssignments[spawnCount]));
+        const bloom = new Bloom(rng, noteAssignments[spawnCount]);
+        blooms.push(bloom);
+        void ensurePiano().then(() => {
+          piano.playNote(bloom.note, 0.22 + Math.random() * 0.1);
+        });
         spawnCount += 1;
         nextSpawn = t + SPAWN_INTERVAL;
         if (spawnCount === TOTAL_BLOOMS) { gardenFull = true; fullAt = t; }
@@ -171,7 +182,10 @@ export function createBloomFourWallsScene(opts = {}) {
       if (gardenFull && !dyingStarted && t > fullAt + HOLD_AFTER_FULL) {
         dyingStarted = true;
         [...blooms].reverse().forEach((b, i) => {
-          setTimeout(() => b.startDying(), i * 600);
+          setTimeout(() => {
+            b.startDying();
+            piano.playNote(b.note, 0.14 + Math.random() * 0.08);
+          }, i * 600);
         });
       }
       blooms.forEach((b) => b.update(dt));
@@ -272,6 +286,7 @@ export function createBloomFourWallsScene(opts = {}) {
   }
 
   function onPointerDown(e) {
+    void ensurePiano();
     dragging = true;
     lastX = e.clientX;
     lastY = e.clientY;
@@ -296,6 +311,7 @@ export function createBloomFourWallsScene(opts = {}) {
   window.addEventListener('mouseup', onPointerUp);
   window.addEventListener('mousemove', onPointerMove);
   renderer.domElement.addEventListener('touchstart', (e) => {
+    void ensurePiano();
     const t = e.touches[0];
     dragging = true;
     lastX = t.clientX;
@@ -480,5 +496,7 @@ export function createBloomFourWallsScene(opts = {}) {
     getMachineDna: () => machineDna.express(),
     getGardenLifePct: () => lifePct,
     getBlooms: () => blooms.map((b) => ({ note: b.note, dead: b.dead })),
+    getPiano: () => piano,
+    ensurePiano,
   };
 }

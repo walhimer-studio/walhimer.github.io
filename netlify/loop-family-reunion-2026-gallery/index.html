@@ -239,9 +239,9 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-lifebar';
-import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-lifebar';
-import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-lifebar';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-piano';
+import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
+import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-piano';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260730-wall-ui';
@@ -896,6 +896,7 @@ deleteNearest.addEventListener('click', () => deleteNearestSlot());
 
 document.addEventListener('keydown', (e) => {
   if (!wallScene) return;
+  wallScene.ensurePiano?.();
   const k = e.key.toLowerCase();
   if (k === 'arrowup') { wallScene.setMoveKey('forward', true); e.preventDefault(); }
   if (k === 'arrowdown') { wallScene.setMoveKey('back', true); e.preventDefault(); }
@@ -966,6 +967,7 @@ async function boot() {
   canvasRecorder = createCanvasRecorder(() => wallScene.getCanvas(), {
     filePrefix: `co-create-${ROOM_ID}`,
     onActiveChange: setRecActive,
+    getAudioStream: () => wallScene?.getPiano()?.getAudioStream?.(),
   });
 
   if (MOD_TOKEN) {
