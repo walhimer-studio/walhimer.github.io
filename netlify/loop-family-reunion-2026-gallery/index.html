@@ -97,9 +97,11 @@
       left: 12px;
       right: auto;
     }
+    body.view-wall {
+      --wall-footer-h: 52px;
+    }
     body.view-wall #panel {
       padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-      padding-right: calc(156px + env(safe-area-inset-right));
     }
     body.view-wall #panel .panel-upload { display: none; }
     body.view-wall #panel #status {
@@ -112,7 +114,7 @@
       top: auto;
       left: auto;
       right: calc(10px + env(safe-area-inset-right));
-      bottom: calc(10px + env(safe-area-inset-bottom));
+      bottom: calc(var(--wall-footer-h) + 8px + env(safe-area-inset-bottom));
       width: auto;
       padding: 0;
       background: transparent;
@@ -319,7 +321,19 @@ async function loadSlotTexture(data) {
   throw new Error('Could not load image from cloud');
 }
 
-function setStatus(msg) { statusEl.textContent = msg; }
+function setStatus(msg) {
+  statusEl.textContent = msg;
+  syncWallFooterLayout();
+}
+
+function syncWallFooterLayout() {
+  if (VIEW !== 'wall') return;
+  requestAnimationFrame(() => {
+    const panel = document.getElementById('panel');
+    if (!panel) return;
+    document.body.style.setProperty('--wall-footer-h', `${panel.offsetHeight}px`);
+  });
+}
 
 function drawQrCode(canvas, text) {
   const gen = window.qrcode;
@@ -859,9 +873,11 @@ bindPanButton(document.getElementById('panLeft'), 'left');
 bindPanButton(document.getElementById('panRight'), 'right');
 document.getElementById('zoomIn')?.addEventListener('click', () => wallScene?.zoomBy?.(0.88));
 document.getElementById('zoomOut')?.addEventListener('click', () => wallScene?.zoomBy?.(1.14));
+window.addEventListener('resize', syncWallFooterLayout);
 
 async function boot() {
   setupUrlsAndQr();
+  syncWallFooterLayout();
   loadLocalCount();
   const panel = document.getElementById('panel');
   wallScene = createBloomFourWallsScene({
