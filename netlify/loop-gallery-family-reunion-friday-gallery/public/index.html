@@ -52,9 +52,9 @@
     #panPad .spacer { visibility: hidden; pointer-events: none; }
     #zoomIn, #zoomOut { font-size: 22px; font-weight: 600; line-height: 1; }
     #qrOverlay {
-      position: fixed; top: 12px; right: 12px; z-index: 5;
+      position: fixed; top: 12px; right: 12px; z-index: 25;
       background: rgba(255,255,255,0.96); border: 1px solid rgba(0,0,0,0.1);
-      border-radius: 12px; padding: 12px 14px; max-width: 220px;
+      border-radius: 12px; padding: 12px 14px; width: 228px;
       font: 11px/1.45 system-ui, sans-serif; color: #333;
       box-shadow: 0 8px 28px rgba(0,0,0,0.08);
     }
@@ -72,7 +72,13 @@
     }
     #urlBar div + div { margin-top: 4px; }
     #urlBar strong { color: rgba(20, 30, 40, 0.85); }
-    body.view-wall #hint { max-width: calc(100vw - 260px); }
+    body.view-wall #hint { display: none; }
+    body.view-wall #urlBar { display: none; }
+    body.view-wall #wall-counter {
+      top: 12px;
+      left: 12px;
+      right: auto;
+    }
     body.view-phone #qrOverlay { display: none; }
     body.view-phone #urlBar { display: none; }
     body.view-phone #hint { top: 10px; }
