@@ -6,8 +6,9 @@ export function createBloomFourWallsScene(opts = {}) {
   const THREE = window.THREE;
   if (!THREE) throw new Error('THREE required on window');
 
-  const ROOM = 10;
-  const HALF = 5;
+  const ROOM = 50;
+  const HALF = ROOM / 2;
+  const BLOOMS_ENABLED = opts.bloomsEnabled === true; // default off for now
   const COLS = 4;
   const ROWS = 2;
   const CELL_W = ROOM / COLS;
@@ -160,13 +161,15 @@ export function createBloomFourWallsScene(opts = {}) {
     panCtx.clearRect(0, 0, PAN_W, PAN_H);
     panCtx.fillStyle = '#ffffff';
     panCtx.fillRect(0, 0, PAN_W, PAN_H);
-    [...blooms].sort((a, b) => b.maxR - a.maxR).forEach((b) => b.draw(panCtx, t));
+    if (BLOOMS_ENABLED) {
+      [...blooms].sort((a, b) => b.maxR - a.maxR).forEach((b) => b.draw(panCtx, t));
+    }
   }
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, ROOM * 4);
   camera.position.set(0, 0, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -392,12 +395,12 @@ export function createBloomFourWallsScene(opts = {}) {
 
     if (autoRotate) yaw += 0.0003;
 
-    gardenUpdate(t, dt);
+    if (BLOOMS_ENABLED) gardenUpdate(t, dt);
     gardenDraw(t);
     panTex.needsUpdate = true;
     wallTextures.forEach((tex) => { tex.needsUpdate = true; });
 
-    if (lifebarEl) lifebarEl.style.width = `${lifePct.toFixed(2)}%`;
+    if (lifebarEl && BLOOMS_ENABLED) lifebarEl.style.width = `${lifePct.toFixed(2)}%`;
 
     const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
     const qP = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);

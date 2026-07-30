@@ -18,7 +18,8 @@
   <title>Loop Gallery — Family Reunion Friday Gallery</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
-    canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; z-index: 2; }
+    /* WebGL scene only — do not match #qrCanvas inside #qrOverlay */
+    body > canvas { display: block; position: fixed; inset: 0; width: 100%; height: 100%; touch-action: none; z-index: 2; }
     #hint {
       position: fixed; left: 10px; top: 10px; z-index: 3;
       font: 11px/1.45 ui-monospace, monospace;
@@ -71,7 +72,10 @@
       box-shadow: 0 8px 28px rgba(0,0,0,0.08);
     }
     #qrOverlay h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
-    #qrCanvas { display: block; width: 200px; height: 200px; image-rendering: pixelated; border: 2px solid #111; }
+    #qrCanvas {
+      display: block; position: static; width: 200px; height: 200px;
+      image-rendering: pixelated; border: 2px solid #111; background: #fff;
+    }
     #qrOverlay .phoneUrl {
       margin: 8px 0 0; word-break: break-all; color: rgba(0,0,0,0.55); font-family: ui-monospace, monospace; font-size: 10px;
     }
@@ -106,18 +110,21 @@
     }
     body.view-wall #qrOverlay {
       top: auto;
-      right: 12px;
+      left: auto;
+      right: calc(10px + env(safe-area-inset-right));
       bottom: calc(10px + env(safe-area-inset-bottom));
       width: auto;
-      padding: 8px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
     }
     body.view-wall #qrOverlay h2,
     body.view-wall #qrOverlay .phoneUrl { display: none; }
     body.view-wall #qrCanvas {
-      width: 132px;
-      height: 132px;
+      width: 140px;
+      height: 140px;
     }
     body.view-wall #panPad {
       left: 12px;
@@ -184,7 +191,7 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-wall-ui';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-room50';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260730-wall-ui';
