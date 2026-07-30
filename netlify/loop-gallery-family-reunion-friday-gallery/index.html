@@ -156,10 +156,10 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-no-public-loop';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-sync-thumb';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260730-no-public-loop';
+} from './gallery-sync.mjs?v=20260730-sync-thumb';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -198,6 +198,19 @@ let firebaseSync = null;
 let wallScene = null;
 let isModerator = false;
 let bootReady = false;
+let cloudLoadFailures = 0;
+
+function onRemoteSlot(data) {
+  void addFrame(data, true, VIEW !== 'wall').then((ok) => {
+    if (!ok) {
+      cloudLoadFailures += 1;
+      if (VIEW === 'wall') {
+        setStatus(`Cloud piece ${data.slotId} failed to load · ${cloudLoadFailures} failed · hard refresh monitor`);
+      }
+    }
+    updateUploadUI();
+  });
+}
 let FRAME_MAX_W = 18;
 let FRAME_MAX_H = 13;
 let FRAME_MIN_H = 5;
@@ -241,6 +254,17 @@ async function loadSlotTexture(data) {
   }
   if (data.previewUrl?.startsWith('data:')) {
     return loadArtTexture(data.previewUrl);
+  }
+  if (data.url?.startsWith('https://')) {
+    try {
+      const res = await fetch(data.url);
+      if (res.ok) {
+        const blob = await res.blob();
+        return loadArtTexture(URL.createObjectURL(blob));
+      }
+    } catch (err) {
+      console.warn('Download URL fetch failed', data.slotId, err);
+    }
   }
   if (firebaseSync?.objectUrlForSlot && (data.storagePath || data.slotId)) {
     const payload = {
@@ -608,7 +632,8 @@ function updateUploadUI() {
     ? ` · synced${firebaseSync.configSource ? ` (${firebaseSync.configSource})` : ''}`
     : ` · local only — refresh loses images${firebaseSync?.error ? ` · ${firebaseSync.error}` : ''}`;
   const mod = isModerator ? ' · mod' : '';
-  const wallLine = `${slots.size} on wall · room ${ROOM_ID}${sync}${mod}`;
+  const failed = cloudLoadFailures > 0 ? ` · ${cloudLoadFailures} cloud load failed` : '';
+  const wallLine = `${slots.size} on wall · room ${ROOM_ID}${sync}${failed}${mod}`;
   const urlBarSync = document.getElementById('urlBarSync');
   if (urlBarSync) urlBarSync.textContent = wallLine;
   if (VIEW === 'wall') {
@@ -807,7 +832,7 @@ async function boot() {
     }
     firebaseSync = await initGallerySync(
       ROOM_ID,
-      (data) => { void addFrame(data, true, true); },
+      onRemoteSlot,
       (id) => removeFrame(id)
     );
   } catch (_) {

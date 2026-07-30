@@ -146,6 +146,17 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       usedThumb = true;
     }
 
+    // Always mirror a Firestore thumbnail when small enough so the monitor
+    // can render without relying on Storage reads cross-device.
+    if (
+      !docData.thumbData
+      && meta.previewUrl?.startsWith('data:image/')
+      && meta.previewUrl.length <= 900000
+    ) {
+      docData.thumbData = meta.previewUrl;
+      usedThumb = true;
+    }
+
     try {
       await fs.setDoc(fs.doc(slotsCol, slotId), docData);
     } catch (err) {
