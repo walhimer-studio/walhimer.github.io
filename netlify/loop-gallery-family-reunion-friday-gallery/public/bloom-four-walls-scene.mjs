@@ -194,6 +194,7 @@ export function createBloomFourWallsScene(opts = {}) {
     return tex;
   });
 
+  const wallMeshes = {};
   WALL_ORDER.forEach((key, i) => {
     const def = WALL_DEFS[key];
     const mesh = new THREE.Mesh(
@@ -202,6 +203,8 @@ export function createBloomFourWallsScene(opts = {}) {
     );
     mesh.position.set(...def.pos);
     mesh.rotation.y = def.rotY;
+    mesh.renderOrder = 0;
+    wallMeshes[key] = mesh;
     scene.add(mesh);
   });
 
@@ -284,16 +287,28 @@ export function createBloomFourWallsScene(opts = {}) {
   }
   window.addEventListener('resize', resize);
 
+  const FRAME_INSET = 0.38;
   const wallAnchor = new THREE.Object3D();
+
+  function cellLocal(wall, col, row) {
+    return {
+      lx: -ROOM / 2 + (col + 0.5) * CELL_W,
+      ly: -ROOM / 2 + (row + 0.5) * CELL_H,
+      lz: FRAME_INSET,
+      wall,
+      col,
+      row,
+      side: WALL_DEFS[wall].side,
+    };
+  }
 
   function cellTransform(wall, col, row) {
     const def = WALL_DEFS[wall];
-    const lx = -ROOM / 2 + (col + 0.5) * CELL_W;
-    const ly = -ROOM / 2 + (row + 0.5) * CELL_H;
+    const { lx, ly, lz } = cellLocal(wall, col, row);
     wallAnchor.position.set(...def.pos);
     wallAnchor.rotation.set(0, def.rotY, 0);
     wallAnchor.updateMatrixWorld(true);
-    const local = new THREE.Vector3(lx, ly, 0.14);
+    const local = new THREE.Vector3(lx, ly, lz);
     const position = local.applyMatrix4(wallAnchor.matrixWorld);
     return { position, rotY: def.rotY, wall, col, row, side: def.side };
   }
@@ -312,9 +327,11 @@ export function createBloomFourWallsScene(opts = {}) {
   }
 
   function findNextEmpty(occupied) {
+    const rowOrder = ROWS > 1 ? [1, 0] : [0];
+    const colOrder = COLS > 2 ? [1, 2, 0, 3] : [...Array(COLS).keys()];
     for (const wall of WALL_ORDER) {
-      for (let row = 0; row < ROWS; row += 1) {
-        for (let col = 0; col < COLS; col += 1) {
+      for (const row of rowOrder) {
+        for (const col of colOrder) {
           const slotId = slotIdForCell(wall, col, row);
           if (!occupied.has(slotId)) {
             return {
@@ -393,12 +410,14 @@ export function createBloomFourWallsScene(opts = {}) {
   return {
     getScene: () => scene,
     getCanvas: () => renderer.domElement,
+    getWallMesh: (wall) => wallMeshes[wall],
     setMoveKey,
     getViewPan,
     focusCell,
     zoomBy,
     findNextEmpty,
     cellCenter,
+    cellLocal,
     cellTransform,
     maxFrameSize,
     slotIdForCell,

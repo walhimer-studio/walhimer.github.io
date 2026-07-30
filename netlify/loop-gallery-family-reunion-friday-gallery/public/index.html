@@ -179,6 +179,7 @@ let pendingMeta = null;
 let firebaseSync = null;
 let wallScene = null;
 let isModerator = false;
+let bootReady = false;
 let FRAME_MAX_W = 18;
 let FRAME_MAX_H = 13;
 let FRAME_MIN_H = 5;
@@ -187,7 +188,6 @@ let GRID_ROWS = 2;
 let WALL_ORDER = ['N', 'E', 'S', 'W'];
 
 const slots = new Map();
-const frameGroup = new THREE.Group();
 const textureLoader = new THREE.TextureLoader();
 textureLoader.setCrossOrigin('anonymous');
 
@@ -407,39 +407,73 @@ function findNearestSlot() {
   return best;
 }
 
+function clampFrameSize(frameW, frameH) {
+  const max = wallScene?.maxFrameSize?.() || { frameMaxW: FRAME_MAX_W, frameMaxH: FRAME_MAX_H };
+  let fw = Number(frameW) || max.frameMaxW;
+  let fh = Number(frameH) || max.frameMaxH;
+  const aspect = fw / fh || 1;
+  if (aspect > max.frameMaxW / max.frameMaxH) {
+    fw = max.frameMaxW;
+    fh = fw / aspect;
+  } else {
+    fh = max.frameMaxH;
+    fw = fh * aspect;
+  }
+  return { frameW: fw, frameH: fh };
+}
+
 function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
-  const { position, rotY } = wallScene.cellTransform(wall, col, row);
+  const wallMesh = wallScene.getWallMesh(wall);
+  if (!wallMesh) throw new Error(`Unknown wall ${wall}`);
+
+  const { lx, ly, lz } = wallScene.cellLocal(wall, col, row);
+  const size = clampFrameSize(frameW, frameH);
+  frameW = size.frameW;
+  frameH = size.frameH;
+
   const holder = new THREE.Group();
   holder.userData.slotId = null;
-  holder.position.copy(position);
-  holder.rotation.y = rotY;
+  holder.position.set(lx, ly, lz);
+  holder.frustumCulled = false;
+  holder.renderOrder = 100;
 
   const backing = new THREE.Mesh(
     new THREE.PlaneGeometry(frameW + 0.12, frameH + 0.12),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, depthWrite: false })
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff, depthTest: false, depthWrite: false, transparent: true,
+    })
   );
   backing.position.z = 0.02;
-  backing.renderOrder = 20;
+  backing.renderOrder = 100;
   holder.add(backing);
 
   const mat = new THREE.MeshBasicMaterial({
-    map: texture, toneMapped: false, side: THREE.DoubleSide, depthTest: false, depthWrite: false,
+    map: texture,
+    toneMapped: false,
+    side: THREE.DoubleSide,
+    depthTest: false,
+    depthWrite: false,
+    transparent: true,
   });
   applyTextureColorSpace(texture);
   const art = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), mat);
-  art.position.z = 0.04;
-  art.renderOrder = 21;
+  art.position.z = 0.05;
+  art.renderOrder = 101;
+  art.frustumCulled = false;
   holder.add(art);
 
   const border = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.PlaneGeometry(frameW + 0.08, frameH + 0.08)),
-    new THREE.LineBasicMaterial({ color: 0x222222, depthTest: false, depthWrite: false })
+    new THREE.LineBasicMaterial({ color: 0x222222, depthTest: false, depthWrite: false, transparent: true })
   );
   border.position.copy(art.position);
-  border.renderOrder = 22;
+  border.renderOrder = 102;
   holder.add(border);
 
-  return { group: holder, art, texture, frameW, frameH };
+  wallMesh.add(holder);
+  wallMesh.renderOrder = 0;
+
+  return { group: holder, art, texture, frameW, frameH, wallMesh };
 }
 
 function addFrame(data, persist = true, quiet = false) {
@@ -451,7 +485,6 @@ function addFrame(data, persist = true, quiet = false) {
   return loadSlotTexture(data).then((tex) => {
     const built = makeFrameMesh(wall, col, row, frameW, frameH, tex);
     built.group.userData.slotId = data.slotId;
-    frameGroup.add(built.group);
     const storedUrl = data.remoteUrl && !data.remoteUrl.startsWith('blob:')
       ? data.remoteUrl
       : (data.url?.startsWith('data:') ? undefined : data.url);
@@ -490,7 +523,7 @@ function addFrame(data, persist = true, quiet = false) {
 function removeFrame(slotId) {
   const s = slots.get(slotId);
   if (!s) return;
-  frameGroup.remove(s.group);
+  s.group?.parent?.remove(s.group);
   s.texture?.dispose();
   if (s.url?.startsWith('blob:')) URL.revokeObjectURL(s.url);
   slots.delete(slotId);
@@ -569,6 +602,11 @@ function updateUploadUI() {
 }
 
 fileInput.addEventListener('change', async () => {
+  if (!bootReady) {
+    setStatus('Still loading gallery…');
+    fileInput.value = '';
+    return;
+  }
   const file = fileInput.files?.[0];
   if (!file) return;
   pendingFile = null;
@@ -736,8 +774,6 @@ async function boot() {
   GRID_ROWS = wallScene.layout.ROWS;
   WALL_ORDER = wallScene.layout.WALL_ORDER;
 
-  wallScene.getScene().add(frameGroup);
-
   if (MOD_TOKEN) {
     try {
       const mod = await checkModerator(MOD_TOKEN);
@@ -762,6 +798,7 @@ async function boot() {
 
   loadLocalSlots();
 
+  bootReady = true;
   updateUploadUI();
   wallScene.getCanvas()?.focus({ preventScroll: true });
 }
