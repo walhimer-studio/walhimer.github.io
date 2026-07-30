@@ -21,23 +21,22 @@ Deploying `/` fails on filenames like `sketches/827 (centered) #10.html` (`#` is
 | GitHub Pages | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/` |
 | Default room | `family-reunion-friday-2` |
 
-## Loop gallery — Family Reunion Friday Gallery (Bloom four walls)
+## Loop Family Reunion 2026 — Gallery
 
 | Setting | Value |
 |---------|--------|
-| Base directory | `netlify/loop-gallery-family-reunion-friday-gallery` |
-| GitHub Pages (gallery / projector) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/` |
+| Base directory | `netlify/loop-family-reunion-2026-gallery` |
+| GitHub Pages (monitor) | `https://mark-walhimer.com/netlify/loop-family-reunion-2026-gallery/` |
 | Default room | `family-reunion-friday-2` |
 
-## Loop gallery — Family Reunion Friday Phone
+## Loop Family Reunion 2026 — Phone
 
 | Setting | Value |
 |---------|--------|
-| Base directory | `netlify/loop-gallery-family-reunion-friday-phone` |
-| GitHub Pages (pocket upload) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/` |
-| Assets | symlinks to gallery deploy root (same room + Firebase) |
+| Base directory | `netlify/loop-family-reunion-2026-phone` |
+| GitHub Pages (upload) | `https://mark-walhimer.com/netlify/loop-family-reunion-2026-phone/` |
 
-Legacy redirect: `netlify/loop-gallery-family-reunion-friday-wall/` → gallery path above.
+Legacy redirects: `loop-gallery-family-reunion-friday-gallery`, `…-phone`, `…-wall` → URLs above.
 
 ## Ghost 77823 gravity
 

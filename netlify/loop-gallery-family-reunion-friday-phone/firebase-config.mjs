@@ -1,1 +1,0 @@
-../loop-gallery-family-reunion-friday-gallery/firebase-config.mjs

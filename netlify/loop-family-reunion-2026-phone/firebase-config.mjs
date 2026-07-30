@@ -1,0 +1,1 @@
+../loop-family-reunion-2026-gallery/firebase-config.mjs
