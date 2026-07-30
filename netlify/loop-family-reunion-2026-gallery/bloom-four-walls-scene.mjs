@@ -1,7 +1,15 @@
 /**
  * Bloom / Release — four-wall room for Loop Gallery (Family Reunion).
  * Garden blooms on wall textures; visitor frames hang as meshes in front of walls.
+ * Co-Create Machine DNA: seed, lifeline, garden arc, DNA notes per bloom.
  */
+import {
+  GARDEN,
+  createCoCreateMachineDna,
+  shuffleNotePool,
+  formatMachineDnaLine,
+} from './co-create-machine-dna.mjs';
+
 export function createBloomFourWallsScene(opts = {}) {
   const THREE = window.THREE;
   if (!THREE) throw new Error('THREE required on window');
@@ -9,7 +17,7 @@ export function createBloomFourWallsScene(opts = {}) {
   const BASE_ROOM = 10;
   const ROOM = BASE_ROOM * 5;
   const HALF = ROOM / 2;
-  const BLOOMS_ENABLED = opts.bloomsEnabled === true; // default off for now
+  const BLOOMS_ENABLED = opts.bloomsEnabled !== false;
   const COLS = 4;
   const ROWS = 2;
   const CELL_W = ROOM / COLS;
@@ -45,9 +53,10 @@ export function createBloomFourWallsScene(opts = {}) {
   }
 
   class Bloom {
-    constructor(rng) {
+    constructor(rng, note) {
       this.x = rng.range(0, PAN_W);
       this.y = rng.range(PAN_H * 0.08, PAN_H * 0.92);
+      this.note = note;
       const h0 = rng.range(0, 360);
       this.c1 = hsbToRgb(h0, rng.range(80, 100), 100);
       this.c2 = hsbToRgb((h0 + rng.range(30, 80)) % 360, rng.range(70, 95), 100);
@@ -110,17 +119,24 @@ export function createBloomFourWallsScene(opts = {}) {
     }
   }
 
-  const TOTAL_BLOOMS = 22;
-  const SPAWN_INTERVAL = 1800;
-  const HOLD_AFTER_FULL = 8000;
-  const TOTAL_LIFE = TOTAL_BLOOMS * SPAWN_INTERVAL + HOLD_AFTER_FULL + 30000;
+  const TOTAL_BLOOMS = GARDEN.TOTAL_BLOOMS;
+  const SPAWN_INTERVAL = GARDEN.SPAWN_INTERVAL;
+  const HOLD_AFTER_FULL = GARDEN.HOLD_AFTER_FULL;
+  const TOTAL_LIFE = GARDEN.TOTAL_BLOOMS * GARDEN.SPAWN_INTERVAL
+    + GARDEN.HOLD_AFTER_FULL + GARDEN.FADE_TAIL_MS;
 
   const panCanvas = document.createElement('canvas');
   panCanvas.width = PAN_W;
   panCanvas.height = PAN_H;
   const panCtx = panCanvas.getContext('2d');
 
-  const rng = new Rand(Date.now() % 99991);
+  const machineDna = createCoCreateMachineDna({
+    seed: opts.seed,
+    label: opts.dnaLabel ?? 'co-create',
+    lifespanSeconds: TOTAL_LIFE / 1000,
+  });
+  const rng = new Rand(machineDna.seed);
+  let noteAssignments = shuffleNotePool(rng);
   let blooms = [];
   let spawnCount = 0;
   let nextSpawn = 600;
@@ -138,26 +154,34 @@ export function createBloomFourWallsScene(opts = {}) {
     fullAt = -1;
     dyingStarted = false;
     startTime = t;
+    noteAssignments = shuffleNotePool(rng);
+    machineDna.onGardenCycleComplete();
   }
 
   function gardenUpdate(t, dt) {
     if (!startTime) startTime = t;
     const elapsed = t - startTime;
-    if (spawnCount < TOTAL_BLOOMS && t > nextSpawn) {
-      blooms.push(new Bloom(rng));
-      spawnCount += 1;
-      nextSpawn = t + SPAWN_INTERVAL;
-      if (spawnCount === TOTAL_BLOOMS) { gardenFull = true; fullAt = t; }
+    if (BLOOMS_ENABLED) {
+      if (spawnCount < TOTAL_BLOOMS && t > nextSpawn) {
+        blooms.push(new Bloom(rng, noteAssignments[spawnCount]));
+        spawnCount += 1;
+        nextSpawn = t + SPAWN_INTERVAL;
+        if (spawnCount === TOTAL_BLOOMS) { gardenFull = true; fullAt = t; }
+      }
+      if (gardenFull && !dyingStarted && t > fullAt + HOLD_AFTER_FULL) {
+        dyingStarted = true;
+        [...blooms].reverse().forEach((b, i) => {
+          setTimeout(() => b.startDying(), i * 600);
+        });
+      }
+      blooms.forEach((b) => b.update(dt));
+      if (dyingStarted && blooms.every((b) => b.dead)) gardenReset(t);
+    } else if (elapsed >= TOTAL_LIFE) {
+      gardenReset(t);
     }
-    if (gardenFull && !dyingStarted && t > fullAt + HOLD_AFTER_FULL) {
-      dyingStarted = true;
-      [...blooms].reverse().forEach((b, i) => {
-        setTimeout(() => b.startDying(), i * 600);
-      });
-    }
-    blooms.forEach((b) => b.update(dt));
-    if (dyingStarted && blooms.every((b) => b.dead)) gardenReset(t);
     lifePct = Math.min(elapsed / TOTAL_LIFE * 100, 100);
+    machineDna.syncGardenAge(elapsed / 1000);
+    machineDna.update(dt / 1000, { scarLoad: opts.getScarLoad?.() ?? 0 });
   }
 
   function gardenDraw(t) {
@@ -237,6 +261,7 @@ export function createBloomFourWallsScene(opts = {}) {
 
   const wallCounterEl = opts.wallCounterEl || null;
   const lifebarEl = opts.lifebarEl || null;
+  const machineDnaEl = opts.machineDnaEl || null;
 
   function updateWallLabel() {
     if (!wallCounterEl) return;
@@ -419,12 +444,15 @@ export function createBloomFourWallsScene(opts = {}) {
 
     if (autoRotate) yaw += 0.0003;
 
-    if (BLOOMS_ENABLED) gardenUpdate(t, dt);
+    gardenUpdate(t, dt);
     gardenDraw(t);
     panTex.needsUpdate = true;
     wallTextures.forEach((tex) => { tex.needsUpdate = true; });
 
-    if (lifebarEl && BLOOMS_ENABLED) lifebarEl.style.width = `${lifePct.toFixed(2)}%`;
+    if (lifebarEl) lifebarEl.style.width = `${lifePct.toFixed(2)}%`;
+    if (machineDnaEl) {
+      machineDnaEl.textContent = formatMachineDnaLine(machineDna.express(), lifePct);
+    }
 
     const qY = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
     const qP = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
@@ -449,5 +477,8 @@ export function createBloomFourWallsScene(opts = {}) {
     maxFrameSize,
     slotIdForCell,
     layout: { ROOM, BASE_ROOM, COLS, ROWS, CELL_W, CELL_H, FRAME_CELL_W, FRAME_CELL_H, WALL_ORDER },
+    getMachineDna: () => machineDna.express(),
+    getGardenLifePct: () => lifePct,
+    getBlooms: () => blooms.map((b) => ({ note: b.note, dead: b.dead })),
   };
 }

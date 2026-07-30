@@ -156,6 +156,22 @@
       letter-spacing: 0.24em; text-transform: uppercase;
       color: rgba(0, 0, 0, 0.18); pointer-events: none;
     }
+    #machine-dna {
+      display: none;
+      position: fixed;
+      top: 38px;
+      left: 12px;
+      z-index: 5;
+      max-width: min(520px, calc(100vw - 180px));
+      font: 9px/1.5 ui-monospace, monospace;
+      letter-spacing: 0.06em;
+      color: rgba(0, 0, 0, 0.22);
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    body.view-wall #machine-dna { display: block; }
     #lifebar-wrap {
       position: fixed; bottom: 0; left: 0; width: 100%; height: 2px;
       background: rgba(0, 0, 0, 0.04); z-index: 5; pointer-events: none;
@@ -171,6 +187,7 @@
     Choose image → Hang on wall · max 100 uploads · max 3 MB
   </div>
   <div id="wall-counter">Wall 1 · North</div>
+  <div id="machine-dna" aria-hidden="true"></div>
   <div id="coCreateCredit">Co-Create, Mark Walhimer, 2026</div>
   <div id="lifebar-wrap" aria-hidden="true"><div id="lifebar"></div></div>
   <div id="qrOverlay">
@@ -208,7 +225,8 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-dolly';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-dna';
+import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-dna';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260730-wall-ui';
@@ -227,6 +245,7 @@ const roomSuffix = ROOM_ID === DEFAULT_ROOM ? '' : `?room=${encodeURIComponent(R
 const WALL_URL = `${GALLERY_PUBLIC}${roomSuffix}`;
 const PHONE_URL = `${PHONE_PUBLIC}${roomSuffix}`;
 const GALLERY_WALL_TITLE = 'Loop Art Critique · Institute of Contemporary Art, Miami · Family Reunion 2026';
+const MACHINE_DNA_SEED = parseSeed(params, ROOM_ID);
 // TEMP — Family Reunion night 2026-07-29 (revert to 5 after event)
 const MAX_UPLOADS = 100;
 document.title = VIEW === 'phone'
@@ -899,6 +918,13 @@ async function boot() {
     insertBefore: panel,
     wallCounterEl: document.getElementById('wall-counter'),
     lifebarEl: document.getElementById('lifebar'),
+    machineDnaEl: document.getElementById('machine-dna'),
+    seed: MACHINE_DNA_SEED,
+    dnaLabel: ROOM_ID,
+    getScarLoad: () => {
+      const cap = GRID_COLS * GRID_ROWS * WALL_ORDER.length;
+      return cap > 0 ? slots.size / cap : 0;
+    },
   });
   const { frameMaxW, frameMaxH, frameMinH } = wallScene.maxFrameSize();
   FRAME_MAX_W = frameMaxW;
