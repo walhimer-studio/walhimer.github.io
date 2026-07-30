@@ -93,10 +93,36 @@
       left: 12px;
       right: auto;
     }
+    body.view-wall #panel {
+      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+      padding-right: calc(156px + env(safe-area-inset-right));
+    }
+    body.view-wall #panel .panel-upload { display: none; }
     body.view-wall #panel #status {
       display: block;
       font-size: 11px;
+      line-height: 1.45;
       color: rgba(0, 0, 0, 0.65);
+    }
+    body.view-wall #qrOverlay {
+      top: auto;
+      right: 12px;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      width: auto;
+      padding: 8px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    body.view-wall #qrOverlay h2,
+    body.view-wall #qrOverlay .phoneUrl { display: none; }
+    body.view-wall #qrCanvas {
+      width: 132px;
+      height: 132px;
+    }
+    body.view-wall #panPad {
+      left: 12px;
+      right: auto;
+      bottom: calc(72px + env(safe-area-inset-bottom));
     }
     body.view-phone #qrOverlay { display: none; }
     body.view-phone #urlBar { display: none; }
@@ -142,13 +168,15 @@
     <button type="button" id="panRight" aria-label="Right">→</button>
   </div>
   <div id="panel">
-    <div class="row">
+    <div class="row panel-upload">
       <label class="btn" for="fileInput">Choose image</label>
       <input id="fileInput" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
       <img id="preview" alt="" />
       <button type="button" id="hangWall" class="primary" disabled>Hang on wall</button>
       <button type="button" id="deleteNearest" class="danger" hidden>Remove nearest</button>
       <span id="modBadge">Moderator</span>
+    </div>
+    <div class="row">
       <span id="status">Loading…</span>
     </div>
   </div>
@@ -156,10 +184,10 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-urls';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-wall-ui';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260730-urls';
+} from './gallery-sync.mjs?v=20260730-wall-ui';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -174,12 +202,13 @@ const VIEW = ON_PHONE_PATH ? 'phone' : (VIEW_PARAM === 'phone' ? 'phone' : 'wall
 const roomSuffix = ROOM_ID === DEFAULT_ROOM ? '' : `?room=${encodeURIComponent(ROOM_ID)}`;
 const WALL_URL = `${GALLERY_PUBLIC}${roomSuffix}`;
 const PHONE_URL = `${PHONE_PUBLIC}${roomSuffix}`;
-document.title = VIEW === 'phone'
-  ? 'Loop Gallery — Family Reunion Friday Phone'
-  : 'Loop Gallery — Family Reunion Friday Gallery';
-document.body.classList.add(`view-${VIEW}`);
+const GALLERY_WALL_TITLE = 'Loop Art Critique · Institute of Contemporary Art, Miami · Family Reunion 2026';
 // TEMP — Family Reunion night 2026-07-29 (revert to 5 after event)
 const MAX_UPLOADS = 100;
+document.title = VIEW === 'phone'
+  ? 'Loop Gallery — Family Reunion Friday Phone'
+  : GALLERY_WALL_TITLE;
+document.body.classList.add(`view-${VIEW}`);
 const MAX_BYTES = 3 * 1024 * 1024;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
 const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
@@ -657,7 +686,7 @@ function updateUploadUI() {
     : ` · local only — refresh loses images${firebaseSync?.error ? ` · ${firebaseSync.error}` : ''}`;
   const mod = isModerator ? ' · mod' : '';
   const failed = cloudLoadFailures > 0 ? ` · ${cloudLoadFailures} cloud load failed` : '';
-  const wallLine = `${slots.size} on wall · room ${ROOM_ID}${sync}${failed}${mod}`;
+  const wallLine = `${GALLERY_WALL_TITLE} · ${slots.size} on wall${sync}${failed}${mod}`;
   const urlBarSync = document.getElementById('urlBarSync');
   if (urlBarSync) urlBarSync.textContent = wallLine;
   if (VIEW === 'wall') {
