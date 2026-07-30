@@ -26,7 +26,7 @@ Deploying `/` fails on filenames like `sketches/827 (centered) #10.html` (`#` is
 | Setting | Value |
 |---------|--------|
 | Base directory | `netlify/loop-gallery-family-reunion-friday-gallery` |
-| GitHub Pages (gallery / projector) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/` |
+| GitHub Pages (gallery / projector) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/` |
 | Default room | `family-reunion-friday-2` |
 
 ## Loop gallery — Family Reunion Friday Phone
@@ -34,8 +34,8 @@ Deploying `/` fails on filenames like `sketches/827 (centered) #10.html` (`#` is
 | Setting | Value |
 |---------|--------|
 | Base directory | `netlify/loop-gallery-family-reunion-friday-phone` |
-| GitHub Pages (pocket upload) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/public/` |
-| Assets | `public/` → symlink to gallery `public/` (same room + Firebase) |
+| GitHub Pages (pocket upload) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/` |
+| Assets | symlinks to gallery deploy root (same room + Firebase) |
 
 Legacy redirect: `netlify/loop-gallery-family-reunion-friday-wall/` → gallery path above.
 

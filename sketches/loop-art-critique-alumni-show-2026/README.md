@@ -12,8 +12,8 @@ https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 
 | Deploy | URL |
 |--------|-----|
-| Bloom four walls + Firebase (gallery / projector) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/ |
-| Phone upload (same room) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/public/ |
+| Bloom four walls + Firebase (gallery / projector) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/ |
+| Phone upload (same room) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/ |
 | Flat wall (earlier) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-2/public/ |
 
 Firebase project: `loop-gallery-family-reunion-3` · room: `family-reunion-friday-2`

@@ -4,10 +4,6 @@ Copy of [`loop-gallery-family-reunion-friday-2/`](../loop-gallery-family-reunion
 
 ## Live URL (GitHub Pages)
 
-https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/
-
-Shorter redirect:
-
 https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/
 
 Default Firebase room: **`family-reunion-friday-2`** (same project + room as Friday 2 — override with `?room=other-name`).
@@ -16,12 +12,12 @@ Default Firebase room: **`family-reunion-friday-2`** (same project + room as Fri
 
 | Screen | URL |
 |--------|-----|
-| **Gallery** (projector / monitor — Bloom room + QR) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/ |
-| **Phone** (participants upload images) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/public/ |
+| **Gallery** (projector / monitor — Bloom room + QR) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/ |
+| **Phone** (participants upload images) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/ |
 
-Legacy `?view=phone` on the gallery URL still works. The gallery URL always opens **wall** view (even on a phone). Use the **phone** URL for pocket uploads.
+Legacy `/public/` paths redirect to the URLs above.
 
-**Wall view** shows the four-wall Bloom room (generative blooms + life bar), visitor JPEGs on all four walls, and a **QR code** for phone upload.
+**Gallery view** shows the four-wall Bloom room (generative blooms + life bar), visitor JPEGs on all four walls, and a **QR code** for phone upload. Put this on the monitor — share the **phone** URL with participants.
 
 ## Room vs Friday 2
 
@@ -39,4 +35,5 @@ Firebase rules: see [Friday 2 README](../loop-gallery-family-reunion-friday-2/RE
 | Setting | Value |
 |---------|--------|
 | Base directory | `netlify/loop-gallery-family-reunion-friday-gallery` |
-| Publish / functions | from `netlify.toml` |
+| Publish | `.` (site root — `index.html` + assets) |
+| Functions | `netlify/functions` |

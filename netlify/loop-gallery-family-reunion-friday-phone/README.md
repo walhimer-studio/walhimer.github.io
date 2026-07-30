@@ -4,17 +4,13 @@ Phone upload entry for the Family Reunion Bloom gallery. Same Firebase room and 
 
 ## Live URL (GitHub Pages)
 
-https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/public/
-
-Shorter redirect:
-
 https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/
 
-## Pair with wall URL
+## Pair with gallery URL
 
 | Screen | URL |
 |--------|-----|
-| **Gallery** (projector / monitor) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/ |
-| **Phone** (upload from pocket) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/public/ |
+| **Gallery** (projector / monitor) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/ |
+| **Phone** (upload from pocket) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/ |
 
-`public/` is a symlink to the gallery deploy folder — one codebase, two canonical URLs.
+Asset files symlink to the gallery folder — one codebase, two canonical URLs. Legacy `/public/` redirects to the URLs above.
