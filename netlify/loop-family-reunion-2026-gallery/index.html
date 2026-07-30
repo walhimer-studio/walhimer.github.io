@@ -26,6 +26,14 @@
       color: rgba(90, 120, 140, 0.55);
       pointer-events: none; max-width: 440px;
     }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
+    #status[data-rec="1"]::before {
+      content: 'REC · ';
+      color: rgba(220, 50, 70, 0.9);
+    }
     #panel {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
       padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
@@ -183,7 +191,7 @@
 <body>
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
-    <span id="hintControls">Drag to look around · scroll or +/− to move closer · arrows turn</span><br>
+    <span id="hintControls">Drag to look around · scroll or +/− to move closer · arrows turn · R record MP4</span><br>
     Choose image → Hang on wall · max 100 uploads · max 3 MB
   </div>
   <div id="wall-counter">Wall 1 · North</div>
@@ -225,8 +233,9 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-dna';
-import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-dna';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-rec';
+import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-rec';
+import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-rec';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260730-wall-ui';
@@ -269,6 +278,7 @@ let pendingFile = null;
 let pendingMeta = null;
 let firebaseSync = null;
 let wallScene = null;
+let canvasRecorder = null;
 let isModerator = false;
 let bootReady = false;
 let cloudLoadFailures = 0;
@@ -358,6 +368,12 @@ async function loadSlotTexture(data) {
 function setStatus(msg) {
   statusEl.textContent = msg;
   syncWallFooterLayout();
+}
+
+function setRecActive(on) {
+  const hint = document.getElementById('hint');
+  if (hint) hint.dataset.rec = on ? '1' : '';
+  if (statusEl) statusEl.dataset.rec = on ? '1' : '';
 }
 
 function syncWallFooterLayout() {
@@ -880,6 +896,14 @@ document.addEventListener('keydown', (e) => {
   if (k === 'arrowdown') { wallScene.setMoveKey('back', true); e.preventDefault(); }
   if (k === 'arrowleft') { wallScene.setMoveKey('left', true); e.preventDefault(); }
   if (k === 'arrowright') { wallScene.setMoveKey('right', true); e.preventDefault(); }
+  if (k === 'r' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    if (e.target.closest('input, textarea, select')) return;
+    e.preventDefault();
+    canvasRecorder?.toggle().then((on) => {
+      setStatus(on ? 'Recording MP4… (R to stop)' : 'Recording saved');
+      if (!on && VIEW === 'wall') updateUploadUI();
+    });
+  }
   if (e.key === 'Backspace' && isModerator) deleteNearestSlot();
 });
 document.addEventListener('keyup', (e) => {
@@ -933,6 +957,11 @@ async function boot() {
   GRID_COLS = wallScene.layout.COLS;
   GRID_ROWS = wallScene.layout.ROWS;
   WALL_ORDER = wallScene.layout.WALL_ORDER;
+
+  canvasRecorder = createCanvasRecorder(() => wallScene.getCanvas(), {
+    filePrefix: `co-create-${ROOM_ID}`,
+    onActiveChange: setRecActive,
+  });
 
   if (MOD_TOKEN) {
     try {
