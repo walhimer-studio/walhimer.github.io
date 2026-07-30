@@ -6,13 +6,16 @@ export function createBloomFourWallsScene(opts = {}) {
   const THREE = window.THREE;
   if (!THREE) throw new Error('THREE required on window');
 
-  const ROOM = 50;
+  const BASE_ROOM = 10;
+  const ROOM = BASE_ROOM * 5;
   const HALF = ROOM / 2;
   const BLOOMS_ENABLED = opts.bloomsEnabled === true; // default off for now
   const COLS = 4;
   const ROWS = 2;
   const CELL_W = ROOM / COLS;
   const CELL_H = ROOM / ROWS;
+  const FRAME_CELL_W = BASE_ROOM / COLS;
+  const FRAME_CELL_H = BASE_ROOM / ROWS;
   const PAN_W = 4096;
   const PAN_H = 1024;
   const WALL_ORDER = ['N', 'E', 'S', 'W'];
@@ -169,7 +172,7 @@ export function createBloomFourWallsScene(opts = {}) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, ROOM * 4);
+  const camera = new THREE.PerspectiveCamera(82, window.innerWidth / window.innerHeight, 0.1, ROOM * 4);
   camera.position.set(0, 0, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -354,9 +357,9 @@ export function createBloomFourWallsScene(opts = {}) {
 
   function maxFrameSize() {
     return {
-      frameMaxW: CELL_W * 0.88,
-      frameMaxH: CELL_H * 0.88,
-      frameMinH: CELL_H * 0.35,
+      frameMaxW: FRAME_CELL_W * 0.88,
+      frameMaxH: FRAME_CELL_H * 0.88,
+      frameMinH: FRAME_CELL_H * 0.35,
     };
   }
 
@@ -424,6 +427,6 @@ export function createBloomFourWallsScene(opts = {}) {
     cellTransform,
     maxFrameSize,
     slotIdForCell,
-    layout: { ROOM, COLS, ROWS, CELL_W, CELL_H, WALL_ORDER },
+    layout: { ROOM, BASE_ROOM, COLS, ROWS, CELL_W, CELL_H, FRAME_CELL_W, FRAME_CELL_H, WALL_ORDER },
   };
 }
