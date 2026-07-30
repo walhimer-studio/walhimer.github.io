@@ -28,8 +28,19 @@ Redirect stub (repo root): `loop-art-critique-alumni-show-2026/index.html` → h
 
 | Work | Status | Catalog |
 |------|--------|---------|
+| **Loop Family Reunion — Co-Create gallery** | **Live** | [loop-family-reunion-co-create-gallery.md](./loop-family-reunion-co-create-gallery.md) |
 | Surrender Machine — Loop 21 | Live (July 3 opening) | `sketches/loop-art-critique-2026/loop-21-surrender-machine/` |
 | **Loop Alumni Show — Invisible Layer** | **Concept — pending approval** | [loop-alumni-show-invisible-layer-concept.md](./loop-alumni-show-invisible-layer-concept.md) |
+
+## Machine DNA (Co-Create gallery)
+
+| Field | Value |
+|-------|--------|
+| Species | `co-create` |
+| Seed | Room-derived · `?seed=` override |
+| Mode | surrender / mirror · participatory |
+| Lifeline | Bloom garden arc |
+| Bodies | monitor · phone · Firebase `family-reunion-friday-2` |
 
 ## Machine DNA (Loop Alumni Show — Invisible Layer)
 

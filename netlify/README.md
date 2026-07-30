@@ -36,6 +36,8 @@ Deploying `/` fails on filenames like `sketches/827 (centered) #10.html` (`#` is
 | Base directory | `netlify/loop-family-reunion-2026-phone` |
 | GitHub Pages (upload) | `https://mark-walhimer.com/netlify/loop-family-reunion-2026-phone/` |
 
+Phone folder symlinks gallery modules (`co-create-machine-dna.mjs`, `samples/`, etc.) — see [phone README](./loop-family-reunion-2026-phone/README.md).
+
 Legacy redirects: `loop-gallery-family-reunion-friday-gallery`, `…-phone`, `…-wall` → URLs above.
 
 ## Ghost 77823 gravity

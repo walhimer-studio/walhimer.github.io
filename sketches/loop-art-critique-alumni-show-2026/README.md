@@ -18,10 +18,13 @@ https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 
 Firebase project: `loop-gallery-family-reunion-3` · room: `family-reunion-friday-2`
 
+Monitor QR → phone URL above (generated at runtime). Catalog: [loop-family-reunion-co-create-gallery.md](../../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md).
+
 ## Works (canonical paths — not in this folder)
 
 | Work | Status | Path |
 |------|--------|------|
+| **Loop Family Reunion — Co-Create gallery** | Live | [catalog](../../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md) · [gallery README](../../netlify/loop-family-reunion-2026-gallery/README.md) |
 | Surrender Machine — Loop 21 | Live | `sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html` |
 | Loop 21 surrender wall notes | Live | `sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md` |
 | **Loop Alumni Show — Invisible Layer** | **Concept / POC** | [catalog concept](../../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md) · [POC](loop-alumni-show-invisible-layer-poc.html) |
