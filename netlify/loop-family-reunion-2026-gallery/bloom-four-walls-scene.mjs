@@ -233,6 +233,7 @@ export function createBloomFourWallsScene(opts = {}) {
   let running = true;
   let lastT = null;
   const keys = { forward: false, back: false, left: false, right: false };
+  const MAX_VIEW_DIST = HALF - 1.25;
 
   const wallCounterEl = opts.wallCounterEl || null;
   const lifebarEl = opts.lifebarEl || null;
@@ -285,6 +286,27 @@ export function createBloomFourWallsScene(opts = {}) {
     lastX = t.clientX;
     lastY = t.clientY;
   }, { passive: true });
+
+  function nudgeView(delta) {
+    if (!delta) return;
+    autoRotate = false;
+    const forward = new THREE.Vector3(0, 0, -1);
+    forward.applyQuaternion(camera.quaternion);
+    camera.position.addScaledVector(forward, delta);
+    const len = camera.position.length();
+    if (len > MAX_VIEW_DIST) camera.position.multiplyScalar(MAX_VIEW_DIST / len);
+  }
+
+  function onWheel(e) {
+    e.preventDefault();
+    let dy = e.deltaY;
+    if (e.deltaMode === 1) dy *= 16;
+    else if (e.deltaMode === 2) dy *= window.innerHeight;
+    const scale = e.ctrlKey ? 0.0025 : 0.055;
+    nudgeView(-dy * scale);
+  }
+
+  renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
 
   function resize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -380,8 +402,7 @@ export function createBloomFourWallsScene(opts = {}) {
   }
 
   function zoomBy(factor) {
-    camera.fov = Math.max(35, Math.min(95, camera.fov * factor));
-    camera.updateProjectionMatrix();
+    nudgeView((1 - factor) * 3.5);
   }
 
   function tick(t) {

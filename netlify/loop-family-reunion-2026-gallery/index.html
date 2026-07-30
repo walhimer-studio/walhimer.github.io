@@ -153,7 +153,7 @@
 <body>
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
-    <span id="hintControls">Drag to look around · blooms on walls · scroll or +/− zoom · arrows turn</span><br>
+    <span id="hintControls">Drag to look around · scroll or +/− to move closer · arrows turn</span><br>
     Choose image → Hang on wall · max 100 uploads · max 3 MB
   </div>
   <div id="wall-counter">Wall 1 · North</div>
@@ -193,7 +193,7 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-room50-fix';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-dolly';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260730-wall-ui';
