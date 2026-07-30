@@ -119,7 +119,7 @@
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
     <span id="hintControls">Drag to look around · blooms on walls · scroll or +/− zoom · arrows turn</span><br>
-    Choose image → Hang on wall · max 100 uploads · max 2 MB
+    Choose image → Hang on wall · max 100 uploads · max 3 MB
   </div>
   <div id="wall-counter">Wall 1 · North</div>
   <div id="lifebar-wrap" aria-hidden="true"><div id="lifebar"></div></div>
@@ -156,10 +156,10 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-limit100';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-hires';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260730-limit100';
+} from './gallery-sync.mjs?v=20260730-hires';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -180,7 +180,7 @@ document.title = VIEW === 'phone'
 document.body.classList.add(`view-${VIEW}`);
 // TEMP — Family Reunion night 2026-07-29 (revert to 5 after event)
 const MAX_UPLOADS = 100;
-const MAX_BYTES = 2 * 1024 * 1024;
+const MAX_BYTES = 3 * 1024 * 1024;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
 const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
 const PREVIEW_KEY = `loopGallery:${ROOM_ID}:previews`;
@@ -246,16 +246,6 @@ async function loadArtTexture(url) {
 }
 
 async function loadSlotTexture(data) {
-  if (data.thumbData?.startsWith('data:image/')) {
-    return loadArtTexture(data.thumbData);
-  }
-  const cached = loadCachedPreview(data.slotId);
-  if (cached) {
-    try { return await loadArtTexture(cached); } catch (_) {}
-  }
-  if (data.previewUrl?.startsWith('data:')) {
-    return loadArtTexture(data.previewUrl);
-  }
   if (data.url?.startsWith('https://')) {
     try {
       const res = await fetch(data.url);
@@ -279,6 +269,16 @@ async function loadSlotTexture(data) {
     } catch (err) {
       console.warn('Storage read failed', data.slotId, err);
     }
+  }
+  if (data.thumbData?.startsWith('data:image/')) {
+    return loadArtTexture(data.thumbData);
+  }
+  const cached = loadCachedPreview(data.slotId);
+  if (cached) {
+    try { return await loadArtTexture(cached); } catch (_) {}
+  }
+  if (data.previewUrl?.startsWith('data:')) {
+    return loadArtTexture(data.previewUrl);
   }
   throw new Error('Could not load image from cloud');
 }
@@ -574,6 +574,28 @@ function removeFrame(slotId) {
   updateUploadUI();
 }
 
+function makeSyncThumb(sourceCanvas, exportQuality) {
+  const maxEdge = 720;
+  let sw = sourceCanvas.width;
+  let sh = sourceCanvas.height;
+  if (Math.max(sw, sh) > maxEdge) {
+    const scale = maxEdge / Math.max(sw, sh);
+    sw = Math.max(1, Math.round(sw * scale));
+    sh = Math.max(1, Math.round(sh * scale));
+  }
+  const thumbCanvas = document.createElement('canvas');
+  thumbCanvas.width = sw;
+  thumbCanvas.height = sh;
+  thumbCanvas.getContext('2d').drawImage(sourceCanvas, 0, 0, sw, sh);
+  let q = Math.min(0.8, exportQuality);
+  let syncThumb = thumbCanvas.toDataURL('image/jpeg', q);
+  while (syncThumb.length > 900000 && q > 0.45) {
+    q -= 0.08;
+    syncThumb = thumbCanvas.toDataURL('image/jpeg', q);
+  }
+  return syncThumb;
+}
+
 async function prepareJPEG(file) {
   const nameOk = /\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
   if (file.type && !/^image\//i.test(file.type) && !nameOk) {
@@ -597,7 +619,7 @@ async function prepareJPEG(file) {
   const aspect = bmp.width / bmp.height;
   const frame = fitFrameToWall(aspect);
 
-  const pxPerUnit = 24;
+  const pxPerUnit = 320;
   let tw = Math.min(2048, Math.round(frame.frameW * pxPerUnit));
   let th = Math.min(2048, Math.round(frame.frameH * pxPerUnit));
 
@@ -618,9 +640,10 @@ async function prepareJPEG(file) {
     throw new Error(`Export still over ${formatKb(MAX_BYTES)} after compression`);
   }
 
-  const previewUrl = canvas.toDataURL('image/jpeg', Math.min(0.82, quality));
+  const previewUrl = canvas.toDataURL('image/jpeg', Math.min(0.92, quality));
+  const syncThumb = makeSyncThumb(canvas, quality);
   const outFile = new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
-  return { file: outFile, previewUrl, ...frame, bytes: blob.size, aspect: frame.aspect };
+  return { file: outFile, previewUrl, syncThumb, ...frame, bytes: blob.size, aspect: frame.aspect };
 }
 
 function updateUploadUI() {

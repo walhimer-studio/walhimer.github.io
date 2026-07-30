@@ -128,7 +128,7 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       await st.uploadBytes(ref, file, { contentType: 'image/jpeg' });
       docData.url = await st.getDownloadURL(ref);
     } catch (storageErr) {
-      const thumb = meta.previewUrl;
+      const thumb = meta.syncThumb || meta.previewUrl;
       if (!thumb?.startsWith('data:image/')) {
         throw new Error(
           `Storage blocked (${storageErr?.code || 'permission-denied'}). `
@@ -146,14 +146,14 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       usedThumb = true;
     }
 
-    // Always mirror a Firestore thumbnail when small enough so the monitor
-    // can render without relying on Storage reads cross-device.
+    // Small Firestore fallback only — monitor prefers full Storage JPEG.
+    const syncThumb = meta.syncThumb || meta.previewUrl;
     if (
       !docData.thumbData
-      && meta.previewUrl?.startsWith('data:image/')
-      && meta.previewUrl.length <= 900000
+      && syncThumb?.startsWith('data:image/')
+      && syncThumb.length <= 900000
     ) {
-      docData.thumbData = meta.previewUrl;
+      docData.thumbData = syncThumb;
       usedThumb = true;
     }
 
