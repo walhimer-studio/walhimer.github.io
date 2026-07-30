@@ -119,7 +119,7 @@
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
     <span id="hintControls">Drag to look around · blooms on walls · scroll or +/− zoom · arrows turn</span><br>
-    Choose image → Hang on wall · max 5 uploads · max 2 MB
+    Choose image → Hang on wall · max 100 uploads · max 2 MB
   </div>
   <div id="wall-counter">Wall 1 · North</div>
   <div id="lifebar-wrap" aria-hidden="true"><div id="lifebar"></div></div>
@@ -156,10 +156,10 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-sync-thumb';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-limit100';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260730-sync-thumb';
+} from './gallery-sync.mjs?v=20260730-limit100';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -178,7 +178,8 @@ document.title = VIEW === 'phone'
   ? 'Loop Gallery — Family Reunion Friday Phone'
   : 'Loop Gallery — Family Reunion Friday Gallery';
 document.body.classList.add(`view-${VIEW}`);
-const MAX_UPLOADS = 5;
+// TEMP — Family Reunion night 2026-07-29 (revert to 5 after event)
+const MAX_UPLOADS = 100;
 const MAX_BYTES = 2 * 1024 * 1024;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
 const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
@@ -677,7 +678,7 @@ async function hang() {
     return;
   }
   if (uploadCount >= MAX_UPLOADS) {
-    setStatus('Upload limit reached — 5 per browser for this room');
+    setStatus('Upload limit reached — 100 per browser for this room');
     return;
   }
   const slot = findNextEmpty();

@@ -2,7 +2,8 @@ import { createHash } from 'crypto';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
-const MAX_UPLOADS = 5;
+// TEMP — Family Reunion night 2026-07-29 (revert to 5 after event)
+const MAX_UPLOADS = 100;
 
 function ipHash(ip) {
   return createHash('sha256').update(ip).digest('hex').slice(0, 24);
