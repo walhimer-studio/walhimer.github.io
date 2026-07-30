@@ -109,6 +109,7 @@
       font-size: 11px;
       line-height: 1.45;
       color: rgba(0, 0, 0, 0.65);
+      padding-right: 13rem;
     }
     body.view-wall #qrOverlay {
       top: auto;
@@ -133,6 +134,20 @@
       right: auto;
       bottom: calc(72px + env(safe-area-inset-bottom));
     }
+    #coCreateCredit {
+      display: none;
+      position: fixed;
+      right: calc(14px + env(safe-area-inset-right));
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      z-index: 21;
+      font: 10px/1.45 system-ui, sans-serif;
+      color: rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+      text-align: right;
+    }
+    body.view-wall #coCreateCredit { display: block; }
     body.view-phone #qrOverlay { display: none; }
     body.view-phone #urlBar { display: none; }
     body.view-phone #hint { top: 10px; }
@@ -157,6 +172,7 @@
     Choose image → Hang on wall · max 100 uploads · max 3 MB
   </div>
   <div id="wall-counter">Wall 1 · North</div>
+  <div id="coCreateCredit">Co-Create, Mark Walhimer, 2026</div>
   <div id="lifebar-wrap" aria-hidden="true"><div id="lifebar"></div></div>
   <div id="qrOverlay">
     <h2>Scan · hang on wall</h2>
