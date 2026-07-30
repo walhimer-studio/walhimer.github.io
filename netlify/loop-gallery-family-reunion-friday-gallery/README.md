@@ -16,8 +16,10 @@ Default Firebase room: **`family-reunion-friday-2`** (same project + room as Fri
 
 | Screen | URL |
 |--------|-----|
-| **Wall** (projector / monitor — Bloom room + QR) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/` or `?view=wall` |
-| **Phone** (participants upload images) | `https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/?view=phone` |
+| **Gallery** (projector / monitor — Bloom room + QR) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-gallery/public/ |
+| **Phone** (participants upload images) | https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/public/ |
+
+Legacy `?view=phone` on the gallery URL still works. The gallery URL always opens **wall** view (even on a phone). Use the **phone** URL for pocket uploads.
 
 **Wall view** shows the four-wall Bloom room (generative blooms + life bar), visitor JPEGs on all four walls, and a **QR code** for phone upload.
 

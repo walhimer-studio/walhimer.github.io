@@ -73,6 +73,8 @@
     #urlBar div + div { margin-top: 4px; }
     #urlBar strong { color: rgba(20, 30, 40, 0.85); }
     body.view-wall #hint { display: none; }
+    body.view-wall .hint-title-phone { display: none; }
+    body.view-phone .hint-title-gallery { display: none; }
     body.view-wall #urlBar { display: none; }
     body.view-wall #wall-counter {
       top: 12px;
@@ -103,7 +105,7 @@
 </head>
 <body>
   <div id="hint">
-    Loop Gallery · Family Reunion Friday Gallery<br>
+    <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
     <span id="hintControls">Drag to look around · blooms on walls · scroll or +/− zoom · arrows turn</span><br>
     Choose image → Hang on wall · max 5 uploads · max 2 MB
   </div>
@@ -142,23 +144,27 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-be290b7';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-phone-urls';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260730-be290b7';
+} from './gallery-sync.mjs?v=20260730-phone-urls';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
 const DEFAULT_ROOM = 'family-reunion-friday-2';
 const ROOM_ID = (params.get('room') || DEFAULT_ROOM).replace(/[^\w-]/g, '') || DEFAULT_ROOM;
 const MOD_TOKEN = params.get('mod') || '';
+const GALLERY_PUBLIC = `${location.origin}/netlify/loop-gallery-family-reunion-friday-gallery/public/`;
+const PHONE_PUBLIC = `${location.origin}/netlify/loop-gallery-family-reunion-friday-phone/public/`;
+const ON_PHONE_PATH = location.pathname.includes('/loop-gallery-family-reunion-friday-phone/');
 const VIEW_PARAM = params.get('view')?.toLowerCase();
-const IS_MOBILE = window.matchMedia('(max-width: 768px)').matches
-  || /iPhone|iPad|Android/i.test(navigator.userAgent);
-const VIEW = VIEW_PARAM === 'wall' ? 'wall' : (VIEW_PARAM === 'phone' ? 'phone' : (IS_MOBILE ? 'phone' : 'wall'));
-const PAGE_BASE = `${location.origin}${location.pathname}`;
-const WALL_URL = `${PAGE_BASE}?view=wall&room=${ROOM_ID}`;
-const PHONE_URL = `${PAGE_BASE}?view=phone&room=${ROOM_ID}`;
+const VIEW = ON_PHONE_PATH ? 'phone' : (VIEW_PARAM === 'phone' ? 'phone' : 'wall');
+const roomSuffix = ROOM_ID === DEFAULT_ROOM ? '' : `?room=${encodeURIComponent(ROOM_ID)}`;
+const WALL_URL = `${GALLERY_PUBLIC}${roomSuffix}`;
+const PHONE_URL = `${PHONE_PUBLIC}${roomSuffix}`;
+document.title = VIEW === 'phone'
+  ? 'Loop Gallery — Family Reunion Friday Phone'
+  : 'Loop Gallery — Family Reunion Friday Gallery';
 document.body.classList.add(`view-${VIEW}`);
 const MAX_UPLOADS = 5;
 const MAX_BYTES = 2 * 1024 * 1024;
