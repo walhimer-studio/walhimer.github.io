@@ -142,10 +142,11 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs';
+const GALLERY_BUILD = '20260730-be290b7';
+import { createBloomFourWallsScene } from `./bloom-four-walls-scene.mjs?v=${GALLERY_BUILD}`;
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs';
+} from `./gallery-sync.mjs?v=${GALLERY_BUILD}`;
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
