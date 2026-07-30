@@ -1,0 +1,3 @@
+# Repo-root folders that predate check_catalog_mirror.py (redirect stubs only).
+# Do NOT add new catalog series here — fix layout instead.
+invisible-layer

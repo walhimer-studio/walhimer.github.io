@@ -10,6 +10,7 @@ cat > "$HOOK" <<'EOF'
 set -euo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
+python3 _scripts/check_catalog_mirror.py
 python3 _scripts/check_self_contained.py
 python3 _scripts/check_catalog_sync.py
 EOF

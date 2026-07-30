@@ -2,7 +2,7 @@
  * COMPOSE — ephemeral upload → RGB→XYZ GPU volume (new file).
  * Invisible RGB: R→XY, G→color, B→Z. No server storage.
  */
-import * as THREE from "/sketches/js/three-0.170.0.module.js";
+import * as THREE from "../../js/three-0.170.0.module.js";
 
 const PAL = {
   pink: [255, 16, 240],

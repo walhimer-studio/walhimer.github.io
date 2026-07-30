@@ -82,7 +82,7 @@ cd ~/Documents/GitHub/walhimer.github.io
 1. Keep `data/catalog.json` current via `python3 _scripts/refresh_catalog.py`.
 2. Open `catalog-db.html` to browse/search/filter the collection as a mini database.
 3. If links or labels need adjustment, update `catalog-db.html` only (no manifest schema change required).
-4. Run `python3 _scripts/check_repo_layout.py` before commit to catch root-level folder drift.
+4. Run `python3 _scripts/check_catalog_mirror.py` and `python3 _scripts/check_repo_layout.py` before commit to catch layout drift.
 5. Run `python3 _scripts/check_self_contained.py` before commit — **all** published HTML must pass (or `_scripts/install_pre_commit_hook.sh` once).
 
 ---

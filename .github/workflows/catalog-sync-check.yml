@@ -11,5 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Catalog mirror layout (catalog ↔ sketches)
+        run: python3 _scripts/check_catalog_mirror.py
+
       - name: catalog.json must match SERIES refresh output
         run: python3 _scripts/check_catalog_sync.py

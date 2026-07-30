@@ -1,14 +1,12 @@
 # Loop Art Critique Alumni Show #3 · July 2026
 
-**Top-level hub** — ICA Miami alumni exhibition (*Technological Counterproduction*), Loop cohort #21. Structure guide: [Submission & series structure](../docs/submission-and-series-structure.md).
+**Catalog hub** — ICA Miami alumni exhibition (*Technological Counterproduction*), Loop cohort #21. Structure guide: [Submission & series structure](../../docs/submission-and-series-structure.md).
 
 **Do not copy artwork into this folder.** Canonical Surrender Machine alumni piece lives in `sketches/loop-art-critique-2026/loop-21-surrender-machine/`.
 
 ## Live URL (hub)
 
-https://mark-walhimer.com/loop-art-critique-alumni-show-2026/index.html
-
-GitHub folder: [`loop-art-critique-alumni-show-2026/`](../loop-art-critique-alumni-show-2026/) (repo root) · [index.md](./index.md)
+https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
 
 ## Participatory gallery (Family Reunion)
 
@@ -25,7 +23,7 @@ Firebase project: `loop-gallery-family-reunion-3` · room: `family-reunion-frida
 |------|--------|------|
 | Surrender Machine — Loop 21 | Live | `sketches/loop-art-critique-2026/loop-21-surrender-machine/index.html` |
 | Loop 21 surrender wall notes | Live | `sketches/loop-art-critique-2026/LOOP-21-SURRENDER-WALL.md` |
-| **Loop Alumni Show — Invisible Layer** | **Concept / POC** | [catalog concept](../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md) · [POC](loop-alumni-show-invisible-layer-poc.html) |
+| **Loop Alumni Show — Invisible Layer** | **Concept / POC** | [catalog concept](../../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md) · [POC](loop-alumni-show-invisible-layer-poc.html) |
 
 ## Assets (in this folder)
 
@@ -46,11 +44,11 @@ Firebase project: `loop-gallery-family-reunion-3` · room: `family-reunion-frida
 
 ## Change workflow
 
-1. Update **this README** and [index.md](./index.md)
-2. Update hub `index.html` and register in `sketches/index.html` SERIES
+1. Update **this README**
+2. Update hub + `SERIES` in `sketches/index.html`
 3. `python3 _scripts/reorder_series_by_index_mtime.py`
 4. `python3 _scripts/refresh_catalog.py` → commit `data/catalog.json`
-5. `python3 _scripts/check_self_contained.py` (full repo, exit 0)
+5. `python3 _scripts/check_catalog_mirror.py` + `check_catalog_sync.py` + `check_self_contained.py`
 6. Push
 
-Old URL `sketches/loop-art-critique-alumni-show-2026/` redirects here.
+Repo-root `loop-art-critique-alumni-show-2026/index.html` is a **redirect stub** to this folder only.

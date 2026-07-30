@@ -1,5 +1,5 @@
 ---
-description: New sketches are not published until SERIES + catalog.json are updated (README publish checklist)
+description: Catalog mirror layout + publish checklist — binding; enforced by check_catalog_mirror.py in pre-commit and CI
 alwaysApply: true
 ---
 
@@ -9,11 +9,28 @@ alwaysApply: true
 
 Creating or shipping sketch HTML is **not done** until the full publish steps below are complete and committed.
 
+## Layout (non-negotiable — enforced by `_scripts/check_catalog_mirror.py`)
+
+```
+catalog/{path}/README.md          ← catalog statement
+sketches/{same-path}/              ← WIP + hub (mirrors catalog)
+```
+
+| Forbidden | Required |
+|-----------|----------|
+| Project folder at **repo root** (`loop-art-critique-alumni-show-2026/` next to `catalog/`) | Hub HTML at `sketches/{path}/index.html` |
+| SERIES HTML pointing outside `sketches/` | SERIES `../catalog/{path}/README.md` for catalog markdown |
+| Inventing parallel folders “for GitHub visibility” | `github.com/.../tree/main/sketches/{path}/` **is** the GitHub folder |
+| Skipping mirror because user said “own folder” | **Stop.** Explain mirror rule; do not move to repo root |
+
+**Pre-commit + CI run `check_catalog_mirror.py`.** If it fails, do not commit or push.
+
 ## Hard stops
 
 1. **Never commit or push** new/changed public sketch HTML without completing the publish checklist.
 2. **Never treat** “file exists on disk” or “pushed to GitHub” as published — the catalog UI and `data/catalog.json` are the publish surface.
-3. **Prefer** `_scripts/safe_publish.sh "message"` for publish commits (runs guards + refresh + push).
+3. **Never move** a catalog project out of `sketches/{same-path}/` unless the user sends an explicit repo-layout exception with `check_repo_layout.py` update.
+4. **Prefer** `_scripts/safe_publish.sh "message"` for publish commits (runs all guards + refresh + push).
 
 ## Publish checklist (required order)
 
@@ -23,14 +40,16 @@ When adding or changing work under `sketches/` (or promoting to `installations/`
 2. Update **`catalog/{series}/README.md`** (and `{artwork}.md` when applicable).
 3. `python3 _scripts/reorder_series_by_index_mtime.py`
 4. `python3 _scripts/refresh_catalog.py` → commit **`data/catalog.json`**
-5. `python3 _scripts/check_catalog_sync.py` (must exit 0)
-6. `python3 _scripts/check_self_contained.py` (must exit 0 — see `self-contained-published-html.mdc`)
+5. `python3 _scripts/check_catalog_mirror.py` (must exit 0)
+6. `python3 _scripts/check_catalog_sync.py` (must exit 0)
+7. `python3 _scripts/check_self_contained.py` (must exit 0 — see `self-contained-published-html.mdc`)
 
 ## Pre-ship checklist
 
-- [ ] SERIES lists every new sketch `.html` path (not only the series hub `index.html`)
+- [ ] `sketches/{path}/` mirrors `catalog/{path}/`
+- [ ] SERIES lists every new sketch `.html` path under `sketches/` (not only the series hub `index.html`)
 - [ ] `data/catalog.json` refreshed and staged in the same commit
-- [ ] Both sync + self-contained checks pass locally
+- [ ] Mirror + sync + self-contained checks pass locally
 - [ ] If user asked to publish: run `_scripts/safe_publish.sh` or equivalent full sequence before push
 
 ## Technical series example
