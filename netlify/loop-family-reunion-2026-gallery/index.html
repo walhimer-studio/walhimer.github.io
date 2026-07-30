@@ -181,10 +181,16 @@
     }
     body.view-wall #machine-dna { display: block; }
     #lifebar-wrap {
-      position: fixed; bottom: 0; left: 0; width: 100%; height: 2px;
-      background: rgba(0, 0, 0, 0.04); z-index: 5; pointer-events: none;
+      position: fixed;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      bottom: calc(var(--wall-footer-h, 52px) + env(safe-area-inset-bottom));
+      background: rgba(0, 0, 0, 0.06);
+      z-index: 21;
+      pointer-events: none;
     }
-    #lifebar { height: 100%; width: 0%; background: rgba(0, 0, 0, 0.18); transition: width 0.1s linear; }
+    #lifebar { height: 100%; width: 0%; background: rgba(0, 0, 0, 0.32); transition: width 0.1s linear; }
     body.view-phone #wall-counter { top: 10px; right: 12px; }
   </style>
 </head>
@@ -233,9 +239,9 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-rec';
-import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-rec';
-import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-rec';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-lifebar';
+import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-lifebar';
+import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-lifebar';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260730-wall-ui';
@@ -377,7 +383,6 @@ function setRecActive(on) {
 }
 
 function syncWallFooterLayout() {
-  if (VIEW !== 'wall') return;
   requestAnimationFrame(() => {
     const panel = document.getElementById('panel');
     if (!panel) return;
