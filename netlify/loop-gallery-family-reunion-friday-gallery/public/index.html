@@ -79,6 +79,11 @@
       left: 12px;
       right: auto;
     }
+    body.view-wall #panel #status {
+      display: block;
+      font-size: 11px;
+      color: rgba(0, 0, 0, 0.65);
+    }
     body.view-phone #qrOverlay { display: none; }
     body.view-phone #urlBar { display: none; }
     body.view-phone #hint { top: 10px; }
@@ -411,24 +416,27 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
 
   const backing = new THREE.Mesh(
     new THREE.PlaneGeometry(frameW + 0.12, frameH + 0.12),
-    new THREE.MeshBasicMaterial({ color: 0xffffff })
+    new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false, depthWrite: false })
   );
   backing.position.z = 0.02;
+  backing.renderOrder = 20;
   holder.add(backing);
 
-  const mat = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false, side: THREE.DoubleSide });
+  const mat = new THREE.MeshBasicMaterial({
+    map: texture, toneMapped: false, side: THREE.DoubleSide, depthTest: false, depthWrite: false,
+  });
   applyTextureColorSpace(texture);
   const art = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), mat);
   art.position.z = 0.04;
-  art.renderOrder = 2;
+  art.renderOrder = 21;
   holder.add(art);
 
   const border = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.PlaneGeometry(frameW + 0.08, frameH + 0.08)),
-    new THREE.LineBasicMaterial({ color: 0x222222 })
+    new THREE.LineBasicMaterial({ color: 0x222222, depthTest: false, depthWrite: false })
   );
   border.position.copy(art.position);
-  border.renderOrder = 3;
+  border.renderOrder = 22;
   holder.add(border);
 
   return { group: holder, art, texture, frameW, frameH };
@@ -552,7 +560,10 @@ function updateUploadUI() {
   const wallLine = `${slots.size} on wall · room ${ROOM_ID}${sync}${mod}`;
   const urlBarSync = document.getElementById('urlBarSync');
   if (urlBarSync) urlBarSync.textContent = wallLine;
-  if (VIEW === 'wall') return;
+  if (VIEW === 'wall') {
+    setStatus(wallLine);
+    return;
+  }
   const hint = remaining > 0 && !pendingFile ? ' · choose image first' : '';
   setStatus(`${remaining} of ${MAX_UPLOADS} uploads left · room ${ROOM_ID}${sync}${mod}${hint}`);
 }
@@ -641,10 +652,11 @@ async function hang() {
     fileInput.value = '';
     previewEl.style.display = 'none';
     updateUploadUI();
+    const wallLabel = { N: 'North', E: 'East', S: 'South', W: 'West' }[slot.wall] || slot.wall;
     const syncNote = firebaseSync?.mode === 'firebase'
       ? (uploaded?.usedThumb ? ' · synced via Firestore' : ' · synced to cloud')
       : ' · local only';
-    setStatus(`Hung on wall · slot ${slot.slotId}${syncNote}`);
+    setStatus(`Hung on ${wallLabel} wall · slot ${slot.slotId}${syncNote} · drag to look around`);
   } catch (err) {
     console.error(err);
     setStatus(err?.message || 'Could not hang — not saved to cloud');

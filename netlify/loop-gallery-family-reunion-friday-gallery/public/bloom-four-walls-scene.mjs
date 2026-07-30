@@ -293,7 +293,7 @@ export function createBloomFourWallsScene(opts = {}) {
     wallAnchor.position.set(...def.pos);
     wallAnchor.rotation.set(0, def.rotY, 0);
     wallAnchor.updateMatrixWorld(true);
-    const local = new THREE.Vector3(lx, ly, 0.06);
+    const local = new THREE.Vector3(lx, ly, 0.14);
     const position = local.applyMatrix4(wallAnchor.matrixWorld);
     return { position, rotY: def.rotY, wall, col, row, side: def.side };
   }
@@ -350,8 +350,8 @@ export function createBloomFourWallsScene(opts = {}) {
 
   function focusCell(wall, col, row) {
     const def = WALL_DEFS[wall];
-    const targetYaw = def.rotY + Math.PI;
-    yaw = targetYaw;
+    // Face the wall (rotY is the wall mesh rotation; camera yaw matches it).
+    yaw = def.rotY;
     pitch = 0;
     autoRotate = false;
   }
