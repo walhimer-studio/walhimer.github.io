@@ -3,8 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <link rel="canonical" href="https://mark-walhimer.com/netlify/loop-gallery-family-reunion-friday-phone/" />
-  <script>location.replace("../" + location.search + location.hash);</script>
-  <title>Redirect</title>
+  <title>Loop Gallery — redirect</title>
+  <script>
+    (function () {
+      var q = location.search;
+      var bust = 'fresh=1';
+      var next = '../' + (q ? (q + '&' + bust) : ('?' + bust)) + location.hash;
+      location.replace(next);
+    })();
+  </script>
 </head>
-<body><p><a href="../">Open phone upload</a></p></body>
+<body>
+  <p><a href="../?fresh=1">Open phone upload</a></p>
+</body>
 </html>

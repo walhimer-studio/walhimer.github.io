@@ -3,6 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <script>
+    (function () {
+      var p = location.pathname;
+      if (p.indexOf('/public/') !== -1 || /\/public\/?$/.test(p)) {
+        var clean = p.replace(/\/public\/?/, '/');
+        location.replace(clean + location.search + location.hash);
+      }
+    })();
+  </script>
   <title>Loop Gallery — Family Reunion Friday Gallery</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
@@ -144,10 +156,10 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-flat-urls';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-no-public-loop';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260730-flat-urls';
+} from './gallery-sync.mjs?v=20260730-no-public-loop';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
