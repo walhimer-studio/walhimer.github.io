@@ -142,6 +142,30 @@
       right: auto;
       bottom: calc(72px + env(safe-area-inset-bottom));
     }
+    #recordMp4 {
+      display: none;
+      position: fixed;
+      top: calc(12px + env(safe-area-inset-top));
+      right: calc(12px + env(safe-area-inset-right));
+      z-index: 22;
+      appearance: none;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font: 10px/1.2 ui-monospace, monospace;
+      letter-spacing: 0.04em;
+      color: rgba(0, 0, 0, 0.62);
+      cursor: pointer;
+      touch-action: manipulation;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+    #recordMp4.on {
+      color: rgba(220, 50, 70, 0.95);
+      border-color: rgba(220, 50, 70, 0.45);
+      background: rgba(255, 248, 248, 0.98);
+    }
+    body.view-wall #recordMp4 { display: inline-block; }
     #coCreateCredit {
       display: none;
       position: fixed;
@@ -201,6 +225,7 @@
     Choose image → Hang on wall · max 100 uploads · max 3 MB
   </div>
   <div id="wall-counter">Wall 1 · North</div>
+  <button type="button" id="recordMp4" aria-pressed="false">Record MP4</button>
   <div id="machine-dna" aria-hidden="true"></div>
   <div id="coCreateCredit">Co-Create, Mark Walhimer, 2026</div>
   <div id="lifebar-wrap" aria-hidden="true"><div id="lifebar"></div></div>
@@ -241,7 +266,7 @@
   <script type="module">
 import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260730-piano';
 import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
-import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-piano';
+import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260730-wall-ui';
@@ -380,6 +405,23 @@ function setRecActive(on) {
   const hint = document.getElementById('hint');
   if (hint) hint.dataset.rec = on ? '1' : '';
   if (statusEl) statusEl.dataset.rec = on ? '1' : '';
+  syncRecordMp4Button(on);
+}
+
+function syncRecordMp4Button(on) {
+  const btn = document.getElementById('recordMp4');
+  if (!btn) return;
+  btn.classList.toggle('on', !!on);
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  btn.textContent = on ? 'Stop MP4' : 'Record MP4';
+}
+
+async function toggleRecordMp4() {
+  wallScene?.ensurePiano?.();
+  if (!canvasRecorder) return;
+  const on = await canvasRecorder.toggle();
+  setStatus(on ? 'Recording MP4… (Stop MP4 or R to stop)' : 'Recording saved');
+  if (!on && VIEW === 'wall') updateUploadUI();
 }
 
 function syncWallFooterLayout() {
@@ -905,10 +947,7 @@ document.addEventListener('keydown', (e) => {
   if (k === 'r' && !e.metaKey && !e.ctrlKey && !e.altKey) {
     if (e.target.closest('input, textarea, select')) return;
     e.preventDefault();
-    canvasRecorder?.toggle().then((on) => {
-      setStatus(on ? 'Recording MP4… (R to stop)' : 'Recording saved');
-      if (!on && VIEW === 'wall') updateUploadUI();
-    });
+    void toggleRecordMp4();
   }
   if (e.key === 'Backspace' && isModerator) deleteNearestSlot();
 });
@@ -937,6 +976,7 @@ bindPanButton(document.getElementById('panLeft'), 'left');
 bindPanButton(document.getElementById('panRight'), 'right');
 document.getElementById('zoomIn')?.addEventListener('click', () => wallScene?.zoomBy?.(0.88));
 document.getElementById('zoomOut')?.addEventListener('click', () => wallScene?.zoomBy?.(1.14));
+document.getElementById('recordMp4')?.addEventListener('click', () => { void toggleRecordMp4(); });
 window.addEventListener('resize', syncWallFooterLayout);
 
 async function boot() {
