@@ -2,7 +2,7 @@
 
 Participatory **looping gallery hallway**: visitors walk a white corridor and **hang JPEGs on wall slots**. One artwork per slot (no overlap). Max **5 uploads per device** (local) and per **IP** when Firebase + service account are configured.
 
-Based on the scale and walk model of [Loop Alumni Show — Invisible Layer POC](https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html). This deploy is a **gallery layer** — not a copy of the full invisible-layer shader hallway.
+Based on the scale and walk model of [Loop Alumni Show — Invisible Layer POC](https://mark-walhimer.com/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html). This deploy is a **gallery layer** — not a copy of the full invisible-layer shader hallway.
 
 ## Family Reunion Friday — simple path (no Netlify required)
 

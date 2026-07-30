@@ -91,7 +91,7 @@ No requirement to embed live HTML inside the verse geometry; **click → URL** i
 | Hosting | **Netlify** | Separate site for show (display + phone), same pattern as `netlify/gravity-77823/` |
 | Sync | **Firebase Realtime Database** | Config via Netlify function; no API keys in repo |
 | Display | New alumni HTML fork | July 14 organism + July 13 landscape renderer |
-| Phone | Compose-style offer page | Already prototyped in `sketches/loop-art-critique-alumni-show-2026/compose.html` |
+| Phone | Compose-style offer page | Already prototyped in `loop-art-critique-alumni-show-2026/compose.html` |
 | Archive | RTDB `contributions` tree | Feeds end-of-show cumulative export |
 
 Studio sketches stay self-contained on mark-walhimer.com; the **live participatory layer** runs on Netlify (CDN Firebase acceptable for that host).
@@ -116,9 +116,9 @@ Studio sketches stay self-contained on mark-walhimer.com; the **live participato
 | Item | Path (planned) |
 |------|----------------|
 | Catalog entry (this doc) | `catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md` |
-| Sketches / build | `sketches/loop-art-critique-alumni-show-2026/` |
+| Sketches / build | `loop-art-critique-alumni-show-2026/` |
 | Netlify site | `netlify/` (new site TBD, e.g. `alumni-invisible-layer-2026`) |
-| Hub | `sketches/loop-art-critique-alumni-show-2026/index.html` |
+| Hub | `loop-art-critique-alumni-show-2026/index.html` |
 
 **Do not copy artwork into the alumni sketch folder** — canonical engine forks get explicit paths once build starts (per series README).
 
@@ -138,7 +138,7 @@ Studio sketches stay self-contained on mark-walhimer.com; the **live participato
 
 - `sketches/invisible-layer/invisible-layer-july-14-2026.html` — box / vol3d organism
 - `sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html` — walking landscape
-- `sketches/loop-art-critique-alumni-show-2026/compose.html` — ephemeral offer prototype
+- `loop-art-critique-alumni-show-2026/compose.html` — ephemeral offer prototype
 - `drafts/surrender-machine-alumni-show-concept-2026-07-03.md` — earlier participatory machine notes
 
 ---

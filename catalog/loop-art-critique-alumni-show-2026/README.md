@@ -7,11 +7,13 @@
 |-------|--------|
 | Series | Loop Art Critique Alumni Show #3 July 2026 |
 | Catalog path | `catalog/loop-art-critique-alumni-show-2026/` |
-| WIP sketches | `sketches/loop-art-critique-alumni-show-2026/README.md` |
+| Hub (repo root) | `loop-art-critique-alumni-show-2026/` · [README.md](../../loop-art-critique-alumni-show-2026/README.md) |
 
 ## Live URL (hub)
 
-https://mark-walhimer.com/sketches/loop-art-critique-alumni-show-2026/index.html
+https://mark-walhimer.com/loop-art-critique-alumni-show-2026/index.html
+
+Legacy redirect: `sketches/loop-art-critique-alumni-show-2026/` → hub above.
 
 ## Publish checklist
 
