@@ -14,7 +14,7 @@ Machine index: [`sessions/emotion-map.json`](./sessions/emotion-map.json)
 | [face-signal-portrait-replay.html](./face-signal-portrait-replay.html) | Replay — mood crossfade (keys 1–5) | **done** |
 | [face-signal-replay.html](./face-signal-replay.html) | Wire-head replay — skeleton, no photo wrap | **done** |
 | [face-signal-thought-replay.html](./face-signal-thought-replay.html) | Thought replay — face crossfade + mind layer | **done** |
-| [witness-mirror.html](./witness-mirror.html) | Witness Mirror (5s) — testimony + machine witness | **done** |
+| [witness-mirror-5s.html](./witness-mirror-5s.html) | Witness Mirror (5s) — testimony + machine witness | **done** |
 | [witness-mirror-1s.html](./witness-mirror-1s.html) | Witness Mirror (1s) — moment audit, 1s samples | **done** |
 
 ## Sessions (`sessions/`)

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Witness Mirror (1s) — Mark Walhimer</title>
+  <title>Witness Mirror (5s) — Mark Walhimer</title>
   <style>
     :root {
       --bg: #0a0a0c;
@@ -23,13 +23,6 @@
     }
     main { max-width: 980px; margin: 0 auto; padding: 24px 20px 48px; }
     h1 { font-size: 18px; font-weight: 600; margin: 0 0 6px; letter-spacing: 0.04em; text-transform: uppercase; }
-    .statement {
-      margin: 0 0 10px;
-      max-width: 52em;
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--ink);
-    }
     .sub { color: var(--muted); margin-bottom: 20px; font-size: 13px; }
     .layout { display: grid; gap: 16px; }
     .video-wrap {
@@ -109,8 +102,7 @@
 </head>
 <body>
   <main>
-    <h1>Witness Mirror <span style="font-weight:400;color:var(--muted)">· 1s</span></h1>
-    <p class="statement">Technology as witness, a tool that registers affect you may not be admitting, or renders what was invisible, or asks you to surrender to a process you don't fully control.</p>
+    <h1>Witness Mirror <span style="font-weight:400;color:var(--muted)">· 5s</span></h1>
     <p class="sub" id="status">Loading face mesh…</p>
 
     <div class="layout">
@@ -129,13 +121,13 @@
       </div>
     </div>
 
-    <p class="note">Scrub the video progress bar — machine witness on your face · ML labels jump to nearest sample (~every 1s) · <a href="witness-mirror-5s.html" style="color:var(--ml)">5s version</a> · mute helps</p>
+    <p class="note">Scrub the video progress bar — machine witness on your face · ML labels jump to nearest sample (~every 5s) · <a href="witness-mirror-1s.html" style="color:var(--ml)">1s version</a> · mute helps</p>
   </main>
 
   <script src="../js/ml5-1.min.js"></script>
   <script>
     const VIDEO_BASE = 'sessions/testimony/';
-    const DATA_URL = 'sessions/witness-mirror-ml-1s.json';
+    const DATA_URL = 'sessions/witness-mirror-ml.json';
 
     const ML_WORDS = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'];
 
@@ -421,7 +413,7 @@
       }
       player.currentTime = seekT ?? 0;
       startTracking();
-      setStatus('Scrub video · DeepFace samples every 1s · blue box + bars below');
+      setStatus('Scrub video · blue box + bars update with DeepFace samples');
     }
 
     function loadVideo(mp4, seekT) {
@@ -465,7 +457,7 @@
         const mp4 = firstVideo();
         if (mp4) loadVideo(mp4, 0);
       } catch (err) {
-        setStatus('Could not load face mesh or sessions/witness-mirror-ml-1s.json.');
+        setStatus('Could not load face mesh or sessions/witness-mirror-ml.json.');
         console.error(err);
       }
     }

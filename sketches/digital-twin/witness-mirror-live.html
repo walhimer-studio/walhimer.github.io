@@ -212,17 +212,17 @@
         <div class="big point" id="point-now">—</div>
         <div class="point-grid" id="point-grid"></div>
 
-        <h2 class="section-gap">Counterpoint · ML now</h2>
+        <h2 class="section-gap">Counterpoint · ML now <span style="font-weight:400">(1s avg)</span></h2>
         <div class="big ml" id="ml-now">—</div>
         <div class="scores" id="scores-now"></div>
         <div class="counterpoint" id="counterpoint">Set a point word, then read — ML witnesses your face in real time.</div>
 
-        <h2 class="section-gap">Session share · % of live samples · <span id="session-time">0:00</span></h2>
+        <h2 class="section-gap">Session share · % of 1s readings · <span id="session-time">0:00</span></h2>
         <div class="scores scores-session" id="scores-session"></div>
       </div>
     </div>
 
-    <p class="note">Live = face-api.js in browser (7 expressions). Recorded review = DeepFace offline on testimony — <a href="witness-mirror-1s.html">1s audit</a> · <a href="witness-mirror.html">5s evaluation</a>. Future: story scripted for seven words → capture → review where point and counterpoint disagree.</p>
+    <p class="note">Live = face-api.js · ~10 samples/s averaged to <strong>one reading per second</strong>. Recorded review = DeepFace offline — <a href="witness-mirror-1s.html">1s audit</a> · <a href="witness-mirror-5s.html">5s evaluation</a>.</p>
   </main>
 
   <script src="js/face-api/face-api.min.js"></script>
@@ -239,10 +239,21 @@
       neutral: 'neutral',
     };
 
+    const SAMPLE_INTERVAL_MS = 100;
+    const READING_INTERVAL_MS = 1000;
+
     let stream = null;
     let modelsReady = false;
     let detecting = false;
     let detectLoop = null;
+    let readingTimer = null;
+    let detectBusy = false;
+    let lastSampleMs = 0;
+    let windowBuffer = [];
+    let windowBoxes = [];
+    let overlayBox = null;
+    let overlayScores = null;
+    let overlayDominant = null;
     let pointWord = null;
     let sessionCounts = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
     let sessionTotal = 0;
@@ -353,6 +364,55 @@
       return out;
     }
 
+    function averageScores(buffer) {
+      if (!buffer.length) return null;
+      const sums = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
+      for (const scores of buffer) {
+        for (const w of ML_WORDS) sums[w] += scores[w] ?? 0;
+      }
+      const n = buffer.length;
+      const avg = Object.fromEntries(ML_WORDS.map((w) => [w, Math.round((sums[w] / n) * 10) / 10]));
+      return avg;
+    }
+
+    function averageBox(boxes) {
+      if (!boxes.length) return null;
+      let x = 0;
+      let y = 0;
+      let w = 0;
+      let h = 0;
+      for (const b of boxes) {
+        x += b.x;
+        y += b.y;
+        w += b.width;
+        h += b.height;
+      }
+      const n = boxes.length;
+      return { x: x / n, y: y / n, width: w / n, height: h / n };
+    }
+
+    function publishReading(scores, box) {
+      overlayScores = scores;
+      overlayDominant = dominantFromScores(scores);
+      overlayBox = box;
+      lastScores = overlayScores;
+      lastDominant = overlayDominant;
+      sessionCounts[lastDominant] = (sessionCounts[lastDominant] || 0) + 1;
+      sessionTotal += 1;
+      renderScores(lastScores, document.getElementById('scores-now'), lastDominant);
+      renderSessionShare();
+      updateCounterpoint();
+    }
+
+    function flushReadingWindow() {
+      if (!windowBuffer.length) return;
+      const avg = averageScores(windowBuffer);
+      const box = averageBox(windowBoxes);
+      windowBuffer = [];
+      windowBoxes = [];
+      if (avg && box) publishReading(avg, box);
+    }
+
     function dominantFromScores(scores) {
       return mlScoresSorted(scores)[0]?.name || null;
     }
@@ -388,6 +448,7 @@
         btn.classList.toggle('active', btn.dataset.word === word);
       }
       updateCounterpoint();
+      drawOverlayFrame();
     }
 
     function buildPointGrid() {
@@ -433,17 +494,14 @@
       ctx.fillText(text, x + padX, y - padY);
     }
 
-    function drawOverlay(box) {
-      resizeOverlay();
-      ctx.clearRect(0, 0, overlay.width, overlay.height);
+    function drawOverlay() {
       const layout = videoLayout();
-      if (!layout || !box) return;
+      if (!layout || !overlayBox) return;
 
-      // Video is CSS-mirrored; map detection box into display space without mirroring text.
-      const x = layout.ox + (layout.vw - box.x - box.width) * layout.scale;
-      const y = layout.oy + box.y * layout.scale;
-      const w = box.width * layout.scale;
-      const h = box.height * layout.scale;
+      const x = layout.ox + (layout.vw - overlayBox.x - overlayBox.width) * layout.scale;
+      const y = layout.oy + overlayBox.y * layout.scale;
+      const w = overlayBox.width * layout.scale;
+      const h = overlayBox.height * layout.scale;
 
       ctx.strokeStyle = '#4da6ff';
       ctx.lineWidth = 3;
@@ -452,16 +510,16 @@
       ctx.lineWidth = 1;
       ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
 
-      const mlTop = lastDominant || '—';
+      const mlTop = overlayDominant || '—';
       drawLabel(x, y, `ML: ${mlTop}`, '#4da6ff');
       if (pointWord) {
         drawLabel(x, y + h + 4, `Point: ${pointWord}`, 'rgba(212, 165, 116, 0.92)');
       }
 
-      if (lastScores) {
+      if (overlayScores) {
         let ty = y + 4;
-        for (const { name, val } of mlScoresSorted(lastScores)) {
-          const fill = name === lastDominant
+        for (const { name, val } of mlScoresSorted(overlayScores)) {
+          const fill = name === overlayDominant
             ? 'rgba(77, 166, 255, 0.92)'
             : 'rgba(20, 20, 24, 0.88)';
           drawLabel(x + w + 6, ty + 18, `${name} ${val}%`, fill);
@@ -470,40 +528,45 @@
       }
     }
 
-    async function detectFrame() {
-      if (!modelsReady || !player.videoWidth) return;
-      const det = await faceapi
-        .detectSingleFace(player, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
-        .withFaceExpressions();
-      if (!det) {
-        lastScores = null;
-        lastDominant = null;
-        renderScores(null, document.getElementById('scores-now'), null);
-        updateCounterpoint();
-        drawOverlay(null);
-        return;
+    async function detectFrame(now) {
+      if (!modelsReady || !player.videoWidth || detectBusy) return;
+      if (now - lastSampleMs < SAMPLE_INTERVAL_MS) return;
+      lastSampleMs = now;
+      detectBusy = true;
+      try {
+        const det = await faceapi
+          .detectSingleFace(player, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
+          .withFaceExpressions();
+        if (!det) return;
+        windowBuffer.push(expressionsToScores(det.expressions));
+        windowBoxes.push(det.detection.box);
+      } finally {
+        detectBusy = false;
       }
+    }
 
-      lastScores = expressionsToScores(det.expressions);
-      lastDominant = dominantFromScores(lastScores);
-      sessionCounts[lastDominant] = (sessionCounts[lastDominant] || 0) + 1;
-      sessionTotal += 1;
-
-      renderScores(lastScores, document.getElementById('scores-now'), lastDominant);
-      renderSessionShare();
-      updateCounterpoint();
-      drawOverlay(det.detection.box);
+    function drawOverlayFrame() {
+      resizeOverlay();
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+      drawOverlay();
     }
 
     function startDetectLoop() {
       if (detectLoop) return;
-      const tick = async () => {
+      windowBuffer = [];
+      windowBoxes = [];
+      lastSampleMs = 0;
+      const tick = (now) => {
         detectLoop = requestAnimationFrame(tick);
-        if (!detecting) return;
-        if (document.hidden) return;
-        await detectFrame();
+        if (!detecting || document.hidden) return;
+        detectFrame(now);
       };
       detectLoop = requestAnimationFrame(tick);
+      if (readingTimer) clearInterval(readingTimer);
+      readingTimer = setInterval(() => {
+        flushReadingWindow();
+        drawOverlayFrame();
+      }, READING_INTERVAL_MS);
     }
 
     function stopDetectLoop() {
@@ -511,6 +574,14 @@
         cancelAnimationFrame(detectLoop);
         detectLoop = null;
       }
+      if (readingTimer) {
+        clearInterval(readingTimer);
+        readingTimer = null;
+      }
+      flushReadingWindow();
+      windowBuffer = [];
+      windowBoxes = [];
+      drawOverlayFrame();
     }
 
     async function loadModels() {
@@ -612,7 +683,7 @@
         detecting = true;
         startSessionClock();
         startDetectLoop();
-        setStatus('Live witness · pick point words while you read · Record adds mic if available');
+        setStatus('Live witness · ~10 samples/s → 1 reading/s · pick point words while you read');
       } catch (err) {
         console.error(err);
         const msg = cameraErrorMessage(err);
@@ -640,7 +711,17 @@
     function resetSession() {
       sessionCounts = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
       sessionTotal = 0;
+      windowBuffer = [];
+      windowBoxes = [];
+      overlayBox = null;
+      overlayScores = null;
+      overlayDominant = null;
+      lastScores = null;
+      lastDominant = null;
+      renderScores(null, document.getElementById('scores-now'), null);
       renderSessionShare();
+      updateCounterpoint();
+      drawOverlayFrame();
       if (detecting) startSessionClock();
       else {
         sessionStartMs = null;
@@ -697,7 +778,7 @@
     document.getElementById('cam-btn').addEventListener('click', startCamera);
     document.getElementById('rec-btn').addEventListener('click', toggleRecord);
     document.getElementById('reset-btn').addEventListener('click', resetSession);
-    window.addEventListener('resize', () => drawOverlay(null));
+    window.addEventListener('resize', drawOverlayFrame);
     window.addEventListener('beforeunload', stopCamera);
 
     buildPointGrid();

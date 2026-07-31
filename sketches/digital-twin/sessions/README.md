@@ -54,7 +54,7 @@ Replay: [`face-signal-thought-replay.html`](../face-signal-thought-replay.html) 
 | `witness-mirror-ml-1s.json` | DeepFace samples every 1s |
 | `testimony/*.mp4` | H.264 proxies for browser playback (local, gitignored) |
 
-Run: `python3 _scripts/analyze_testimony_emotions.py` · Review: [`witness-mirror.html`](../witness-mirror.html) · [`witness-mirror-1s.html`](../witness-mirror-1s.html) (`--interval 1` → `witness-mirror-ml-1s.json`)
+Run: `python3 _scripts/analyze_testimony_emotions.py` · Review: [`witness-mirror-5s.html`](../witness-mirror-5s.html) · [`witness-mirror-1s.html`](../witness-mirror-1s.html) (`--interval 1` → `witness-mirror-ml-1s.json`)
 
 Session JSON does **not** contain photos. PNGs are the visible layer.
 

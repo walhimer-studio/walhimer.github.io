@@ -23,7 +23,7 @@ Browser pipeline: capture face signals → store as JSON → pair each mood with
 | **Portrait replay** | https://mark-walhimer.com/sketches/digital-twin/face-signal-portrait-replay.html |
 | **Wire replay** | https://mark-walhimer.com/sketches/digital-twin/face-signal-replay.html |
 | **Thought replay** | https://mark-walhimer.com/sketches/digital-twin/face-signal-thought-replay.html |
-| **Witness Mirror (5s)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror.html |
+| **Witness Mirror (5s)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror-5s.html |
 | **Witness Mirror (1s)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror-1s.html |
 | **Witness Mirror (live)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror-live.html |
 | **Landscape (next test)** | https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html |
@@ -74,7 +74,7 @@ See [face-signal-study.md](./face-signal-study.md) · [face-signal-portrait-repl
 3. **Crossfade replay** — keys 1–5, bottom mood labels
 4. **Wire skeleton** — JSON drives wire head (`face-signal-replay.html`); proves geometry, no photo wrap yet
 5. **Thought replay** — mood crossfade + `thought-map.json` / `thoughts/*.json` (`face-signal-thought-replay.html`)
-6. **Witness Mirror (5s)** — machine witness on testimony video (`witness-mirror.html` + `sessions/witness-mirror-ml.json`)
+6. **Witness Mirror (5s)** — machine witness on testimony video (`witness-mirror-5s.html` + `sessions/witness-mirror-ml.json`)
 7. **Witness Mirror (1s)** — same UI, 1-second DeepFace samples (`witness-mirror-1s.html` + `sessions/witness-mirror-ml-1s.json`)
 8. **Witness Mirror (live)** — webcam + face-api point/counterpoint (`witness-mirror-live.html` + `js/face-api/`)
 
