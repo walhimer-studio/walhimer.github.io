@@ -222,7 +222,7 @@
       </div>
     </div>
 
-    <p class="note">Live = face-api.js · ~10 samples/s averaged to <strong>one reading per second</strong>. Recorded review = DeepFace offline — <a href="witness-mirror-1s.html">1s audit</a> · <a href="witness-mirror-5s.html">5s evaluation</a>.</p>
+    <p class="note">Live = face-api.js · ~10 samples/s → <strong>1 reading/s</strong> · neutral dampened (browser model bias). Trust DeepFace on recording — <a href="witness-mirror-1s.html">1s</a> · <a href="witness-mirror-5s.html">5s</a>.</p>
   </main>
 
   <script src="js/face-api/face-api.min.js"></script>
@@ -241,6 +241,9 @@
 
     const SAMPLE_INTERVAL_MS = 100;
     const READING_INTERVAL_MS = 1000;
+    /** face-api.js skews neutral on webcam; dampen before display + dominant pick */
+    const NEUTRAL_WEIGHT = 0.42;
+    const MIN_RUNNER_PCT = 8;
 
     let stream = null;
     let modelsReady = false;
@@ -364,6 +367,17 @@
       return out;
     }
 
+    function witnessScores(raw) {
+      const out = { ...raw };
+      out.neutral = (out.neutral ?? 0) * NEUTRAL_WEIGHT;
+      const total = ML_WORDS.reduce((s, w) => s + (out[w] ?? 0), 0);
+      if (total <= 0) return raw;
+      for (const w of ML_WORDS) {
+        out[w] = Math.round(((out[w] ?? 0) / total) * 1000) / 10;
+      }
+      return out;
+    }
+
     function averageScores(buffer) {
       if (!buffer.length) return null;
       const sums = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
@@ -406,7 +420,8 @@
 
     function flushReadingWindow() {
       if (!windowBuffer.length) return;
-      const avg = averageScores(windowBuffer);
+      const raw = averageScores(windowBuffer);
+      const avg = raw ? witnessScores(raw) : null;
       const box = averageBox(windowBoxes);
       windowBuffer = [];
       windowBoxes = [];
@@ -414,7 +429,14 @@
     }
 
     function dominantFromScores(scores) {
-      return mlScoresSorted(scores)[0]?.name || null;
+      const sorted = mlScoresSorted(scores);
+      const top = sorted[0];
+      if (!top) return null;
+      const runner = sorted.find((row) => row.name !== 'neutral');
+      if (top.name === 'neutral' && runner && runner.val >= MIN_RUNNER_PCT) {
+        return runner.name;
+      }
+      return top.name;
     }
 
     function updateCounterpoint() {
@@ -535,7 +557,7 @@
       detectBusy = true;
       try {
         const det = await faceapi
-          .detectSingleFace(player, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
+          .detectSingleFace(player, new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.35 }))
           .withFaceExpressions();
         if (!det) return;
         windowBuffer.push(expressionsToScores(det.expressions));
