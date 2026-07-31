@@ -5,59 +5,24 @@ import json
 import os
 import sys
 from collections import Counter, defaultdict
+from pathlib import Path
 
 import cv2
 from deepface import DeepFace
 
+ROOT = Path(__file__).resolve().parents[1]
+TESTIMONY = ROOT / "sketches/digital-twin/sessions/testimony"
+OUT_PATH = ROOT / "sketches/digital-twin/sessions/testimony-emotion-ml.json"
+
 SEGMENTS = [
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-302026.mov",
-        "label": "neutral",
-        "start": 11,
-        "end": 55,
-    },
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-302026.mov",
-        "label": "happy",
-        "start": 55,
-        "end": 96,
-    },
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-302026.mov",
-        "label": "sad",
-        "start": 96,
-        "end": 144,
-    },
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-302026.mov",
-        "label": "think",
-        "start": 144,
-        "end": 192,
-    },
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-302026.mov",
-        "label": "surprise",
-        "start": 192,
-        "end": 234,
-    },
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-30-2026-2.mov",
-        "label": "grief",
-        "start": 0,
-        "end": 63,
-    },
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-30-2026-2.mov",
-        "label": "love",
-        "start": 63,
-        "end": 163,
-    },
-    {
-        "video": "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/sketches/digital-twin/sessions/testimony/digital-twin-7-30-2026-2.mov",
-        "label": "anger",
-        "start": 163,
-        "end": 199,
-    },
+    {"video": TESTIMONY / "digital-twin-7-302026.mov", "label": "neutral", "start": 11, "end": 55},
+    {"video": TESTIMONY / "digital-twin-7-302026.mov", "label": "happy", "start": 55, "end": 96},
+    {"video": TESTIMONY / "digital-twin-7-302026.mov", "label": "sad", "start": 96, "end": 144},
+    {"video": TESTIMONY / "digital-twin-7-302026.mov", "label": "think", "start": 144, "end": 192},
+    {"video": TESTIMONY / "digital-twin-7-302026.mov", "label": "surprise", "start": 192, "end": 234},
+    {"video": TESTIMONY / "digital-twin-7-30-2026-2.mov", "label": "grief", "start": 0, "end": 63},
+    {"video": TESTIMONY / "digital-twin-7-30-2026-2.mov", "label": "love", "start": 63, "end": 163},
+    {"video": TESTIMONY / "digital-twin-7-30-2026-2.mov", "label": "anger", "start": 163, "end": 199},
 ]
 
 SAMPLE_EVERY_S = 5
@@ -70,7 +35,6 @@ def frame_at(cap, t_sec):
 
 
 def analyze_frame(frame):
-    # DeepFace expects BGR from OpenCV
     result = DeepFace.analyze(
         frame,
         actions=["emotion"],
@@ -79,7 +43,6 @@ def analyze_frame(frame):
     )
     if isinstance(result, list):
         result = result[0]
-    emotions = result.get("dominant_emotion"), result.get("emotion", {})
     return {
         "dominant": result.get("dominant_emotion"),
         "scores": {k: round(float(v), 2) for k, v in result.get("emotion", {}).items()},
@@ -110,7 +73,7 @@ def main():
     caps = {}
 
     for seg in SEGMENTS:
-        path = seg["video"]
+        path = str(seg["video"])
         if path not in caps:
             caps[path] = cv2.VideoCapture(path)
         cap = caps[path]
@@ -140,10 +103,10 @@ def main():
     for cap in caps.values():
         cap.release()
 
-    out_path = "/Users/markwalhimer/Documents/GitHub/walhimer.github.io/.tmp/testimony-emotion-ml.json"
-    with open(out_path, "w") as f:
+    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(OUT_PATH, "w") as f:
         json.dump(out, f, indent=2)
-    print(f"\nWrote {out_path}")
+    print(f"\nWrote {OUT_PATH}")
 
 
 if __name__ == "__main__":

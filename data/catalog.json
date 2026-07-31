@@ -54,6 +54,7 @@
         "sketch_entry": {
           "repo_paths": [
             "sketches/digital-twin/README.md",
+            "sketches/digital-twin/emotion-mirror.html",
             "sketches/digital-twin/face-signal-portrait-replay.html",
             "sketches/digital-twin/face-signal-replay.html",
             "sketches/digital-twin/face-signal-study.html",
@@ -70,6 +71,7 @@
             "sketches/digital-twin/sessions/sad.png",
             "sketches/digital-twin/sessions/surprise.json",
             "sketches/digital-twin/sessions/surprise.png",
+            "sketches/digital-twin/sessions/testimony-emotion-ml.json",
             "sketches/digital-twin/sessions/think.json",
             "sketches/digital-twin/sessions/think.png",
             "sketches/digital-twin/sessions/thought-map.json",
@@ -705,24 +707,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-face-signal-thought-replay",
+      "id": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
       "dublin_core": {
-        "title": "../catalog/digital-twin/face-signal-thought-replay.md",
+        "title": "digital-twin/README.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-face-signal-thought-replay",
+        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000325"
+        "catalog_number": "WS-000310"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Digital twin-catalog-digital-twin-face-signal-thought-replay",
+        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-readme",
         "type": "HumanMadeObject",
-        "_label": "../catalog/digital-twin/face-signal-thought-replay.md",
+        "_label": "digital-twin/README.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -737,12 +739,12 @@
         ],
         "sketch": {
           "series": "Digital twin",
-          "file": "../catalog/digital-twin/face-signal-thought-replay.md"
+          "file": "digital-twin/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/digital-twin/face-signal-thought-replay.md"
+          "sketches/digital-twin/README.md"
         ],
         "external_urls": []
       }
@@ -791,6 +793,136 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Digital twin:digital-twin-emotion-mirror",
+      "dublin_core": {
+        "title": "digital-twin/emotion-mirror",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-emotion-mirror",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000327"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-emotion-mirror",
+        "type": "HumanMadeObject",
+        "_label": "digital-twin/emotion-mirror",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "digital-twin/emotion-mirror.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/digital-twin/emotion-mirror.html",
+          "sketches/js/ml5-1.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-emotion-mirror",
+      "dublin_core": {
+        "title": "../catalog/digital-twin/emotion-mirror.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-emotion-mirror",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000328"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-catalog-digital-twin-emotion-mirror",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/digital-twin/emotion-mirror.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "../catalog/digital-twin/emotion-mirror.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/digital-twin/emotion-mirror.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-face-signal-thought-replay",
+      "dublin_core": {
+        "title": "../catalog/digital-twin/face-signal-thought-replay.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-face-signal-thought-replay",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000325"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-catalog-digital-twin-face-signal-thought-replay",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/digital-twin/face-signal-thought-replay.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "../catalog/digital-twin/face-signal-thought-replay.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/digital-twin/face-signal-thought-replay.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Digital twin:digital-twin-face-signal-thought-replay",
       "dublin_core": {
         "title": "digital-twin/face-signal-thought-replay",
@@ -830,49 +962,6 @@
         "repo_paths": [
           "sketches/digital-twin/face-signal-thought-replay.html",
           "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
-      "dublin_core": {
-        "title": "digital-twin/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000310"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-readme",
-        "type": "HumanMadeObject",
-        "_label": "digital-twin/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Digital twin",
-          "file": "digital-twin/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/digital-twin/README.md"
         ],
         "external_urls": []
       }
