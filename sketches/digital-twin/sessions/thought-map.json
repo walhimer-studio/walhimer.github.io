@@ -1,0 +1,63 @@
+{
+  "version": 3,
+  "title": "Digital twin — thought map",
+  "description": "Mind layer: DeepFace 7 face words (authoritative over self-label). Maps each ML emotion to stance + passage from testimony. Parallel to emotion-map.json (face PNG layer).",
+  "created": "2026-07-30",
+  "updated": "2026-07-30",
+  "author": "Mark Walhimer",
+  "documentation": "catalog/digital-twin/README.md",
+  "linkedEmotionMap": "emotion-map.json",
+  "replayPage": "sketches/digital-twin/face-signal-thought-replay.html",
+  "testimony": [
+    "testimony/digital-twin-7-302026.mov",
+    "testimony/digital-twin-7-30-2026-2.mov"
+  ],
+  "disclaimer": "Mood keys follow DeepFace (angry, disgust, fear, happy, sad, surprise, neutral). Passages transcribed from testimony (2026-07-30). Model of surface + memory — not live counsel, not the person.",
+  "taxonomy": "DeepFace · 7 face words",
+  "thoughtDir": "thoughts/",
+  "legacySelfLabeled": "thoughts/legacy-self-labeled/",
+  "emotions": {
+    "angry": {
+      "key": 1,
+      "label": "angry",
+      "file": "thoughts/angry.json",
+      "faceMood": "surprise"
+    },
+    "disgust": {
+      "key": 2,
+      "label": "disgust",
+      "file": "thoughts/disgust.json",
+      "faceMood": "think"
+    },
+    "fear": {
+      "key": 3,
+      "label": "fear",
+      "file": "thoughts/fear.json",
+      "faceMood": "sad"
+    },
+    "happy": {
+      "key": 4,
+      "label": "happy",
+      "file": "thoughts/happy.json",
+      "faceMood": "happy"
+    },
+    "sad": {
+      "key": 5,
+      "label": "sad",
+      "file": "thoughts/sad.json",
+      "faceMood": "sad"
+    },
+    "surprise": {
+      "key": 6,
+      "label": "surprise",
+      "file": "thoughts/surprise.json",
+      "faceMood": "surprise"
+    },
+    "neutral": {
+      "key": 7,
+      "label": "neutral",
+      "file": "thoughts/neutral.json",
+      "faceMood": "neutral"
+    }
+  }
+}

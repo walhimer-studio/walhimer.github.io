@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "mood": "happy",
+  "key": 4,
+  "label": "happy",
+  "faceMood": "happy",
+  "taxonomy": "DeepFace \u00b7 7 face words",
+  "mlSampleCount": 3,
+  "mlSegmentTops": [],
+  "stance": "Small daily joy \u2014 walk, light, being known by name \u00b7 ML samples: 3",
+  "passage": "For me \u2014 I go get a coffee, and to me that's happy. I get to see the leaves, the way the sun comes through. Maybe a pretty girl walks by. Maybe a little child walks by with their mother. That makes me happy. Sitting in the coffee shop \u2014 I know Alex, I know Liz, I know Zai, Ari \u2014 I know their names, they know my name. That makes me happy. It's somewhere in between happy and neutral.",
+  "source": "emotion testimony \u00b7 digital-twin-7-302026.mov",
+  "anchor_ms": 55000,
+  "recorded": "2026-07-30"
+}

@@ -5,14 +5,14 @@
 
 **Mapping images to emotions** with **Markdown**, **JSON**, **HTML**, **JavaScript + ml5**, and **Cursor**.
 
-A browser-based pipeline: capture face signals with machine learning, store them as JSON, pair each mood with a straight-ahead PNG, and crossfade between those images on keys **1–5**. First step toward **people in landscapes** who react to a visitor’s camera.
+Browser pipeline: capture face signals → store as JSON → pair each mood with a straight-ahead PNG → crossfade on keys **1–5**. First step toward **people in landscapes** who react to a visitor’s camera.
 
 | Field | Value |
 |-------|--------|
 | Series | Digital twin |
 | Catalog path | `catalog/digital-twin/` |
 | WIP sketches | `sketches/digital-twin/` |
-| Sessions | `sketches/digital-twin/sessions/` |
+| Sessions + index | `sketches/digital-twin/sessions/` · [`emotion-map.json`](../../sketches/digital-twin/sessions/emotion-map.json) |
 
 ## Live URLs
 
@@ -22,6 +22,8 @@ A browser-based pipeline: capture face signals with machine learning, store them
 | **Capture** | https://mark-walhimer.com/sketches/digital-twin/face-signal-study.html |
 | **Portrait replay** | https://mark-walhimer.com/sketches/digital-twin/face-signal-portrait-replay.html |
 | **Wire replay** | https://mark-walhimer.com/sketches/digital-twin/face-signal-replay.html |
+| **Thought replay** | https://mark-walhimer.com/sketches/digital-twin/face-signal-thought-replay.html |
+| **Landscape (next test)** | https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html |
 
 **Video:** ~24s screen recording — portrait replay crossfading neutral → sad → surprise (`digital-twin.mov`)
 
@@ -38,33 +40,72 @@ A browser-based pipeline: capture face signals with machine learning, store them
 | **ML (ml5.js)** | Face mesh + selfie segmentation (MediaPipe via ml5) |
 | **Cursor** | IDE used to build and iterate |
 
-**Two layers:** **PNG** = visible face · **JSON** = motion score (no photos inside JSON)
+**Two layers (today):** **PNG** = visible face · **JSON** = motion score (no photos inside session JSON)
+
+**Mind layer (POC):** **thought-map.json** + **thoughts/*.json** — DeepFace 7 face words, testimony from 2026-07-30 videos · replay at `face-signal-thought-replay.html`
 
 ---
 
 ## Emotion → image map
 
-[`sketches/digital-twin/sessions/emotion-map.json`](../../sketches/digital-twin/sessions/emotion-map.json)
-
-| Key | Emotion | Image | JSON |
-|-----|---------|-------|------|
+| Key | Emotion | Image | JSON session |
+|-----|---------|-------|--------------|
 | **1** | neutral | `neutral.png` | `neutral.json` |
 | **2** | happy | `happy.png` | `happy.json` |
 | **3** | sad | `sad.png` | `sad.json` |
 | **4** | think | `think.png` | `think.json` |
 | **5** | surprise | `surprise.png` | `surprise.json` |
 
-See [face-signal-study.md](./face-signal-study.md) · [face-signal-portrait-replay.md](./face-signal-portrait-replay.md) · [face-signal-replay.md](./face-signal-replay.md).
+Straight-ahead frame hints: `mood-anchors.json` in sessions folder.
+
+See [face-signal-study.md](./face-signal-study.md) · [face-signal-portrait-replay.md](./face-signal-portrait-replay.md) · [face-signal-replay.md](./face-signal-replay.md) · [face-signal-thought-replay.md](./face-signal-thought-replay.md).
 
 ---
 
-## Where this is going
+## Pipeline
+
+### Done (POC)
+
+1. **Capture** — webcam + ml5, record labeled JSON, save mood stills
+2. **Map** — five PNGs + sessions indexed in `emotion-map.json`
+3. **Crossfade replay** — keys 1–5, bottom mood labels
+4. **Wire skeleton** — JSON drives wire head (`face-signal-replay.html`); proves geometry, no photo wrap yet
+5. **Thought replay** — mood crossfade + `thought-map.json` / `thoughts/*.json` (`face-signal-thought-replay.html`)
+
+### Next
+
+1. **Landscape test** — place inhabitant (PNG or video billboard) in July-13 walkable landscape
+2. **Walking video** — loop of you walking toward camera (`walk-loop.mp4`)
+3. **Sidewalk video** — third-person clip from the street (`sidewalk.mp4`)
+
+### Future — skeleton + wrap
+
+**Wire frame = skeleton.** **Images wrapped on skeleton = skinning / rigging.**
+
+- ml5 landmarks (face, later body pose) drive the wire frame
+- Mood PNGs (or video patches) bind to that skeleton instead of floating as flat crossfades
+- Visitor webcam drives the skeleton → inhabitant **reacts** in the landscape
+
+Crossfade works today because single-photo mesh warp tore. Skeleton + multi-patch wrap is the richer path when one continuous face/body is needed.
+
+```mermaid
+flowchart LR
+  A[Webcam / JSON] --> B[Wire skeleton]
+  B --> C[Wrap mood images]
+  C --> D[Figure in landscape]
+  E[Visitor camera] --> F[ml5 signals]
+  F --> B
+```
+
+---
+
+## Scale to other people
 
 1. **Ask permission** — five photos per person (or one neutral to start)
 2. **Capture** — straight-ahead cutouts per mood
-3. **Map** — PNG + JSON in `emotion-map.json`
-4. **Place** — portraits as figures in a landscape
-5. **React** — visitor webcam via ml5 → crossfade inhabitant face
+3. **Map** — add entry to `emotion-map.json` (or per-person map file)
+4. **Place** — figure in landscape
+5. **React** — visitor expression → inhabitant crossfade or skeleton wrap
 
 ---
 
@@ -84,5 +125,5 @@ See [face-signal-study.md](./face-signal-study.md) · [face-signal-portrait-repl
 | Field | Value |
 |-------|--------|
 | Species | Digital twin |
-| Mode | Capture / crossfade replay |
-| Bodies | browser · ml5 · p5 |
+| Mode | Capture · crossfade replay · (future) skeleton wrap |
+| Bodies | browser · ml5 · p5 · Three.js |

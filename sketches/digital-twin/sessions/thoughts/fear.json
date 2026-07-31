@@ -1,0 +1,17 @@
+{
+  "version": 3,
+  "mood": "fear",
+  "key": 3,
+  "label": "fear",
+  "faceMood": "sad",
+  "taxonomy": "DeepFace \u00b7 7 face words",
+  "mlSampleCount": 16,
+  "mlSegmentTops": [
+    "grief"
+  ],
+  "stance": "Father \u2014 loss, and what stayed in me",
+  "passage": "Grief is difficult. I love my father. He was a difficult person, very intelligent, very opinionated, very difficult for people to understand him. But he understood me, and he taught me a lot. And to me that's grief \u2014 that sense of loss. He died in about 2006, and since losing him I've become more aware of the negative parts. But the positive parts are in me. They're me. And that's grief.",
+  "source": "emotion testimony \u00b7 digital-twin-7-30-2026-2.mov",
+  "anchor_ms": 0,
+  "recorded": "2026-07-30"
+}

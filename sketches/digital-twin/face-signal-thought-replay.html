@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Face signal thought replay — Mark Walhimer</title>
+  <script src="../js/p5-1.11.2.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0c;
+      font-family: ui-monospace, "DM Mono", monospace;
+    }
+    body > canvas {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    #ui {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+    #panel {
+      position: fixed;
+      right: 12px;
+      top: 12px;
+      width: min(92vw, 380px);
+      max-height: calc(100vh - 24px);
+      overflow: auto;
+      padding: 14px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(14, 14, 16, 0.94);
+      font-size: 10px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.62);
+      pointer-events: auto;
+    }
+    #panel h1 {
+      margin: 0 0 4px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.88);
+    }
+    #panel .sub {
+      margin: 0 0 12px;
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.38);
+      letter-spacing: 0.04em;
+    }
+    #stance {
+      margin: 0 0 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(116, 180, 220, 0.25);
+      background: rgba(116, 180, 220, 0.08);
+      color: rgba(180, 220, 255, 0.92);
+      font-size: 10px;
+      letter-spacing: 0.03em;
+    }
+    #passage {
+      margin: 0 0 12px;
+      font-size: 11px;
+      line-height: 1.75;
+      color: rgba(255, 255, 255, 0.82);
+    }
+    #source {
+      margin: 0 0 12px;
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    #source a {
+      color: rgba(184, 151, 106, 0.95);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(184, 151, 106, 0.35);
+    }
+    #disclaimer {
+      margin: 0 0 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.32);
+      line-height: 1.55;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 10px;
+    }
+    button {
+      font: inherit;
+      font-size: 10px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.78);
+      cursor: pointer;
+    }
+    button:hover { background: rgba(255, 255, 255, 0.08); }
+    button.active {
+      border-color: rgba(116, 180, 220, 0.55);
+      background: rgba(116, 180, 220, 0.12);
+      color: #fff;
+    }
+    #keys {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.35);
+    }
+    #mood-strip {
+      position: fixed;
+      left: 0;
+      right: min(404px, 92vw);
+      bottom: 0;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 14px;
+      align-items: center;
+      padding: 14px 20px 28px;
+      pointer-events: none;
+      font-size: clamp(9px, 1.8vw, 12px);
+      letter-spacing: 0.14em;
+      text-transform: lowercase;
+    }
+    #mood-strip span {
+      color: rgba(255, 255, 255, 0.28);
+      transition: color 0.35s ease;
+    }
+    #mood-strip span.active { color: #fff; }
+    #empty {
+      position: fixed;
+      inset: 0;
+      right: min(404px, 92vw);
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.2);
+      text-align: center;
+      padding: 24px;
+      line-height: 1.8;
+    }
+    #empty.hidden { display: none; }
+    @media (max-width: 720px) {
+      #panel {
+        right: 8px;
+        left: 8px;
+        top: auto;
+        bottom: 8px;
+        width: auto;
+        max-height: 42vh;
+      }
+      #mood-strip { right: 0; padding-bottom: calc(42vh + 24px); }
+      #empty { right: 0; bottom: 42vh; }
+    }
+  </style>
+</head>
+<body>
+  <div id="empty">Loading mood portraits…</div>
+  <div id="ui">
+    <aside id="panel">
+      <h1>Thought replay</h1>
+      <p class="sub">Mind layer · DeepFace 7 face words · thought-map.json</p>
+      <div class="btn-row" id="emotion-buttons">
+        <button type="button" data-mood="angry">1 angry</button>
+        <button type="button" data-mood="disgust">2 disgust</button>
+        <button type="button" data-mood="fear">3 fear</button>
+        <button type="button" data-mood="happy">4 happy</button>
+        <button type="button" data-mood="sad">5 sad</button>
+        <button type="button" data-mood="surprise">6 surprise</button>
+        <button type="button" data-mood="neutral">7 neutral</button>
+      </div>
+      <p id="stance">—</p>
+      <p id="passage">Press 1–7 · ML face words + testimony from thought-map.json</p>
+      <p id="face-hint" class="sub" style="margin:0 0 10px"></p>
+      <p id="source"></p>
+      <p id="disclaimer"></p>
+      <p id="keys"><strong>1–7</strong> DeepFace mood · 2 disgust · 1 angry · 3 fear use nearest face PNG</p>
+    </aside>
+    <nav id="mood-strip" aria-label="Emotion labels">
+      <span data-mood="angry">angry</span>
+      <span data-mood="disgust">disgust</span>
+      <span data-mood="fear">fear</span>
+      <span data-mood="happy">happy</span>
+      <span data-mood="sad">sad</span>
+      <span data-mood="surprise">surprise</span>
+      <span data-mood="neutral">neutral</span>
+    </nav>
+  </div>
+
+  <script>
+    const SESSION_DIR = 'sessions/';
+    const THOUGHT_DIR = SESSION_DIR + 'thoughts/';
+    const MOOD_IMAGES = {
+      neutral: 'neutral.png',
+      happy: 'happy.png',
+      sad: 'sad.png',
+      think: 'think.png',
+      surprise: 'surprise.png',
+    };
+    const MOODS = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'];
+    const BLEND_MS = 450;
+
+    let portrait = null;
+    let moodPortraits = {};
+    let thoughtMap = null;
+    let thoughts = {};
+    let activeThoughtMood = '';
+    let displayFaceMood = 'neutral';
+    let blendFaceFrom = 'neutral';
+    let blendFaceTo = 'neutral';
+    let blendT = 1;
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    async function loadJson(path) {
+      const res = await fetch(path);
+      if (!res.ok) throw new Error('Could not load ' + path);
+      return res.json();
+    }
+
+    function updateMoodStrip(mood) {
+      for (const el of document.querySelectorAll('#mood-strip [data-mood]')) {
+        el.classList.toggle('active', el.dataset.mood === mood);
+      }
+      for (const btn of document.querySelectorAll('#emotion-buttons button')) {
+        btn.classList.toggle('active', btn.dataset.mood === mood);
+      }
+    }
+
+    function faceMoodFor(thoughtMood) {
+      const t = thoughts[thoughtMood];
+      if (t?.faceMood && MOOD_IMAGES[t.faceMood]) return t.faceMood;
+      const entry = thoughtMap?.emotions?.[thoughtMood];
+      if (entry?.faceMood && MOOD_IMAGES[entry.faceMood]) return entry.faceMood;
+      if (MOOD_IMAGES[thoughtMood]) return thoughtMood;
+      return 'neutral';
+    }
+
+    function renderThought(mood) {
+      const t = thoughts[mood];
+      const stanceEl = document.getElementById('stance');
+      const passageEl = document.getElementById('passage');
+      const sourceEl = document.getElementById('source');
+      const hintEl = document.getElementById('face-hint');
+      const face = faceMoodFor(mood);
+      if (!t) {
+        stanceEl.textContent = mood + ' — thought file missing';
+        passageEl.textContent = '—';
+        sourceEl.textContent = '';
+        hintEl.textContent = '';
+        return;
+      }
+      stanceEl.textContent = t.stance || '—';
+      passageEl.textContent = t.passage || '—';
+      if (mood !== face) {
+        hintEl.textContent = 'Face: ' + face + '.png (until ' + mood + ' PNG exists)';
+      } else {
+        hintEl.textContent = 'Face: ' + face + '.png';
+      }
+      if (t.source) {
+        if (t.sourcePath) {
+          sourceEl.innerHTML = 'Source: <a href="' + t.sourcePath + '">' + t.source + '</a>';
+        } else {
+          sourceEl.textContent = 'Source: ' + t.source;
+        }
+      } else {
+        sourceEl.textContent = '';
+      }
+    }
+
+    function getMoodImage(mood) {
+      if (moodPortraits[mood]) return moodPortraits[mood];
+      if (mood === 'neutral' && portrait) return portrait;
+      return portrait || moodPortraits.neutral || null;
+    }
+
+    function startMoodBlend(thoughtMood) {
+      if (!MOODS.includes(thoughtMood)) return;
+      const faceTo = faceMoodFor(thoughtMood);
+      const sameFace =
+        thoughtMood === activeThoughtMood &&
+        faceTo === displayFaceMood &&
+        blendT >= 1;
+      if (!sameFace) {
+        blendFaceFrom = displayFaceMood;
+        blendFaceTo = faceTo;
+        blendT = 0;
+      }
+      activeThoughtMood = thoughtMood;
+      updateMoodStrip(thoughtMood);
+      renderThought(thoughtMood);
+    }
+
+    async function selectMood(mood) {
+      if (!thoughts[mood] && thoughtMap?.emotions?.[mood]?.file) {
+        try {
+          thoughts[mood] = await loadJson(SESSION_DIR + thoughtMap.emotions[mood].file);
+        } catch (err) {
+          console.warn(err);
+        }
+      }
+      startMoodBlend(mood);
+    }
+
+    function layoutForImage(img) {
+      const margin = 48;
+      const maxW = width - margin * 2;
+      const maxH = height - margin * 2 - 80;
+      const aspect = img.width / img.height;
+      let w = maxW;
+      let h = w / aspect;
+      if (h > maxH) {
+        h = maxH;
+        w = h * aspect;
+      }
+      return { w, h };
+    }
+
+    function drawPortraitImage(img, alpha) {
+      if (!img || alpha <= 0) return;
+      const fit = layoutForImage(img);
+      push();
+      tint(255, 255 * alpha);
+      texture(img);
+      textureMode(NORMAL);
+      noStroke();
+      beginShape();
+      vertex(-fit.w * 0.5, -fit.h * 0.5, 0, 0);
+      vertex(fit.w * 0.5, -fit.h * 0.5, 1, 0);
+      vertex(fit.w * 0.5, fit.h * 0.5, 1, 1);
+      vertex(-fit.w * 0.5, fit.h * 0.5, 0, 1);
+      endShape(CLOSE);
+      noTint();
+      pop();
+    }
+
+    function drawMoodCrossfade() {
+      if (!getMoodImage(blendFaceFrom) && !portrait) return;
+      if (blendT < 1) blendT = min(1, blendT + deltaTime / BLEND_MS);
+      if (blendT >= 1) displayFaceMood = blendFaceTo;
+
+      const imgA = getMoodImage(blendFaceFrom);
+      const imgB = getMoodImage(blendFaceTo);
+      if (!imgA && !imgB) return;
+
+      if (blendFaceFrom === blendFaceTo || blendT >= 1) {
+        drawPortraitImage(imgB || imgA, 1);
+        return;
+      }
+      drawPortraitImage(imgA, 1 - blendT);
+      drawPortraitImage(imgB, blendT);
+    }
+
+    function tryLoadMoodImages() {
+      let loaded = 0;
+      for (const [mood, file] of Object.entries(MOOD_IMAGES)) {
+        loadImage(
+          SESSION_DIR + file,
+          (img) => {
+            moodPortraits[mood] = img;
+            if (mood === 'neutral' && !portrait) portrait = img;
+            loaded += 1;
+            if (loaded === 1 || mood === 'neutral') {
+              document.getElementById('empty').classList.add('hidden');
+            }
+          },
+          () => {}
+        );
+      }
+    }
+
+    async function loadAllThoughts() {
+      thoughtMap = await loadJson(SESSION_DIR + 'thought-map.json');
+      document.getElementById('disclaimer').textContent = thoughtMap.disclaimer || '';
+      for (const mood of MOODS) {
+        const entry = thoughtMap.emotions?.[mood];
+        if (!entry?.file) continue;
+        thoughts[mood] = await loadJson(SESSION_DIR + entry.file);
+      }
+    }
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight, WEBGL);
+      pixelDensity(Math.min(2, window.devicePixelRatio || 1));
+      tryLoadMoodImages();
+      loadAllThoughts()
+        .then(function () {
+          return selectMood('sad');
+        })
+        .catch(function (err) {
+          document.getElementById('passage').textContent =
+            'Could not load thought-map — serve repo root: python3 -m http.server 8080';
+          console.warn(err);
+        });
+    }
+
+    function draw() {
+      background(10, 10, 12);
+      drawMoodCrossfade();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+
+    function keyPressed() {
+      const num = parseInt(key, 10);
+      if (num >= 1 && num <= 7) {
+        selectMood(MOODS[num - 1]);
+        return false;
+      }
+    }
+
+    for (const btn of document.querySelectorAll('#emotion-buttons button')) {
+      btn.addEventListener('click', () => selectMood(btn.dataset.mood));
+    }
+  </script>
+</body>
+</html>

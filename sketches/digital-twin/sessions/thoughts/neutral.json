@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "mood": "neutral",
+  "key": 7,
+  "label": "neutral",
+  "faceMood": "neutral",
+  "taxonomy": "DeepFace \u00b7 7 face words",
+  "mlSampleCount": 19,
+  "mlSegmentTops": [],
+  "stance": "When self-criticism pauses \u2014 rare \u00b7 ML samples: 19",
+  "passage": "I'm probably neutral the least. I don't spend a lot of time in a neutral state. I'm very self-critical. I'm constantly trying to think things through \u2014 it's sort of the way I'm wired. So neutral, to me, is when I forget thinking. And it doesn't happen that often.",
+  "source": "emotion testimony \u00b7 digital-twin-7-302026.mov",
+  "anchor_ms": 11000,
+  "recorded": "2026-07-30"
+}

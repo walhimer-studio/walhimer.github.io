@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Digital twin — Mark Walhimer</title>
-  <meta name="description" content="Digital twin proof of concept — mapping images to emotions via JSON, HTML, JavaScript, and ml5." />
+  <meta name="description" content="Digital twin proof of concept — mapping images to emotions via Markdown, JSON, HTML, JavaScript, and ml5." />
   <meta name="color-scheme" content="light" />
   <meta name="theme-color" content="#ffffff" />
   <link rel="canonical" href="https://mark-walhimer.com/sketches/digital-twin/index.html" />
@@ -22,7 +22,9 @@
     .kicker { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); margin-bottom: 18px; }
     h1 { font-family: var(--serif); font-size: clamp(32px, 5vw, 52px); font-weight: 300; line-height: 1.08; letter-spacing: -.02em; margin-bottom: 16px; }
     h1 em { font-style: italic; color: var(--accent); }
-    .lede { font-size: 13px; color: rgba(58,56,52,.62); line-height: 1.75; max-width: 640px; margin-bottom: 32px; }
+    h2 { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); margin: 36px 0 12px; font-weight: 400; }
+    .lede { font-size: 13px; color: rgba(58,56,52,.62); line-height: 1.75; max-width: 640px; margin-bottom: 8px; }
+    .stack { font-size: 11px; color: var(--dim); line-height: 1.7; margin-bottom: 24px; max-width: 640px; }
     ul { list-style: none; border-top: 1px solid var(--rule); }
     li { border-bottom: 1px solid var(--rule); }
     li a {
@@ -34,9 +36,12 @@
     }
     li a:hover { color: var(--accent); }
     li span { display: block; font-size: 10px; color: var(--dim); margin-top: 4px; letter-spacing: .06em; }
+    li.planned span::after { content: ' · planned'; color: var(--accent); }
     .back { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 24px; }
     .back a { color: var(--dim); text-decoration: none; }
     .back a:hover { color: var(--accent); }
+    .doc-link { font-size: 11px; margin-top: 28px; }
+    .doc-link a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(184,151,106,.4); }
   </style>
 </head>
 <body>
@@ -45,17 +50,45 @@
     <p class="kicker">Digital twin · proof of concept</p>
     <h1>Mapping images to <em>emotions</em></h1>
     <p class="lede">Capture face signals with ml5, store as JSON, pair each mood with a straight-ahead PNG, crossfade on keys 1–5. First step toward people in landscapes who react to a visitor’s camera.</p>
+    <p class="stack">Markdown · JSON · HTML · JavaScript · ml5 · Cursor</p>
+
+    <h2>Live — POC</h2>
     <ul>
       <li>
-        <a href="face-signal-portrait-replay.html">Portrait replay <span>Primary — mood crossfade · black background</span></a>
+        <a href="face-signal-portrait-replay.html">Portrait replay <span>Primary — mood crossfade · five PNGs · keys 1–5</span></a>
       </li>
       <li>
-        <a href="face-signal-study.html">Face signal study <span>Capture — webcam + record + save still</span></a>
+        <a href="face-signal-study.html">Face signal study <span>Capture — webcam + record JSON + save still (S)</span></a>
       </li>
       <li>
-        <a href="face-signal-replay.html">Wire replay <span>Earlier — JSON on wire head</span></a>
+        <a href="face-signal-replay.html">Wire replay <span>Skeleton — JSON drives wire head (wrap images later)</span></a>
+      </li>
+      <li>
+        <a href="face-signal-thought-replay.html">Thought replay <span>Mind layer — mood crossfade + thought-map.json · keys 1–5</span></a>
       </li>
     </ul>
+
+    <h2>Next</h2>
+    <ul>
+      <li class="planned">
+        <a href="../invisible-layer/invisible-layer-july-13-2026-landscape.html">Landscape test <span>Place inhabitant in walkable terrain — billboard PNG or video</span></a>
+      </li>
+      <li class="planned">
+        <span style="display:block;padding:14px 0;font-size:13px;color:var(--ink);">Walking video <span>Loop of you walking — body layer (`sessions/walk-loop.mp4`)</span></span>
+      </li>
+      <li class="planned">
+        <span style="display:block;padding:14px 0;font-size:13px;color:var(--ink);">Sidewalk video <span>Third-person street view — witness clip (`sessions/sidewalk.mp4`)</span></span>
+      </li>
+    </ul>
+
+    <h2>Future</h2>
+    <ul>
+      <li>
+        <span style="display:block;padding:14px 0;font-size:13px;color:var(--ink);">Skeleton + wrap <span>ml5 wire frame → bind mood images (skinning) → visitor camera drives reaction</span></span>
+      </li>
+    </ul>
+
+    <p class="doc-link"><a href="sessions/emotion-map.json">emotion-map.json</a> · <a href="../../catalog/digital-twin/README.md">catalog README</a></p>
   </div>
 </body>
 </html>

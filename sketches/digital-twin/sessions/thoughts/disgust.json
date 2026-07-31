@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "mood": "disgust",
+  "key": 2,
+  "label": "disgust",
+  "faceMood": "think",
+  "taxonomy": "DeepFace \u00b7 7 face words",
+  "mlSampleCount": 0,
+  "mlSegmentTops": [],
+  "stance": "Not observed in tapes 1\u20132",
+  "passage": "DeepFace found no dominant disgust samples in testimony (2026-07-30). Reserved for the next tape.",
+  "source": "DeepFace \u00b7 testimony-emotion-ml.json",
+  "anchor_ms": 0,
+  "recorded": "2026-07-30"
+}

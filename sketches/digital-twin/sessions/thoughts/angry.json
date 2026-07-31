@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "mood": "angry",
+  "key": 1,
+  "label": "angry",
+  "faceMood": "surprise",
+  "taxonomy": "DeepFace \u00b7 7 face words",
+  "mlSampleCount": 2,
+  "mlSegmentTops": [],
+  "stance": "Being disappeared \u2014 worst wound \u00b7 ML samples: 2",
+  "passage": "I get the most angry when people try to disappear me. I've had a lot of people in my life who have tried to disappear me. And to me, that's the worst thing somebody can do to me. It's abandonment. They try to disappear.",
+  "source": "emotion testimony \u00b7 digital-twin-7-30-2026-2.mov",
+  "anchor_ms": 163000,
+  "recorded": "2026-07-30"
+}

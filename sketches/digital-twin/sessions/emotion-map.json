@@ -1,24 +1,52 @@
 {
-  "version": 1,
+  "version": 2,
   "title": "Digital twin — emotion image map",
-  "description": "Maps each named emotion to a visible PNG and optional motion JSON. Proof of concept for landscape inhabitants that react to visitor camera input via ml5.",
+  "description": "Maps each named emotion to a visible PNG and optional motion JSON. Index for the digital twin POC: crossfade today, wire skeleton + image wrap and landscape placement next.",
   "created": "2026-07-29",
+  "updated": "2026-07-30",
   "author": "Mark Walhimer",
   "documentation": "catalog/digital-twin/README.md",
-  "note": "JSON holds geometry only — no photos inside. PNGs are the visible face per mood.",
+  "hub": "sketches/digital-twin/index.html",
+  "note": "Session JSON holds geometry only — no photos inside. PNGs and future video clips are the visible skin.",
   "pages": {
+    "hub": "sketches/digital-twin/index.html",
     "capture": "sketches/digital-twin/face-signal-study.html",
     "portraitReplay": "sketches/digital-twin/face-signal-portrait-replay.html",
-    "wireReplay": "sketches/digital-twin/face-signal-replay.html"
+    "wireReplay": "sketches/digital-twin/face-signal-replay.html",
+    "thoughtReplay": "sketches/digital-twin/face-signal-thought-replay.html",
+    "landscapeTest": "sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html"
   },
   "stack": {
     "markdown": "catalog/digital-twin/README.md",
-    "json": "sketches/digital-twin/sessions/*.json, emotion-map.json",
+    "json": "sketches/digital-twin/sessions/*.json, emotion-map.json, mood-anchors.json",
     "html": "Self-contained pages under sketches/digital-twin/ (p5 + ml5 vendored locally)",
-    "javascript": "p5.js — draw, WebGL crossfade, UI",
+    "javascript": "p5.js · Three.js (landscape test)",
     "ml": "ml5.js — face mesh + selfie segmentation (MediaPipe via ml5)",
     "cursor": "Cursor IDE — build and iteration environment",
-    "runtime": "Browser + localhost http.server — camera requires http(s)"
+    "runtime": "Browser + http.server — camera requires http(s)"
+  },
+  "pipeline": {
+    "done": [
+      "Capture face geometry + mood labels (study)",
+      "Five straight-ahead mood PNGs per person",
+      "Portrait crossfade replay (keys 1–5)",
+      "Wire-head JSON replay (skeleton proof, no photo wrap)",
+      "Thought replay — mood crossfade + thought-map / thoughts/*.json"
+    ],
+    "next": [
+      "Place inhabitant in walkable landscape (billboard test)",
+      "Walking video loop (body in motion)",
+      "Sidewalk / third-person video (environment witness)"
+    ],
+    "future": [
+      "Wire skeleton from ml5 landmarks (face, then pose)",
+      "Wrap / skin mood images onto skeleton (rigging)",
+      "Visitor webcam drives skeleton → inhabitant reacts in landscape"
+    ]
+  },
+  "replayModes": {
+    "current": "crossfade",
+    "future": "skeleton-wrap"
   },
   "emotions": {
     "neutral": {
@@ -58,5 +86,9 @@
     }
   },
   "signals": ["smile", "mouth", "brow", "tilt", "yaw"],
-  "replayMode": "crossfade"
+  "futureAssets": {
+    "walkLoop": "walk-loop.mp4",
+    "sidewalk": "sidewalk.mp4",
+    "note": "Optional body / context video clips — not yet captured"
+  }
 }

@@ -1,0 +1,23 @@
+{
+  "version": 3,
+  "mood": "sad",
+  "key": 5,
+  "label": "sad",
+  "faceMood": "sad",
+  "taxonomy": "DeepFace \u00b7 7 face words",
+  "mlSampleCount": 44,
+  "mlSegmentTops": [
+    "neutral",
+    "happy",
+    "sad",
+    "think",
+    "surprise",
+    "love",
+    "anger"
+  ],
+  "stance": "Dominant ML read across testimony",
+  "passage": "When I get sad, it's usually about lost opportunity. I miss Fanny. I think about Fanny a lot. Fanny was my father's mother. She wasn't an easy woman to love, but she loved me, and it was clear that she loved me, and it was clear that she knew I needed love. But there's not been a lot of people in my life that have loved me that way. That's when I get sad. DeepFace read sad across segments labeled: neutral, happy, think, surprise, love, anger, and sad.",
+  "source": "emotion testimony \u00b7 digital-twin-7-302026.mov",
+  "anchor_ms": 96000,
+  "recorded": "2026-07-30"
+}

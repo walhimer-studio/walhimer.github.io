@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "mood": "surprise",
+  "key": 6,
+  "label": "surprise",
+  "faceMood": "surprise",
+  "taxonomy": "DeepFace \u00b7 7 face words",
+  "mlSampleCount": 1,
+  "mlSegmentTops": [],
+  "stance": "Usually not good \u2014 loss, abandonment, attack \u00b7 ML samples: 1",
+  "passage": "Surprise is often linked with sadness. When I'm surprised, it's usually I'm surprised by something not good. Not a lot of positive surprises in my life. My mother died November 6, almost nine months ago, and there was no funeral. My sister's not speaking to me. There's been no discussion of her estate. I've been abandoned by many people. So often surprises are related to sadness or being attacked.",
+  "source": "emotion testimony \u00b7 digital-twin-7-302026.mov",
+  "anchor_ms": 192000,
+  "recorded": "2026-07-30"
+}

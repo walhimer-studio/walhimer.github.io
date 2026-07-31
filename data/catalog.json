@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-07-29",
+  "updated": "2026-07-30",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 · July 2026",
-          "file": "loop-art-critique-alumni-show-2026/index.html"
+          "series": "Digital twin",
+          "file": "digital-twin/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,13 +53,36 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/loop-art-critique-alumni-show-2026/README.md",
-            "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
-            "sketches/loop-art-critique-alumni-show-2026/compose-offer.html",
-            "sketches/loop-art-critique-alumni-show-2026/compose-rgb-xyz.mjs",
-            "sketches/loop-art-critique-alumni-show-2026/compose.html",
-            "sketches/loop-art-critique-alumni-show-2026/index.html",
-            "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html"
+            "sketches/digital-twin/README.md",
+            "sketches/digital-twin/face-signal-portrait-replay.html",
+            "sketches/digital-twin/face-signal-replay.html",
+            "sketches/digital-twin/face-signal-study.html",
+            "sketches/digital-twin/face-signal-thought-replay.html",
+            "sketches/digital-twin/index.html",
+            "sketches/digital-twin/sessions/README.md",
+            "sketches/digital-twin/sessions/emotion-map.json",
+            "sketches/digital-twin/sessions/happy.json",
+            "sketches/digital-twin/sessions/happy.png",
+            "sketches/digital-twin/sessions/mood-anchors.json",
+            "sketches/digital-twin/sessions/neutral.json",
+            "sketches/digital-twin/sessions/neutral.png",
+            "sketches/digital-twin/sessions/sad.json",
+            "sketches/digital-twin/sessions/sad.png",
+            "sketches/digital-twin/sessions/surprise.json",
+            "sketches/digital-twin/sessions/surprise.png",
+            "sketches/digital-twin/sessions/think.json",
+            "sketches/digital-twin/sessions/think.png",
+            "sketches/digital-twin/sessions/thought-map.json",
+            "sketches/digital-twin/sessions/thoughts/angry.json",
+            "sketches/digital-twin/sessions/thoughts/disgust.json",
+            "sketches/digital-twin/sessions/thoughts/fear.json",
+            "sketches/digital-twin/sessions/thoughts/happy.json",
+            "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/grief.json",
+            "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/love.json",
+            "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/think.json",
+            "sketches/digital-twin/sessions/thoughts/neutral.json",
+            "sketches/digital-twin/sessions/thoughts/sad.json",
+            "sketches/digital-twin/sessions/thoughts/surprise.json"
           ],
           "external_urls": []
         },
@@ -682,240 +705,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
+      "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-face-signal-thought-replay",
       "dublin_core": {
-        "title": "../loop-art-critique-alumni-show-2026/README.md",
+        "title": "../catalog/digital-twin/face-signal-thought-replay.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
+        "identifier": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-face-signal-thought-replay",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000321"
+        "catalog_number": "WS-000325"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-loop-art-critique-alumni-show-2026-",
+        "id": "https://mark-walhimer.com/#work/Digital twin-catalog-digital-twin-face-signal-thought-replay",
         "type": "HumanMadeObject",
-        "_label": "../loop-art-critique-alumni-show-2026/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 · July 2026",
-          "file": "loop-art-critique-alumni-show-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-alumni-show-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
-      "dublin_core": {
-        "title": "../catalog/loop-art-critique-alumni-show-2026/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000319"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-catalog-loop-art-critique-alumni-sh",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/loop-art-critique-alumni-show-2026/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 · July 2026",
-          "file": "../catalog/loop-art-critique-alumni-show-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/loop-art-critique-alumni-show-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-family-reunion-co-create-gallery",
-      "dublin_core": {
-        "title": "../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-family-reunion-co-create-gallery",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000324"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-catalog-loop-art-critique-alumni-sh",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 · July 2026",
-          "file": "../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-concept",
-      "dublin_core": {
-        "title": "../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-concept",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000318"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-catalog-loop-art-critique-alumni-sh",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 · July 2026",
-          "file": "../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-poc",
-      "dublin_core": {
-        "title": "../loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-poc",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000320"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-loop-art-critique-alumni-show-2026-",
-        "type": "HumanMadeObject",
-        "_label": "../loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Art Critique Alumni Show #3 · July 2026",
-          "file": "loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html",
-          "sketches/loop-snippets/js/three.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Digital twin:digital-twin-index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
+        "_label": "../catalog/digital-twin/face-signal-thought-replay.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -930,80 +737,12 @@
         ],
         "sketch": {
           "series": "Digital twin",
-          "file": "digital-twin/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
+          "file": "../catalog/digital-twin/face-signal-thought-replay.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/digital-twin/README.md",
-          "sketches/digital-twin/face-signal-portrait-replay.html",
-          "sketches/digital-twin/face-signal-replay.html",
-          "sketches/digital-twin/face-signal-study.html",
-          "sketches/digital-twin/index.html",
-          "sketches/digital-twin/sessions/README.md",
-          "sketches/digital-twin/sessions/emotion-map.json",
-          "sketches/digital-twin/sessions/happy.json",
-          "sketches/digital-twin/sessions/happy.png",
-          "sketches/digital-twin/sessions/mood-anchors.json",
-          "sketches/digital-twin/sessions/neutral.json",
-          "sketches/digital-twin/sessions/neutral.png",
-          "sketches/digital-twin/sessions/sad.json",
-          "sketches/digital-twin/sessions/sad.png",
-          "sketches/digital-twin/sessions/surprise.json",
-          "sketches/digital-twin/sessions/surprise.png",
-          "sketches/digital-twin/sessions/think.json",
-          "sketches/digital-twin/sessions/think.png"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
-      "dublin_core": {
-        "title": "digital-twin/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000310"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-readme",
-        "type": "HumanMadeObject",
-        "_label": "digital-twin/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Digital twin",
-          "file": "digital-twin/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/digital-twin/README.md"
+          "catalog/digital-twin/face-signal-thought-replay.md"
         ],
         "external_urls": []
       }
@@ -1047,6 +786,93 @@
       "artifacts": {
         "repo_paths": [
           "catalog/digital-twin/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:digital-twin-face-signal-thought-replay",
+      "dublin_core": {
+        "title": "digital-twin/face-signal-thought-replay",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-face-signal-thought-replay",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000326"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-face-signal-thought-replay",
+        "type": "HumanMadeObject",
+        "_label": "digital-twin/face-signal-thought-replay",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "digital-twin/face-signal-thought-replay.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/digital-twin/face-signal-thought-replay.html",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
+      "dublin_core": {
+        "title": "digital-twin/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000310"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-readme",
+        "type": "HumanMadeObject",
+        "_label": "digital-twin/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "digital-twin/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/digital-twin/README.md"
         ],
         "external_urls": []
       }
@@ -1309,6 +1135,279 @@
         "repo_paths": [
           "sketches/digital-twin/face-signal-replay.html",
           "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 · July 2026",
+          "file": "loop-art-critique-alumni-show-2026/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/README.md",
+          "sketches/loop-art-critique-alumni-show-2026/assets/family-reunion-poster.png",
+          "sketches/loop-art-critique-alumni-show-2026/compose-offer.html",
+          "sketches/loop-art-critique-alumni-show-2026/compose-rgb-xyz.mjs",
+          "sketches/loop-art-critique-alumni-show-2026/compose.html",
+          "sketches/loop-art-critique-alumni-show-2026/index.html",
+          "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
+      "dublin_core": {
+        "title": "../loop-art-critique-alumni-show-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000321"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-loop-art-critique-alumni-show-2026-",
+        "type": "HumanMadeObject",
+        "_label": "../loop-art-critique-alumni-show-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 · July 2026",
+          "file": "loop-art-critique-alumni-show-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
+      "dublin_core": {
+        "title": "../catalog/loop-art-critique-alumni-show-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000319"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-catalog-loop-art-critique-alumni-sh",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/loop-art-critique-alumni-show-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 · July 2026",
+          "file": "../catalog/loop-art-critique-alumni-show-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/loop-art-critique-alumni-show-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-family-reunion-co-create-gallery",
+      "dublin_core": {
+        "title": "../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-family-reunion-co-create-gallery",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000324"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-catalog-loop-art-critique-alumni-sh",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 · July 2026",
+          "file": "../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-concept",
+      "dublin_core": {
+        "title": "../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:catalog-loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-concept",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000318"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-catalog-loop-art-critique-alumni-sh",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 · July 2026",
+          "file": "../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-poc",
+      "dublin_core": {
+        "title": "../loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique Alumni Show #3 · July 2026:loop-art-critique-alumni-show-2026-loop-alumni-show-invisible-layer-poc",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000320"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique Alumni Show #3 · July 2026-loop-art-critique-alumni-show-2026-",
+        "type": "HumanMadeObject",
+        "_label": "../loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Art Critique Alumni Show #3 · July 2026",
+          "file": "loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html",
+          "sketches/loop-snippets/js/three.min.js"
         ],
         "external_urls": []
       }
