@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Sample testimony videos and run DeepFace emotion detection per labeled segment."""
 
+import argparse
 import json
 import os
 import sys
@@ -12,7 +13,7 @@ from deepface import DeepFace
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTIMONY = ROOT / "sketches/digital-twin/sessions/testimony"
-OUT_PATH = ROOT / "sketches/digital-twin/sessions/testimony-emotion-ml.json"
+DEFAULT_OUT = ROOT / "sketches/digital-twin/sessions/testimony-emotion-ml.json"
 
 SEGMENTS = [
     {"video": TESTIMONY / "digital-twin-7-302026.mov", "label": "neutral", "start": 11, "end": 55},
@@ -24,8 +25,6 @@ SEGMENTS = [
     {"video": TESTIMONY / "digital-twin-7-30-2026-2.mov", "label": "love", "start": 63, "end": 163},
     {"video": TESTIMONY / "digital-twin-7-30-2026-2.mov", "label": "anger", "start": 163, "end": 199},
 ]
-
-SAMPLE_EVERY_S = 5
 
 
 def frame_at(cap, t_sec):
@@ -69,7 +68,16 @@ def summarize_segment(label, samples):
 
 
 def main():
-    out = {"segments": [], "model": "DeepFace emotion (enforce_detection=False)"}
+    parser = argparse.ArgumentParser(description="DeepFace emotion samples on testimony video")
+    parser.add_argument("--interval", type=float, default=5, help="Seconds between samples (default: 5)")
+    parser.add_argument("--out", type=Path, default=DEFAULT_OUT, help="Output JSON path")
+    args = parser.parse_args()
+
+    out = {
+        "segments": [],
+        "model": "DeepFace emotion (enforce_detection=False)",
+        "sample_every_s": args.interval,
+    }
     caps = {}
 
     for seg in SEGMENTS:
@@ -79,7 +87,7 @@ def main():
         cap = caps[path]
         samples = []
         sample_log = []
-        t = seg["start"] + 2
+        t = seg["start"] + min(1.0, args.interval)
         while t < seg["end"]:
             frame = frame_at(cap, t)
             if frame is not None:
@@ -89,7 +97,7 @@ def main():
                     sample_log.append({"t_sec": round(t, 1), **result})
                 except Exception as e:
                     print(f"  skip {seg['label']} @{t}s: {e}", file=sys.stderr)
-            t += SAMPLE_EVERY_S
+            t += args.interval
         summary = summarize_segment(seg["label"], samples)
         summary["video"] = os.path.basename(path)
         summary["time_range_s"] = [seg["start"], seg["end"]]
@@ -103,10 +111,10 @@ def main():
     for cap in caps.values():
         cap.release()
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_PATH, "w") as f:
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    with open(args.out, "w") as f:
         json.dump(out, f, indent=2)
-    print(f"\nWrote {OUT_PATH}")
+    print(f"\nWrote {args.out} ({args.interval}s interval)")
 
 
 if __name__ == "__main__":

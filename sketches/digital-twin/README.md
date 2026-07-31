@@ -14,7 +14,8 @@ Machine index: [`sessions/emotion-map.json`](./sessions/emotion-map.json)
 | [face-signal-portrait-replay.html](./face-signal-portrait-replay.html) | Replay — mood crossfade (keys 1–5) | **done** |
 | [face-signal-replay.html](./face-signal-replay.html) | Wire-head replay — skeleton, no photo wrap | **done** |
 | [face-signal-thought-replay.html](./face-signal-thought-replay.html) | Thought replay — face crossfade + mind layer | **done** |
-| [emotion-mirror.html](./emotion-mirror.html) | Emotion Mirror — ML5 + DeepFace testimony review | **done** |
+| [emotion-mirror.html](./emotion-mirror.html) | Emotion Mirror — ML5 + DeepFace testimony review (5s) | **done** |
+| [emotion-mirror-1s.html](./emotion-mirror-1s.html) | Emotion Mirror (1s) — same UI, 1s DeepFace samples | **done** |
 
 ## Sessions (`sessions/`)
 
@@ -24,6 +25,7 @@ Machine index: [`sessions/emotion-map.json`](./sessions/emotion-map.json)
 | `thought-map.json` | Emotion → stance + passage (mind layer) |
 | `thoughts/*.json` | Per-mood thinking — parallel to mood PNGs |
 | `testimony-emotion-ml.json` | DeepFace samples for Emotion Mirror (every ~5s) |
+| `testimony-emotion-ml-1s.json` | DeepFace samples for Emotion Mirror (1s) |
 | `testimony/*.mp4` | Local H.264 proxies (gitignored) |
 | `mood-anchors.json` | Straight-ahead frame times per mood |
 | `neutral.png` … `surprise.png` | Visible face per mood |

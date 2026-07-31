@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Emotion Mirror — Mark Walhimer</title>
+  <title>Emotion Mirror (1s) — Mark Walhimer</title>
   <style>
     :root {
       --bg: #0a0a0c;
@@ -101,7 +101,7 @@
 </head>
 <body>
   <main>
-    <h1>Emotion Mirror</h1>
+    <h1>Emotion Mirror <span style="font-weight:400;color:var(--muted)">· 1s</span></h1>
     <p class="sub" id="status">Loading face mesh…</p>
 
     <div class="layout">
@@ -120,13 +120,13 @@
       </div>
     </div>
 
-    <p class="note">Scrub the video progress bar — blue box tracks face live; ML labels + bars jump to nearest sample (~every 5s) · <a href="emotion-mirror-1s.html" style="color:var(--ml)">1s version</a> · mute helps</p>
+    <p class="note">Scrub the video progress bar — blue box tracks face live; ML labels + bars jump to nearest sample (~every 1s) · <a href="emotion-mirror.html" style="color:var(--ml)">5s version</a> · mute helps</p>
   </main>
 
   <script src="../js/ml5-1.min.js"></script>
   <script>
     const VIDEO_BASE = 'sessions/testimony/';
-    const DATA_URL = 'sessions/testimony-emotion-ml.json';
+    const DATA_URL = 'sessions/testimony-emotion-ml-1s.json';
 
     const ML_WORDS = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'];
 
@@ -405,7 +405,7 @@
       }
       player.currentTime = seekT ?? 0;
       startTracking();
-      setStatus('Scrub video · blue box + bars update with DeepFace samples');
+      setStatus('Scrub video · DeepFace samples every 1s · blue box + bars below');
     }
 
     function loadVideo(mp4, seekT) {
@@ -449,7 +449,7 @@
         const mp4 = firstVideo();
         if (mp4) loadVideo(mp4, 0);
       } catch (err) {
-        setStatus('Could not load face mesh or sessions/testimony-emotion-ml.json.');
+        setStatus('Could not load face mesh or sessions/testimony-emotion-ml-1s.json.');
         console.error(err);
       }
     }

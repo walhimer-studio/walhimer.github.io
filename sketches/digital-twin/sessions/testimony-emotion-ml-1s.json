@@ -1,0 +1,5610 @@
+{
+  "segments": [
+    {
+      "label": "neutral",
+      "samples": 43,
+      "dominant_votes": {
+        "sad": 34,
+        "fear": 5,
+        "neutral": 3,
+        "happy": 1
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 76.67,
+        "fear": 12.79,
+        "neutral": 6.0,
+        "happy": 2.87,
+        "angry": 1.52,
+        "surprise": 0.14,
+        "disgust": 0.0
+      },
+      "video": "digital-twin-7-302026.mov",
+      "time_range_s": [
+        11,
+        55
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 12.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 13.47,
+            "sad": 86.25,
+            "surprise": 0.0,
+            "neutral": 0.29
+          }
+        },
+        {
+          "t_sec": 13.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.46,
+            "disgust": 0.0,
+            "fear": 59.14,
+            "happy": 0.23,
+            "sad": 36.26,
+            "surprise": 0.02,
+            "neutral": 3.89
+          }
+        },
+        {
+          "t_sec": 14.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.07,
+            "disgust": 0.0,
+            "fear": 51.99,
+            "happy": 0.11,
+            "sad": 47.83,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 15.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.8,
+            "disgust": 0.0,
+            "fear": 4.62,
+            "happy": 0.01,
+            "sad": 93.83,
+            "surprise": 0.01,
+            "neutral": 0.73
+          }
+        },
+        {
+          "t_sec": 16.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.95,
+            "disgust": 0.0,
+            "fear": 19.06,
+            "happy": 0.01,
+            "sad": 78.14,
+            "surprise": 0.06,
+            "neutral": 0.78
+          }
+        },
+        {
+          "t_sec": 17.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.68,
+            "disgust": 0.0,
+            "fear": 6.42,
+            "happy": 0.12,
+            "sad": 92.76,
+            "surprise": 0.0,
+            "neutral": 0.03
+          }
+        },
+        {
+          "t_sec": 18.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.06,
+            "disgust": 0.0,
+            "fear": 21.3,
+            "happy": 0.09,
+            "sad": 78.54,
+            "surprise": 0.0,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 19.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 2.43,
+            "disgust": 0.0,
+            "fear": 14.57,
+            "happy": 0.86,
+            "sad": 34.88,
+            "surprise": 0.44,
+            "neutral": 46.82
+          }
+        },
+        {
+          "t_sec": 20.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 91.38,
+            "happy": 0.0,
+            "sad": 8.62,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 21.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.73,
+            "disgust": 0.0,
+            "fear": 21.49,
+            "happy": 0.01,
+            "sad": 64.47,
+            "surprise": 0.16,
+            "neutral": 7.14
+          }
+        },
+        {
+          "t_sec": 22.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 0.78,
+            "happy": 0.0,
+            "sad": 99.03,
+            "surprise": 0.0,
+            "neutral": 0.18
+          }
+        },
+        {
+          "t_sec": 23.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 1.17,
+            "disgust": 0.0,
+            "fear": 63.26,
+            "happy": 0.83,
+            "sad": 23.41,
+            "surprise": 0.16,
+            "neutral": 11.17
+          }
+        },
+        {
+          "t_sec": 24.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.29,
+            "disgust": 0.04,
+            "fear": 27.26,
+            "happy": 0.08,
+            "sad": 50.17,
+            "surprise": 0.02,
+            "neutral": 17.13
+          }
+        },
+        {
+          "t_sec": 25.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.09,
+            "disgust": 0.02,
+            "fear": 36.35,
+            "happy": 5.28,
+            "sad": 1.84,
+            "surprise": 0.27,
+            "neutral": 55.14
+          }
+        },
+        {
+          "t_sec": 26.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 0.0,
+            "sad": 99.98,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 27.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.09,
+            "disgust": 0.0,
+            "fear": 9.04,
+            "happy": 0.31,
+            "sad": 50.55,
+            "surprise": 0.22,
+            "neutral": 37.79
+          }
+        },
+        {
+          "t_sec": 28.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.96,
+            "disgust": 0.0,
+            "fear": 13.49,
+            "happy": 0.0,
+            "sad": 84.36,
+            "surprise": 0.06,
+            "neutral": 1.13
+          }
+        },
+        {
+          "t_sec": 29.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.03,
+            "happy": 0.0,
+            "sad": 99.97,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 30.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 0.0,
+            "sad": 99.98,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 31.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.05,
+            "happy": 0.0,
+            "sad": 99.95,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 32.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 33.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 1.72,
+            "happy": 0.38,
+            "sad": 97.91,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 34.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.73,
+            "happy": 0.0,
+            "sad": 99.27,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 35.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 36.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 2.23,
+            "happy": 0.0,
+            "sad": 97.77,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 37.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.59,
+            "happy": 0.0,
+            "sad": 99.41,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 38.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 30.05,
+            "happy": 0.0,
+            "sad": 69.95,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 39.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 0.0,
+            "sad": 99.98,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 40.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 0.0,
+            "sad": 99.98,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 41.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.91,
+            "disgust": 0.0,
+            "fear": 3.9,
+            "happy": 0.0,
+            "sad": 92.14,
+            "surprise": 0.0,
+            "neutral": 3.04
+          }
+        },
+        {
+          "t_sec": 42.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 7.49,
+            "disgust": 0.0,
+            "fear": 0.33,
+            "happy": 0.0,
+            "sad": 90.84,
+            "surprise": 0.0,
+            "neutral": 1.34
+          }
+        },
+        {
+          "t_sec": 43.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 44.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 45.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 46.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.01,
+            "happy": 0.0,
+            "sad": 99.99,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 47.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.9,
+            "disgust": 0.0,
+            "fear": 0.39,
+            "happy": 98.67,
+            "sad": 0.0,
+            "surprise": 0.0,
+            "neutral": 0.04
+          }
+        },
+        {
+          "t_sec": 48.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 27.94,
+            "disgust": 0.06,
+            "fear": 19.25,
+            "happy": 1.41,
+            "sad": 5.75,
+            "surprise": 1.01,
+            "neutral": 44.58
+          }
+        },
+        {
+          "t_sec": 49.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 50.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.01,
+            "happy": 0.0,
+            "sad": 99.99,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 51.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.03,
+            "happy": 0.0,
+            "sad": 99.96,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 52.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 4.18,
+            "happy": 0.0,
+            "sad": 95.78,
+            "surprise": 0.0,
+            "neutral": 0.04
+          }
+        },
+        {
+          "t_sec": 53.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 4.29,
+            "disgust": 0.0,
+            "fear": 39.16,
+            "happy": 1.2,
+            "sad": 26.17,
+            "surprise": 3.73,
+            "neutral": 25.45
+          }
+        },
+        {
+          "t_sec": 54.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 7.13,
+            "happy": 0.32,
+            "sad": 91.27,
+            "surprise": 0.0,
+            "neutral": 1.26
+          }
+        }
+      ]
+    },
+    {
+      "label": "happy",
+      "samples": 40,
+      "dominant_votes": {
+        "sad": 29,
+        "surprise": 1,
+        "fear": 4,
+        "happy": 4,
+        "neutral": 2
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 70.51,
+        "fear": 11.69,
+        "happy": 8.94,
+        "neutral": 4.79,
+        "surprise": 2.65,
+        "angry": 1.41,
+        "disgust": 0.02
+      },
+      "video": "digital-twin-7-302026.mov",
+      "time_range_s": [
+        55,
+        96
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 56.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.02,
+            "disgust": 0.0,
+            "fear": 0.16,
+            "happy": 0.0,
+            "sad": 99.82,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 57.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.55,
+            "disgust": 0.0,
+            "fear": 11.67,
+            "happy": 0.0,
+            "sad": 87.61,
+            "surprise": 0.11,
+            "neutral": 0.06
+          }
+        },
+        {
+          "t_sec": 58.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.38,
+            "disgust": 0.03,
+            "fear": 21.12,
+            "happy": 0.15,
+            "sad": 75.05,
+            "surprise": 0.29,
+            "neutral": 1.98
+          }
+        },
+        {
+          "t_sec": 59.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.5,
+            "disgust": 0.01,
+            "fear": 20.27,
+            "happy": 1.01,
+            "sad": 74.28,
+            "surprise": 0.1,
+            "neutral": 3.84
+          }
+        },
+        {
+          "t_sec": 60.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.19,
+            "happy": 0.0,
+            "sad": 99.81,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 61.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 1.88,
+            "happy": 0.0,
+            "sad": 98.12,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 62.0,
+          "dominant": "surprise",
+          "scores": {
+            "angry": 0.02,
+            "disgust": 0.0,
+            "fear": 0.68,
+            "happy": 0.0,
+            "sad": 0.0,
+            "surprise": 99.3,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 63.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 65.42,
+            "happy": 0.0,
+            "sad": 34.58,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 64.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.09,
+            "disgust": 0.0,
+            "fear": 75.18,
+            "happy": 1.33,
+            "sad": 22.65,
+            "surprise": 0.26,
+            "neutral": 0.49
+          }
+        },
+        {
+          "t_sec": 65.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.54,
+            "disgust": 0.0,
+            "fear": 1.13,
+            "happy": 94.85,
+            "sad": 0.15,
+            "surprise": 1.85,
+            "neutral": 1.49
+          }
+        },
+        {
+          "t_sec": 66.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 3.35,
+            "happy": 0.05,
+            "sad": 96.53,
+            "surprise": 0.0,
+            "neutral": 0.07
+          }
+        },
+        {
+          "t_sec": 67.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.02,
+            "disgust": 0.01,
+            "fear": 2.8,
+            "happy": 0.26,
+            "sad": 87.03,
+            "surprise": 0.15,
+            "neutral": 4.74
+          }
+        },
+        {
+          "t_sec": 68.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.21,
+            "happy": 0.0,
+            "sad": 99.79,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 69.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.14,
+            "disgust": 0.0,
+            "fear": 1.63,
+            "happy": 0.18,
+            "sad": 97.03,
+            "surprise": 0.01,
+            "neutral": 1.01
+          }
+        },
+        {
+          "t_sec": 70.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.11,
+            "disgust": 0.0,
+            "fear": 1.03,
+            "happy": 0.03,
+            "sad": 98.1,
+            "surprise": 0.05,
+            "neutral": 0.68
+          }
+        },
+        {
+          "t_sec": 71.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.84,
+            "disgust": 0.01,
+            "fear": 6.11,
+            "happy": 0.05,
+            "sad": 86.87,
+            "surprise": 0.26,
+            "neutral": 1.87
+          }
+        },
+        {
+          "t_sec": 72.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.23,
+            "disgust": 0.0,
+            "fear": 4.04,
+            "happy": 0.1,
+            "sad": 95.45,
+            "surprise": 0.0,
+            "neutral": 0.18
+          }
+        },
+        {
+          "t_sec": 73.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.34,
+            "disgust": 0.04,
+            "fear": 7.89,
+            "happy": 0.03,
+            "sad": 83.16,
+            "surprise": 0.19,
+            "neutral": 2.35
+          }
+        },
+        {
+          "t_sec": 74.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.02,
+            "disgust": 0.0,
+            "fear": 3.85,
+            "happy": 0.26,
+            "sad": 84.46,
+            "surprise": 0.02,
+            "neutral": 11.4
+          }
+        },
+        {
+          "t_sec": 75.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.38,
+            "happy": 78.69,
+            "sad": 20.83,
+            "surprise": 0.0,
+            "neutral": 0.1
+          }
+        },
+        {
+          "t_sec": 76.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.74,
+            "disgust": 0.25,
+            "fear": 16.62,
+            "happy": 0.13,
+            "sad": 75.35,
+            "surprise": 0.03,
+            "neutral": 1.88
+          }
+        },
+        {
+          "t_sec": 77.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.02,
+            "disgust": 0.0,
+            "fear": 13.59,
+            "happy": 0.18,
+            "sad": 81.07,
+            "surprise": 0.01,
+            "neutral": 4.13
+          }
+        },
+        {
+          "t_sec": 78.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.53,
+            "disgust": 0.0,
+            "fear": 19.99,
+            "happy": 22.15,
+            "sad": 2.13,
+            "surprise": 1.44,
+            "neutral": 53.76
+          }
+        },
+        {
+          "t_sec": 79.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.08,
+            "disgust": 0.0,
+            "fear": 22.3,
+            "happy": 66.2,
+            "sad": 0.62,
+            "surprise": 0.19,
+            "neutral": 10.61
+          }
+        },
+        {
+          "t_sec": 80.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.21,
+            "disgust": 0.0,
+            "fear": 1.69,
+            "happy": 0.05,
+            "sad": 85.74,
+            "surprise": 0.11,
+            "neutral": 6.2
+          }
+        },
+        {
+          "t_sec": 81.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.91,
+            "disgust": 0.0,
+            "fear": 1.59,
+            "happy": 0.02,
+            "sad": 96.4,
+            "surprise": 0.03,
+            "neutral": 0.05
+          }
+        },
+        {
+          "t_sec": 82.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 83.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.16,
+            "disgust": 0.01,
+            "fear": 5.65,
+            "happy": 0.01,
+            "sad": 85.66,
+            "surprise": 0.0,
+            "neutral": 3.51
+          }
+        },
+        {
+          "t_sec": 84.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.01,
+            "happy": 0.0,
+            "sad": 99.99,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 85.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.17,
+            "happy": 0.08,
+            "sad": 99.68,
+            "surprise": 0.0,
+            "neutral": 0.07
+          }
+        },
+        {
+          "t_sec": 86.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.74,
+            "disgust": 0.0,
+            "fear": 0.99,
+            "happy": 0.01,
+            "sad": 97.02,
+            "surprise": 0.0,
+            "neutral": 0.23
+          }
+        },
+        {
+          "t_sec": 87.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.05,
+            "disgust": 0.0,
+            "fear": 1.63,
+            "happy": 0.0,
+            "sad": 98.29,
+            "surprise": 0.0,
+            "neutral": 0.02
+          }
+        },
+        {
+          "t_sec": 88.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 89.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 3.03,
+            "disgust": 0.02,
+            "fear": 26.06,
+            "happy": 1.84,
+            "sad": 28.86,
+            "surprise": 0.6,
+            "neutral": 39.61
+          }
+        },
+        {
+          "t_sec": 90.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.01,
+            "happy": 83.22,
+            "sad": 0.08,
+            "surprise": 0.29,
+            "neutral": 16.39
+          }
+        },
+        {
+          "t_sec": 91.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 92.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.02,
+            "disgust": 0.0,
+            "fear": 0.14,
+            "happy": 0.64,
+            "sad": 99.17,
+            "surprise": 0.0,
+            "neutral": 0.03
+          }
+        },
+        {
+          "t_sec": 93.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.76,
+            "disgust": 0.18,
+            "fear": 73.17,
+            "happy": 0.98,
+            "sad": 19.6,
+            "surprise": 0.04,
+            "neutral": 5.27
+          }
+        },
+        {
+          "t_sec": 94.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 4.13,
+            "disgust": 0.13,
+            "fear": 47.26,
+            "happy": 4.94,
+            "sad": 25.27,
+            "surprise": 0.43,
+            "neutral": 17.84
+          }
+        },
+        {
+          "t_sec": 95.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.04,
+            "disgust": 0.0,
+            "fear": 7.9,
+            "happy": 0.03,
+            "sad": 84.19,
+            "surprise": 0.04,
+            "neutral": 1.81
+          }
+        }
+      ]
+    },
+    {
+      "label": "sad",
+      "samples": 47,
+      "dominant_votes": {
+        "sad": 32,
+        "fear": 5,
+        "happy": 3,
+        "surprise": 1,
+        "neutral": 5,
+        "angry": 1
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 63.21,
+        "neutral": 13.21,
+        "fear": 11.57,
+        "happy": 6.01,
+        "angry": 4.65,
+        "surprise": 1.33,
+        "disgust": 0.01
+      },
+      "video": "digital-twin-7-302026.mov",
+      "time_range_s": [
+        96,
+        144
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 97.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.01,
+            "happy": 0.03,
+            "sad": 99.96,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 98.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.64,
+            "disgust": 0.01,
+            "fear": 55.21,
+            "happy": 0.05,
+            "sad": 36.59,
+            "surprise": 0.07,
+            "neutral": 7.43
+          }
+        },
+        {
+          "t_sec": 99.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.05,
+            "disgust": 0.0,
+            "fear": 66.93,
+            "happy": 27.36,
+            "sad": 2.63,
+            "surprise": 0.01,
+            "neutral": 3.02
+          }
+        },
+        {
+          "t_sec": 100.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.44,
+            "disgust": 0.0,
+            "fear": 4.61,
+            "happy": 0.0,
+            "sad": 93.53,
+            "surprise": 0.0,
+            "neutral": 0.41
+          }
+        },
+        {
+          "t_sec": 101.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.03,
+            "happy": 0.0,
+            "sad": 99.97,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 102.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 3.07,
+            "disgust": 0.02,
+            "fear": 54.95,
+            "happy": 0.45,
+            "sad": 21.75,
+            "surprise": 0.42,
+            "neutral": 19.34
+          }
+        },
+        {
+          "t_sec": 103.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.95,
+            "disgust": 0.0,
+            "fear": 4.96,
+            "happy": 0.0,
+            "sad": 86.56,
+            "surprise": 0.0,
+            "neutral": 5.52
+          }
+        },
+        {
+          "t_sec": 104.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.09,
+            "disgust": 0.0,
+            "fear": 8.18,
+            "happy": 0.0,
+            "sad": 90.26,
+            "surprise": 0.17,
+            "neutral": 0.3
+          }
+        },
+        {
+          "t_sec": 105.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.36,
+            "happy": 0.0,
+            "sad": 99.63,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 106.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.29,
+            "disgust": 0.05,
+            "fear": 11.42,
+            "happy": 0.17,
+            "sad": 88.0,
+            "surprise": 0.02,
+            "neutral": 0.05
+          }
+        },
+        {
+          "t_sec": 107.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.38,
+            "disgust": 0.0,
+            "fear": 17.08,
+            "happy": 0.29,
+            "sad": 69.47,
+            "surprise": 0.18,
+            "neutral": 10.59
+          }
+        },
+        {
+          "t_sec": 108.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 0.54,
+            "happy": 3.88,
+            "sad": 95.58,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 109.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.02,
+            "disgust": 0.06,
+            "fear": 34.6,
+            "happy": 7.34,
+            "sad": 38.18,
+            "surprise": 0.08,
+            "neutral": 17.71
+          }
+        },
+        {
+          "t_sec": 110.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.08,
+            "disgust": 0.0,
+            "fear": 1.23,
+            "happy": 1.21,
+            "sad": 97.42,
+            "surprise": 0.03,
+            "neutral": 0.02
+          }
+        },
+        {
+          "t_sec": 111.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 1.25,
+            "happy": 3.49,
+            "sad": 95.17,
+            "surprise": 0.04,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 112.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.02,
+            "disgust": 0.0,
+            "fear": 0.29,
+            "happy": 0.83,
+            "sad": 98.86,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 113.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 97.9,
+            "sad": 0.06,
+            "surprise": 0.0,
+            "neutral": 2.02
+          }
+        },
+        {
+          "t_sec": 114.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.16,
+            "disgust": 0.0,
+            "fear": 2.91,
+            "happy": 0.02,
+            "sad": 73.9,
+            "surprise": 0.03,
+            "neutral": 16.98
+          }
+        },
+        {
+          "t_sec": 115.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.27,
+            "disgust": 0.0,
+            "fear": 39.86,
+            "happy": 0.72,
+            "sad": 38.35,
+            "surprise": 0.29,
+            "neutral": 20.51
+          }
+        },
+        {
+          "t_sec": 116.0,
+          "dominant": "surprise",
+          "scores": {
+            "angry": 0.08,
+            "disgust": 0.01,
+            "fear": 29.5,
+            "happy": 6.58,
+            "sad": 1.92,
+            "surprise": 54.13,
+            "neutral": 7.79
+          }
+        },
+        {
+          "t_sec": 117.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 17.9,
+            "disgust": 0.0,
+            "fear": 1.42,
+            "happy": 0.0,
+            "sad": 80.64,
+            "surprise": 0.01,
+            "neutral": 0.04
+          }
+        },
+        {
+          "t_sec": 118.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 37.67,
+            "disgust": 0.01,
+            "fear": 3.58,
+            "happy": 0.0,
+            "sad": 52.67,
+            "surprise": 0.01,
+            "neutral": 6.05
+          }
+        },
+        {
+          "t_sec": 119.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 5.18,
+            "happy": 0.21,
+            "sad": 94.47,
+            "surprise": 0.02,
+            "neutral": 0.12
+          }
+        },
+        {
+          "t_sec": 120.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.05,
+            "disgust": 0.24,
+            "fear": 14.74,
+            "happy": 0.41,
+            "sad": 66.85,
+            "surprise": 0.14,
+            "neutral": 15.56
+          }
+        },
+        {
+          "t_sec": 121.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 0.49,
+            "happy": 1.05,
+            "sad": 98.45,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 122.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.95,
+            "disgust": 0.01,
+            "fear": 2.56,
+            "happy": 0.22,
+            "sad": 81.49,
+            "surprise": 0.01,
+            "neutral": 12.77
+          }
+        },
+        {
+          "t_sec": 123.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 3.13,
+            "disgust": 0.0,
+            "fear": 0.58,
+            "happy": 0.02,
+            "sad": 95.22,
+            "surprise": 0.13,
+            "neutral": 0.93
+          }
+        },
+        {
+          "t_sec": 124.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 5.82,
+            "disgust": 0.0,
+            "fear": 2.09,
+            "happy": 0.03,
+            "sad": 22.53,
+            "surprise": 0.02,
+            "neutral": 69.52
+          }
+        },
+        {
+          "t_sec": 125.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 9.11,
+            "disgust": 0.01,
+            "fear": 14.01,
+            "happy": 0.03,
+            "sad": 76.36,
+            "surprise": 0.02,
+            "neutral": 0.46
+          }
+        },
+        {
+          "t_sec": 126.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.67,
+            "disgust": 0.03,
+            "fear": 1.14,
+            "happy": 0.04,
+            "sad": 91.64,
+            "surprise": 0.28,
+            "neutral": 0.19
+          }
+        },
+        {
+          "t_sec": 127.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 58.41,
+            "disgust": 0.01,
+            "fear": 13.37,
+            "happy": 0.08,
+            "sad": 26.23,
+            "surprise": 0.42,
+            "neutral": 1.48
+          }
+        },
+        {
+          "t_sec": 128.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.24,
+            "disgust": 0.0,
+            "fear": 1.21,
+            "happy": 0.0,
+            "sad": 96.45,
+            "surprise": 0.0,
+            "neutral": 0.09
+          }
+        },
+        {
+          "t_sec": 129.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 8.83,
+            "disgust": 0.0,
+            "fear": 6.84,
+            "happy": 0.04,
+            "sad": 81.07,
+            "surprise": 1.34,
+            "neutral": 1.88
+          }
+        },
+        {
+          "t_sec": 130.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 4.18,
+            "disgust": 0.05,
+            "fear": 1.12,
+            "happy": 62.45,
+            "sad": 4.18,
+            "surprise": 1.32,
+            "neutral": 26.7
+          }
+        },
+        {
+          "t_sec": 131.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.13,
+            "disgust": 0.01,
+            "fear": 1.26,
+            "happy": 0.19,
+            "sad": 91.98,
+            "surprise": 0.04,
+            "neutral": 4.38
+          }
+        },
+        {
+          "t_sec": 132.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 7.54,
+            "disgust": 0.01,
+            "fear": 4.29,
+            "happy": 0.26,
+            "sad": 33.22,
+            "surprise": 0.01,
+            "neutral": 54.67
+          }
+        },
+        {
+          "t_sec": 133.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.08,
+            "happy": 0.0,
+            "sad": 0.6,
+            "surprise": 0.0,
+            "neutral": 99.32
+          }
+        },
+        {
+          "t_sec": 134.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 1.54,
+            "happy": 0.0,
+            "sad": 98.28,
+            "surprise": 0.0,
+            "neutral": 0.19
+          }
+        },
+        {
+          "t_sec": 135.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 7.33,
+            "disgust": 0.01,
+            "fear": 23.48,
+            "happy": 0.01,
+            "sad": 47.82,
+            "surprise": 0.0,
+            "neutral": 21.35
+          }
+        },
+        {
+          "t_sec": 136.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.28,
+            "disgust": 0.01,
+            "fear": 61.55,
+            "happy": 0.82,
+            "sad": 36.37,
+            "surprise": 0.03,
+            "neutral": 0.95
+          }
+        },
+        {
+          "t_sec": 137.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 16.13,
+            "disgust": 0.04,
+            "fear": 11.66,
+            "happy": 0.03,
+            "sad": 43.12,
+            "surprise": 0.07,
+            "neutral": 28.94
+          }
+        },
+        {
+          "t_sec": 138.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 1.28,
+            "disgust": 0.07,
+            "fear": 1.54,
+            "happy": 59.64,
+            "sad": 7.23,
+            "surprise": 1.76,
+            "neutral": 28.47
+          }
+        },
+        {
+          "t_sec": 139.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.61,
+            "disgust": 0.0,
+            "fear": 32.45,
+            "happy": 4.39,
+            "sad": 6.44,
+            "surprise": 1.12,
+            "neutral": 55.0
+          }
+        },
+        {
+          "t_sec": 140.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.03,
+            "happy": 0.0,
+            "sad": 99.97,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 141.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.07,
+            "happy": 0.0,
+            "sad": 99.93,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 142.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.99,
+            "happy": 0.0,
+            "sad": 99.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 143.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 3.9,
+            "disgust": 0.01,
+            "fear": 2.72,
+            "happy": 2.19,
+            "sad": 10.92,
+            "surprise": 0.13,
+            "neutral": 80.12
+          }
+        }
+      ]
+    },
+    {
+      "label": "think",
+      "samples": 47,
+      "dominant_votes": {
+        "neutral": 10,
+        "sad": 34,
+        "angry": 1,
+        "fear": 2
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 60.57,
+        "neutral": 18.89,
+        "fear": 10.65,
+        "angry": 8.17,
+        "happy": 1.09,
+        "surprise": 0.55,
+        "disgust": 0.08
+      },
+      "video": "digital-twin-7-302026.mov",
+      "time_range_s": [
+        144,
+        192
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 145.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 4.01,
+            "disgust": 0.01,
+            "fear": 22.67,
+            "happy": 0.12,
+            "sad": 28.66,
+            "surprise": 0.24,
+            "neutral": 44.29
+          }
+        },
+        {
+          "t_sec": 146.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 12.3,
+            "disgust": 0.0,
+            "fear": 2.86,
+            "happy": 0.02,
+            "sad": 76.5,
+            "surprise": 0.05,
+            "neutral": 8.28
+          }
+        },
+        {
+          "t_sec": 147.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.1,
+            "disgust": 0.0,
+            "fear": 0.19,
+            "happy": 0.02,
+            "sad": 0.68,
+            "surprise": 0.02,
+            "neutral": 98.98
+          }
+        },
+        {
+          "t_sec": 148.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 149.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 150.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 0.02,
+            "sad": 99.96,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 151.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 34.06,
+            "disgust": 0.1,
+            "fear": 7.48,
+            "happy": 0.05,
+            "sad": 50.71,
+            "surprise": 0.66,
+            "neutral": 6.93
+          }
+        },
+        {
+          "t_sec": 152.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.52,
+            "disgust": 0.0,
+            "fear": 4.25,
+            "happy": 0.05,
+            "sad": 94.86,
+            "surprise": 0.0,
+            "neutral": 0.32
+          }
+        },
+        {
+          "t_sec": 153.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.48,
+            "disgust": 0.03,
+            "fear": 33.45,
+            "happy": 3.19,
+            "sad": 56.07,
+            "surprise": 0.1,
+            "neutral": 5.68
+          }
+        },
+        {
+          "t_sec": 154.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.88,
+            "disgust": 0.06,
+            "fear": 34.24,
+            "happy": 0.4,
+            "sad": 62.59,
+            "surprise": 0.19,
+            "neutral": 0.64
+          }
+        },
+        {
+          "t_sec": 155.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.56,
+            "disgust": 1.1,
+            "fear": 32.72,
+            "happy": 12.85,
+            "sad": 38.08,
+            "surprise": 0.17,
+            "neutral": 9.52
+          }
+        },
+        {
+          "t_sec": 156.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.15,
+            "disgust": 0.0,
+            "fear": 6.21,
+            "happy": 13.46,
+            "sad": 12.99,
+            "surprise": 2.88,
+            "neutral": 64.31
+          }
+        },
+        {
+          "t_sec": 157.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.04,
+            "happy": 0.0,
+            "sad": 99.95,
+            "surprise": 0.0,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 158.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 23.42,
+            "disgust": 0.0,
+            "fear": 19.97,
+            "happy": 0.35,
+            "sad": 46.1,
+            "surprise": 4.93,
+            "neutral": 5.23
+          }
+        },
+        {
+          "t_sec": 159.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 17.41,
+            "disgust": 0.03,
+            "fear": 10.54,
+            "happy": 0.21,
+            "sad": 52.61,
+            "surprise": 0.62,
+            "neutral": 18.57
+          }
+        },
+        {
+          "t_sec": 160.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 161.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 10.04,
+            "disgust": 0.0,
+            "fear": 12.89,
+            "happy": 0.2,
+            "sad": 55.46,
+            "surprise": 0.04,
+            "neutral": 21.36
+          }
+        },
+        {
+          "t_sec": 162.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 163.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.78,
+            "disgust": 0.0,
+            "fear": 0.57,
+            "happy": 0.0,
+            "sad": 98.63,
+            "surprise": 0.0,
+            "neutral": 0.02
+          }
+        },
+        {
+          "t_sec": 164.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.3,
+            "disgust": 0.0,
+            "fear": 0.44,
+            "happy": 0.0,
+            "sad": 99.05,
+            "surprise": 0.0,
+            "neutral": 0.21
+          }
+        },
+        {
+          "t_sec": 165.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 0.05,
+            "happy": 6.57,
+            "sad": 34.13,
+            "surprise": 0.01,
+            "neutral": 59.21
+          }
+        },
+        {
+          "t_sec": 166.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 0.86,
+            "happy": 0.91,
+            "sad": 98.23,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 167.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.16,
+            "disgust": 0.0,
+            "fear": 12.26,
+            "happy": 1.14,
+            "sad": 86.43,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 168.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.19,
+            "disgust": 0.0,
+            "fear": 15.14,
+            "happy": 0.72,
+            "sad": 83.95,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 169.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.69,
+            "disgust": 0.03,
+            "fear": 24.96,
+            "happy": 0.03,
+            "sad": 63.23,
+            "surprise": 2.06,
+            "neutral": 3.0
+          }
+        },
+        {
+          "t_sec": 170.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.05,
+            "disgust": 0.0,
+            "fear": 5.51,
+            "happy": 0.02,
+            "sad": 90.09,
+            "surprise": 0.07,
+            "neutral": 3.26
+          }
+        },
+        {
+          "t_sec": 171.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 4.04,
+            "disgust": 0.0,
+            "fear": 2.32,
+            "happy": 1.12,
+            "sad": 37.91,
+            "surprise": 0.02,
+            "neutral": 54.58
+          }
+        },
+        {
+          "t_sec": 172.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.44,
+            "disgust": 0.0,
+            "fear": 2.31,
+            "happy": 0.09,
+            "sad": 93.87,
+            "surprise": 0.0,
+            "neutral": 2.28
+          }
+        },
+        {
+          "t_sec": 173.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.23,
+            "disgust": 0.01,
+            "fear": 3.05,
+            "happy": 0.3,
+            "sad": 87.25,
+            "surprise": 0.0,
+            "neutral": 3.17
+          }
+        },
+        {
+          "t_sec": 174.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.5,
+            "disgust": 0.18,
+            "fear": 8.41,
+            "happy": 1.05,
+            "sad": 76.72,
+            "surprise": 0.22,
+            "neutral": 6.92
+          }
+        },
+        {
+          "t_sec": 175.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 12.85,
+            "disgust": 0.22,
+            "fear": 4.38,
+            "happy": 0.06,
+            "sad": 74.49,
+            "surprise": 0.05,
+            "neutral": 7.95
+          }
+        },
+        {
+          "t_sec": 176.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.82,
+            "disgust": 0.1,
+            "fear": 1.89,
+            "happy": 0.01,
+            "sad": 90.51,
+            "surprise": 0.01,
+            "neutral": 2.65
+          }
+        },
+        {
+          "t_sec": 177.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 47.69,
+            "disgust": 0.04,
+            "fear": 13.44,
+            "happy": 0.24,
+            "sad": 27.79,
+            "surprise": 7.78,
+            "neutral": 3.02
+          }
+        },
+        {
+          "t_sec": 178.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 13.62,
+            "disgust": 0.57,
+            "fear": 20.68,
+            "happy": 4.49,
+            "sad": 28.58,
+            "surprise": 4.11,
+            "neutral": 27.96
+          }
+        },
+        {
+          "t_sec": 179.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 19.1,
+            "disgust": 0.04,
+            "fear": 2.13,
+            "happy": 0.04,
+            "sad": 49.2,
+            "surprise": 0.03,
+            "neutral": 29.47
+          }
+        },
+        {
+          "t_sec": 180.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.24,
+            "disgust": 0.0,
+            "fear": 6.11,
+            "happy": 0.02,
+            "sad": 63.62,
+            "surprise": 0.02,
+            "neutral": 24.98
+          }
+        },
+        {
+          "t_sec": 181.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 14.33,
+            "disgust": 0.06,
+            "fear": 4.97,
+            "happy": 0.04,
+            "sad": 5.05,
+            "surprise": 0.04,
+            "neutral": 75.52
+          }
+        },
+        {
+          "t_sec": 182.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.3,
+            "happy": 0.09,
+            "sad": 3.49,
+            "surprise": 0.0,
+            "neutral": 96.12
+          }
+        },
+        {
+          "t_sec": 183.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 15.65,
+            "disgust": 0.63,
+            "fear": 43.41,
+            "happy": 0.02,
+            "sad": 29.14,
+            "surprise": 0.1,
+            "neutral": 11.04
+          }
+        },
+        {
+          "t_sec": 184.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 22.63,
+            "disgust": 0.0,
+            "fear": 0.71,
+            "happy": 0.0,
+            "sad": 76.51,
+            "surprise": 0.0,
+            "neutral": 0.15
+          }
+        },
+        {
+          "t_sec": 185.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 2.28,
+            "disgust": 0.02,
+            "fear": 88.34,
+            "happy": 0.63,
+            "sad": 8.69,
+            "surprise": 0.01,
+            "neutral": 0.04
+          }
+        },
+        {
+          "t_sec": 186.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 36.13,
+            "disgust": 0.0,
+            "fear": 1.06,
+            "happy": 0.0,
+            "sad": 62.54,
+            "surprise": 0.0,
+            "neutral": 0.28
+          }
+        },
+        {
+          "t_sec": 187.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 19.77,
+            "disgust": 0.0,
+            "fear": 8.07,
+            "happy": 0.01,
+            "sad": 61.81,
+            "surprise": 0.16,
+            "neutral": 10.18
+          }
+        },
+        {
+          "t_sec": 188.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 3.24,
+            "disgust": 0.0,
+            "fear": 1.98,
+            "happy": 0.02,
+            "sad": 31.68,
+            "surprise": 0.0,
+            "neutral": 63.08
+          }
+        },
+        {
+          "t_sec": 189.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 7.08,
+            "disgust": 0.11,
+            "fear": 5.22,
+            "happy": 0.19,
+            "sad": 23.27,
+            "surprise": 0.11,
+            "neutral": 64.02
+          }
+        },
+        {
+          "t_sec": 190.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 12.47,
+            "disgust": 0.2,
+            "fear": 24.29,
+            "happy": 0.24,
+            "sad": 47.53,
+            "surprise": 0.51,
+            "neutral": 14.77
+          }
+        },
+        {
+          "t_sec": 191.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 8.62,
+            "disgust": 0.16,
+            "fear": 10.33,
+            "happy": 2.13,
+            "sad": 38.29,
+            "surprise": 0.52,
+            "neutral": 39.95
+          }
+        }
+      ]
+    },
+    {
+      "label": "surprise",
+      "samples": 41,
+      "dominant_votes": {
+        "sad": 31,
+        "angry": 4,
+        "neutral": 5,
+        "happy": 1
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 68.41,
+        "neutral": 11.01,
+        "angry": 10.33,
+        "fear": 6.98,
+        "happy": 3.08,
+        "surprise": 0.11,
+        "disgust": 0.08
+      },
+      "video": "digital-twin-7-302026.mov",
+      "time_range_s": [
+        192,
+        234
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 193.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.03,
+            "happy": 0.0,
+            "sad": 99.96,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 194.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.9,
+            "happy": 0.0,
+            "sad": 99.1,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 195.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 2.14,
+            "happy": 0.0,
+            "sad": 97.58,
+            "surprise": 0.0,
+            "neutral": 0.28
+          }
+        },
+        {
+          "t_sec": 196.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 61.37,
+            "disgust": 0.53,
+            "fear": 8.36,
+            "happy": 0.17,
+            "sad": 22.52,
+            "surprise": 0.43,
+            "neutral": 6.62
+          }
+        },
+        {
+          "t_sec": 197.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 49.15,
+            "disgust": 0.01,
+            "fear": 10.8,
+            "happy": 0.26,
+            "sad": 25.33,
+            "surprise": 0.23,
+            "neutral": 14.22
+          }
+        },
+        {
+          "t_sec": 198.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 70.14,
+            "disgust": 0.12,
+            "fear": 7.04,
+            "happy": 4.4,
+            "sad": 11.74,
+            "surprise": 1.21,
+            "neutral": 5.34
+          }
+        },
+        {
+          "t_sec": 199.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.66,
+            "disgust": 0.0,
+            "fear": 4.35,
+            "happy": 0.17,
+            "sad": 8.54,
+            "surprise": 0.05,
+            "neutral": 85.23
+          }
+        },
+        {
+          "t_sec": 200.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 20.35,
+            "disgust": 0.64,
+            "fear": 14.17,
+            "happy": 0.56,
+            "sad": 43.25,
+            "surprise": 0.09,
+            "neutral": 20.94
+          }
+        },
+        {
+          "t_sec": 201.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 24.38,
+            "disgust": 0.0,
+            "fear": 7.65,
+            "happy": 0.33,
+            "sad": 62.58,
+            "surprise": 0.46,
+            "neutral": 4.59
+          }
+        },
+        {
+          "t_sec": 202.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 12.34,
+            "disgust": 0.02,
+            "fear": 6.91,
+            "happy": 0.04,
+            "sad": 62.5,
+            "surprise": 0.28,
+            "neutral": 17.91
+          }
+        },
+        {
+          "t_sec": 203.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.08,
+            "happy": 0.79,
+            "sad": 99.1,
+            "surprise": 0.02,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 204.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.36,
+            "disgust": 0.05,
+            "fear": 4.96,
+            "happy": 14.2,
+            "sad": 3.65,
+            "surprise": 0.03,
+            "neutral": 75.75
+          }
+        },
+        {
+          "t_sec": 205.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 3.43,
+            "happy": 0.0,
+            "sad": 96.57,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 206.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 19.67,
+            "disgust": 0.58,
+            "fear": 9.47,
+            "happy": 0.07,
+            "sad": 60.56,
+            "surprise": 0.12,
+            "neutral": 9.53
+          }
+        },
+        {
+          "t_sec": 207.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 48.96,
+            "disgust": 0.04,
+            "fear": 3.91,
+            "happy": 0.0,
+            "sad": 42.81,
+            "surprise": 0.2,
+            "neutral": 4.08
+          }
+        },
+        {
+          "t_sec": 208.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 4.5,
+            "disgust": 0.06,
+            "fear": 24.21,
+            "happy": 1.02,
+            "sad": 30.05,
+            "surprise": 0.22,
+            "neutral": 39.93
+          }
+        },
+        {
+          "t_sec": 209.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.01,
+            "happy": 99.84,
+            "sad": 0.0,
+            "surprise": 0.0,
+            "neutral": 0.14
+          }
+        },
+        {
+          "t_sec": 210.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.47,
+            "happy": 0.0,
+            "sad": 99.53,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 211.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.06,
+            "happy": 0.0,
+            "sad": 99.93,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 212.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.05,
+            "happy": 0.0,
+            "sad": 99.95,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 213.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 12.27,
+            "disgust": 0.0,
+            "fear": 2.76,
+            "happy": 0.31,
+            "sad": 34.45,
+            "surprise": 0.29,
+            "neutral": 49.92
+          }
+        },
+        {
+          "t_sec": 214.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 4.14,
+            "happy": 0.0,
+            "sad": 95.86,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 215.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.78,
+            "disgust": 0.01,
+            "fear": 16.89,
+            "happy": 0.03,
+            "sad": 67.47,
+            "surprise": 0.05,
+            "neutral": 10.77
+          }
+        },
+        {
+          "t_sec": 216.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.05,
+            "happy": 0.0,
+            "sad": 99.95,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 217.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 0.0,
+            "sad": 99.98,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 218.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.06,
+            "disgust": 0.0,
+            "fear": 0.49,
+            "happy": 0.77,
+            "sad": 98.66,
+            "surprise": 0.0,
+            "neutral": 0.02
+          }
+        },
+        {
+          "t_sec": 219.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.03,
+            "disgust": 0.0,
+            "fear": 1.72,
+            "happy": 0.11,
+            "sad": 98.12,
+            "surprise": 0.0,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 220.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.54,
+            "disgust": 0.05,
+            "fear": 35.22,
+            "happy": 0.05,
+            "sad": 45.87,
+            "surprise": 0.31,
+            "neutral": 12.96
+          }
+        },
+        {
+          "t_sec": 221.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.23,
+            "disgust": 0.24,
+            "fear": 12.69,
+            "happy": 0.19,
+            "sad": 53.5,
+            "surprise": 0.04,
+            "neutral": 29.1
+          }
+        },
+        {
+          "t_sec": 222.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 19.01,
+            "disgust": 0.11,
+            "fear": 5.6,
+            "happy": 0.01,
+            "sad": 69.26,
+            "surprise": 0.11,
+            "neutral": 5.92
+          }
+        },
+        {
+          "t_sec": 223.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 12.77,
+            "disgust": 0.01,
+            "fear": 5.14,
+            "happy": 0.01,
+            "sad": 81.57,
+            "surprise": 0.01,
+            "neutral": 0.48
+          }
+        },
+        {
+          "t_sec": 224.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.01,
+            "happy": 0.0,
+            "sad": 99.99,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 225.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.61,
+            "disgust": 0.0,
+            "fear": 2.38,
+            "happy": 0.0,
+            "sad": 91.31,
+            "surprise": 0.0,
+            "neutral": 0.7
+          }
+        },
+        {
+          "t_sec": 226.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.02,
+            "happy": 0.0,
+            "sad": 99.97,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 227.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 3.99,
+            "disgust": 0.0,
+            "fear": 1.42,
+            "happy": 0.0,
+            "sad": 43.86,
+            "surprise": 0.0,
+            "neutral": 50.72
+          }
+        },
+        {
+          "t_sec": 228.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 23.29,
+            "disgust": 0.0,
+            "fear": 2.4,
+            "happy": 0.01,
+            "sad": 74.24,
+            "surprise": 0.01,
+            "neutral": 0.05
+          }
+        },
+        {
+          "t_sec": 229.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.0,
+            "sad": 100.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 230.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.49,
+            "disgust": 0.09,
+            "fear": 14.21,
+            "happy": 2.6,
+            "sad": 78.93,
+            "surprise": 0.05,
+            "neutral": 2.62
+          }
+        },
+        {
+          "t_sec": 231.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 8.79,
+            "disgust": 0.58,
+            "fear": 28.31,
+            "happy": 0.15,
+            "sad": 59.85,
+            "surprise": 0.28,
+            "neutral": 2.03
+          }
+        },
+        {
+          "t_sec": 232.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.55,
+            "disgust": 0.15,
+            "fear": 21.2,
+            "happy": 0.13,
+            "sad": 72.75,
+            "surprise": 0.02,
+            "neutral": 1.21
+          }
+        },
+        {
+          "t_sec": 233.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 3.08,
+            "disgust": 0.0,
+            "fear": 22.45,
+            "happy": 0.0,
+            "sad": 73.82,
+            "surprise": 0.16,
+            "neutral": 0.48
+          }
+        }
+      ]
+    },
+    {
+      "label": "grief",
+      "samples": 62,
+      "dominant_votes": {
+        "neutral": 17,
+        "fear": 13,
+        "angry": 9,
+        "sad": 19,
+        "surprise": 2,
+        "happy": 2
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 30.46,
+        "neutral": 26.09,
+        "fear": 24.05,
+        "angry": 12.36,
+        "happy": 3.82,
+        "surprise": 3.15,
+        "disgust": 0.05
+      },
+      "video": "digital-twin-7-30-2026-2.mov",
+      "time_range_s": [
+        0,
+        63
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 1.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 2.36,
+            "disgust": 0.01,
+            "fear": 8.36,
+            "happy": 0.14,
+            "sad": 11.05,
+            "surprise": 0.03,
+            "neutral": 78.06
+          }
+        },
+        {
+          "t_sec": 2.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 38.16,
+            "disgust": 1.03,
+            "fear": 42.45,
+            "happy": 0.74,
+            "sad": 16.56,
+            "surprise": 0.41,
+            "neutral": 0.65
+          }
+        },
+        {
+          "t_sec": 3.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 9.79,
+            "disgust": 0.0,
+            "fear": 2.69,
+            "happy": 0.13,
+            "sad": 34.44,
+            "surprise": 0.29,
+            "neutral": 52.66
+          }
+        },
+        {
+          "t_sec": 4.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 46.28,
+            "disgust": 0.01,
+            "fear": 15.66,
+            "happy": 0.31,
+            "sad": 31.75,
+            "surprise": 1.11,
+            "neutral": 4.88
+          }
+        },
+        {
+          "t_sec": 5.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 52.82,
+            "disgust": 0.08,
+            "fear": 6.62,
+            "happy": 0.68,
+            "sad": 9.28,
+            "surprise": 8.94,
+            "neutral": 21.58
+          }
+        },
+        {
+          "t_sec": 6.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 45.05,
+            "disgust": 0.12,
+            "fear": 16.48,
+            "happy": 0.11,
+            "sad": 20.73,
+            "surprise": 5.48,
+            "neutral": 12.04
+          }
+        },
+        {
+          "t_sec": 7.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 44.41,
+            "disgust": 0.05,
+            "fear": 1.95,
+            "happy": 0.02,
+            "sad": 38.07,
+            "surprise": 0.88,
+            "neutral": 14.62
+          }
+        },
+        {
+          "t_sec": 8.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 77.92,
+            "disgust": 0.06,
+            "fear": 8.55,
+            "happy": 0.1,
+            "sad": 9.86,
+            "surprise": 1.2,
+            "neutral": 2.32
+          }
+        },
+        {
+          "t_sec": 9.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 5.43,
+            "disgust": 0.0,
+            "fear": 1.17,
+            "happy": 0.17,
+            "sad": 20.54,
+            "surprise": 1.18,
+            "neutral": 71.5
+          }
+        },
+        {
+          "t_sec": 10.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 15.16,
+            "disgust": 0.23,
+            "fear": 50.26,
+            "happy": 0.01,
+            "sad": 33.89,
+            "surprise": 0.08,
+            "neutral": 0.38
+          }
+        },
+        {
+          "t_sec": 11.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 53.19,
+            "disgust": 0.02,
+            "fear": 8.08,
+            "happy": 0.1,
+            "sad": 15.56,
+            "surprise": 12.92,
+            "neutral": 10.13
+          }
+        },
+        {
+          "t_sec": 12.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 21.63,
+            "disgust": 0.0,
+            "fear": 2.28,
+            "happy": 0.11,
+            "sad": 53.6,
+            "surprise": 1.81,
+            "neutral": 20.57
+          }
+        },
+        {
+          "t_sec": 13.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.64,
+            "disgust": 0.28,
+            "fear": 36.8,
+            "happy": 0.03,
+            "sad": 50.35,
+            "surprise": 0.03,
+            "neutral": 5.87
+          }
+        },
+        {
+          "t_sec": 14.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 2.69,
+            "disgust": 0.75,
+            "fear": 66.79,
+            "happy": 0.2,
+            "sad": 28.47,
+            "surprise": 0.0,
+            "neutral": 1.09
+          }
+        },
+        {
+          "t_sec": 15.0,
+          "dominant": "surprise",
+          "scores": {
+            "angry": 0.52,
+            "disgust": 0.0,
+            "fear": 2.55,
+            "happy": 45.13,
+            "sad": 0.0,
+            "surprise": 51.8,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 16.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 98.28,
+            "happy": 0.0,
+            "sad": 1.72,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 17.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 6.57,
+            "disgust": 0.08,
+            "fear": 48.04,
+            "happy": 0.72,
+            "sad": 42.27,
+            "surprise": 0.01,
+            "neutral": 2.3
+          }
+        },
+        {
+          "t_sec": 18.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.28,
+            "disgust": 0.0,
+            "fear": 98.9,
+            "happy": 0.32,
+            "sad": 0.49,
+            "surprise": 0.01,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 19.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.06,
+            "disgust": 0.0,
+            "fear": 44.59,
+            "happy": 0.03,
+            "sad": 55.31,
+            "surprise": 0.0,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 20.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.08,
+            "disgust": 0.0,
+            "fear": 0.94,
+            "happy": 0.24,
+            "sad": 84.92,
+            "surprise": 0.0,
+            "neutral": 12.81
+          }
+        },
+        {
+          "t_sec": 21.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 23.59,
+            "happy": 0.0,
+            "sad": 76.41,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 22.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.03,
+            "happy": 0.01,
+            "sad": 0.11,
+            "surprise": 0.0,
+            "neutral": 99.85
+          }
+        },
+        {
+          "t_sec": 23.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 56.36,
+            "happy": 0.0,
+            "sad": 40.09,
+            "surprise": 0.0,
+            "neutral": 3.51
+          }
+        },
+        {
+          "t_sec": 24.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 49.43,
+            "disgust": 0.0,
+            "fear": 31.79,
+            "happy": 0.92,
+            "sad": 9.28,
+            "surprise": 5.28,
+            "neutral": 3.3
+          }
+        },
+        {
+          "t_sec": 25.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 6.01,
+            "disgust": 0.0,
+            "fear": 18.82,
+            "happy": 58.76,
+            "sad": 11.68,
+            "surprise": 2.89,
+            "neutral": 1.84
+          }
+        },
+        {
+          "t_sec": 26.0,
+          "dominant": "surprise",
+          "scores": {
+            "angry": 13.18,
+            "disgust": 0.02,
+            "fear": 20.29,
+            "happy": 0.3,
+            "sad": 3.96,
+            "surprise": 61.6,
+            "neutral": 0.64
+          }
+        },
+        {
+          "t_sec": 27.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 30.46,
+            "disgust": 0.01,
+            "fear": 22.12,
+            "happy": 0.04,
+            "sad": 13.65,
+            "surprise": 21.6,
+            "neutral": 12.12
+          }
+        },
+        {
+          "t_sec": 28.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.95,
+            "disgust": 0.02,
+            "fear": 5.26,
+            "happy": 3.62,
+            "sad": 16.71,
+            "surprise": 0.08,
+            "neutral": 72.36
+          }
+        },
+        {
+          "t_sec": 29.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.49,
+            "disgust": 0.01,
+            "fear": 30.16,
+            "happy": 5.68,
+            "sad": 19.17,
+            "surprise": 0.45,
+            "neutral": 43.05
+          }
+        },
+        {
+          "t_sec": 30.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 2.51,
+            "disgust": 0.0,
+            "fear": 8.97,
+            "happy": 0.03,
+            "sad": 10.94,
+            "surprise": 0.01,
+            "neutral": 77.53
+          }
+        },
+        {
+          "t_sec": 31.0,
+          "dominant": "happy",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.1,
+            "happy": 82.94,
+            "sad": 3.92,
+            "surprise": 0.0,
+            "neutral": 13.03
+          }
+        },
+        {
+          "t_sec": 32.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.52,
+            "disgust": 0.0,
+            "fear": 2.93,
+            "happy": 0.0,
+            "sad": 94.64,
+            "surprise": 0.0,
+            "neutral": 0.9
+          }
+        },
+        {
+          "t_sec": 33.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.23,
+            "disgust": 0.0,
+            "fear": 83.82,
+            "happy": 0.01,
+            "sad": 2.84,
+            "surprise": 12.28,
+            "neutral": 0.83
+          }
+        },
+        {
+          "t_sec": 34.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 22.94,
+            "disgust": 0.0,
+            "fear": 11.36,
+            "happy": 0.05,
+            "sad": 12.97,
+            "surprise": 0.09,
+            "neutral": 52.58
+          }
+        },
+        {
+          "t_sec": 35.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 20.18,
+            "disgust": 0.02,
+            "fear": 34.1,
+            "happy": 2.48,
+            "sad": 22.05,
+            "surprise": 0.05,
+            "neutral": 21.12
+          }
+        },
+        {
+          "t_sec": 36.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 52.35,
+            "disgust": 0.0,
+            "fear": 0.44,
+            "happy": 16.37,
+            "sad": 8.9,
+            "surprise": 0.0,
+            "neutral": 21.93
+          }
+        },
+        {
+          "t_sec": 37.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 11.2,
+            "disgust": 0.0,
+            "fear": 0.42,
+            "happy": 0.19,
+            "sad": 15.1,
+            "surprise": 0.0,
+            "neutral": 73.09
+          }
+        },
+        {
+          "t_sec": 38.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 8.29,
+            "disgust": 0.0,
+            "fear": 0.34,
+            "happy": 0.58,
+            "sad": 70.41,
+            "surprise": 0.0,
+            "neutral": 20.38
+          }
+        },
+        {
+          "t_sec": 39.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.21,
+            "disgust": 0.04,
+            "fear": 5.67,
+            "happy": 0.1,
+            "sad": 84.84,
+            "surprise": 0.02,
+            "neutral": 8.12
+          }
+        },
+        {
+          "t_sec": 40.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 12.35,
+            "disgust": 0.35,
+            "fear": 11.56,
+            "happy": 0.03,
+            "sad": 10.98,
+            "surprise": 0.33,
+            "neutral": 64.4
+          }
+        },
+        {
+          "t_sec": 41.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.32,
+            "disgust": 0.0,
+            "fear": 0.45,
+            "happy": 4.81,
+            "sad": 2.76,
+            "surprise": 0.02,
+            "neutral": 91.64
+          }
+        },
+        {
+          "t_sec": 42.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.7,
+            "disgust": 0.0,
+            "fear": 3.62,
+            "happy": 0.11,
+            "sad": 85.04,
+            "surprise": 0.03,
+            "neutral": 9.5
+          }
+        },
+        {
+          "t_sec": 43.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.74,
+            "disgust": 0.02,
+            "fear": 13.7,
+            "happy": 0.86,
+            "sad": 7.16,
+            "surprise": 0.04,
+            "neutral": 77.48
+          }
+        },
+        {
+          "t_sec": 44.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.9,
+            "disgust": 0.0,
+            "fear": 11.1,
+            "happy": 0.04,
+            "sad": 85.47,
+            "surprise": 0.05,
+            "neutral": 1.44
+          }
+        },
+        {
+          "t_sec": 45.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 14.23,
+            "disgust": 0.03,
+            "fear": 4.7,
+            "happy": 0.29,
+            "sad": 61.84,
+            "surprise": 0.03,
+            "neutral": 18.87
+          }
+        },
+        {
+          "t_sec": 46.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.81,
+            "disgust": 0.01,
+            "fear": 16.87,
+            "happy": 0.2,
+            "sad": 44.09,
+            "surprise": 0.05,
+            "neutral": 33.97
+          }
+        },
+        {
+          "t_sec": 47.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.03,
+            "disgust": 0.0,
+            "fear": 98.29,
+            "happy": 0.01,
+            "sad": 1.67,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 48.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 3.46,
+            "disgust": 0.0,
+            "fear": 23.5,
+            "happy": 0.34,
+            "sad": 58.76,
+            "surprise": 0.16,
+            "neutral": 13.79
+          }
+        },
+        {
+          "t_sec": 49.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 11.13,
+            "disgust": 0.0,
+            "fear": 5.84,
+            "happy": 0.0,
+            "sad": 60.48,
+            "surprise": 0.01,
+            "neutral": 22.54
+          }
+        },
+        {
+          "t_sec": 50.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 6.65,
+            "disgust": 0.0,
+            "fear": 10.66,
+            "happy": 0.01,
+            "sad": 39.31,
+            "surprise": 0.01,
+            "neutral": 43.35
+          }
+        },
+        {
+          "t_sec": 51.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 8.43,
+            "disgust": 0.0,
+            "fear": 3.47,
+            "happy": 0.01,
+            "sad": 73.49,
+            "surprise": 0.01,
+            "neutral": 14.6
+          }
+        },
+        {
+          "t_sec": 52.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 4.6,
+            "disgust": 0.02,
+            "fear": 17.74,
+            "happy": 0.06,
+            "sad": 27.69,
+            "surprise": 0.03,
+            "neutral": 49.86
+          }
+        },
+        {
+          "t_sec": 53.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 8.12,
+            "disgust": 0.0,
+            "fear": 5.78,
+            "happy": 0.17,
+            "sad": 47.15,
+            "surprise": 0.18,
+            "neutral": 38.6
+          }
+        },
+        {
+          "t_sec": 54.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.0,
+            "happy": 0.16,
+            "sad": 0.04,
+            "surprise": 0.0,
+            "neutral": 99.8
+          }
+        },
+        {
+          "t_sec": 55.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 3.05,
+            "disgust": 0.0,
+            "fear": 3.54,
+            "happy": 0.01,
+            "sad": 16.74,
+            "surprise": 0.0,
+            "neutral": 76.67
+          }
+        },
+        {
+          "t_sec": 56.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 98.61,
+            "happy": 0.0,
+            "sad": 1.33,
+            "surprise": 0.0,
+            "neutral": 0.06
+          }
+        },
+        {
+          "t_sec": 57.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 90.5,
+            "happy": 0.01,
+            "sad": 9.25,
+            "surprise": 0.0,
+            "neutral": 0.24
+          }
+        },
+        {
+          "t_sec": 58.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.74,
+            "disgust": 0.04,
+            "fear": 40.87,
+            "happy": 4.05,
+            "sad": 47.82,
+            "surprise": 0.07,
+            "neutral": 6.42
+          }
+        },
+        {
+          "t_sec": 59.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.97,
+            "disgust": 0.0,
+            "fear": 38.62,
+            "happy": 3.78,
+            "sad": 41.2,
+            "surprise": 1.51,
+            "neutral": 12.92
+          }
+        },
+        {
+          "t_sec": 60.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 2.06,
+            "disgust": 0.0,
+            "fear": 10.12,
+            "happy": 0.3,
+            "sad": 21.57,
+            "surprise": 0.02,
+            "neutral": 65.94
+          }
+        },
+        {
+          "t_sec": 61.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 23.23,
+            "disgust": 0.0,
+            "fear": 10.6,
+            "happy": 0.0,
+            "sad": 61.02,
+            "surprise": 0.0,
+            "neutral": 5.14
+          }
+        },
+        {
+          "t_sec": 62.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 3.92,
+            "disgust": 0.0,
+            "fear": 53.15,
+            "happy": 0.46,
+            "sad": 7.31,
+            "surprise": 2.35,
+            "neutral": 32.8
+          }
+        }
+      ]
+    },
+    {
+      "label": "love",
+      "samples": 99,
+      "dominant_votes": {
+        "sad": 43,
+        "neutral": 15,
+        "fear": 37,
+        "angry": 2,
+        "surprise": 2
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 41.08,
+        "fear": 36.03,
+        "neutral": 15.27,
+        "angry": 4.73,
+        "surprise": 1.66,
+        "happy": 1.21,
+        "disgust": 0.02
+      },
+      "video": "digital-twin-7-30-2026-2.mov",
+      "time_range_s": [
+        63,
+        163
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 64.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 14.04,
+            "disgust": 0.09,
+            "fear": 6.3,
+            "happy": 0.15,
+            "sad": 49.0,
+            "surprise": 0.01,
+            "neutral": 30.41
+          }
+        },
+        {
+          "t_sec": 65.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.44,
+            "disgust": 0.0,
+            "fear": 0.52,
+            "happy": 4.91,
+            "sad": 3.59,
+            "surprise": 0.01,
+            "neutral": 90.53
+          }
+        },
+        {
+          "t_sec": 66.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 14.51,
+            "disgust": 0.0,
+            "fear": 4.32,
+            "happy": 0.24,
+            "sad": 47.34,
+            "surprise": 0.27,
+            "neutral": 33.3
+          }
+        },
+        {
+          "t_sec": 67.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.96,
+            "disgust": 0.0,
+            "fear": 8.27,
+            "happy": 0.03,
+            "sad": 77.44,
+            "surprise": 0.0,
+            "neutral": 12.3
+          }
+        },
+        {
+          "t_sec": 68.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.55,
+            "disgust": 0.0,
+            "fear": 0.41,
+            "happy": 0.08,
+            "sad": 11.99,
+            "surprise": 0.01,
+            "neutral": 86.95
+          }
+        },
+        {
+          "t_sec": 69.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 24.63,
+            "disgust": 0.01,
+            "fear": 13.1,
+            "happy": 0.01,
+            "sad": 42.36,
+            "surprise": 0.04,
+            "neutral": 19.85
+          }
+        },
+        {
+          "t_sec": 70.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 52.06,
+            "happy": 0.07,
+            "sad": 47.86,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 71.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 19.28,
+            "disgust": 0.0,
+            "fear": 0.03,
+            "happy": 0.0,
+            "sad": 6.85,
+            "surprise": 0.0,
+            "neutral": 73.84
+          }
+        },
+        {
+          "t_sec": 72.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.91,
+            "disgust": 0.0,
+            "fear": 2.65,
+            "happy": 0.03,
+            "sad": 94.34,
+            "surprise": 0.0,
+            "neutral": 1.06
+          }
+        },
+        {
+          "t_sec": 73.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.09,
+            "disgust": 0.0,
+            "fear": 14.76,
+            "happy": 0.01,
+            "sad": 50.98,
+            "surprise": 0.01,
+            "neutral": 32.15
+          }
+        },
+        {
+          "t_sec": 74.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.53,
+            "disgust": 0.0,
+            "fear": 20.68,
+            "happy": 0.21,
+            "sad": 65.75,
+            "surprise": 1.05,
+            "neutral": 5.77
+          }
+        },
+        {
+          "t_sec": 75.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.58,
+            "disgust": 0.02,
+            "fear": 16.9,
+            "happy": 5.52,
+            "sad": 13.49,
+            "surprise": 0.23,
+            "neutral": 63.26
+          }
+        },
+        {
+          "t_sec": 76.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 79.88,
+            "happy": 0.0,
+            "sad": 20.12,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 77.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 16.17,
+            "disgust": 0.0,
+            "fear": 9.68,
+            "happy": 0.01,
+            "sad": 55.36,
+            "surprise": 0.03,
+            "neutral": 18.76
+          }
+        },
+        {
+          "t_sec": 78.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 7.15,
+            "disgust": 0.0,
+            "fear": 7.99,
+            "happy": 0.01,
+            "sad": 23.45,
+            "surprise": 0.04,
+            "neutral": 61.36
+          }
+        },
+        {
+          "t_sec": 79.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 18.41,
+            "disgust": 0.18,
+            "fear": 10.28,
+            "happy": 0.18,
+            "sad": 33.52,
+            "surprise": 0.46,
+            "neutral": 36.97
+          }
+        },
+        {
+          "t_sec": 80.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 13.08,
+            "disgust": 0.01,
+            "fear": 11.61,
+            "happy": 0.19,
+            "sad": 58.3,
+            "surprise": 0.01,
+            "neutral": 16.8
+          }
+        },
+        {
+          "t_sec": 81.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 3.77,
+            "disgust": 0.01,
+            "fear": 11.84,
+            "happy": 0.06,
+            "sad": 78.37,
+            "surprise": 0.36,
+            "neutral": 5.59
+          }
+        },
+        {
+          "t_sec": 82.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 7.25,
+            "disgust": 0.0,
+            "fear": 5.49,
+            "happy": 0.0,
+            "sad": 84.77,
+            "surprise": 0.0,
+            "neutral": 2.48
+          }
+        },
+        {
+          "t_sec": 83.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 8.42,
+            "disgust": 0.0,
+            "fear": 2.18,
+            "happy": 0.0,
+            "sad": 78.64,
+            "surprise": 0.0,
+            "neutral": 10.76
+          }
+        },
+        {
+          "t_sec": 84.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 98.91,
+            "disgust": 0.01,
+            "fear": 0.19,
+            "happy": 0.1,
+            "sad": 0.38,
+            "surprise": 0.0,
+            "neutral": 0.41
+          }
+        },
+        {
+          "t_sec": 85.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 2.38,
+            "happy": 0.0,
+            "sad": 97.62,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 86.0,
+          "dominant": "surprise",
+          "scores": {
+            "angry": 1.07,
+            "disgust": 0.0,
+            "fear": 2.6,
+            "happy": 0.01,
+            "sad": 0.07,
+            "surprise": 96.24,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 87.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 2.64,
+            "happy": 0.0,
+            "sad": 0.91,
+            "surprise": 0.04,
+            "neutral": 96.41
+          }
+        },
+        {
+          "t_sec": 88.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 98.61,
+            "happy": 0.0,
+            "sad": 1.22,
+            "surprise": 0.03,
+            "neutral": 0.14
+          }
+        },
+        {
+          "t_sec": 89.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 97.46,
+            "happy": 0.12,
+            "sad": 2.37,
+            "surprise": 0.02,
+            "neutral": 0.02
+          }
+        },
+        {
+          "t_sec": 90.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 2.13,
+            "disgust": 0.02,
+            "fear": 1.99,
+            "happy": 3.69,
+            "sad": 6.23,
+            "surprise": 0.03,
+            "neutral": 85.89
+          }
+        },
+        {
+          "t_sec": 91.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 4.39,
+            "disgust": 0.01,
+            "fear": 2.85,
+            "happy": 0.19,
+            "sad": 15.35,
+            "surprise": 0.01,
+            "neutral": 77.19
+          }
+        },
+        {
+          "t_sec": 92.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.26,
+            "disgust": 0.23,
+            "fear": 7.73,
+            "happy": 11.52,
+            "sad": 6.28,
+            "surprise": 1.13,
+            "neutral": 71.85
+          }
+        },
+        {
+          "t_sec": 93.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.63,
+            "disgust": 0.0,
+            "fear": 17.55,
+            "happy": 2.4,
+            "sad": 42.97,
+            "surprise": 0.06,
+            "neutral": 36.4
+          }
+        },
+        {
+          "t_sec": 94.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 12.06,
+            "disgust": 0.0,
+            "fear": 4.0,
+            "happy": 0.0,
+            "sad": 83.81,
+            "surprise": 0.03,
+            "neutral": 0.1
+          }
+        },
+        {
+          "t_sec": 95.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.03,
+            "disgust": 0.0,
+            "fear": 3.96,
+            "happy": 0.0,
+            "sad": 85.38,
+            "surprise": 0.0,
+            "neutral": 6.63
+          }
+        },
+        {
+          "t_sec": 96.0,
+          "dominant": "surprise",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 30.1,
+            "happy": 0.6,
+            "sad": 18.71,
+            "surprise": 50.2,
+            "neutral": 0.35
+          }
+        },
+        {
+          "t_sec": 97.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 62.34,
+            "happy": 0.0,
+            "sad": 37.66,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 98.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 36.79,
+            "happy": 0.0,
+            "sad": 63.2,
+            "surprise": 0.0,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 99.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 15.66,
+            "happy": 0.0,
+            "sad": 84.14,
+            "surprise": 0.0,
+            "neutral": 0.2
+          }
+        },
+        {
+          "t_sec": 100.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 3.73,
+            "disgust": 0.0,
+            "fear": 5.66,
+            "happy": 1.1,
+            "sad": 57.11,
+            "surprise": 0.04,
+            "neutral": 32.36
+          }
+        },
+        {
+          "t_sec": 101.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.18,
+            "disgust": 0.01,
+            "fear": 6.57,
+            "happy": 0.0,
+            "sad": 87.06,
+            "surprise": 0.0,
+            "neutral": 5.18
+          }
+        },
+        {
+          "t_sec": 102.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.0,
+            "disgust": 0.0,
+            "fear": 1.48,
+            "happy": 0.0,
+            "sad": 96.55,
+            "surprise": 0.0,
+            "neutral": 0.97
+          }
+        },
+        {
+          "t_sec": 103.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.12,
+            "disgust": 0.0,
+            "fear": 2.16,
+            "happy": 0.09,
+            "sad": 85.63,
+            "surprise": 0.0,
+            "neutral": 12.0
+          }
+        },
+        {
+          "t_sec": 104.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.6,
+            "happy": 0.0,
+            "sad": 0.4,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 105.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 4.63,
+            "disgust": 0.08,
+            "fear": 73.49,
+            "happy": 0.41,
+            "sad": 5.93,
+            "surprise": 11.08,
+            "neutral": 4.39
+          }
+        },
+        {
+          "t_sec": 106.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.01,
+            "disgust": 0.0,
+            "fear": 70.63,
+            "happy": 0.0,
+            "sad": 28.49,
+            "surprise": 0.0,
+            "neutral": 0.87
+          }
+        },
+        {
+          "t_sec": 107.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.02,
+            "disgust": 0.0,
+            "fear": 77.73,
+            "happy": 0.0,
+            "sad": 22.02,
+            "surprise": 0.0,
+            "neutral": 0.23
+          }
+        },
+        {
+          "t_sec": 108.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.25,
+            "disgust": 0.01,
+            "fear": 58.66,
+            "happy": 10.31,
+            "sad": 5.47,
+            "surprise": 0.09,
+            "neutral": 25.2
+          }
+        },
+        {
+          "t_sec": 109.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 20.81,
+            "disgust": 0.98,
+            "fear": 8.48,
+            "happy": 0.02,
+            "sad": 67.2,
+            "surprise": 0.04,
+            "neutral": 2.47
+          }
+        },
+        {
+          "t_sec": 110.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 11.93,
+            "disgust": 0.0,
+            "fear": 5.57,
+            "happy": 0.05,
+            "sad": 47.15,
+            "surprise": 0.0,
+            "neutral": 35.3
+          }
+        },
+        {
+          "t_sec": 111.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.27,
+            "disgust": 0.01,
+            "fear": 95.79,
+            "happy": 0.21,
+            "sad": 3.72,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 112.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.86,
+            "disgust": 0.0,
+            "fear": 94.58,
+            "happy": 0.98,
+            "sad": 3.57,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 113.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 7.73,
+            "disgust": 0.01,
+            "fear": 82.48,
+            "happy": 8.18,
+            "sad": 1.6,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 114.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 3.19,
+            "disgust": 0.0,
+            "fear": 6.08,
+            "happy": 0.52,
+            "sad": 80.47,
+            "surprise": 1.14,
+            "neutral": 8.61
+          }
+        },
+        {
+          "t_sec": 115.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.85,
+            "disgust": 0.03,
+            "fear": 4.3,
+            "happy": 1.94,
+            "sad": 41.99,
+            "surprise": 0.16,
+            "neutral": 49.73
+          }
+        },
+        {
+          "t_sec": 116.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.9,
+            "disgust": 0.0,
+            "fear": 6.01,
+            "happy": 0.04,
+            "sad": 91.37,
+            "surprise": 0.07,
+            "neutral": 0.61
+          }
+        },
+        {
+          "t_sec": 117.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.66,
+            "disgust": 0.0,
+            "fear": 2.58,
+            "happy": 0.04,
+            "sad": 89.92,
+            "surprise": 0.46,
+            "neutral": 1.33
+          }
+        },
+        {
+          "t_sec": 118.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 2.15,
+            "disgust": 0.0,
+            "fear": 76.07,
+            "happy": 0.03,
+            "sad": 21.75,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 119.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 20.24,
+            "disgust": 0.01,
+            "fear": 10.35,
+            "happy": 0.01,
+            "sad": 67.71,
+            "surprise": 0.04,
+            "neutral": 1.63
+          }
+        },
+        {
+          "t_sec": 120.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.05,
+            "disgust": 0.0,
+            "fear": 84.81,
+            "happy": 0.82,
+            "sad": 14.32,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 121.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 13.55,
+            "happy": 3.91,
+            "sad": 82.5,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 122.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 1.12,
+            "happy": 0.0,
+            "sad": 98.87,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 123.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 97.22,
+            "happy": 0.1,
+            "sad": 2.64,
+            "surprise": 0.0,
+            "neutral": 0.04
+          }
+        },
+        {
+          "t_sec": 124.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 5.88,
+            "happy": 0.0,
+            "sad": 94.11,
+            "surprise": 0.0,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 125.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 1.1,
+            "happy": 0.0,
+            "sad": 98.9,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 126.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 2.62,
+            "happy": 0.0,
+            "sad": 97.38,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 127.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.65,
+            "happy": 0.0,
+            "sad": 99.35,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 128.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 74.36,
+            "happy": 0.0,
+            "sad": 25.64,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 129.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.81,
+            "happy": 0.0,
+            "sad": 99.19,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 130.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.03,
+            "disgust": 0.0,
+            "fear": 7.69,
+            "happy": 0.17,
+            "sad": 92.01,
+            "surprise": 0.0,
+            "neutral": 0.09
+          }
+        },
+        {
+          "t_sec": 131.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 97.16,
+            "happy": 0.0,
+            "sad": 2.84,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 132.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 14.51,
+            "happy": 0.0,
+            "sad": 85.48,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 133.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.13,
+            "disgust": 0.0,
+            "fear": 45.41,
+            "happy": 31.44,
+            "sad": 6.8,
+            "surprise": 0.43,
+            "neutral": 15.8
+          }
+        },
+        {
+          "t_sec": 134.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 75.96,
+            "happy": 1.42,
+            "sad": 22.27,
+            "surprise": 0.0,
+            "neutral": 0.31
+          }
+        },
+        {
+          "t_sec": 135.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.12,
+            "disgust": 0.0,
+            "fear": 34.41,
+            "happy": 13.3,
+            "sad": 3.92,
+            "surprise": 0.06,
+            "neutral": 48.19
+          }
+        },
+        {
+          "t_sec": 136.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 65.51,
+            "happy": 0.67,
+            "sad": 33.46,
+            "surprise": 0.0,
+            "neutral": 0.31
+          }
+        },
+        {
+          "t_sec": 137.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.06,
+            "disgust": 0.0,
+            "fear": 64.27,
+            "happy": 11.02,
+            "sad": 24.58,
+            "surprise": 0.0,
+            "neutral": 0.08
+          }
+        },
+        {
+          "t_sec": 138.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.04,
+            "disgust": 0.0,
+            "fear": 77.41,
+            "happy": 1.6,
+            "sad": 20.94,
+            "surprise": 0.0,
+            "neutral": 0.01
+          }
+        },
+        {
+          "t_sec": 139.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.86,
+            "happy": 0.0,
+            "sad": 0.14,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 140.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 72.34,
+            "happy": 0.0,
+            "sad": 27.66,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 141.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.81,
+            "happy": 0.0,
+            "sad": 0.19,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 142.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.02,
+            "disgust": 0.0,
+            "fear": 99.66,
+            "happy": 0.04,
+            "sad": 0.29,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 143.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.04,
+            "happy": 0.0,
+            "sad": 0.96,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 144.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 98.31,
+            "happy": 0.0,
+            "sad": 1.69,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 145.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.33,
+            "happy": 0.0,
+            "sad": 99.67,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 146.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.93,
+            "happy": 0.0,
+            "sad": 0.07,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 147.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.99,
+            "happy": 0.0,
+            "sad": 0.01,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 148.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.53,
+            "happy": 0.0,
+            "sad": 0.47,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 149.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 98.72,
+            "happy": 0.0,
+            "sad": 1.28,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 150.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 95.13,
+            "happy": 0.0,
+            "sad": 4.87,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 151.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 98.03,
+            "happy": 0.0,
+            "sad": 1.97,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 152.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.21,
+            "disgust": 0.0,
+            "fear": 0.09,
+            "happy": 0.01,
+            "sad": 2.98,
+            "surprise": 0.0,
+            "neutral": 96.7
+          }
+        },
+        {
+          "t_sec": 153.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.01,
+            "disgust": 0.01,
+            "fear": 2.2,
+            "happy": 0.19,
+            "sad": 85.79,
+            "surprise": 0.04,
+            "neutral": 7.76
+          }
+        },
+        {
+          "t_sec": 154.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 2.81,
+            "disgust": 0.0,
+            "fear": 1.26,
+            "happy": 0.02,
+            "sad": 24.13,
+            "surprise": 0.0,
+            "neutral": 71.78
+          }
+        },
+        {
+          "t_sec": 155.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 6.81,
+            "disgust": 0.01,
+            "fear": 66.37,
+            "happy": 0.44,
+            "sad": 26.37,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 156.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.17,
+            "disgust": 0.0,
+            "fear": 94.3,
+            "happy": 0.01,
+            "sad": 5.52,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 157.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 50.64,
+            "disgust": 0.03,
+            "fear": 3.81,
+            "happy": 0.03,
+            "sad": 44.72,
+            "surprise": 0.01,
+            "neutral": 0.76
+          }
+        },
+        {
+          "t_sec": 158.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.66,
+            "disgust": 0.0,
+            "fear": 2.09,
+            "happy": 0.0,
+            "sad": 97.25,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 159.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 16.91,
+            "disgust": 0.0,
+            "fear": 3.15,
+            "happy": 0.0,
+            "sad": 79.85,
+            "surprise": 0.0,
+            "neutral": 0.08
+          }
+        },
+        {
+          "t_sec": 160.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 0.37,
+            "disgust": 0.0,
+            "fear": 1.62,
+            "happy": 0.3,
+            "sad": 16.2,
+            "surprise": 0.01,
+            "neutral": 81.51
+          }
+        },
+        {
+          "t_sec": 161.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 7.46,
+            "disgust": 0.0,
+            "fear": 1.26,
+            "happy": 0.0,
+            "sad": 87.28,
+            "surprise": 0.0,
+            "neutral": 4.0
+          }
+        },
+        {
+          "t_sec": 162.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.62,
+            "disgust": 0.01,
+            "fear": 11.56,
+            "happy": 0.01,
+            "sad": 57.71,
+            "surprise": 0.0,
+            "neutral": 26.09
+          }
+        }
+      ]
+    },
+    {
+      "label": "anger",
+      "samples": 35,
+      "dominant_votes": {
+        "sad": 20,
+        "fear": 8,
+        "neutral": 4,
+        "angry": 3
+      },
+      "top_dominant": "sad",
+      "avg_scores": {
+        "sad": 47.32,
+        "fear": 25.83,
+        "neutral": 14.93,
+        "angry": 10.2,
+        "surprise": 0.93,
+        "happy": 0.58,
+        "disgust": 0.21
+      },
+      "video": "digital-twin-7-30-2026-2.mov",
+      "time_range_s": [
+        163,
+        199
+      ],
+      "samples_detail": [
+        {
+          "t_sec": 164.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.88,
+            "disgust": 0.0,
+            "fear": 3.25,
+            "happy": 0.02,
+            "sad": 91.82,
+            "surprise": 0.0,
+            "neutral": 3.02
+          }
+        },
+        {
+          "t_sec": 165.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 14.33,
+            "disgust": 0.23,
+            "fear": 32.89,
+            "happy": 0.11,
+            "sad": 34.27,
+            "surprise": 0.1,
+            "neutral": 18.08
+          }
+        },
+        {
+          "t_sec": 166.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.83,
+            "disgust": 0.0,
+            "fear": 5.06,
+            "happy": 0.0,
+            "sad": 90.17,
+            "surprise": 0.0,
+            "neutral": 3.93
+          }
+        },
+        {
+          "t_sec": 167.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 3.62,
+            "disgust": 0.03,
+            "fear": 33.25,
+            "happy": 0.65,
+            "sad": 30.37,
+            "surprise": 0.11,
+            "neutral": 31.97
+          }
+        },
+        {
+          "t_sec": 168.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 1.44,
+            "disgust": 0.0,
+            "fear": 11.13,
+            "happy": 0.1,
+            "sad": 15.02,
+            "surprise": 0.01,
+            "neutral": 72.3
+          }
+        },
+        {
+          "t_sec": 169.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 2.59,
+            "disgust": 0.06,
+            "fear": 18.45,
+            "happy": 0.38,
+            "sad": 67.23,
+            "surprise": 0.07,
+            "neutral": 11.23
+          }
+        },
+        {
+          "t_sec": 170.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 3.34,
+            "disgust": 0.0,
+            "fear": 4.21,
+            "happy": 0.9,
+            "sad": 78.26,
+            "surprise": 0.14,
+            "neutral": 13.15
+          }
+        },
+        {
+          "t_sec": 171.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.45,
+            "disgust": 0.0,
+            "fear": 3.85,
+            "happy": 0.89,
+            "sad": 65.21,
+            "surprise": 0.48,
+            "neutral": 25.11
+          }
+        },
+        {
+          "t_sec": 172.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 1.76,
+            "disgust": 0.0,
+            "fear": 10.81,
+            "happy": 2.31,
+            "sad": 59.91,
+            "surprise": 0.53,
+            "neutral": 24.69
+          }
+        },
+        {
+          "t_sec": 173.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 3.86,
+            "disgust": 0.01,
+            "fear": 7.77,
+            "happy": 0.74,
+            "sad": 34.51,
+            "surprise": 0.03,
+            "neutral": 53.07
+          }
+        },
+        {
+          "t_sec": 174.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 7.05,
+            "disgust": 0.01,
+            "fear": 3.11,
+            "happy": 0.0,
+            "sad": 85.53,
+            "surprise": 0.0,
+            "neutral": 4.3
+          }
+        },
+        {
+          "t_sec": 175.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.09,
+            "disgust": 0.0,
+            "fear": 0.59,
+            "happy": 0.0,
+            "sad": 99.3,
+            "surprise": 0.0,
+            "neutral": 0.02
+          }
+        },
+        {
+          "t_sec": 176.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.77,
+            "happy": 0.0,
+            "sad": 0.23,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 177.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 100.0,
+            "happy": 0.0,
+            "sad": 0.0,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 178.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.85,
+            "happy": 0.0,
+            "sad": 0.15,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 179.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 99.97,
+            "happy": 0.0,
+            "sad": 0.03,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 180.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.49,
+            "disgust": 0.0,
+            "fear": 67.53,
+            "happy": 1.51,
+            "sad": 21.63,
+            "surprise": 8.3,
+            "neutral": 0.53
+          }
+        },
+        {
+          "t_sec": 181.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 0.12,
+            "disgust": 0.0,
+            "fear": 87.82,
+            "happy": 0.81,
+            "sad": 4.73,
+            "surprise": 0.02,
+            "neutral": 6.51
+          }
+        },
+        {
+          "t_sec": 182.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.23,
+            "disgust": 0.0,
+            "fear": 6.08,
+            "happy": 2.54,
+            "sad": 54.02,
+            "surprise": 0.96,
+            "neutral": 30.16
+          }
+        },
+        {
+          "t_sec": 183.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 6.54,
+            "disgust": 0.01,
+            "fear": 9.87,
+            "happy": 0.14,
+            "sad": 56.73,
+            "surprise": 0.18,
+            "neutral": 26.54
+          }
+        },
+        {
+          "t_sec": 184.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 8.63,
+            "disgust": 0.12,
+            "fear": 16.96,
+            "happy": 0.19,
+            "sad": 67.54,
+            "surprise": 0.5,
+            "neutral": 6.05
+          }
+        },
+        {
+          "t_sec": 185.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.94,
+            "disgust": 0.1,
+            "fear": 7.82,
+            "happy": 1.73,
+            "sad": 74.42,
+            "surprise": 0.41,
+            "neutral": 9.59
+          }
+        },
+        {
+          "t_sec": 186.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 4.55,
+            "disgust": 0.01,
+            "fear": 2.01,
+            "happy": 1.31,
+            "sad": 81.99,
+            "surprise": 0.17,
+            "neutral": 9.97
+          }
+        },
+        {
+          "t_sec": 187.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 2.96,
+            "disgust": 0.0,
+            "fear": 5.88,
+            "happy": 0.3,
+            "sad": 38.11,
+            "surprise": 0.04,
+            "neutral": 52.71
+          }
+        },
+        {
+          "t_sec": 188.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 86.69,
+            "disgust": 3.93,
+            "fear": 8.69,
+            "happy": 0.0,
+            "sad": 0.64,
+            "surprise": 0.05,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 189.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 53.33,
+            "disgust": 0.0,
+            "fear": 44.09,
+            "happy": 0.0,
+            "sad": 2.58,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 190.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 11.91,
+            "disgust": 0.07,
+            "fear": 5.62,
+            "happy": 0.0,
+            "sad": 78.6,
+            "surprise": 0.0,
+            "neutral": 3.8
+          }
+        },
+        {
+          "t_sec": 191.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.13,
+            "disgust": 0.02,
+            "fear": 10.09,
+            "happy": 0.01,
+            "sad": 70.09,
+            "surprise": 0.01,
+            "neutral": 14.66
+          }
+        },
+        {
+          "t_sec": 192.0,
+          "dominant": "fear",
+          "scores": {
+            "angry": 33.49,
+            "disgust": 1.41,
+            "fear": 38.42,
+            "happy": 1.57,
+            "sad": 4.94,
+            "surprise": 15.05,
+            "neutral": 5.12
+          }
+        },
+        {
+          "t_sec": 193.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 10.54,
+            "disgust": 0.27,
+            "fear": 25.13,
+            "happy": 0.2,
+            "sad": 51.26,
+            "surprise": 0.43,
+            "neutral": 12.17
+          }
+        },
+        {
+          "t_sec": 194.0,
+          "dominant": "angry",
+          "scores": {
+            "angry": 48.73,
+            "disgust": 0.86,
+            "fear": 24.87,
+            "happy": 2.88,
+            "sad": 14.23,
+            "surprise": 4.81,
+            "neutral": 3.62
+          }
+        },
+        {
+          "t_sec": 195.0,
+          "dominant": "neutral",
+          "scores": {
+            "angry": 3.58,
+            "disgust": 0.35,
+            "fear": 3.65,
+            "happy": 1.06,
+            "sad": 31.74,
+            "surprise": 0.15,
+            "neutral": 59.48
+          }
+        },
+        {
+          "t_sec": 196.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 0.0,
+            "disgust": 0.0,
+            "fear": 0.12,
+            "happy": 0.0,
+            "sad": 99.88,
+            "surprise": 0.0,
+            "neutral": 0.0
+          }
+        },
+        {
+          "t_sec": 197.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 5.9,
+            "disgust": 0.0,
+            "fear": 3.91,
+            "happy": 0.0,
+            "sad": 85.29,
+            "surprise": 0.0,
+            "neutral": 4.9
+          }
+        },
+        {
+          "t_sec": 198.0,
+          "dominant": "sad",
+          "scores": {
+            "angry": 16.96,
+            "disgust": 0.0,
+            "fear": 1.51,
+            "happy": 0.0,
+            "sad": 65.84,
+            "surprise": 0.0,
+            "neutral": 15.7
+          }
+        }
+      ]
+    }
+  ],
+  "model": "DeepFace emotion (enforce_detection=False)",
+  "sample_every_s": 1.0
+}
