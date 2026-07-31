@@ -9,7 +9,7 @@
   "mlSegmentTops": [],
   "stance": "Not observed in tapes 1\u20132",
   "passage": "DeepFace found no dominant disgust samples in testimony (2026-07-30). Reserved for the next tape.",
-  "source": "DeepFace \u00b7 testimony-emotion-ml.json",
+  "source": "DeepFace · witness-mirror-ml.json",
   "anchor_ms": 0,
   "recorded": "2026-07-30"
 }

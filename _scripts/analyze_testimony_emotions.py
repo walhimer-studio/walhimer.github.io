@@ -13,7 +13,7 @@ from deepface import DeepFace
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTIMONY = ROOT / "sketches/digital-twin/sessions/testimony"
-DEFAULT_OUT = ROOT / "sketches/digital-twin/sessions/testimony-emotion-ml.json"
+DEFAULT_OUT = ROOT / "sketches/digital-twin/sessions/witness-mirror-ml.json"
 
 SEGMENTS = [
     {"video": TESTIMONY / "digital-twin-7-302026.mov", "label": "neutral", "start": 11, "end": 55},
