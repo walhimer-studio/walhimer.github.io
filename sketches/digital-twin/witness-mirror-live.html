@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Witness Mirror (live) — Mark Walhimer</title>
+  <style>
+    :root {
+      --bg: #0a0a0c;
+      --panel: #141418;
+      --ink: #e8e4dc;
+      --muted: #8a8680;
+      --ml: #4da6ff;
+      --point: #d4a574;
+      --line: #2a2a32;
+      --gap: #c46;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 14px/1.45 ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    main { max-width: 980px; margin: 0 auto; padding: 24px 20px 48px; }
+    h1 { font-size: 18px; font-weight: 600; margin: 0 0 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .statement {
+      margin: 0 0 10px;
+      max-width: 52em;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .sub { color: var(--muted); margin-bottom: 16px; font-size: 13px; }
+    .layout { display: grid; gap: 16px; }
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      overflow: hidden;
+      min-height: 240px;
+    }
+    .video-wrap video {
+      display: block;
+      width: 100%;
+      max-height: 72vh;
+      object-fit: contain;
+      transform: scaleX(-1);
+    }
+    .video-wrap canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #gate {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(10, 10, 12, 0.92);
+      z-index: 2;
+      padding: 24px;
+      text-align: center;
+    }
+    #gate.hidden { display: none; }
+    #gate p { margin: 0; color: var(--muted); font-size: 13px; max-width: 28em; line-height: 1.55; }
+    #gate-btn, .btn {
+      cursor: pointer;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--panel);
+      color: var(--ink);
+      font: inherit;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #gate-btn:hover, .btn:hover { border-color: var(--ml); color: var(--ml); }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .toolbar .btn.recording { border-color: var(--gap); color: var(--gap); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .big { font-size: 28px; font-weight: 600; letter-spacing: 0.02em; }
+    .big.ml { color: var(--ml); }
+    .big.point { color: var(--point); }
+    .big.gap { color: var(--gap); }
+    .scores { margin-top: 12px; }
+    .score-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 44px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .score-row .bar {
+      height: 8px;
+      background: #222;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .score-row .bar span {
+      display: block;
+      height: 100%;
+      background: #555;
+      border-radius: 2px;
+    }
+    .score-row.top span:first-child { color: var(--ml); font-weight: 600; }
+    .score-row.top .bar span { background: var(--ml); }
+    .card h2 #session-time {
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+    }
+    .card h2.section-gap {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .scores-session .score-row.top span:first-child { color: var(--ink); font-weight: 600; }
+    .scores-session .score-row.top .bar span { background: #888; }
+    .point-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .point-btn {
+      cursor: pointer;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: lowercase;
+    }
+    .point-btn:hover { border-color: var(--point); color: var(--point); }
+    .point-btn.active {
+      border-color: var(--point);
+      color: var(--point);
+      background: rgba(212, 165, 116, 0.12);
+    }
+    .counterpoint {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--line);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .counterpoint.disagree {
+      border-left-color: var(--gap);
+      color: var(--ink);
+    }
+    .note { color: var(--muted); font-size: 12px; margin-top: 16px; line-height: 1.55; }
+    .note a { color: var(--ml); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Witness Mirror <span style="font-weight:400;color:var(--muted)">· live</span></h1>
+    <p class="statement">Technology as witness, a tool that registers affect you may not be admitting, or renders what was invisible, or asks you to surrender to a process you don't fully control.</p>
+    <p class="sub" id="status">Loading face models…</p>
+
+    <div class="toolbar">
+      <button type="button" class="btn" id="cam-btn" hidden>Camera</button>
+      <button type="button" class="btn" id="rec-btn" hidden>Record</button>
+      <button type="button" class="btn" id="reset-btn" hidden>Reset session</button>
+    </div>
+
+    <div class="layout">
+      <div class="video-wrap">
+        <div id="gate">
+          <p id="gate-msg"><strong>Camera needed.</strong> Serve from repo root:<br /><code>python3 -m http.server 8080</code><br />Open in <strong>Chrome or Safari</strong> (not Cursor preview):<br /><span id="gate-url">http://localhost:8080/sketches/digital-twin/witness-mirror-live.html</span></p>
+          <button type="button" id="gate-btn">Start camera</button>
+        </div>
+        <video id="player" playsinline muted autoplay></video>
+        <canvas id="overlay"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Point · what you're evoking</h2>
+        <div class="big point" id="point-now">—</div>
+        <div class="point-grid" id="point-grid"></div>
+
+        <h2 class="section-gap">Counterpoint · ML now</h2>
+        <div class="big ml" id="ml-now">—</div>
+        <div class="scores" id="scores-now"></div>
+        <div class="counterpoint" id="counterpoint">Set a point word, then read — ML witnesses your face in real time.</div>
+
+        <h2 class="section-gap">Session share · % of live samples · <span id="session-time">0:00</span></h2>
+        <div class="scores scores-session" id="scores-session"></div>
+      </div>
+    </div>
+
+    <p class="note">Live = face-api.js in browser (7 expressions). Recorded review = DeepFace offline on testimony — <a href="witness-mirror-1s.html">1s audit</a> · <a href="witness-mirror.html">5s evaluation</a>. Future: story scripted for seven words → capture → review where point and counterpoint disagree.</p>
+  </main>
+
+  <script src="js/face-api/face-api.min.js"></script>
+  <script>
+    const MODEL_URL = 'js/face-api/models';
+    const ML_WORDS = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'];
+    const EXPRESSION_MAP = {
+      angry: 'angry',
+      disgusted: 'disgust',
+      fearful: 'fear',
+      happy: 'happy',
+      sad: 'sad',
+      surprised: 'surprise',
+      neutral: 'neutral',
+    };
+
+    let stream = null;
+    let modelsReady = false;
+    let detecting = false;
+    let detectLoop = null;
+    let pointWord = null;
+    let sessionCounts = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
+    let sessionTotal = 0;
+    let sessionStartMs = null;
+    let sessionClock = null;
+    let lastScores = null;
+    let lastDominant = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    const player = document.getElementById('player');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+    const gate = document.getElementById('gate');
+    const statusEl = document.getElementById('status');
+
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
+
+    function pct(val) {
+      return Math.round(val * 1000) / 10;
+    }
+
+    function fmtDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateSessionTime() {
+      const el = document.getElementById('session-time');
+      if (!el) return;
+      if (!sessionStartMs) {
+        el.textContent = '0:00';
+        return;
+      }
+      el.textContent = fmtDuration((Date.now() - sessionStartMs) / 1000);
+    }
+
+    function startSessionClock() {
+      sessionStartMs = Date.now();
+      if (sessionClock) clearInterval(sessionClock);
+      sessionClock = setInterval(updateSessionTime, 1000);
+      updateSessionTime();
+    }
+
+    function stopSessionClock() {
+      if (sessionClock) {
+        clearInterval(sessionClock);
+        sessionClock = null;
+      }
+    }
+
+    function mlScoresSorted(scores) {
+      return ML_WORDS
+        .map((name) => ({ name, val: scores?.[name] ?? 0 }))
+        .sort((a, b) => b.val - a.val);
+    }
+
+    function renderScores(scores, el, dominant) {
+      if (!el) return;
+      el.innerHTML = '';
+      if (!scores) return;
+      for (const { name, val } of mlScoresSorted(scores)) {
+        const row = document.createElement('div');
+        row.className = 'score-row' + (name === dominant ? ' top' : '');
+        row.innerHTML = `
+          <span>${name}</span>
+          <div class="bar"><span style="width:${val}%"></span></div>
+          <span>${val}%</span>
+        `;
+        el.appendChild(row);
+      }
+    }
+
+    function renderSessionShare() {
+      const el = document.getElementById('scores-session');
+      if (!el) return;
+      el.innerHTML = '';
+      if (!sessionTotal) return;
+      const shares = ML_WORDS
+        .map((name) => ({
+          name,
+          val: Math.round((sessionCounts[name] / sessionTotal) * 1000) / 10,
+        }))
+        .sort((a, b) => b.val - a.val);
+      const top = shares[0]?.name;
+      for (const { name, val } of shares) {
+        const row = document.createElement('div');
+        row.className = 'score-row' + (name === top && val > 0 ? ' top' : '');
+        row.innerHTML = `
+          <span>${name}</span>
+          <div class="bar"><span style="width:${val}%"></span></div>
+          <span>${val}%</span>
+        `;
+        el.appendChild(row);
+      }
+    }
+
+    function expressionsToScores(expressions) {
+      const out = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
+      if (!expressions) return out;
+      for (const [expr, prob] of Object.entries(expressions)) {
+        const key = EXPRESSION_MAP[expr];
+        if (key) out[key] = pct(prob);
+      }
+      return out;
+    }
+
+    function dominantFromScores(scores) {
+      return mlScoresSorted(scores)[0]?.name || null;
+    }
+
+    function updateCounterpoint() {
+      const el = document.getElementById('counterpoint');
+      const mlEl = document.getElementById('ml-now');
+      if (!el || !mlEl) return;
+      if (!lastDominant) {
+        el.textContent = 'Face the camera — ML witnesses in real time.';
+        el.classList.remove('disagree');
+        return;
+      }
+      mlEl.textContent = lastDominant;
+      if (!pointWord) {
+        el.textContent = `ML reads ${lastDominant}. Pick a point word above while you read or evoke.`;
+        el.classList.remove('disagree');
+        return;
+      }
+      if (pointWord === lastDominant) {
+        el.textContent = `Point and counterpoint agree: ${pointWord}.`;
+        el.classList.remove('disagree');
+      } else {
+        el.textContent = `Point: ${pointWord} · Counterpoint: ${lastDominant} — masking or disagreement.`;
+        el.classList.add('disagree');
+      }
+    }
+
+    function setPointWord(word) {
+      pointWord = word;
+      document.getElementById('point-now').textContent = word || '—';
+      for (const btn of document.querySelectorAll('.point-btn')) {
+        btn.classList.toggle('active', btn.dataset.word === word);
+      }
+      updateCounterpoint();
+    }
+
+    function buildPointGrid() {
+      const grid = document.getElementById('point-grid');
+      for (const word of ML_WORDS) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'point-btn';
+        btn.dataset.word = word;
+        btn.textContent = word;
+        btn.addEventListener('click', () => setPointWord(word));
+        grid.appendChild(btn);
+      }
+    }
+
+    function videoLayout() {
+      const vw = player.videoWidth;
+      const vh = player.videoHeight;
+      const cw = player.clientWidth;
+      const ch = player.clientHeight;
+      if (!vw || !vh || !cw || !ch) return null;
+      const scale = Math.min(cw / vw, ch / vh);
+      const dw = vw * scale;
+      const dh = vh * scale;
+      return { scale, ox: (cw - dw) / 2, oy: (ch - dh) / 2, vw, vh, cw, ch };
+    }
+
+    function resizeOverlay() {
+      const wrap = overlay.parentElement;
+      overlay.width = Math.round(wrap.clientWidth);
+      overlay.height = Math.round(player.clientHeight || wrap.clientHeight);
+    }
+
+    function drawLabel(x, y, text, fill) {
+      ctx.font = '600 13px ui-sans-serif, system-ui, sans-serif';
+      const padX = 8;
+      const padY = 5;
+      const w = ctx.measureText(text).width + padX * 2;
+      const h = 22;
+      ctx.fillStyle = fill;
+      ctx.fillRect(x, y - h, w, h);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(text, x + padX, y - padY);
+    }
+
+    function drawOverlay(box) {
+      resizeOverlay();
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+      const layout = videoLayout();
+      if (!layout || !box) return;
+
+      // Video is CSS-mirrored; map detection box into display space without mirroring text.
+      const x = layout.ox + (layout.vw - box.x - box.width) * layout.scale;
+      const y = layout.oy + box.y * layout.scale;
+      const w = box.width * layout.scale;
+      const h = box.height * layout.scale;
+
+      ctx.strokeStyle = '#4da6ff';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x, y, w, h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+
+      const mlTop = lastDominant || '—';
+      drawLabel(x, y, `ML: ${mlTop}`, '#4da6ff');
+      if (pointWord) {
+        drawLabel(x, y + h + 4, `Point: ${pointWord}`, 'rgba(212, 165, 116, 0.92)');
+      }
+
+      if (lastScores) {
+        let ty = y + 4;
+        for (const { name, val } of mlScoresSorted(lastScores)) {
+          const fill = name === lastDominant
+            ? 'rgba(77, 166, 255, 0.92)'
+            : 'rgba(20, 20, 24, 0.88)';
+          drawLabel(x + w + 6, ty + 18, `${name} ${val}%`, fill);
+          ty += 22;
+        }
+      }
+    }
+
+    async function detectFrame() {
+      if (!modelsReady || !player.videoWidth) return;
+      const det = await faceapi
+        .detectSingleFace(player, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 }))
+        .withFaceExpressions();
+      if (!det) {
+        lastScores = null;
+        lastDominant = null;
+        renderScores(null, document.getElementById('scores-now'), null);
+        updateCounterpoint();
+        drawOverlay(null);
+        return;
+      }
+
+      lastScores = expressionsToScores(det.expressions);
+      lastDominant = dominantFromScores(lastScores);
+      sessionCounts[lastDominant] = (sessionCounts[lastDominant] || 0) + 1;
+      sessionTotal += 1;
+
+      renderScores(lastScores, document.getElementById('scores-now'), lastDominant);
+      renderSessionShare();
+      updateCounterpoint();
+      drawOverlay(det.detection.box);
+    }
+
+    function startDetectLoop() {
+      if (detectLoop) return;
+      const tick = async () => {
+        detectLoop = requestAnimationFrame(tick);
+        if (!detecting) return;
+        if (document.hidden) return;
+        await detectFrame();
+      };
+      detectLoop = requestAnimationFrame(tick);
+    }
+
+    function stopDetectLoop() {
+      if (detectLoop) {
+        cancelAnimationFrame(detectLoop);
+        detectLoop = null;
+      }
+    }
+
+    async function loadModels() {
+      setStatus('Loading face-api models…');
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+      ]);
+      modelsReady = true;
+      setStatus('Models ready — start camera.');
+      document.getElementById('cam-btn').hidden = false;
+    }
+
+    function updateGateUrl() {
+      const el = document.getElementById('gate-url');
+      if (el) el.textContent = location.href;
+    }
+
+    function cameraErrorMessage(err) {
+      const name = err?.name || '';
+      if (/vscode-webview|cursor/i.test(navigator.userAgent)) {
+        return 'Cursor preview blocks camera — copy the URL below into Chrome or Safari.';
+      }
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        return 'Permission denied — allow Camera in the browser prompt, or System Settings → Privacy → Camera → enable your browser.';
+      }
+      if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        return 'No camera found — connect a webcam or use a Mac with FaceTime camera.';
+      }
+      if (name === 'NotReadableError' || name === 'TrackStartError') {
+        return 'Camera in use by another app — quit FaceTime, Zoom, or Photo Booth and try again.';
+      }
+      if (!window.isSecureContext) {
+        return 'Camera needs a secure context — use http://localhost:8080/… from repo root, not file://.';
+      }
+      if (!navigator.mediaDevices?.getUserMedia) {
+        return 'This browser does not support getUserMedia — use Chrome or Safari.';
+      }
+      return `Camera error (${name || 'unknown'}) — try Chrome or Safari outside Cursor.`;
+    }
+
+    async function acquireStream() {
+      const attempts = [
+        { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+        { video: { facingMode: 'user' }, audio: false },
+        { video: true, audio: false },
+      ];
+      let lastErr = null;
+      for (const constraints of attempts) {
+        try {
+          return await navigator.mediaDevices.getUserMedia(constraints);
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      throw lastErr || new Error('getUserMedia failed');
+    }
+
+    function showGateMessage(html) {
+      const msg = document.getElementById('gate-msg');
+      if (msg) msg.innerHTML = html;
+      showGate(true);
+      updateGateUrl();
+    }
+
+    function showGate(show) {
+      gate.classList.toggle('hidden', !show);
+      if (show) updateGateUrl();
+    }
+
+    function showControls(on) {
+      document.getElementById('cam-btn').hidden = !on;
+      document.getElementById('rec-btn').hidden = !on;
+      document.getElementById('reset-btn').hidden = !on;
+    }
+
+    async function startCamera() {
+      if (location.protocol === 'file:') {
+        setStatus('Camera blocked on file:// — use http://localhost from repo root.');
+        showGateMessage(
+          '<strong>file:// blocks camera.</strong><br />In terminal:<br /><code>cd …/walhimer.github.io && python3 -m http.server 8080</code><br />Then open:<br /><span id="gate-url"></span>'
+        );
+        return;
+      }
+      if (/vscode-webview|cursor/i.test(navigator.userAgent)) {
+        setStatus('Open this URL in Chrome or Safari — Cursor preview blocks camera.');
+        showGateMessage(
+          '<strong>Cursor preview blocks camera.</strong><br />Copy into Chrome or Safari:<br /><span id="gate-url"></span>'
+        );
+        return;
+      }
+      try {
+        setStatus('Requesting camera… allow access if prompted.');
+        stream = await acquireStream();
+        player.srcObject = stream;
+        await player.play();
+        showGate(false);
+        showControls(true);
+        detecting = true;
+        startSessionClock();
+        startDetectLoop();
+        setStatus('Live witness · pick point words while you read · Record adds mic if available');
+      } catch (err) {
+        console.error(err);
+        const msg = cameraErrorMessage(err);
+        setStatus(msg);
+        showGateMessage(`<strong>${msg}</strong><br /><span id="gate-url"></span>`);
+      }
+    }
+
+    function stopCamera() {
+      detecting = false;
+      stopSessionClock();
+      sessionStartMs = null;
+      updateSessionTime();
+      stopDetectLoop();
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+      if (stream) {
+        for (const track of stream.getTracks()) track.stop();
+        stream = null;
+      }
+      player.srcObject = null;
+    }
+
+    function resetSession() {
+      sessionCounts = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
+      sessionTotal = 0;
+      renderSessionShare();
+      if (detecting) startSessionClock();
+      else {
+        sessionStartMs = null;
+        updateSessionTime();
+      }
+      setStatus('Session counts reset.');
+    }
+
+    function toggleRecord() {
+      const btn = document.getElementById('rec-btn');
+      if (!stream) return;
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        btn.textContent = 'Record';
+        btn.classList.remove('recording');
+        setStatus('Recording stopped — download should begin.');
+        return;
+      }
+      recordedChunks = [];
+      const videoTracks = stream.getVideoTracks();
+      let recStream = stream;
+      if (!stream.getAudioTracks().length) {
+        setStatus('Video-only recording (no mic). Allow mic on next camera start for audio.');
+      }
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+        ? 'video/webm;codecs=vp9,opus'
+        : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
+          ? 'video/webm;codecs=vp8,opus'
+          : 'video/webm';
+      if (!videoTracks.length) {
+        setStatus('No video track to record.');
+        return;
+      }
+      mediaRecorder = new MediaRecorder(recStream, { mimeType: mime });
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size) recordedChunks.push(e.data);
+      };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `witness-mirror-live-${Date.now()}.webm`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+      mediaRecorder.start();
+      btn.textContent = 'Stop';
+      btn.classList.add('recording');
+      setStatus('Recording… stop to download webm for offline DeepFace pass.');
+    }
+
+    document.getElementById('gate-btn').addEventListener('click', startCamera);
+    document.getElementById('cam-btn').addEventListener('click', startCamera);
+    document.getElementById('rec-btn').addEventListener('click', toggleRecord);
+    document.getElementById('reset-btn').addEventListener('click', resetSession);
+    window.addEventListener('resize', () => drawOverlay(null));
+    window.addEventListener('beforeunload', stopCamera);
+
+    buildPointGrid();
+    updateGateUrl();
+    loadModels().catch((err) => {
+      console.error(err);
+      setStatus('Could not load js/face-api/models — check vendored weights.');
+    });
+  </script>
+</body>
+</html>

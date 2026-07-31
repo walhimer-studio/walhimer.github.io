@@ -61,6 +61,11 @@
             "sketches/digital-twin/face-signal-study.html",
             "sketches/digital-twin/face-signal-thought-replay.html",
             "sketches/digital-twin/index.html",
+            "sketches/digital-twin/js/face-api/face-api.min.js",
+            "sketches/digital-twin/js/face-api/models/face_expression_model-shard1",
+            "sketches/digital-twin/js/face-api/models/face_expression_model-weights_manifest.json",
+            "sketches/digital-twin/js/face-api/models/tiny_face_detector_model-shard1",
+            "sketches/digital-twin/js/face-api/models/tiny_face_detector_model-weights_manifest.json",
             "sketches/digital-twin/sessions/README.md",
             "sketches/digital-twin/sessions/emotion-map.json",
             "sketches/digital-twin/sessions/happy.json",
@@ -88,6 +93,7 @@
             "sketches/digital-twin/sessions/witness-mirror-ml-1s.json",
             "sketches/digital-twin/sessions/witness-mirror-ml.json",
             "sketches/digital-twin/witness-mirror-1s.html",
+            "sketches/digital-twin/witness-mirror-live.html",
             "sketches/digital-twin/witness-mirror.html"
           ],
           "external_urls": []
@@ -711,6 +717,52 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Digital twin:digital-twin-witness-mirror-live",
+      "dublin_core": {
+        "title": "digital-twin/witness-mirror-live",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-witness-mirror-live",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000332"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-witness-mirror-live",
+        "type": "HumanMadeObject",
+        "_label": "digital-twin/witness-mirror-live",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "digital-twin/witness-mirror-live.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/digital-twin/js/face-api/face-api.min.js",
+          "sketches/digital-twin/witness-mirror-1s.html",
+          "sketches/digital-twin/witness-mirror-live.html",
+          "sketches/digital-twin/witness-mirror.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Digital twin:digital-twin-witness-mirror-1s",
       "dublin_core": {
         "title": "digital-twin/witness-mirror-1s",
@@ -751,6 +803,137 @@
           "sketches/digital-twin/witness-mirror-1s.html",
           "sketches/digital-twin/witness-mirror.html",
           "sketches/js/ml5-1.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:digital-twin-witness-mirror",
+      "dublin_core": {
+        "title": "digital-twin/witness-mirror",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-witness-mirror",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000328"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-witness-mirror",
+        "type": "HumanMadeObject",
+        "_label": "digital-twin/witness-mirror",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "digital-twin/witness-mirror.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/digital-twin/witness-mirror-1s.html",
+          "sketches/digital-twin/witness-mirror.html",
+          "sketches/js/ml5-1.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-readme",
+      "dublin_core": {
+        "title": "../catalog/digital-twin/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000314"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-catalog-digital-twin-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/digital-twin/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "../catalog/digital-twin/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/digital-twin/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-witness-mirror-live",
+      "dublin_core": {
+        "title": "../catalog/digital-twin/witness-mirror-live.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-witness-mirror-live",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000331"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Digital twin-catalog-digital-twin-witness-mirror-live",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/digital-twin/witness-mirror-live.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "../catalog/digital-twin/witness-mirror-live.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/digital-twin/witness-mirror-live.md"
         ],
         "external_urls": []
       }
@@ -837,94 +1020,6 @@
       "artifacts": {
         "repo_paths": [
           "sketches/digital-twin/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-readme",
-      "dublin_core": {
-        "title": "../catalog/digital-twin/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000314"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Digital twin-catalog-digital-twin-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/digital-twin/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Digital twin",
-          "file": "../catalog/digital-twin/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/digital-twin/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Digital twin:digital-twin-witness-mirror",
-      "dublin_core": {
-        "title": "digital-twin/witness-mirror",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Digital twin:digital-twin-witness-mirror",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000328"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Digital twin-digital-twin-witness-mirror",
-        "type": "HumanMadeObject",
-        "_label": "digital-twin/witness-mirror",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Digital twin",
-          "file": "digital-twin/witness-mirror.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/digital-twin/witness-mirror-1s.html",
-          "sketches/digital-twin/witness-mirror.html",
-          "sketches/js/ml5-1.min.js"
         ],
         "external_urls": []
       }
