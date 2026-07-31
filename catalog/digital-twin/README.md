@@ -26,6 +26,7 @@ Browser pipeline: capture face signals → store as JSON → pair each mood with
 | **Witness Mirror (5s)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror-5s.html |
 | **Witness Mirror (1s)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror-1s.html |
 | **Witness Mirror (live)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror-live.html |
+| **Witness Mirror (DeepFace live)** | https://mark-walhimer.com/sketches/digital-twin/witness-mirror-deepface-live.html *(local lab — needs Python server)* |
 | **Landscape (next test)** | https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-july-13-2026-landscape.html |
 
 **Video:** ~24s screen recording — portrait replay crossfading neutral → sad → surprise (`digital-twin.mov`)
@@ -61,7 +62,7 @@ Browser pipeline: capture face signals → store as JSON → pair each mood with
 
 Straight-ahead frame hints: `mood-anchors.json` in sessions folder.
 
-See [face-signal-study.md](./face-signal-study.md) · [face-signal-portrait-replay.md](./face-signal-portrait-replay.md) · [face-signal-replay.md](./face-signal-replay.md) · [face-signal-thought-replay.md](./face-signal-thought-replay.md) · [witness-mirror.md](./witness-mirror.md) · [witness-mirror-1s.md](./witness-mirror-1s.md).
+See [face-signal-study.md](./face-signal-study.md) · [face-signal-portrait-replay.md](./face-signal-portrait-replay.md) · [face-signal-replay.md](./face-signal-replay.md) · [face-signal-thought-replay.md](./face-signal-thought-replay.md) · [witness-mirror.md](./witness-mirror.md) · [witness-mirror-1s.md](./witness-mirror-1s.md) · [witness-mirror-live.md](./witness-mirror-live.md) · [witness-mirror-deepface-live.md](./witness-mirror-deepface-live.md).
 
 ---
 
@@ -76,13 +77,15 @@ See [face-signal-study.md](./face-signal-study.md) · [face-signal-portrait-repl
 5. **Thought replay** — mood crossfade + `thought-map.json` / `thoughts/*.json` (`face-signal-thought-replay.html`)
 6. **Witness Mirror (5s)** — machine witness on testimony video (`witness-mirror-5s.html` + `sessions/witness-mirror-ml.json`)
 7. **Witness Mirror (1s)** — same UI, 1-second DeepFace samples (`witness-mirror-1s.html` + `sessions/witness-mirror-ml-1s.json`)
-8. **Witness Mirror (live)** — webcam + face-api point/counterpoint (`witness-mirror-live.html` + `js/face-api/`)
+8. **Witness Mirror (live)** — webcam + face-api point/counterpoint (`witness-mirror-live.html` + `js/face-api/`) — browser lab, not trusted for sharing
+9. **Witness Mirror (DeepFace live)** — webcam + local DeepFace server (`witness-mirror-deepface-live.html` + `_scripts/witness_mirror_deepface_live.py`) — trusted witness path
 
 ### Next
 
-1. **Landscape test** — place inhabitant (PNG or video billboard) in July-13 walkable landscape
-2. **Walking video** — loop of you walking toward camera (`walk-loop.mp4`)
-3. **Sidewalk video** — third-person clip from the street (`sidewalk.mp4`)
+1. **15s story + annotation** — scripted seven-word read → DeepFace live session → `you / ml / note` layer
+2. **Landscape test** — place inhabitant (PNG or video billboard) in July-13 walkable landscape
+3. **Walking video** — loop of you walking toward camera (`walk-loop.mp4`)
+4. **Sidewalk video** — third-person clip from the street (`sidewalk.mp4`)
 
 ### Future — skeleton + wrap
 
@@ -126,10 +129,24 @@ flowchart LR
 
 ---
 
+## Stack credits
+
+| Library | Role | License / credit |
+|---------|------|------------------|
+| [DeepFace](https://github.com/serengil/deepface) | Emotion witness on testimony + live lab (`analyze_testimony_emotions.py`, `witness_mirror_deepface_live.py`) | MIT — © [Sefik Ilkin Serengil](https://github.com/serengil) |
+| [ml5.js](https://ml5js.org/) | Face mesh + selfie segmentation (capture pipeline) | MIT |
+| [face-api.js](https://github.com/vladmandic/face-api) | Browser live counterpoint lab (`witness-mirror-live.html`) | MIT |
+| [p5.js](https://p5js.org/) | Draw + WebGL crossfade | LGPL |
+| [OpenCV](https://opencv.org/) | Frame decode in DeepFace scripts | Apache 2.0 |
+
+DeepFace `stream()` exists for real-time **face recognition** against a database (OpenCV window). Witness Mirror uses **`DeepFace.analyze`** on sampled frames — same model as 1s/5s review — via Python locally, not in the browser.
+
+---
+
 ## Machine DNA
 
 | Field | Value |
 |-------|--------|
 | Species | Digital twin |
-| Mode | Capture · crossfade replay · (future) skeleton wrap |
-| Bodies | browser · ml5 · p5 · Three.js |
+| Mode | Capture · crossfade replay · witness mirror · (future) skeleton wrap |
+| Bodies | browser · ml5 · p5 · Three.js · DeepFace (Python lab) |

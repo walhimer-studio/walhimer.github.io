@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Witness Mirror (DeepFace live) — Mark Walhimer</title>
+  <style>
+    :root {
+      --bg: #0a0a0c;
+      --panel: #141418;
+      --ink: #e8e4dc;
+      --muted: #8a8680;
+      --ml: #4da6ff;
+      --point: #d4a574;
+      --line: #2a2a32;
+      --gap: #c46;
+      --trust: #6bc48a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 14px/1.45 ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+    main { max-width: 980px; margin: 0 auto; padding: 24px 20px 48px; }
+    h1 { font-size: 18px; font-weight: 600; margin: 0 0 6px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .statement {
+      margin: 0 0 10px;
+      max-width: 52em;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+    .sub { color: var(--muted); margin-bottom: 16px; font-size: 13px; }
+    .layout { display: grid; gap: 16px; }
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      overflow: hidden;
+      min-height: 240px;
+    }
+    .video-wrap video {
+      display: block;
+      width: 100%;
+      max-height: 72vh;
+      object-fit: contain;
+      transform: scaleX(-1);
+    }
+    .video-wrap canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #gate {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(10, 10, 12, 0.92);
+      z-index: 2;
+      padding: 24px;
+      text-align: center;
+    }
+    #gate.hidden { display: none; }
+    #gate p { margin: 0; color: var(--muted); font-size: 13px; max-width: 34em; line-height: 1.55; }
+    #gate code { font-size: 12px; color: var(--ink); }
+    #gate-btn, .btn {
+      cursor: pointer;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--panel);
+      color: var(--ink);
+      font: inherit;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #gate-btn:hover, .btn:hover { border-color: var(--ml); color: var(--ml); }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .toolbar .btn.active { border-color: var(--trust); color: var(--trust); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 14px 16px;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .big { font-size: 28px; font-weight: 600; letter-spacing: 0.02em; }
+    .big.ml { color: var(--ml); }
+    .big.point { color: var(--point); }
+    .scores { margin-top: 12px; }
+    .score-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 44px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .score-row .bar {
+      height: 8px;
+      background: #222;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .score-row .bar span {
+      display: block;
+      height: 100%;
+      background: #555;
+      border-radius: 2px;
+    }
+    .score-row.top span:first-child { color: var(--ml); font-weight: 600; }
+    .score-row.top .bar span { background: var(--ml); }
+    .card h2 #session-time {
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+    }
+    .card h2.section-gap {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .scores-session .score-row.top span:first-child { color: var(--ink); font-weight: 600; }
+    .scores-session .score-row.top .bar span { background: #888; }
+    .point-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .point-btn {
+      cursor: pointer;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: lowercase;
+    }
+    .point-btn:hover { border-color: var(--point); color: var(--point); }
+    .point-btn.active {
+      border-color: var(--point);
+      color: var(--point);
+      background: rgba(212, 165, 116, 0.12);
+    }
+    .counterpoint {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--line);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .counterpoint.disagree {
+      border-left-color: var(--gap);
+      color: var(--ink);
+    }
+    .note { color: var(--muted); font-size: 12px; margin-top: 16px; line-height: 1.55; }
+    .note a { color: var(--ml); }
+    .badge-trust {
+      display: inline-block;
+      padding: 2px 8px;
+      border: 1px solid var(--trust);
+      border-radius: 3px;
+      color: var(--trust);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Witness Mirror <span style="font-weight:400;color:var(--muted)">· DeepFace live</span><span class="badge-trust">trusted witness</span></h1>
+    <p class="statement">Technology as witness — same DeepFace stack as testimony review, on your live camera. Point word vs counterpoint read; 15-second story mode for a bounded session.</p>
+    <p class="sub" id="status">Checking DeepFace server…</p>
+
+    <div class="toolbar">
+      <button type="button" class="btn" id="cam-btn" hidden>Camera</button>
+      <button type="button" class="btn" id="story-btn" hidden>15s story</button>
+      <button type="button" class="btn" id="reset-btn" hidden>Reset session</button>
+    </div>
+
+    <div class="layout">
+      <div class="video-wrap">
+        <div id="gate">
+          <p id="gate-msg"><strong>Local lab only.</strong> Terminal 1 — static server:<br /><code>cd walhimer.github.io && python3 -m http.server 8080</code><br />Terminal 2 — DeepFace witness (venv with deepface):<br /><code>python3 _scripts/witness_mirror_deepface_live.py</code><br />Open in <strong>Chrome or Safari</strong> (not Cursor preview):<br /><span id="gate-url">http://localhost:8080/sketches/digital-twin/witness-mirror-deepface-live.html</span></p>
+          <button type="button" id="gate-btn">Start camera</button>
+        </div>
+        <video id="player" playsinline muted autoplay></video>
+        <canvas id="overlay"></canvas>
+        <canvas id="capture" hidden></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Point · what you're evoking</h2>
+        <div class="big point" id="point-now">—</div>
+        <div class="point-grid" id="point-grid"></div>
+
+        <h2 class="section-gap">Counterpoint · DeepFace now <span style="font-weight:400">(1/s)</span></h2>
+        <div class="big ml" id="ml-now">—</div>
+        <div class="scores" id="scores-now"></div>
+        <div class="counterpoint" id="counterpoint">Start camera — DeepFace witnesses your face once per second.</div>
+
+        <h2 class="section-gap">Session share · % of readings · <span id="session-time">0:00</span></h2>
+        <div class="scores scores-session" id="scores-session"></div>
+      </div>
+    </div>
+
+    <p class="note">DeepFace live requires the local Python server — not shareable on GitHub Pages alone. Browser face-api lab: <a href="witness-mirror-live.html">live (face-api)</a> · Recorded testimony: <a href="witness-mirror-1s.html">1s</a> · <a href="witness-mirror-5s.html">5s</a>.</p>
+  </main>
+
+  <script>
+    const SERVER = 'http://127.0.0.1:8765';
+    const ML_WORDS = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral'];
+    const READING_INTERVAL_MS = 1000;
+    const STORY_DURATION_MS = 15000;
+
+    let stream = null;
+    let serverOk = false;
+    let detecting = false;
+    let analyzeBusy = false;
+    let readingTimer = null;
+    let storyTimer = null;
+    let storyEndsAt = null;
+    let overlayBox = null;
+    let overlayScores = null;
+    let overlayDominant = null;
+    let pointWord = null;
+    let sessionCounts = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
+    let sessionTotal = 0;
+    let sessionStartMs = null;
+    let sessionClock = null;
+    let lastScores = null;
+    let lastDominant = null;
+
+    const player = document.getElementById('player');
+    const overlay = document.getElementById('overlay');
+    const capture = document.getElementById('capture');
+    const captureCtx = capture.getContext('2d');
+    const ctx = overlay.getContext('2d');
+    const gate = document.getElementById('gate');
+    const statusEl = document.getElementById('status');
+
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
+
+    function fmtDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateSessionTime() {
+      const el = document.getElementById('session-time');
+      if (!el) return;
+      if (!sessionStartMs) {
+        el.textContent = '0:00';
+        return;
+      }
+      el.textContent = fmtDuration((Date.now() - sessionStartMs) / 1000);
+    }
+
+    function startSessionClock() {
+      sessionStartMs = Date.now();
+      if (sessionClock) clearInterval(sessionClock);
+      sessionClock = setInterval(updateSessionTime, 1000);
+      updateSessionTime();
+    }
+
+    function stopSessionClock() {
+      if (sessionClock) {
+        clearInterval(sessionClock);
+        sessionClock = null;
+      }
+    }
+
+    function mlScoresSorted(scores) {
+      return ML_WORDS
+        .map((name) => ({ name, val: scores?.[name] ?? 0 }))
+        .sort((a, b) => b.val - a.val);
+    }
+
+    function renderScores(scores, el, dominant) {
+      if (!el) return;
+      el.innerHTML = '';
+      if (!scores) return;
+      for (const { name, val } of mlScoresSorted(scores)) {
+        const row = document.createElement('div');
+        row.className = 'score-row' + (name === dominant ? ' top' : '');
+        row.innerHTML = `
+          <span>${name}</span>
+          <div class="bar"><span style="width:${val}%"></span></div>
+          <span>${val}%</span>
+        `;
+        el.appendChild(row);
+      }
+    }
+
+    function renderSessionShare() {
+      const el = document.getElementById('scores-session');
+      if (!el) return;
+      el.innerHTML = '';
+      if (!sessionTotal) return;
+      const shares = ML_WORDS
+        .map((name) => ({
+          name,
+          val: Math.round((sessionCounts[name] / sessionTotal) * 1000) / 10,
+        }))
+        .sort((a, b) => b.val - a.val);
+      const top = shares[0]?.name;
+      for (const { name, val } of shares) {
+        const row = document.createElement('div');
+        row.className = 'score-row' + (name === top && val > 0 ? ' top' : '');
+        row.innerHTML = `
+          <span>${name}</span>
+          <div class="bar"><span style="width:${val}%"></span></div>
+          <span>${val}%</span>
+        `;
+        el.appendChild(row);
+      }
+    }
+
+    function dominantFromScores(scores) {
+      const sorted = mlScoresSorted(scores);
+      return sorted[0]?.name || null;
+    }
+
+    function publishReading(scores, box) {
+      overlayScores = scores;
+      overlayDominant = dominantFromScores(scores);
+      overlayBox = box;
+      lastScores = overlayScores;
+      lastDominant = overlayDominant;
+      sessionCounts[lastDominant] = (sessionCounts[lastDominant] || 0) + 1;
+      sessionTotal += 1;
+      renderScores(lastScores, document.getElementById('scores-now'), lastDominant);
+      renderSessionShare();
+      updateCounterpoint();
+    }
+
+    function updateCounterpoint() {
+      const el = document.getElementById('counterpoint');
+      const mlEl = document.getElementById('ml-now');
+      if (!el || !mlEl) return;
+      if (!lastDominant) {
+        el.textContent = 'Face the camera — DeepFace witnesses once per second.';
+        el.classList.remove('disagree');
+        return;
+      }
+      mlEl.textContent = lastDominant;
+      if (!pointWord) {
+        el.textContent = `DeepFace reads ${lastDominant}. Pick a point word while you read or evoke.`;
+        el.classList.remove('disagree');
+        return;
+      }
+      if (pointWord === lastDominant) {
+        el.textContent = `Point and counterpoint agree: ${pointWord}.`;
+        el.classList.remove('disagree');
+      } else {
+        el.textContent = `Point: ${pointWord} · Counterpoint: ${lastDominant} — masking or disagreement.`;
+        el.classList.add('disagree');
+      }
+    }
+
+    function setPointWord(word) {
+      pointWord = word;
+      document.getElementById('point-now').textContent = word || '—';
+      for (const btn of document.querySelectorAll('.point-btn')) {
+        btn.classList.toggle('active', btn.dataset.word === word);
+      }
+      updateCounterpoint();
+      drawOverlayFrame();
+    }
+
+    function buildPointGrid() {
+      const grid = document.getElementById('point-grid');
+      for (const word of ML_WORDS) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'point-btn';
+        btn.dataset.word = word;
+        btn.textContent = word;
+        btn.addEventListener('click', () => setPointWord(word));
+        grid.appendChild(btn);
+      }
+    }
+
+    function videoLayout() {
+      const vw = player.videoWidth;
+      const vh = player.videoHeight;
+      const cw = player.clientWidth;
+      const ch = player.clientHeight;
+      if (!vw || !vh || !cw || !ch) return null;
+      const scale = Math.min(cw / vw, ch / vh);
+      const dw = vw * scale;
+      const dh = vh * scale;
+      return { scale, ox: (cw - dw) / 2, oy: (ch - dh) / 2, vw, vh, cw, ch };
+    }
+
+    function resizeOverlay() {
+      const wrap = overlay.parentElement;
+      overlay.width = Math.round(wrap.clientWidth);
+      overlay.height = Math.round(player.clientHeight || wrap.clientHeight);
+    }
+
+    function drawLabel(x, y, text, fill) {
+      ctx.font = '600 13px ui-sans-serif, system-ui, sans-serif';
+      const padX = 8;
+      const padY = 5;
+      const w = ctx.measureText(text).width + padX * 2;
+      const h = 22;
+      ctx.fillStyle = fill;
+      ctx.fillRect(x, y - h, w, h);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(text, x + padX, y - padY);
+    }
+
+    function drawOverlay() {
+      const layout = videoLayout();
+      if (!layout || !overlayBox) return;
+
+      const x = layout.ox + (layout.vw - overlayBox.x - overlayBox.width) * layout.scale;
+      const y = layout.oy + overlayBox.y * layout.scale;
+      const w = overlayBox.width * layout.scale;
+      const h = overlayBox.height * layout.scale;
+
+      ctx.strokeStyle = '#6bc48a';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x, y, w, h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+
+      const mlTop = overlayDominant || '—';
+      drawLabel(x, y, `DeepFace: ${mlTop}`, 'rgba(107, 196, 138, 0.92)');
+      if (pointWord) {
+        drawLabel(x, y + h + 4, `Point: ${pointWord}`, 'rgba(212, 165, 116, 0.92)');
+      }
+
+      if (overlayScores) {
+        let ty = y + 4;
+        for (const { name, val } of mlScoresSorted(overlayScores)) {
+          const fill = name === overlayDominant
+            ? 'rgba(107, 196, 138, 0.92)'
+            : 'rgba(20, 20, 24, 0.88)';
+          drawLabel(x + w + 6, ty + 18, `${name} ${val}%`, fill);
+          ty += 22;
+        }
+      }
+    }
+
+    function drawOverlayFrame() {
+      resizeOverlay();
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+      drawOverlay();
+    }
+
+    function grabFrameDataUrl() {
+      const vw = player.videoWidth;
+      const vh = player.videoHeight;
+      if (!vw || !vh) return null;
+      capture.width = vw;
+      capture.height = vh;
+      captureCtx.save();
+      captureCtx.scale(-1, 1);
+      captureCtx.drawImage(player, -vw, 0, vw, vh);
+      captureCtx.restore();
+      return capture.toDataURL('image/jpeg', 0.85);
+    }
+
+    async function analyzeOnce() {
+      if (!detecting || analyzeBusy || !serverOk) return;
+      const image = grabFrameDataUrl();
+      if (!image) return;
+      analyzeBusy = true;
+      try {
+        const res = await fetch(`${SERVER}/analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setStatus(`DeepFace skip: ${data.error || res.status}`);
+          return;
+        }
+        const region = data.region || {};
+        const box = region.width
+          ? { x: region.x, y: region.y, width: region.width, height: region.height }
+          : null;
+        if (box && data.scores) publishReading(data.scores, box);
+      } catch (err) {
+        console.error(err);
+        serverOk = false;
+        setStatus('Lost DeepFace server — restart witness_mirror_deepface_live.py');
+      } finally {
+        analyzeBusy = false;
+        drawOverlayFrame();
+        if (storyEndsAt && Date.now() >= storyEndsAt) finishStory();
+      }
+    }
+
+    function startReadingLoop() {
+      if (readingTimer) clearInterval(readingTimer);
+      readingTimer = setInterval(analyzeOnce, READING_INTERVAL_MS);
+    }
+
+    function stopReadingLoop() {
+      if (readingTimer) {
+        clearInterval(readingTimer);
+        readingTimer = null;
+      }
+    }
+
+    async function checkServer() {
+      try {
+        const res = await fetch(`${SERVER}/health`, { cache: 'no-store' });
+        if (!res.ok) throw new Error('health failed');
+        serverOk = true;
+        setStatus('DeepFace server ready — start camera.');
+        document.getElementById('cam-btn').hidden = false;
+        return true;
+      } catch (err) {
+        serverOk = false;
+        setStatus('Start DeepFace server: python3 _scripts/witness_mirror_deepface_live.py');
+        return false;
+      }
+    }
+
+    function updateGateUrl() {
+      const el = document.getElementById('gate-url');
+      if (el) el.textContent = location.href;
+    }
+
+    function cameraErrorMessage(err) {
+      const name = err?.name || '';
+      if (/vscode-webview|cursor/i.test(navigator.userAgent)) {
+        return 'Cursor preview blocks camera — copy the URL below into Chrome or Safari.';
+      }
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        return 'Permission denied — allow Camera in the browser prompt.';
+      }
+      if (name === 'NotFoundError') return 'No camera found.';
+      if (name === 'NotReadableError') return 'Camera in use by another app.';
+      if (!window.isSecureContext) {
+        return 'Camera needs http://localhost — not file://.';
+      }
+      return `Camera error (${name || 'unknown'}).`;
+    }
+
+    async function acquireStream() {
+      const attempts = [
+        { video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+        { video: { facingMode: 'user' }, audio: false },
+        { video: true, audio: false },
+      ];
+      let lastErr = null;
+      for (const constraints of attempts) {
+        try {
+          return await navigator.mediaDevices.getUserMedia(constraints);
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      throw lastErr || new Error('getUserMedia failed');
+    }
+
+    function showGate(show) {
+      gate.classList.toggle('hidden', !show);
+      if (show) updateGateUrl();
+    }
+
+    function showControls(on) {
+      document.getElementById('cam-btn').hidden = !on;
+      document.getElementById('story-btn').hidden = !on;
+      document.getElementById('reset-btn').hidden = !on;
+    }
+
+    async function startCamera() {
+      if (!serverOk) {
+        await checkServer();
+        if (!serverOk) return;
+      }
+      if (location.protocol === 'file:') {
+        setStatus('Use http://localhost from repo root.');
+        showGate(true);
+        return;
+      }
+      try {
+        setStatus('Requesting camera…');
+        stream = await acquireStream();
+        player.srcObject = stream;
+        await player.play();
+        showGate(false);
+        showControls(true);
+        detecting = true;
+        startSessionClock();
+        startReadingLoop();
+        setStatus('DeepFace live · 1 reading/s · pick point words while you read');
+      } catch (err) {
+        console.error(err);
+        setStatus(cameraErrorMessage(err));
+        showGate(true);
+      }
+    }
+
+    function stopCamera() {
+      detecting = false;
+      stopReadingLoop();
+      if (storyTimer) {
+        clearTimeout(storyTimer);
+        storyTimer = null;
+      }
+      storyEndsAt = null;
+      document.getElementById('story-btn').classList.remove('active');
+      stopSessionClock();
+      if (stream) {
+        for (const track of stream.getTracks()) track.stop();
+        stream = null;
+      }
+      player.srcObject = null;
+    }
+
+    function resetSession() {
+      sessionCounts = Object.fromEntries(ML_WORDS.map((w) => [w, 0]));
+      sessionTotal = 0;
+      overlayBox = null;
+      overlayScores = null;
+      overlayDominant = null;
+      lastScores = null;
+      lastDominant = null;
+      renderScores(null, document.getElementById('scores-now'), null);
+      renderSessionShare();
+      updateCounterpoint();
+      drawOverlayFrame();
+      if (detecting) startSessionClock();
+      else {
+        sessionStartMs = null;
+        updateSessionTime();
+      }
+      setStatus('Session counts reset.');
+    }
+
+    function finishStory() {
+      storyEndsAt = null;
+      document.getElementById('story-btn').classList.remove('active');
+      setStatus(`15s story complete — ${sessionTotal} DeepFace readings. Review session share below.`);
+    }
+
+    function startStory() {
+      if (!detecting) return;
+      resetSession();
+      startSessionClock();
+      storyEndsAt = Date.now() + STORY_DURATION_MS;
+      document.getElementById('story-btn').classList.add('active');
+      setStatus('15s story — read or evoke; session share updates live.');
+      if (storyTimer) clearTimeout(storyTimer);
+      storyTimer = setTimeout(finishStory, STORY_DURATION_MS);
+    }
+
+    document.getElementById('gate-btn').addEventListener('click', startCamera);
+    document.getElementById('cam-btn').addEventListener('click', startCamera);
+    document.getElementById('story-btn').addEventListener('click', startStory);
+    document.getElementById('reset-btn').addEventListener('click', resetSession);
+    window.addEventListener('resize', drawOverlayFrame);
+    window.addEventListener('beforeunload', stopCamera);
+
+    buildPointGrid();
+    updateGateUrl();
+    checkServer();
+    setInterval(checkServer, 5000);
+  </script>
+</body>
+</html>

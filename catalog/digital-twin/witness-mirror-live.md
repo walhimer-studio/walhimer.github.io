@@ -4,6 +4,8 @@ Technology as witness — **live camera**, real-time counterpoint. Browser face-
 
 **Live:** https://mark-walhimer.com/sketches/digital-twin/witness-mirror-live.html
 
+**Trusted live path:** [Witness Mirror (DeepFace live)](./witness-mirror-deepface-live.md) — same DeepFace stack as 1s/5s; requires local Python server.
+
 | Mode | Stack |
 |------|--------|
 | **Live** | face-api.js · tiny face detector · expression net · vendored under `js/face-api/` |
