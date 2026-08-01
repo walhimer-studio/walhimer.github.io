@@ -449,6 +449,49 @@ export function createBloomFourWallsScene(opts = {}) {
     scene.add(m);
   });
 
+  /** Faint room-corner guides — inset from wall planes so they draw in front of blooms. */
+  const CORNER_INSET = 0.25;
+  const CORNER_FLOOR_LEN = 3;
+  const cornerMat = new THREE.LineBasicMaterial({
+    color: 0xababab,
+    transparent: true,
+    opacity: 0.48,
+    depthWrite: false,
+  });
+  const cornerXZ = [
+    [-HALF, -HALF],
+    [HALF, -HALF],
+    [HALF, HALF],
+    [-HALF, HALF],
+  ];
+  cornerXZ.forEach(([x, z]) => {
+    const ix = x > 0 ? x - CORNER_INSET : x + CORNER_INSET;
+    const iz = z > 0 ? z - CORNER_INSET : z + CORNER_INSET;
+    const vert = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(ix, -HALF + 0.02, iz),
+      new THREE.Vector3(ix, HALF - 0.02, iz),
+    ]);
+    const vertical = new THREE.Line(vert, cornerMat);
+    vertical.renderOrder = 6;
+    scene.add(vertical);
+
+    const dx = x > 0 ? -CORNER_FLOOR_LEN : CORNER_FLOOR_LEN;
+    const dz = z > 0 ? -CORNER_FLOOR_LEN : CORNER_FLOOR_LEN;
+    const alongX = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(ix, -HALF + 0.02, iz),
+      new THREE.Vector3(ix + dx, -HALF + 0.02, iz),
+    ]);
+    const alongZ = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(ix, -HALF + 0.02, iz),
+      new THREE.Vector3(ix, -HALF + 0.02, iz + dz),
+    ]);
+    const legX = new THREE.Line(alongX, cornerMat);
+    const legZ = new THREE.Line(alongZ, cornerMat);
+    legX.renderOrder = 6;
+    legZ.renderOrder = 6;
+    scene.add(legX, legZ);
+  });
+
   let yaw = 0;
   let pitch = 0;
   let dragging = false;
