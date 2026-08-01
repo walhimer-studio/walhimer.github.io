@@ -47,3 +47,20 @@ GitHub Pages serves the same paths under `mark-walhimer.com/netlify/…`.
 [loop-family-reunion-co-create-gallery.md](../../catalog/loop-art-critique-alumni-show-2026/loop-family-reunion-co-create-gallery.md)
 
 Firebase rules: [Friday 2 README](../loop-gallery-family-reunion-friday-2/README.md).
+
+## Upload resolution (2026-08-01)
+
+| Setting | Value |
+|---------|--------|
+| `PX_PER_UNIT` | 1024 (was 320) |
+| Max texture edge | 4096 px |
+| Max exported JPEG | 8 MB |
+
+**Firebase Storage rule** must allow 8 MB writes:
+
+```
+allow write: if request.resource.size < 8 * 1024 * 1024
+  && request.resource.contentType.matches('image/jpeg');
+```
+
+Publish in [Firebase Console](https://console.firebase.google.com/project/loop-gallery-family-reunion-3/storage/rules) before the event if uploads fail after “Hanging…”.

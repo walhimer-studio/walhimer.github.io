@@ -61,7 +61,7 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /loopGallery/rooms/{roomId}/images/{file} {
       allow read: if true;
-      allow write: if request.resource.size < 3 * 1024 * 1024
+      allow write: if request.resource.size < 8 * 1024 * 1024
         && request.resource.contentType.matches('image/jpeg');
     }
   }

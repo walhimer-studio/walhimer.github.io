@@ -221,8 +221,8 @@
 <body>
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
-    <span id="hintControls">Drag to look around · scroll or +/− to move closer · arrows turn · R record MP4</span><br>
-    Choose image → Hang on wall · max 100 uploads · max 3 MB
+    <span id="hintControls">Drag to look · pinch or +/− to move closer · one piece per wall slot · R record MP4</span><br>
+    Choose image → Hang on wall · max 100 uploads · max 8 MB export
   </div>
   <div id="wall-counter">Wall 1 · North</div>
   <button type="button" id="recordMp4" aria-pressed="false">Record MP4</button>
@@ -292,7 +292,11 @@ document.title = VIEW === 'phone'
   ? 'Loop Gallery — Family Reunion Friday Phone'
   : GALLERY_WALL_TITLE;
 document.body.classList.add(`view-${VIEW}`);
-const MAX_BYTES = 3 * 1024 * 1024;
+/** Exported JPEG cap (must match Firebase Storage write rule). */
+const MAX_BYTES = 8 * 1024 * 1024;
+/** Wall texture density — was 320 (~704 px wide); 1024 → ~2250 px at max frame width. */
+const PX_PER_UNIT = 1024;
+const MAX_TEXTURE_PX = 4096;
 const LOCAL_KEY = `loopGallery:${ROOM_ID}:uploads`;
 const SLOTS_KEY = `loopGallery:${ROOM_ID}:slots`;
 const PREVIEW_KEY = `loopGallery:${ROOM_ID}:previews`;
@@ -351,6 +355,9 @@ async function loadArtTexture(url) {
       const tex = new THREE.Texture(img);
       tex.needsUpdate = true;
       applyTextureColorSpace(tex);
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = false;
       resolve(tex);
     };
     img.onerror = () => reject(new Error('Could not decode wall image'));
@@ -575,6 +582,17 @@ function parseCell(data) {
   return { wall, col: local % GRID_COLS, row: Math.floor(local / GRID_COLS) };
 }
 
+function wallSlotCapacity() {
+  return WALL_ORDER.length * GRID_COLS * GRID_ROWS;
+}
+
+function isCellOccupied(wall, col, row, exceptSlotId = null) {
+  for (const s of slots.values()) {
+    if (s.wall === wall && s.col === col && s.row === row && s.slotId !== exceptSlotId) return true;
+  }
+  return false;
+}
+
 function findNextEmpty() {
   return wallScene?.findNextEmpty(slots) ?? null;
 }
@@ -669,6 +687,10 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
 function addFrame(data, persist = true, quiet = false) {
   if (slots.has(data.slotId)) return Promise.resolve(false);
   const { wall, col, row } = parseCell(data);
+  if (isCellOccupied(wall, col, row, data.slotId)) {
+    if (!quiet) setStatus(`Slot ${wall}-${col}-${row} already has art — skipped`);
+    return Promise.resolve(false);
+  }
   const frameW = data.frameW ?? FRAME_MAX_W;
   const frameH = data.frameH ?? FRAME_MAX_H;
 
@@ -766,9 +788,8 @@ async function prepareJPEG(file) {
   const aspect = bmp.width / bmp.height;
   const frame = fitFrameToWall(aspect);
 
-  const pxPerUnit = 320;
-  let tw = Math.min(2048, Math.round(frame.frameW * pxPerUnit));
-  let th = Math.min(2048, Math.round(frame.frameH * pxPerUnit));
+  let tw = Math.min(MAX_TEXTURE_PX, Math.round(frame.frameW * PX_PER_UNIT));
+  let th = Math.min(MAX_TEXTURE_PX, Math.round(frame.frameH * PX_PER_UNIT));
 
   const canvas = document.createElement('canvas');
   canvas.width = tw;
@@ -776,10 +797,10 @@ async function prepareJPEG(file) {
   containDraw(canvas.getContext('2d'), bmp, tw, th);
   bmp.close();
 
-  let quality = 0.9;
+  let quality = 0.92;
   let blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', quality));
-  while (blob && blob.size > MAX_BYTES && quality > 0.45) {
-    quality -= 0.06;
+  while (blob && blob.size > MAX_BYTES && quality > 0.5) {
+    quality -= 0.04;
     blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', quality));
   }
   if (!blob) throw new Error('Could not encode JPEG');
@@ -790,7 +811,16 @@ async function prepareJPEG(file) {
   const previewUrl = canvas.toDataURL('image/jpeg', Math.min(0.92, quality));
   const syncThumb = makeSyncThumb(canvas, quality);
   const outFile = new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
-  return { file: outFile, previewUrl, syncThumb, ...frame, bytes: blob.size, aspect: frame.aspect };
+  return {
+    file: outFile,
+    previewUrl,
+    syncThumb,
+    ...frame,
+    bytes: blob.size,
+    aspect: frame.aspect,
+    exportW: tw,
+    exportH: th,
+  };
 }
 
 function updateUploadUI() {
@@ -834,7 +864,9 @@ fileInput.addEventListener('change', async () => {
     pendingMeta = prep;
     previewEl.src = prep.previewUrl;
     previewEl.style.display = 'block';
-    setStatus(`Ready · ${formatKb(prep.bytes)} · frame ${prep.frameW.toFixed(1)}×${prep.frameH.toFixed(1)} wall units`);
+    setStatus(
+      `Ready · ${formatKb(prep.bytes)} · ${prep.exportW}×${prep.exportH} px · frame ${prep.frameW.toFixed(1)}×${prep.frameH.toFixed(1)} wall units`
+    );
     updateUploadUI();
   } catch (err) {
     setStatus(err.message || 'Invalid image');
@@ -852,8 +884,8 @@ async function hang() {
     return;
   }
   const slot = findNextEmpty();
-  if (!slot) {
-    setStatus('Wall is full — moderator can remove a piece');
+  if (!slot || slots.has(slot.slotId) || isCellOccupied(slot.wall, slot.col, slot.row)) {
+    setStatus(`Wall is full — ${slots.size}/${wallSlotCapacity()} slots · moderator can remove a piece`);
     return;
   }
 
@@ -874,6 +906,11 @@ async function hang() {
       if (uploaded.thumbData) pendingMeta.previewUrl = uploaded.thumbData;
     } else {
       remoteUrl = URL.createObjectURL(pendingFile);
+    }
+
+    if (slots.has(slot.slotId) || isCellOccupied(slot.wall, slot.col, slot.row)) {
+      setStatus('That wall slot was just taken — choose Hang again');
+      return;
     }
 
     const hung = await addFrame({
@@ -974,8 +1011,8 @@ bindPanButton(document.getElementById('panUp'), 'forward');
 bindPanButton(document.getElementById('panDown'), 'back');
 bindPanButton(document.getElementById('panLeft'), 'left');
 bindPanButton(document.getElementById('panRight'), 'right');
-document.getElementById('zoomIn')?.addEventListener('click', () => wallScene?.zoomBy?.(0.88));
-document.getElementById('zoomOut')?.addEventListener('click', () => wallScene?.zoomBy?.(1.14));
+document.getElementById('zoomIn')?.addEventListener('click', () => wallScene?.zoomBy?.(0.78));
+document.getElementById('zoomOut')?.addEventListener('click', () => wallScene?.zoomBy?.(1.28));
 document.getElementById('recordMp4')?.addEventListener('click', () => { void toggleRecordMp4(); });
 window.addEventListener('resize', syncWallFooterLayout);
 

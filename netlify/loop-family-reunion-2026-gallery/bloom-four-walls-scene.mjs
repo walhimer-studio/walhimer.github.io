@@ -265,6 +265,8 @@ export function createBloomFourWallsScene(opts = {}) {
   let yaw = 0;
   let pitch = 0;
   let dragging = false;
+  let pinchActive = false;
+  let pinchStartDist = 0;
   let lastX = 0;
   let lastY = 0;
   let autoRotate = true;
@@ -307,26 +309,59 @@ export function createBloomFourWallsScene(opts = {}) {
     lastY = e.clientY;
   }
 
+  function touchSpan(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
   renderer.domElement.addEventListener('mousedown', onPointerDown);
   window.addEventListener('mouseup', onPointerUp);
   window.addEventListener('mousemove', onPointerMove);
   renderer.domElement.addEventListener('touchstart', (e) => {
     void ensurePiano();
+    autoRotate = false;
+    if (e.touches.length >= 2) {
+      dragging = false;
+      pinchActive = true;
+      pinchStartDist = touchSpan(e.touches);
+      if (e.cancelable) e.preventDefault();
+      return;
+    }
+    pinchActive = false;
     const t = e.touches[0];
     dragging = true;
     lastX = t.clientX;
     lastY = t.clientY;
-    autoRotate = false;
-  }, { passive: true });
-  window.addEventListener('touchend', onPointerUp);
+  }, { passive: false });
+  window.addEventListener('touchend', (e) => {
+    if (e.touches.length === 0) {
+      dragging = false;
+      pinchActive = false;
+      return;
+    }
+    if (e.touches.length === 1) {
+      pinchActive = false;
+      dragging = true;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    }
+  });
   window.addEventListener('touchmove', (e) => {
-    if (!dragging) return;
+    if (e.touches.length >= 2 && pinchActive) {
+      const dist = touchSpan(e.touches);
+      nudgeView(-(dist - pinchStartDist) * 0.022);
+      pinchStartDist = dist;
+      if (e.cancelable) e.preventDefault();
+      return;
+    }
+    if (!dragging || e.touches.length !== 1) return;
     const t = e.touches[0];
     yaw -= (t.clientX - lastX) * 0.003;
     pitch = Math.max(-1.1, Math.min(1.1, pitch - (t.clientY - lastY) * 0.003));
     lastX = t.clientX;
     lastY = t.clientY;
-  }, { passive: true });
+  }, { passive: false });
 
   function nudgeView(delta) {
     if (!delta) return;
@@ -396,13 +431,22 @@ export function createBloomFourWallsScene(opts = {}) {
   }
 
   function findNextEmpty(occupied) {
+    const takenCells = new Set();
+    if (occupied instanceof Map) {
+      occupied.forEach((slot) => {
+        if (slot?.wall != null && slot.col != null && slot.row != null) {
+          takenCells.add(`${slot.wall}-${slot.col}-${slot.row}`);
+        }
+      });
+    }
     const rowOrder = ROWS > 1 ? [1, 0] : [0];
     const colOrder = COLS > 2 ? [1, 2, 0, 3] : [...Array(COLS).keys()];
     for (const wall of WALL_ORDER) {
       for (const row of rowOrder) {
         for (const col of colOrder) {
           const slotId = slotIdForCell(wall, col, row);
-          if (!occupied.has(slotId)) {
+          const cellKey = `${wall}-${col}-${row}`;
+          if (!occupied.has(slotId) && !takenCells.has(cellKey)) {
             return {
               slotId,
               wall,
@@ -443,7 +487,7 @@ export function createBloomFourWallsScene(opts = {}) {
   }
 
   function zoomBy(factor) {
-    nudgeView((1 - factor) * 3.5);
+    nudgeView((1 - factor) * 9);
   }
 
   function tick(t) {
