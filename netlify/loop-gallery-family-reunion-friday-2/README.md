@@ -41,7 +41,10 @@ service cloud.firestore {
       allow read: if true;
       allow create, update: if request.resource.data.keys().hasAll(['side','worldZ','aspect','url'])
         && request.resource.data.url is string
-        && request.resource.data.side in ['L','R'];
+        && request.resource.data.side in ['L','R']
+        && (!('artistLink' in request.resource.data)
+          || (request.resource.data.artistLink is string
+            && request.resource.data.artistLink.matches('https://.*')));
       allow delete: if false;
     }
     match /loopGalleryRooms/{roomId}/limits/{ipHash} {

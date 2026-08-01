@@ -216,12 +216,61 @@
     }
     #lifebar { height: 100%; width: 0%; background: rgba(0, 0, 0, 0.32); transition: width 0.1s linear; }
     body.view-phone #wall-counter { top: 10px; right: 12px; }
+    #panel #artistLink {
+      flex: 1 1 100%;
+      min-width: 0;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      background: #fff;
+    }
+    #pieceDetail {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: #fff;
+      flex-direction: column;
+      padding: calc(12px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom));
+      overflow: auto;
+    }
+    #pieceDetail.open { display: flex; }
+    #pieceBack {
+      appearance: none;
+      align-self: flex-start;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+    #pieceDetailImg {
+      width: 100%;
+      max-height: min(62vh, 640px);
+      object-fit: contain;
+      border-radius: 8px;
+      background: #f7f7f7;
+    }
+    #pieceDetailLink {
+      display: none;
+      margin-top: 14px;
+      font: 14px/1.45 system-ui, sans-serif;
+      color: #0a4;
+      word-break: break-all;
+    }
+    #pieceDetailLink.on { display: inline-block; }
+    body.piece-detail-open #panel,
+    body.piece-detail-open #panPad,
+    body.piece-detail-open #hint { display: none; }
   </style>
 </head>
 <body>
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
-    <span id="hintControls">Drag to look · pinch or +/− to move closer · one piece per wall slot · R record MP4</span><br>
+    <span id="hintControls">Drag to look · pinch or +/− to move closer · tap art for link · one piece per slot · R record MP4</span><br>
     Choose image → Hang on wall · max 100 uploads · max 8 MB export
   </div>
   <div id="wall-counter">Wall 1 · North</div>
@@ -239,6 +288,11 @@
     <div><strong>Phone</strong> (upload from pocket): <span id="phoneUrlBar"></span></div>
     <div id="urlBarSync"></div>
   </div>
+  <div id="pieceDetail" aria-hidden="true">
+    <button type="button" id="pieceBack">← Back to gallery</button>
+    <img id="pieceDetailImg" alt="" />
+    <a id="pieceDetailLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+  </div>
   <div id="panPad" aria-label="Look around">
     <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
     <button type="button" id="panUp" aria-label="Forward">↑</button>
@@ -251,6 +305,7 @@
     <div class="row panel-upload">
       <label class="btn" for="fileInput">Choose image</label>
       <input id="fileInput" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
+      <input id="artistLink" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https:// link — portfolio, Instagram, X (optional)" />
       <img id="preview" alt="" />
       <button type="button" id="hangWall" class="primary" disabled>Hang on wall</button>
       <button type="button" id="deleteNearest" class="danger" hidden>Remove nearest</button>
@@ -269,7 +324,7 @@ import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
 import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260730-wall-ui';
+} from './gallery-sync.mjs?v=20260801-link';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -307,6 +362,15 @@ const previewEl = document.getElementById('preview');
 const hangWall = document.getElementById('hangWall');
 const deleteNearest = document.getElementById('deleteNearest');
 const modBadge = document.getElementById('modBadge');
+const artistLinkInput = document.getElementById('artistLink');
+const pieceDetailEl = document.getElementById('pieceDetail');
+const pieceDetailImg = document.getElementById('pieceDetailImg');
+const pieceDetailLink = document.getElementById('pieceDetailLink');
+const pieceBackBtn = document.getElementById('pieceBack');
+
+const raycaster = new THREE.Raycaster();
+const pickNdc = new THREE.Vector2();
+let phoneTapStart = null;
 
 let uploadCount = 0;
 let pendingFile = null;
@@ -478,6 +542,111 @@ function setupUrlsAndQr() {
   if (canvas) drawQrCode(canvas, PHONE_URL);
 }
 
+function normalizeArtistLink(raw) {
+  const trimmed = (raw || '').trim();
+  if (!trimmed) return '';
+  let url = trimmed;
+  if (!/^https:\/\//i.test(url)) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return null;
+    return parsed.href.slice(0, 500);
+  } catch (_) {
+    return null;
+  }
+}
+
+function slotImageUrl(slot) {
+  return slot.previewUrl || slot.thumbData || slot.url || '';
+}
+
+function pickSlotAt(clientX, clientY) {
+  const camera = wallScene?.getCamera?.();
+  const canvas = wallScene?.getCanvas?.();
+  if (!camera || !canvas) return null;
+  const rect = canvas.getBoundingClientRect();
+  pickNdc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  pickNdc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pickNdc, camera);
+  const meshes = [];
+  for (const s of slots.values()) {
+    if (s.art) meshes.push(s.art);
+  }
+  const hits = raycaster.intersectObjects(meshes, false);
+  if (!hits.length) return null;
+  let node = hits[0].object;
+  while (node) {
+    if (node.userData?.slotId) return node.userData.slotId;
+    node = node.parent;
+  }
+  return null;
+}
+
+function openPieceDetail(slotId) {
+  const slot = slots.get(slotId);
+  if (!slot) return;
+  const imgUrl = slotImageUrl(slot);
+  if (!imgUrl) return;
+  pieceDetailImg.src = imgUrl;
+  pieceDetailImg.alt = `Artwork ${slotId}`;
+  const link = slot.artistLink;
+  if (link) {
+    pieceDetailLink.href = link;
+    pieceDetailLink.textContent = link.replace(/^https:\/\//i, '');
+    pieceDetailLink.classList.add('on');
+  } else {
+    pieceDetailLink.classList.remove('on');
+    pieceDetailLink.removeAttribute('href');
+    pieceDetailLink.textContent = '';
+  }
+  pieceDetailEl.classList.add('open');
+  pieceDetailEl.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('piece-detail-open');
+}
+
+function closePieceDetail() {
+  pieceDetailEl.classList.remove('open');
+  pieceDetailEl.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('piece-detail-open');
+  pieceDetailImg.removeAttribute('src');
+}
+
+function tryOpenPieceAt(clientX, clientY) {
+  if (VIEW !== 'phone') return;
+  const slotId = pickSlotAt(clientX, clientY);
+  if (slotId) openPieceDetail(slotId);
+}
+
+function bindPhoneArtTap() {
+  if (VIEW !== 'phone') return;
+  const canvas = wallScene?.getCanvas?.();
+  if (!canvas) return;
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1 || pieceDetailEl.classList.contains('open')) {
+      phoneTapStart = null;
+      return;
+    }
+    phoneTapStart = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      t: Date.now(),
+    };
+  }, { passive: true });
+  canvas.addEventListener('touchend', (e) => {
+    if (!phoneTapStart || pieceDetailEl.classList.contains('open')) return;
+    const t = e.changedTouches[0];
+    if (!t) return;
+    const start = phoneTapStart;
+    phoneTapStart = null;
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.hypot(dx, dy) > 16 || Date.now() - start.t > 500) return;
+    tryOpenPieceAt(t.clientX, t.clientY);
+  }, { passive: true });
+}
+
+pieceBackBtn?.addEventListener('click', () => closePieceDetail());
+
 function formatKb(n) {
   return `${(n / 1024).toFixed(n >= 10240 ? 0 : 1)} KB`;
 }
@@ -557,9 +726,13 @@ function loadLocalSlots() {
 
 function saveLocalSlots() {
   try {
-    const arr = [...slots.values()].map(({ slotId, wall, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH }) => {
+    const arr = [...slots.values()].map(({
+      slotId, wall, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH, artistLink,
+    }) => {
       const cleanUrl = url?.startsWith('blob:') || url?.startsWith('data:') ? undefined : url;
-      return { slotId, side, worldZ, col, row, url: cleanUrl, storagePath, aspect, frameW, frameH };
+      return {
+        slotId, side, worldZ, col, row, url: cleanUrl, storagePath, aspect, frameW, frameH, artistLink,
+      };
     });
     localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
   } catch (_) {}
@@ -697,6 +870,7 @@ function addFrame(data, persist = true, quiet = false) {
   return loadSlotTexture(data).then((tex) => {
     const built = makeFrameMesh(wall, col, row, frameW, frameH, tex);
     built.group.userData.slotId = data.slotId;
+    built.art.userData.slotId = data.slotId;
     const storedUrl = data.remoteUrl && !data.remoteUrl.startsWith('blob:')
       ? data.remoteUrl
       : (data.url?.startsWith('data:') ? undefined : data.url);
@@ -879,6 +1053,13 @@ async function hang() {
     setStatus('Choose an image first');
     return;
   }
+  const linkRaw = artistLinkInput?.value ?? '';
+  const artistLink = normalizeArtistLink(linkRaw);
+  if (linkRaw.trim() && artistLink === null) {
+    setStatus('Link must start with https://');
+    return;
+  }
+  pendingMeta.artistLink = artistLink || undefined;
   if (uploadCount >= MAX_UPLOADS) {
     setStatus('Upload limit reached — 100 per browser for this room');
     return;
@@ -930,6 +1111,7 @@ async function hang() {
       aspect: pendingMeta.aspect,
       frameW: pendingMeta.frameW,
       frameH: pendingMeta.frameH,
+      artistLink: pendingMeta.artistLink,
     });
     if (!hung) return;
 
@@ -939,6 +1121,7 @@ async function hang() {
     pendingFile = null;
     pendingMeta = null;
     fileInput.value = '';
+    if (artistLinkInput) artistLinkInput.value = '';
     previewEl.style.display = 'none';
     updateUploadUI();
     const wallLabel = { N: 'North', E: 'East', S: 'South', W: 'West' }[slot.wall] || slot.wall;
@@ -1011,8 +1194,8 @@ bindPanButton(document.getElementById('panUp'), 'forward');
 bindPanButton(document.getElementById('panDown'), 'back');
 bindPanButton(document.getElementById('panLeft'), 'left');
 bindPanButton(document.getElementById('panRight'), 'right');
-document.getElementById('zoomIn')?.addEventListener('click', () => wallScene?.zoomBy?.(0.78));
-document.getElementById('zoomOut')?.addEventListener('click', () => wallScene?.zoomBy?.(1.28));
+document.getElementById('zoomIn')?.addEventListener('click', () => wallScene?.zoomBy?.(0.68));
+document.getElementById('zoomOut')?.addEventListener('click', () => wallScene?.zoomBy?.(1.35));
 document.getElementById('recordMp4')?.addEventListener('click', () => { void toggleRecordMp4(); });
 window.addEventListener('resize', syncWallFooterLayout);
 
@@ -1028,6 +1211,10 @@ async function boot() {
     machineDnaEl: document.getElementById('machine-dna'),
     seed: MACHINE_DNA_SEED,
     dnaLabel: ROOM_ID,
+    fieldOfView: VIEW === 'phone' ? 68 : 82,
+    maxViewInset: VIEW === 'phone' ? 0.08 : 0.12,
+    pinchGain: VIEW === 'phone' ? 0.12 : 0.085,
+    zoomStep: VIEW === 'phone' ? 18 : 14,
     getScarLoad: () => {
       const cap = GRID_COLS * GRID_ROWS * WALL_ORDER.length;
       return cap > 0 ? slots.size / cap : 0;
@@ -1070,6 +1257,7 @@ async function boot() {
   }
 
   loadLocalSlots();
+  bindPhoneArtTap();
 
   bootReady = true;
   updateUploadUI();

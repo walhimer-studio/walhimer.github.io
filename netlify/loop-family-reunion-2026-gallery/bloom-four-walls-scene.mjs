@@ -210,7 +210,12 @@ export function createBloomFourWallsScene(opts = {}) {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xffffff);
 
-  const camera = new THREE.PerspectiveCamera(82, window.innerWidth / window.innerHeight, 0.1, ROOM * 4);
+  const camera = new THREE.PerspectiveCamera(
+    opts.fieldOfView ?? 82,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    ROOM * 4
+  );
   camera.position.set(0, 0, 0);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -273,7 +278,9 @@ export function createBloomFourWallsScene(opts = {}) {
   let running = true;
   let lastT = null;
   const keys = { forward: false, back: false, left: false, right: false };
-  const MAX_VIEW_DIST = HALF - 1.25;
+  const MAX_VIEW_DIST = HALF - (opts.maxViewInset ?? 0.12);
+  const PINCH_GAIN = opts.pinchGain ?? 0.085;
+  const ZOOM_STEP = opts.zoomStep ?? 14;
 
   const wallCounterEl = opts.wallCounterEl || null;
   const lifebarEl = opts.lifebarEl || null;
@@ -350,7 +357,7 @@ export function createBloomFourWallsScene(opts = {}) {
   window.addEventListener('touchmove', (e) => {
     if (e.touches.length >= 2 && pinchActive) {
       const dist = touchSpan(e.touches);
-      nudgeView(-(dist - pinchStartDist) * 0.022);
+      nudgeView((dist - pinchStartDist) * PINCH_GAIN);
       pinchStartDist = dist;
       if (e.cancelable) e.preventDefault();
       return;
@@ -487,7 +494,7 @@ export function createBloomFourWallsScene(opts = {}) {
   }
 
   function zoomBy(factor) {
-    nudgeView((1 - factor) * 9);
+    nudgeView((1 - factor) * ZOOM_STEP);
   }
 
   function tick(t) {
@@ -525,6 +532,7 @@ export function createBloomFourWallsScene(opts = {}) {
   return {
     getScene: () => scene,
     getCanvas: () => renderer.domElement,
+    getCamera: () => camera,
     getWallMesh: (wall) => wallMeshes[wall],
     setMoveKey,
     getViewPan,

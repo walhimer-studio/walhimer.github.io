@@ -87,6 +87,7 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       aspect: data.aspect,
       frameW: data.frameW,
       frameH: data.frameH,
+      artistLink: data.artistLink || undefined,
       wall: mWall ? mWall[1] : (mLegacy ? 'N' : undefined),
       col: mWall ? +mWall[2] : (mLegacy ? +mLegacy[1] : undefined),
       row: mWall ? +mWall[3] : (mLegacy ? +mLegacy[2] : undefined),
@@ -121,6 +122,7 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       storagePath: path,
       createdAt: fs.serverTimestamp(),
     };
+    if (meta.artistLink) docData.artistLink = meta.artistLink;
     let usedThumb = false;
 
     try {
