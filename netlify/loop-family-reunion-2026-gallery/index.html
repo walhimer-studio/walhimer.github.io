@@ -254,6 +254,8 @@
       padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
     }
     body.show-wait-screen #showWaitScreen { display: flex; }
+    html.show-wait-pending #showWaitScreen { display: flex; }
+    html.show-wait-pending body > canvas { visibility: hidden; }
     #showWaitScreen img {
       width: min(100%, 920px);
       height: auto;
@@ -266,7 +268,14 @@
     body.show-wait-screen #qrOverlay,
     body.show-wait-screen #wall-counter,
     body.show-wait-screen #recordMp4,
-    body.show-wait-screen #lifebar-wrap { visibility: hidden; }
+    body.show-wait-screen #lifebar-wrap,
+    html.show-wait-pending #panel,
+    html.show-wait-pending #panPad,
+    html.show-wait-pending #hint,
+    html.show-wait-pending #qrOverlay,
+    html.show-wait-pending #wall-counter,
+    html.show-wait-pending #recordMp4,
+    html.show-wait-pending #lifebar-wrap { visibility: hidden; }
     #panel #artistLink,
     #panel #artworkName {
       flex: 1 1 100%;
@@ -330,6 +339,15 @@
   </style>
 </head>
 <body>
+  <script>
+    (function () {
+      var start = new Date('2026-08-01T14:00:00-04:00').getTime();
+      var mod = new URLSearchParams(location.search).get('mod');
+      if (Date.now() < start - 60000 && mod !== 'aug1-2026') {
+        document.documentElement.classList.add('show-wait-pending');
+      }
+    })();
+  </script>
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
     <span id="hintControls">Drag to look · pinch or +/− to move closer · click or tap art for name &amp; link · R record MP4</span><br>
@@ -344,6 +362,12 @@
       height="920"
     />
   </div>
+  <script>
+    if (document.documentElement.classList.contains('show-wait-pending')) {
+      document.body.classList.add('show-wait-screen');
+      document.getElementById('showWaitScreen')?.setAttribute('aria-hidden', 'false');
+    }
+  </script>
   <div id="wall-counter">Wall 1 · North</div>
   <button type="button" id="recordMp4" aria-pressed="false">Record MP4</button>
   <div id="machine-dna" aria-hidden="true"></div>
@@ -413,7 +437,8 @@ import {
   SHOW_OPEN_MESSAGE,
   showWaitScreenActive,
   showElapsedMs,
-} from './show-schedule.mjs?v=20260801-close';
+  showGardenConfig,
+} from './show-schedule.mjs?v=20260801-wait2';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260801-gate';
@@ -1151,6 +1176,7 @@ async function prepareJPEG(file) {
 function syncShowGateBanner() {
   const waitPoster = showWaitScreenActive() && !isShowModerator();
   document.body.classList.toggle('show-wait-screen', waitPoster);
+  document.documentElement.classList.toggle('show-wait-pending', waitPoster);
   const showWaitEl = document.getElementById('showWaitScreen');
   if (showWaitEl) showWaitEl.setAttribute('aria-hidden', waitPoster ? 'false' : 'true');
 
@@ -1496,6 +1522,7 @@ async function boot() {
 
 boot().catch((err) => {
   console.error(err);
+  syncShowGateBanner();
   setStatus(err.message || 'Failed to start gallery');
 });
   </script>
