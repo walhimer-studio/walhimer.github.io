@@ -728,12 +728,10 @@ function saveLocalSlots() {
   try {
     const arr = [...slots.values()].map(({
       slotId, wall, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH, artistLink,
-      offsetX, offsetY, offsetZ, stack,
     }) => {
       const cleanUrl = url?.startsWith('blob:') || url?.startsWith('data:') ? undefined : url;
       return {
-        slotId, side, worldZ, col, row, wall, url: cleanUrl, storagePath, aspect, frameW, frameH,
-        artistLink, offsetX, offsetY, offsetZ, stack,
+        slotId, side, worldZ, col, row, url: cleanUrl, storagePath, aspect, frameW, frameH, artistLink,
       };
     });
     localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
@@ -744,9 +742,9 @@ function parseCell(data) {
   if (data.wall && data.col != null && data.row != null) {
     return { wall: data.wall, col: data.col, row: data.row };
   }
-  const m = /^([NESW])-(\d+)-(\d+)/.exec(data.slotId || '');
+  const m = /^([NESW])-(\d+)-(\d+)$/.exec(data.slotId || '');
   if (m) return { wall: m[1], col: +m[2], row: +m[3] };
-  const legacy = /^W-(\d+)-(\d+)/.exec(data.slotId || '');
+  const legacy = /^W-(\d+)-(\d+)$/.exec(data.slotId || '');
   if (legacy) return { wall: 'N', col: +legacy[1], row: +legacy[2] };
   const idx = typeof data.worldZ === 'number'
     ? Math.abs(Math.round(data.worldZ)) % (WALL_ORDER.length * GRID_COLS * GRID_ROWS)
@@ -757,8 +755,8 @@ function parseCell(data) {
   return { wall, col: local % GRID_COLS, row: Math.floor(local / GRID_COLS) };
 }
 
-function findNextPlacement() {
-  return wallScene?.findNextPlacement(slots) ?? null;
+function findNextEmpty() {
+  return wallScene?.findNextEmpty(slots) ?? null;
 }
 
 function findNearestSlot() {
@@ -794,24 +792,20 @@ function clampFrameSize(frameW, frameH) {
   return { frameW: fw, frameH: fh };
 }
 
-function makeFrameMesh(wall, col, row, frameW, frameH, texture, placement = {}) {
+function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
   const wallMesh = wallScene.getWallMesh(wall);
   if (!wallMesh) throw new Error(`Unknown wall ${wall}`);
 
   const { lx, ly, lz } = wallScene.cellLocal(wall, col, row);
-  const ox = Number(placement.offsetX) || 0;
-  const oy = Number(placement.offsetY) || 0;
-  const oz = Number(placement.offsetZ) || 0;
-  const stack = Number(placement.stack) || 0;
   const size = clampFrameSize(frameW, frameH);
   frameW = size.frameW;
   frameH = size.frameH;
 
   const holder = new THREE.Group();
   holder.userData.slotId = null;
-  holder.position.set(lx + ox, ly + oy, lz + oz);
+  holder.position.set(lx, ly, lz);
   holder.frustumCulled = false;
-  const layer = 100 + stack;
+  holder.renderOrder = 100;
 
   const backing = new THREE.Mesh(
     new THREE.PlaneGeometry(frameW + 0.12, frameH + 0.12),
@@ -820,7 +814,7 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture, placement = {}) 
     })
   );
   backing.position.z = 0.02;
-  backing.renderOrder = layer;
+  backing.renderOrder = 100;
   holder.add(backing);
 
   const mat = new THREE.MeshBasicMaterial({
@@ -834,7 +828,7 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture, placement = {}) 
   applyTextureColorSpace(texture);
   const art = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), mat);
   art.position.z = 0.05;
-  art.renderOrder = layer + 1;
+  art.renderOrder = 101;
   art.frustumCulled = false;
   holder.add(art);
 
@@ -843,7 +837,7 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture, placement = {}) 
     new THREE.LineBasicMaterial({ color: 0x222222, depthTest: false, depthWrite: false, transparent: true })
   );
   border.position.copy(art.position);
-  border.renderOrder = layer + 2;
+  border.renderOrder = 102;
   holder.add(border);
 
   wallMesh.add(holder);
@@ -857,15 +851,9 @@ function addFrame(data, persist = true, quiet = false) {
   const { wall, col, row } = parseCell(data);
   const frameW = data.frameW ?? FRAME_MAX_W;
   const frameH = data.frameH ?? FRAME_MAX_H;
-  const placement = {
-    offsetX: data.offsetX,
-    offsetY: data.offsetY,
-    offsetZ: data.offsetZ,
-    stack: data.stack,
-  };
 
   return loadSlotTexture(data).then((tex) => {
-    const built = makeFrameMesh(wall, col, row, frameW, frameH, tex, placement);
+    const built = makeFrameMesh(wall, col, row, frameW, frameH, tex);
     built.group.userData.slotId = data.slotId;
     built.art.userData.slotId = data.slotId;
     const storedUrl = data.remoteUrl && !data.remoteUrl.startsWith('blob:')
@@ -877,10 +865,6 @@ function addFrame(data, persist = true, quiet = false) {
       side: data.side || wallScene?.cellTransform?.(wall, col, row)?.side || 'L',
       col,
       row,
-      offsetX: data.offsetX,
-      offsetY: data.offsetY,
-      offsetZ: data.offsetZ,
-      stack: data.stack,
       thumbData: data.thumbData,
       url: storedUrl,
       storagePath: data.storagePath
@@ -1065,9 +1049,9 @@ async function hang() {
     setStatus('Upload limit reached — 100 per browser for this room');
     return;
   }
-  const slot = findNextPlacement();
+  const slot = findNextEmpty();
   if (!slot) {
-    setStatus('Could not place on wall — try again');
+    setStatus('Wall is full — moderator can remove a piece');
     return;
   }
 
@@ -1075,13 +1059,6 @@ async function hang() {
   try {
     let remoteUrl;
     let uploaded = null;
-    pendingMeta.wall = slot.wall;
-    pendingMeta.col = slot.col;
-    pendingMeta.row = slot.row;
-    pendingMeta.offsetX = slot.offsetX;
-    pendingMeta.offsetY = slot.offsetY;
-    pendingMeta.offsetZ = slot.offsetZ;
-    pendingMeta.stack = slot.stack;
     if (firebaseSync?.mode === 'firebase') {
       const lim = await commitUploadLimit(ROOM_ID);
       if (!lim.allowed) {
@@ -1097,11 +1074,6 @@ async function hang() {
       remoteUrl = URL.createObjectURL(pendingFile);
     }
 
-    if (slots.has(slot.slotId)) {
-      setStatus('Placement collision — tap Hang again');
-      return;
-    }
-
     const hung = await addFrame({
       slotId: slot.slotId,
       wall: slot.wall,
@@ -1109,10 +1081,6 @@ async function hang() {
       worldZ: slot.worldZ,
       col: slot.col,
       row: slot.row,
-      offsetX: slot.offsetX,
-      offsetY: slot.offsetY,
-      offsetZ: slot.offsetZ,
-      stack: slot.stack,
       previewUrl: pendingMeta.previewUrl,
       url: pendingMeta.previewUrl,
       thumbData: pendingMeta.previewUrl,
