@@ -97,5 +97,5 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     return start();
   };
 
-  return { toggle, isActive: () => active };
+  return { toggle, start, stop, isActive: () => active };
 }

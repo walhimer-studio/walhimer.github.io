@@ -56,6 +56,80 @@ async function postNetlifyFunction(path, body) {
   }
 }
 
+const FIRESTORE_MAX_UPLOADS = 5;
+const DEVICE_ID_KEY = 'loopGallery:deviceId';
+
+function getGalleryDeviceId() {
+  try {
+    let id = localStorage.getItem(DEVICE_ID_KEY);
+    if (!id) {
+      id = typeof crypto?.randomUUID === 'function'
+        ? crypto.randomUUID()
+        : `dev-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      localStorage.setItem(DEVICE_ID_KEY, id);
+    }
+    return id.replace(/[^\w-]/g, '').slice(0, 64) || 'unknown';
+  } catch (_) {
+    return 'unknown';
+  }
+}
+
+function uploadLimitDocRef(db, fs, galleryRoot, roomId, deviceId) {
+  return fs.doc(db, galleryRoot, roomId, 'uploadLimits', deviceId);
+}
+
+async function checkFirestoreUploadLimit(db, fs, galleryRoot, roomId) {
+  const deviceId = getGalleryDeviceId();
+  const ref = uploadLimitDocRef(db, fs, galleryRoot, roomId, deviceId);
+  try {
+    const snap = await fs.getDoc(ref);
+    const count = snap.exists() ? (snap.data().count || 0) : 0;
+    const remaining = Math.max(0, FIRESTORE_MAX_UPLOADS - count);
+    return {
+      allowed: remaining > 0,
+      count,
+      remaining,
+      mode: 'firebase',
+      deviceId,
+    };
+  } catch (err) {
+    console.warn('Firestore upload limit check failed', err);
+    return { allowed: true, mode: 'local', error: err?.message };
+  }
+}
+
+async function commitFirestoreUploadLimit(db, fs, galleryRoot, roomId) {
+  const deviceId = getGalleryDeviceId();
+  const ref = uploadLimitDocRef(db, fs, galleryRoot, roomId, deviceId);
+  try {
+    const result = await fs.runTransaction(db, async (tx) => {
+      const snap = await tx.get(ref);
+      const count = snap.exists() ? (snap.data().count || 0) : 0;
+      if (count >= FIRESTORE_MAX_UPLOADS) {
+        return { allowed: false, count, remaining: 0 };
+      }
+      const next = count + 1;
+      tx.set(ref, {
+        count: next,
+        deviceId,
+        updatedAt: fs.serverTimestamp(),
+      }, { merge: true });
+      return {
+        allowed: true,
+        count: next,
+        remaining: Math.max(0, FIRESTORE_MAX_UPLOADS - next),
+      };
+    });
+    return { ...result, mode: 'firebase', deviceId };
+  } catch (err) {
+    return {
+      allowed: false,
+      error: err?.message || 'Upload limit reached for this device',
+      mode: 'firebase',
+    };
+  }
+}
+
 export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove, sessionOpts = {}) {
   const cfg = await loadGalleryFirebaseConfig();
   if (!cfg) return { mode: 'local', error: 'missing firebase-config.mjs' };
@@ -248,6 +322,8 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove, sess
     objectUrlForSlot,
     ensureGardenSession,
     getGardenElapsedMs,
+    checkUploadLimit: () => checkFirestoreUploadLimit(db, fs, galleryRoot, roomId),
+    commitUploadLimit: () => commitFirestoreUploadLimit(db, fs, galleryRoot, roomId),
     configSource: cfg.source,
   };
   } catch (err) {
@@ -255,11 +331,13 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove, sess
   }
 }
 
-export async function checkUploadLimit(roomId) {
+export async function checkUploadLimit(roomId, firebaseSync = null) {
+  if (firebaseSync?.checkUploadLimit) return firebaseSync.checkUploadLimit();
   return postNetlifyFunction('/.netlify/functions/gallery-limit', { roomId, action: 'check' });
 }
 
-export async function commitUploadLimit(roomId) {
+export async function commitUploadLimit(roomId, firebaseSync = null) {
+  if (firebaseSync?.commitUploadLimit) return firebaseSync.commitUploadLimit();
   return postNetlifyFunction('/.netlify/functions/gallery-limit', { roomId, action: 'commit' });
 }
 

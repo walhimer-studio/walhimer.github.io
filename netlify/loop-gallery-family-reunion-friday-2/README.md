@@ -55,6 +55,15 @@ service cloud.firestore {
             && request.resource.data.artworkName.size() <= 120));
       allow delete: if false;
     }
+    match /loopGallery/{roomId}/uploadLimits/{deviceId} {
+      allow read: if true;
+      allow create: if request.resource.data.deviceId == deviceId
+        && request.resource.data.count == 1;
+      allow update: if request.resource.data.deviceId == deviceId
+        && resource.data.count < 5
+        && request.resource.data.count == resource.data.count + 1;
+      allow delete: if false;
+    }
     match /loopGalleryRooms/{roomId}/limits/{ipHash} {
       allow read, write: if false;
     }

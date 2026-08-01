@@ -697,6 +697,12 @@ export function createBloomFourWallsScene(opts = {}) {
     revolutionCallback = onComplete ?? null;
   }
 
+  function stopRevolution() {
+    autoRotate = false;
+    revolutionAccum = 0;
+    revolutionCallback = null;
+  }
+
   function zoomBy(factor) {
     nudgeView((1 - factor) * ZOOM_STEP);
   }
@@ -771,5 +777,6 @@ export function createBloomFourWallsScene(opts = {}) {
     getPiano: () => piano,
     ensurePiano,
     startRevolution,
+    stopRevolution,
   };
 }

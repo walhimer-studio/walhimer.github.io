@@ -420,10 +420,12 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-10x4';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-auto';
 import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
-import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
+import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260801-rec';
 import {
+  REVOLUTION_MS,
+  RECORD_BEFORE_END_MS,
   SHOW_SEED,
   SHOW_DURATION_MS,
   SHOW_MOD_PARAM,
@@ -439,10 +441,11 @@ import {
   showWaitScreenActive,
   showElapsedMs,
   showGardenConfig,
-} from './show-schedule.mjs?v=20260801-wait2';
+  msUntilShowStart,
+} from './show-schedule.mjs?v=20260801-auto';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260801-gate';
+} from './gallery-sync.mjs?v=20260801-limits';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -504,6 +507,85 @@ let isModerator = false;
 let bootReady = false;
 let cloudLoadFailures = 0;
 let uploadGateTimer = null;
+let autoMp4Timer = null;
+const AUTO_MP4_KEY = `loopGallery:${ROOM_ID}:autoMp4`;
+
+function autoMp4Done(id) {
+  try {
+    const map = JSON.parse(localStorage.getItem(AUTO_MP4_KEY) || '{}');
+    return !!map[id];
+  } catch (_) {
+    return false;
+  }
+}
+
+function markAutoMp4Done(id) {
+  try {
+    const map = JSON.parse(localStorage.getItem(AUTO_MP4_KEY) || '{}');
+    map[id] = Date.now();
+    localStorage.setItem(AUTO_MP4_KEY, JSON.stringify(map));
+  } catch (_) {}
+}
+
+async function runAutoMp4Revolution(label, id) {
+  if (VIEW !== 'wall' || !canvasRecorder || autoMp4Done(id)) return;
+  if (canvasRecorder.isActive()) return;
+  wallScene?.ensurePiano?.();
+  wallScene?.startRevolution?.(() => {
+    wallScene?.stopRevolution?.();
+  });
+  const started = await canvasRecorder.start();
+  if (!started) {
+    wallScene?.stopRevolution?.();
+    return;
+  }
+  markAutoMp4Done(id);
+  setStatus(`Auto-recording MP4 (${label})… one orbit`);
+  setTimeout(() => {
+    if (canvasRecorder?.isActive()) canvasRecorder.stop();
+    wallScene?.stopRevolution?.();
+    if (VIEW === 'wall') setStatus(`Auto MP4 saved (${label})`);
+  }, REVOLUTION_MS);
+}
+
+function scheduleAutoMp4Recordings() {
+  if (VIEW !== 'wall') return;
+  if (autoMp4Timer) clearTimeout(autoMp4Timer);
+
+  const openId = 'open-20260801';
+  const closeId = 'close-20260801';
+  const openAt = showStartMs();
+  const closeAt = showEndMs() - RECORD_BEFORE_END_MS;
+  const now = Date.now();
+
+  const queue = (atMs, id, label) => {
+    if (autoMp4Done(id)) return;
+    const delay = atMs - now;
+    if (delay <= 0) {
+      if (now < atMs + REVOLUTION_MS && showPhase() === 'live') {
+        void runAutoMp4Revolution(label, id);
+      }
+      return;
+    }
+    setTimeout(() => { void runAutoMp4Revolution(label, id); }, delay);
+  };
+
+  queue(openAt, openId, 'show open 2:00 PM');
+  queue(closeAt, closeId, 'show close ~2:58 PM');
+
+  if (showPhase() !== 'after') {
+    const nextPoll = Math.min(
+      msUntilShowStart() || Infinity,
+      Math.max(0, closeAt - now),
+      60000,
+    );
+    if (Number.isFinite(nextPoll) && nextPoll < Infinity) {
+      autoMp4Timer = setTimeout(() => {
+        scheduleAutoMp4Recordings();
+      }, Math.max(5000, nextPoll));
+    }
+  }
+}
 
 function isShowModerator() {
   return isModerator || MOD_TOKEN === SHOW_MOD_PARAM;
@@ -1310,10 +1392,11 @@ async function hang() {
   try {
     let remoteUrl;
     let uploaded = null;
+    let limitResult = null;
     if (firebaseSync?.mode === 'firebase') {
-      const lim = await commitUploadLimit(ROOM_ID);
-      if (!lim.allowed) {
-        setStatus(lim.error || 'Upload limit reached on this network');
+      limitResult = await commitUploadLimit(ROOM_ID, firebaseSync);
+      if (!limitResult.allowed) {
+        setStatus(limitResult.error || 'Upload limit reached — 5 per device for this show');
         return;
       }
       uploaded = await firebaseSync.uploadJPEG(
@@ -1357,7 +1440,11 @@ async function hang() {
     if (hung !== 'ok' && !slots.has(slot.slotId)) return;
 
     wallScene?.focusCell?.(slot.wall, slot.col, slot.row);
-    uploadCount += 1;
+    if (typeof limitResult?.count === 'number') {
+      uploadCount = limitResult.count;
+    } else {
+      uploadCount += 1;
+    }
     saveLocalCount();
     pendingFile = null;
     pendingMeta = null;
@@ -1490,11 +1577,6 @@ async function boot() {
   }
 
   try {
-    const lim = await checkUploadLimit(ROOM_ID);
-    if (lim.mode === 'firebase' && typeof lim.count === 'number') {
-      uploadCount = Math.max(uploadCount, lim.count);
-      saveLocalCount();
-    }
     firebaseSync = await initGallerySync(
       ROOM_ID,
       onRemoteSlot,
@@ -1505,6 +1587,11 @@ async function boot() {
         getScheduledElapsedMs: () => showElapsedMs(),
       },
     );
+    const lim = await checkUploadLimit(ROOM_ID, firebaseSync);
+    if (lim.mode === 'firebase' && typeof lim.count === 'number') {
+      uploadCount = Math.max(uploadCount, lim.count);
+      saveLocalCount();
+    }
   } catch (err) {
     console.error('Firebase init failed', err);
     firebaseSync = { mode: 'local', error: err?.message || 'firebase init failed' };
@@ -1530,6 +1617,7 @@ async function boot() {
   bootReady = true;
   updateUploadUI();
   scheduleUploadGateRefresh();
+  scheduleAutoMp4Recordings();
   wallScene.getCanvas()?.focus({ preventScroll: true });
 }
 
