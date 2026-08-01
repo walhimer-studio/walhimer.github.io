@@ -324,7 +324,7 @@ import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
 import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260801-link';
+} from './gallery-sync.mjs?v=20260801-hangfix';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -742,9 +742,9 @@ function parseCell(data) {
   if (data.wall && data.col != null && data.row != null) {
     return { wall: data.wall, col: data.col, row: data.row };
   }
-  const m = /^([NESW])-(\d+)-(\d+)$/.exec(data.slotId || '');
+  const m = /^([NESW])-(\d+)-(\d+)(?:-.*)?$/.exec(data.slotId || '');
   if (m) return { wall: m[1], col: +m[2], row: +m[3] };
-  const legacy = /^W-(\d+)-(\d+)$/.exec(data.slotId || '');
+  const legacy = /^W-(\d+)-(\d+)(?:-.*)?$/.exec(data.slotId || '');
   if (legacy) return { wall: 'N', col: +legacy[1], row: +legacy[2] };
   const idx = typeof data.worldZ === 'number'
     ? Math.abs(Math.round(data.worldZ)) % (WALL_ORDER.length * GRID_COLS * GRID_ROWS)
@@ -846,9 +846,21 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
   return { group: holder, art, texture, frameW, frameH, wallMesh };
 }
 
+function cellOccupiedByOther(wall, col, row, slotId) {
+  for (const s of slots.values()) {
+    if (s.slotId === slotId) continue;
+    if (s.wall === wall && s.col === col && s.row === row) return true;
+  }
+  return false;
+}
+
 function addFrame(data, persist = true, quiet = false) {
   if (slots.has(data.slotId)) return Promise.resolve(false);
   const { wall, col, row } = parseCell(data);
+  if (cellOccupiedByOther(wall, col, row, data.slotId)) {
+    console.warn('Skipping duplicate cell', wall, col, row, data.slotId);
+    return Promise.resolve(false);
+  }
   const frameW = data.frameW ?? FRAME_MAX_W;
   const frameH = data.frameH ?? FRAME_MAX_H;
 
@@ -1066,7 +1078,16 @@ async function hang() {
         return;
       }
       uploaded = await firebaseSync.uploadJPEG(
-        pendingFile, slot.slotId, slot.side, slot.worldZ, pendingMeta
+        pendingFile,
+        slot.slotId,
+        slot.side,
+        slot.worldZ,
+        {
+          ...pendingMeta,
+          wall: slot.wall,
+          col: slot.col,
+          row: slot.row,
+        },
       );
       remoteUrl = uploaded.url;
       if (uploaded.thumbData) pendingMeta.previewUrl = uploaded.thumbData;
@@ -1093,7 +1114,7 @@ async function hang() {
       frameH: pendingMeta.frameH,
       artistLink: pendingMeta.artistLink,
     });
-    if (!hung) return;
+    if (!hung && !slots.has(slot.slotId)) return;
 
     wallScene?.focusCell?.(slot.wall, slot.col, slot.row);
     uploadCount += 1;

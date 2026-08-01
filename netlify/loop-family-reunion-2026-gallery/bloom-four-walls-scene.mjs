@@ -437,6 +437,15 @@ export function createBloomFourWallsScene(opts = {}) {
     return wallIndex * 100 + col * 10 + row;
   }
 
+  function cellTaken(occupied, wall, col, row) {
+    for (const entry of occupied.values()) {
+      if (entry.wall === wall && entry.col === col && entry.row === row) return true;
+      const m = /^([NESW])-(\d+)-(\d+)(?:-.*)?$/.exec(entry.slotId || '');
+      if (m && m[1] === wall && +m[2] === col && +m[3] === row) return true;
+    }
+    return false;
+  }
+
   function findNextEmpty(occupied) {
     const rowOrder = ROWS > 1 ? [1, 0] : [0];
     const colOrder = COLS > 2 ? [1, 2, 0, 3] : [...Array(COLS).keys()];
@@ -444,7 +453,7 @@ export function createBloomFourWallsScene(opts = {}) {
       for (const row of rowOrder) {
         for (const col of colOrder) {
           const slotId = slotIdForCell(wall, col, row);
-          if (!occupied.has(slotId)) {
+          if (!occupied.has(slotId) && !cellTaken(occupied, wall, col, row)) {
             return {
               slotId,
               wall,
