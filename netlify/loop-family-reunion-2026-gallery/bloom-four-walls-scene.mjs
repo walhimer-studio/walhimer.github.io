@@ -20,7 +20,7 @@ export function createBloomFourWallsScene(opts = {}) {
   const HALF = ROOM / 2;
   const BLOOMS_ENABLED = opts.bloomsEnabled !== false;
   const COLS = 4;
-  const ROWS = 2;
+  const ROWS = 4;
   const CELL_W = ROOM / COLS;
   const CELL_H = ROOM / ROWS;
   const FRAME_CELL_W = BASE_ROOM / COLS;
@@ -446,8 +446,22 @@ export function createBloomFourWallsScene(opts = {}) {
     return false;
   }
 
+  function rowFillOrder(count) {
+    if (count <= 1) return [0];
+    if (count === 2) return [1, 0];
+    const order = [];
+    let a = Math.floor((count - 1) / 2);
+    let b = a + 1;
+    while (order.length < count) {
+      if (a >= 0 && !order.includes(a)) order.push(a--);
+      if (order.length >= count) break;
+      if (b < count && !order.includes(b)) order.push(b++);
+    }
+    return order;
+  }
+
   function findNextEmpty(occupied) {
-    const rowOrder = ROWS > 1 ? [1, 0] : [0];
+    const rowOrder = rowFillOrder(ROWS);
     const colOrder = COLS > 2 ? [1, 2, 0, 3] : [...Array(COLS).keys()];
     for (const wall of WALL_ORDER) {
       for (const row of rowOrder) {
