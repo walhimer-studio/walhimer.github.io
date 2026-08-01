@@ -78,6 +78,7 @@
       border-radius: 12px; padding: 12px 14px; width: 228px;
       font: 11px/1.45 system-ui, sans-serif; color: #333;
       box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+      visibility: hidden;
     }
     #qrOverlay h2 { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; }
     #qrCanvas {
@@ -120,6 +121,7 @@
       padding-right: 13rem;
     }
     body.view-wall #qrOverlay {
+      visibility: visible;
       top: auto;
       left: auto;
       right: calc(10px + env(safe-area-inset-right));
@@ -340,6 +342,16 @@
   </style>
 </head>
 <body>
+  <script>
+    (function () {
+      var p = location.pathname;
+      var q = new URLSearchParams(location.search);
+      var onPhone = p.indexOf('/loop-family-reunion-2026-phone/') !== -1;
+      var viewParam = (q.get('view') || '').toLowerCase();
+      var view = onPhone || viewParam === 'phone' ? 'phone' : 'wall';
+      document.body.classList.add('view-' + view);
+    })();
+  </script>
   <script>
     (function () {
       var start = new Date('2026-08-01T14:00:00-04:00').getTime();
