@@ -270,7 +270,7 @@
 <body>
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
-    <span id="hintControls">Drag to look · pinch or +/− to move closer · tap art for link · one piece per slot · R record MP4</span><br>
+    <span id="hintControls">Drag to look · pinch or +/− to move closer · tap art for link · R record MP4</span><br>
     Choose image → Hang on wall · max 100 uploads · max 8 MB export
   </div>
   <div id="wall-counter">Wall 1 · North</div>
@@ -728,10 +728,12 @@ function saveLocalSlots() {
   try {
     const arr = [...slots.values()].map(({
       slotId, wall, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH, artistLink,
+      offsetX, offsetY, offsetZ, stack,
     }) => {
       const cleanUrl = url?.startsWith('blob:') || url?.startsWith('data:') ? undefined : url;
       return {
-        slotId, side, worldZ, col, row, url: cleanUrl, storagePath, aspect, frameW, frameH, artistLink,
+        slotId, side, worldZ, col, row, wall, url: cleanUrl, storagePath, aspect, frameW, frameH,
+        artistLink, offsetX, offsetY, offsetZ, stack,
       };
     });
     localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
@@ -742,9 +744,9 @@ function parseCell(data) {
   if (data.wall && data.col != null && data.row != null) {
     return { wall: data.wall, col: data.col, row: data.row };
   }
-  const m = /^([NESW])-(\d+)-(\d+)$/.exec(data.slotId || '');
+  const m = /^([NESW])-(\d+)-(\d+)/.exec(data.slotId || '');
   if (m) return { wall: m[1], col: +m[2], row: +m[3] };
-  const legacy = /^W-(\d+)-(\d+)$/.exec(data.slotId || '');
+  const legacy = /^W-(\d+)-(\d+)/.exec(data.slotId || '');
   if (legacy) return { wall: 'N', col: +legacy[1], row: +legacy[2] };
   const idx = typeof data.worldZ === 'number'
     ? Math.abs(Math.round(data.worldZ)) % (WALL_ORDER.length * GRID_COLS * GRID_ROWS)
@@ -755,19 +757,8 @@ function parseCell(data) {
   return { wall, col: local % GRID_COLS, row: Math.floor(local / GRID_COLS) };
 }
 
-function wallSlotCapacity() {
-  return WALL_ORDER.length * GRID_COLS * GRID_ROWS;
-}
-
-function isCellOccupied(wall, col, row, exceptSlotId = null) {
-  for (const s of slots.values()) {
-    if (s.wall === wall && s.col === col && s.row === row && s.slotId !== exceptSlotId) return true;
-  }
-  return false;
-}
-
-function findNextEmpty() {
-  return wallScene?.findNextEmpty(slots) ?? null;
+function findNextPlacement() {
+  return wallScene?.findNextPlacement(slots) ?? null;
 }
 
 function findNearestSlot() {
@@ -803,20 +794,24 @@ function clampFrameSize(frameW, frameH) {
   return { frameW: fw, frameH: fh };
 }
 
-function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
+function makeFrameMesh(wall, col, row, frameW, frameH, texture, placement = {}) {
   const wallMesh = wallScene.getWallMesh(wall);
   if (!wallMesh) throw new Error(`Unknown wall ${wall}`);
 
   const { lx, ly, lz } = wallScene.cellLocal(wall, col, row);
+  const ox = Number(placement.offsetX) || 0;
+  const oy = Number(placement.offsetY) || 0;
+  const oz = Number(placement.offsetZ) || 0;
+  const stack = Number(placement.stack) || 0;
   const size = clampFrameSize(frameW, frameH);
   frameW = size.frameW;
   frameH = size.frameH;
 
   const holder = new THREE.Group();
   holder.userData.slotId = null;
-  holder.position.set(lx, ly, lz);
+  holder.position.set(lx + ox, ly + oy, lz + oz);
   holder.frustumCulled = false;
-  holder.renderOrder = 100;
+  const layer = 100 + stack;
 
   const backing = new THREE.Mesh(
     new THREE.PlaneGeometry(frameW + 0.12, frameH + 0.12),
@@ -825,7 +820,7 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
     })
   );
   backing.position.z = 0.02;
-  backing.renderOrder = 100;
+  backing.renderOrder = layer;
   holder.add(backing);
 
   const mat = new THREE.MeshBasicMaterial({
@@ -839,7 +834,7 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
   applyTextureColorSpace(texture);
   const art = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), mat);
   art.position.z = 0.05;
-  art.renderOrder = 101;
+  art.renderOrder = layer + 1;
   art.frustumCulled = false;
   holder.add(art);
 
@@ -848,7 +843,7 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
     new THREE.LineBasicMaterial({ color: 0x222222, depthTest: false, depthWrite: false, transparent: true })
   );
   border.position.copy(art.position);
-  border.renderOrder = 102;
+  border.renderOrder = layer + 2;
   holder.add(border);
 
   wallMesh.add(holder);
@@ -860,15 +855,17 @@ function makeFrameMesh(wall, col, row, frameW, frameH, texture) {
 function addFrame(data, persist = true, quiet = false) {
   if (slots.has(data.slotId)) return Promise.resolve(false);
   const { wall, col, row } = parseCell(data);
-  if (isCellOccupied(wall, col, row, data.slotId)) {
-    if (!quiet) setStatus(`Slot ${wall}-${col}-${row} already has art — skipped`);
-    return Promise.resolve(false);
-  }
   const frameW = data.frameW ?? FRAME_MAX_W;
   const frameH = data.frameH ?? FRAME_MAX_H;
+  const placement = {
+    offsetX: data.offsetX,
+    offsetY: data.offsetY,
+    offsetZ: data.offsetZ,
+    stack: data.stack,
+  };
 
   return loadSlotTexture(data).then((tex) => {
-    const built = makeFrameMesh(wall, col, row, frameW, frameH, tex);
+    const built = makeFrameMesh(wall, col, row, frameW, frameH, tex, placement);
     built.group.userData.slotId = data.slotId;
     built.art.userData.slotId = data.slotId;
     const storedUrl = data.remoteUrl && !data.remoteUrl.startsWith('blob:')
@@ -880,6 +877,10 @@ function addFrame(data, persist = true, quiet = false) {
       side: data.side || wallScene?.cellTransform?.(wall, col, row)?.side || 'L',
       col,
       row,
+      offsetX: data.offsetX,
+      offsetY: data.offsetY,
+      offsetZ: data.offsetZ,
+      stack: data.stack,
       thumbData: data.thumbData,
       url: storedUrl,
       storagePath: data.storagePath
@@ -1064,9 +1065,9 @@ async function hang() {
     setStatus('Upload limit reached — 100 per browser for this room');
     return;
   }
-  const slot = findNextEmpty();
-  if (!slot || slots.has(slot.slotId) || isCellOccupied(slot.wall, slot.col, slot.row)) {
-    setStatus(`Wall is full — ${slots.size}/${wallSlotCapacity()} slots · moderator can remove a piece`);
+  const slot = findNextPlacement();
+  if (!slot) {
+    setStatus('Could not place on wall — try again');
     return;
   }
 
@@ -1074,6 +1075,13 @@ async function hang() {
   try {
     let remoteUrl;
     let uploaded = null;
+    pendingMeta.wall = slot.wall;
+    pendingMeta.col = slot.col;
+    pendingMeta.row = slot.row;
+    pendingMeta.offsetX = slot.offsetX;
+    pendingMeta.offsetY = slot.offsetY;
+    pendingMeta.offsetZ = slot.offsetZ;
+    pendingMeta.stack = slot.stack;
     if (firebaseSync?.mode === 'firebase') {
       const lim = await commitUploadLimit(ROOM_ID);
       if (!lim.allowed) {
@@ -1089,8 +1097,8 @@ async function hang() {
       remoteUrl = URL.createObjectURL(pendingFile);
     }
 
-    if (slots.has(slot.slotId) || isCellOccupied(slot.wall, slot.col, slot.row)) {
-      setStatus('That wall slot was just taken — choose Hang again');
+    if (slots.has(slot.slotId)) {
+      setStatus('Placement collision — tap Hang again');
       return;
     }
 
@@ -1101,6 +1109,10 @@ async function hang() {
       worldZ: slot.worldZ,
       col: slot.col,
       row: slot.row,
+      offsetX: slot.offsetX,
+      offsetY: slot.offsetY,
+      offsetZ: slot.offsetZ,
+      stack: slot.stack,
       previewUrl: pendingMeta.previewUrl,
       url: pendingMeta.previewUrl,
       thumbData: pendingMeta.previewUrl,

@@ -437,36 +437,46 @@ export function createBloomFourWallsScene(opts = {}) {
     return wallIndex * 100 + col * 10 + row;
   }
 
-  function findNextEmpty(occupied) {
-    const takenCells = new Set();
-    if (occupied instanceof Map) {
-      occupied.forEach((slot) => {
-        if (slot?.wall != null && slot.col != null && slot.row != null) {
-          takenCells.add(`${slot.wall}-${slot.col}-${slot.row}`);
-        }
-      });
+  function countInCell(occupied, wall, col, row) {
+    let n = 0;
+    if (!(occupied instanceof Map)) return 0;
+    occupied.forEach((slot) => {
+      if (slot?.wall === wall && slot.col === col && slot.row === row) n += 1;
+    });
+    return n;
+  }
+
+  /** Round-robin wall cells; stacks overlap with jitter (no hard slot cap). */
+  function findNextPlacement(occupied) {
+    const capacity = WALL_ORDER.length * COLS * ROWS;
+    const total = occupied instanceof Map ? occupied.size : 0;
+    const idx = total % capacity;
+    const perWall = COLS * ROWS;
+    const wall = WALL_ORDER[Math.floor(idx / perWall)];
+    const local = idx % perWall;
+    const col = local % COLS;
+    const row = Math.floor(local / COLS);
+    const stack = countInCell(occupied, wall, col, row);
+    const baseId = slotIdForCell(wall, col, row);
+    let slotId = baseId;
+    if (occupied instanceof Map && occupied.has(slotId)) {
+      slotId = `${baseId}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
     }
-    const rowOrder = ROWS > 1 ? [1, 0] : [0];
-    const colOrder = COLS > 2 ? [1, 2, 0, 3] : [...Array(COLS).keys()];
-    for (const wall of WALL_ORDER) {
-      for (const row of rowOrder) {
-        for (const col of colOrder) {
-          const slotId = slotIdForCell(wall, col, row);
-          const cellKey = `${wall}-${col}-${row}`;
-          if (!occupied.has(slotId) && !takenCells.has(cellKey)) {
-            return {
-              slotId,
-              wall,
-              col,
-              row,
-              side: WALL_DEFS[wall].side,
-              worldZ: worldZForCell(wall, col, row),
-            };
-          }
-        }
-      }
-    }
-    return null;
+    const offsetX = ((stack * 17) % 5 - 2) * 0.7;
+    const offsetY = ((stack * 23) % 5 - 2) * 0.55;
+    const offsetZ = stack * 0.06;
+    return {
+      slotId,
+      wall,
+      col,
+      row,
+      side: WALL_DEFS[wall].side,
+      worldZ: worldZForCell(wall, col, row) + stack,
+      offsetX,
+      offsetY,
+      offsetZ,
+      stack,
+    };
   }
 
   function maxFrameSize() {
@@ -538,7 +548,7 @@ export function createBloomFourWallsScene(opts = {}) {
     getViewPan,
     focusCell,
     zoomBy,
-    findNextEmpty,
+    findNextPlacement,
     cellCenter,
     cellLocal,
     cellTransform,

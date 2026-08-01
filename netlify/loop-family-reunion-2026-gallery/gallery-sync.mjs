@@ -73,8 +73,8 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   const slotsCol = fs.collection(db, galleryRoot, roomId, 'slots');
 
   function slotPayload(slotId, data) {
-    const mWall = /^([NESW])-(\d+)-(\d+)$/.exec(slotId || '');
-    const mLegacy = /^W-(\d+)-(\d+)$/.exec(slotId || '');
+    const mWall = /^([NESW])-(\d+)-(\d+)/.exec(slotId || '');
+    const mLegacy = /^W-(\d+)-(\d+)/.exec(slotId || '');
     const storagePath = data.storagePath
       || `${galleryRoot}/rooms/${roomId}/images/${slotId}.jpg`;
     return {
@@ -88,9 +88,13 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       frameW: data.frameW,
       frameH: data.frameH,
       artistLink: data.artistLink || undefined,
-      wall: mWall ? mWall[1] : (mLegacy ? 'N' : undefined),
-      col: mWall ? +mWall[2] : (mLegacy ? +mLegacy[1] : undefined),
-      row: mWall ? +mWall[3] : (mLegacy ? +mLegacy[2] : undefined),
+      wall: data.wall || (mWall ? mWall[1] : (mLegacy ? 'N' : undefined)),
+      col: data.col ?? (mWall ? +mWall[2] : (mLegacy ? +mLegacy[1] : undefined)),
+      row: data.row ?? (mWall ? +mWall[3] : (mLegacy ? +mLegacy[2] : undefined)),
+      offsetX: data.offsetX,
+      offsetY: data.offsetY,
+      offsetZ: data.offsetZ,
+      stack: data.stack,
     };
   }
 
@@ -123,6 +127,13 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       createdAt: fs.serverTimestamp(),
     };
     if (meta.artistLink) docData.artistLink = meta.artistLink;
+    if (meta.wall) docData.wall = meta.wall;
+    if (meta.col != null) docData.col = meta.col;
+    if (meta.row != null) docData.row = meta.row;
+    if (meta.offsetX != null) docData.offsetX = meta.offsetX;
+    if (meta.offsetY != null) docData.offsetY = meta.offsetY;
+    if (meta.offsetZ != null) docData.offsetZ = meta.offsetZ;
+    if (meta.stack != null) docData.stack = meta.stack;
     let usedThumb = false;
 
     try {
