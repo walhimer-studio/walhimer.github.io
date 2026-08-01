@@ -487,7 +487,7 @@
   <script type="module">
 import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-rec2';
 import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
-import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260801-rec2';
+import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260801-rec3';
 import {
   REVOLUTION_MS,
   RECORD_BEFORE_END_MS,
@@ -613,7 +613,10 @@ async function runAutoMp4Revolution(label, id) {
     wallScene?.stopRevolution?.();
     if (result.ok) {
       markAutoMp4Done(id);
-      if (VIEW === 'wall') setStatus(`Auto MP4 saved (${label}) · ${(result.bytes / 1024 / 1024).toFixed(1)} MB`);
+      const sec = Math.round(result.seconds || 0);
+      if (VIEW === 'wall') {
+        setStatus(`Auto MP4 saved (${label}) · ${sec}s · ${(result.bytes / 1024 / 1024).toFixed(1)} MB`);
+      }
     } else if (VIEW === 'wall') {
       setStatus(`Auto MP4 empty (${label}) — press R and record ~90 s manually`);
     }
@@ -785,32 +788,53 @@ function setStatus(msg) {
   syncWallFooterLayout();
 }
 
+let recordUiTimer = null;
+
 function setRecActive(on) {
   const hint = document.getElementById('hint');
   if (hint) hint.dataset.rec = on ? '1' : '';
   if (statusEl) statusEl.dataset.rec = on ? '1' : '';
   syncRecordMp4Button(on);
+  if (recordUiTimer) clearInterval(recordUiTimer);
+  recordUiTimer = null;
+  if (on) {
+    recordUiTimer = setInterval(() => {
+      const sec = Math.floor(canvasRecorder?.elapsedSeconds?.() || 0);
+      syncRecordMp4Button(true, sec);
+      if (sec > 0 && sec % 15 === 0) {
+        setStatus(`Recording MP4… ${sec}s · keep tab open ~90s for full orbit`);
+      }
+    }, 1000);
+  }
 }
 
-function syncRecordMp4Button(on) {
+function syncRecordMp4Button(on, elapsedSec = 0) {
   const btn = document.getElementById('recordMp4');
   if (!btn) return;
   btn.classList.toggle('on', !!on);
   btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  btn.textContent = on ? 'Stop MP4' : 'Record MP4';
+  btn.textContent = on ? `Stop MP4 (${elapsedSec}s)` : 'Record MP4';
 }
 
 async function toggleRecordMp4() {
   wallScene?.ensurePiano?.();
   if (!canvasRecorder) return;
+  const wasActive = canvasRecorder.isActive();
   const on = await canvasRecorder.toggle();
   if (on) {
-    setStatus('Recording MP4… (Stop MP4 or R to stop)');
-  } else {
-    const result = canvasRecorder.lastResult?.() || { ok: false, bytes: 0 };
-    setStatus(result.ok
-      ? `Recording saved · ${(result.bytes / 1024 / 1024).toFixed(1)} MB`
-      : 'Recording failed (0 bytes) — keep tab focused and try again');
+    wallScene?.startRevolution?.(() => wallScene?.stopRevolution?.(), REVOLUTION_MS);
+    setStatus('Recording MP4… wait ~90s for full orbit (Stop MP4 or R when done)');
+  } else if (wasActive) {
+    wallScene?.stopRevolution?.();
+    const result = canvasRecorder.lastResult?.() || { ok: false, bytes: 0, seconds: 0 };
+    const sec = Math.round(result.seconds || 0);
+    if (result.ok && sec >= 60) {
+      setStatus(`Recording saved · ${sec}s · ${(result.bytes / 1024 / 1024).toFixed(1)} MB`);
+    } else if (result.ok) {
+      setStatus(`Recording saved but only ${sec}s — wait ~90s before Stop for full orbit`);
+    } else {
+      setStatus('Recording failed (0 bytes) — keep tab focused and try again');
+    }
   }
   if (!on && VIEW === 'wall') updateUploadUI();
 }
@@ -1715,8 +1739,9 @@ async function boot() {
 
   canvasRecorder = createCanvasRecorder(() => wallScene.getCanvas(), {
     filePrefix: `co-create-${ROOM_ID}`,
+    includeAudio: false,
+    captureFps: 30,
     onActiveChange: setRecActive,
-    getAudioStream: () => wallScene?.getPiano()?.getAudioStream?.(),
   });
   recorderFrameHook = () => canvasRecorder?.notifyFrame?.();
 

@@ -1,11 +1,13 @@
 /**
  * Canvas → MP4/WebM download via MediaRecorder (Safari mp4, Chrome webm fallback).
- * Uses captureStream(0) + requestFrame() each render tick for reliable WebGL capture.
+ * captureStream(fps) + requestFrame() each render tick for WebGL; video-only by default.
  */
 
 export function createCanvasRecorder(getCanvas, opts = {}) {
   const filePrefix = opts.filePrefix ?? 'loop-gallery';
   const getAudioStream = opts.getAudioStream ?? null;
+  const includeAudio = opts.includeAudio === true;
+  const captureFps = opts.captureFps ?? 30;
   const onActiveChange = opts.onActiveChange ?? null;
 
   let recorder = null;
@@ -15,17 +17,27 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
   let mediaStream = null;
   let mimeType = '';
   let stopResolve = null;
-  let lastResult = { ok: false, bytes: 0 };
+  let lastResult = { ok: false, bytes: 0, seconds: 0 };
+  let startedAt = 0;
 
   const pickMime = () => {
-    const types = [
-      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
-      'video/mp4;codecs=avc1,mp4a.40.2',
-      'video/mp4',
-      'video/webm;codecs=vp9,opus',
-      'video/webm;codecs=vp8,opus',
-      'video/webm',
-    ];
+    const types = includeAudio
+      ? [
+        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+        'video/mp4;codecs=avc1,mp4a.40.2',
+        'video/mp4',
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
+        'video/webm',
+      ]
+      : [
+        'video/mp4;codecs=avc1.42E01E',
+        'video/mp4;codecs=avc1',
+        'video/mp4',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm',
+      ];
     return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
   };
 
@@ -50,7 +62,7 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     if (!active || !videoTrack || videoTrack.readyState !== 'live') return;
     try {
       videoTrack.requestFrame();
-    } catch (_) { /* Safari may omit requestFrame on older builds */ }
+    } catch (_) { /* optional on some browsers */ }
   };
 
   const downloadBlob = (blob) => {
@@ -74,11 +86,11 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
       return false;
     }
 
-    // Manual frame cadence — required for WebGL on Safari.
-    const videoStream = canvas.captureStream(0);
+    const videoStream = canvas.captureStream(captureFps);
     videoTrack = videoStream.getVideoTracks()[0] || null;
     mediaStream = videoStream;
-    if (getAudioStream) {
+
+    if (includeAudio && getAudioStream) {
       try {
         const audioStream = await getAudioStream();
         if (audioStream?.getAudioTracks?.().length) {
@@ -93,7 +105,8 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     }
 
     chunks = [];
-    lastResult = { ok: false, bytes: 0 };
+    lastResult = { ok: false, bytes: 0, seconds: 0 };
+    startedAt = Date.now();
     recorder = new MediaRecorder(mediaStream, {
       mimeType,
       videoBitsPerSecond: 16_000_000,
@@ -101,9 +114,13 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     recorder.ondataavailable = (e) => {
       if (e.data.size) chunks.push(e.data);
     };
+    recorder.onerror = (e) => {
+      console.error('CanvasRecorder error', e);
+    };
     recorder.onstop = () => {
+      const seconds = startedAt ? (Date.now() - startedAt) / 1000 : 0;
       const blob = new Blob(chunks, { type: mimeType.split(';')[0] });
-      lastResult = { ok: blob.size > 0, bytes: blob.size };
+      lastResult = { ok: blob.size > 0, bytes: blob.size, seconds, chunks: chunks.length };
       if (blob.size > 0) {
         downloadBlob(blob);
       } else {
@@ -121,7 +138,7 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     await waitFrames(3);
     notifyFrame();
     notifyFrame();
-    recorder.start(1000);
+    recorder.start(250);
     setActive(true);
     return true;
   };
@@ -138,7 +155,7 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     setTimeout(() => {
       if (recorder && recorder.state !== 'inactive') recorder.stop();
       else resolve(lastResult);
-    }, 250);
+    }, 300);
   });
 
   const toggle = async () => {
@@ -149,6 +166,8 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     return start();
   };
 
+  const elapsedSeconds = () => (active && startedAt ? (Date.now() - startedAt) / 1000 : 0);
+
   return {
     toggle,
     start,
@@ -156,5 +175,6 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     isActive: () => active,
     notifyFrame,
     lastResult: () => lastResult,
+    elapsedSeconds,
   };
 }
