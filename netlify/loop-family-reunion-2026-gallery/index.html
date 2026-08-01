@@ -574,27 +574,41 @@ let bootReady = false;
 let cloudLoadFailures = 0;
 let uploadGateTimer = null;
 let autoMp4Timer = null;
+let autoMp4CatchUpQueued = false;
 const AUTO_MP4_KEY = `loopGallery:${ROOM_ID}:autoMp4`;
 
-function autoMp4Done(id) {
+function autoMp4Entry(id) {
   try {
     const map = JSON.parse(localStorage.getItem(AUTO_MP4_KEY) || '{}');
-    return !!map[id];
+    return map[id] ?? null;
   } catch (_) {
-    return false;
+    return null;
   }
 }
 
-function markAutoMp4Done(id) {
+/** Legacy timestamp-only marks (failed empty/1s takes) do not count as success. */
+function autoMp4Success(id) {
+  const entry = autoMp4Entry(id);
+  if (entry == null) return false;
+  if (typeof entry === 'number' || entry === true) return false;
+  return !!entry.ok && (entry.seconds ?? 0) >= 45;
+}
+
+function markAutoMp4Done(id, result) {
   try {
     const map = JSON.parse(localStorage.getItem(AUTO_MP4_KEY) || '{}');
-    map[id] = Date.now();
+    map[id] = {
+      t: Date.now(),
+      ok: !!result?.ok,
+      seconds: result?.seconds ?? 0,
+      bytes: result?.bytes ?? 0,
+    };
     localStorage.setItem(AUTO_MP4_KEY, JSON.stringify(map));
   } catch (_) {}
 }
 
 async function runAutoMp4Revolution(label, id) {
-  if (VIEW !== 'wall' || !canvasRecorder || autoMp4Done(id)) return;
+  if (VIEW !== 'wall' || !canvasRecorder || autoMp4Success(id)) return;
   if (canvasRecorder.isActive()) return;
   wallScene?.ensurePiano?.();
   await wallScene?.getPiano()?.loadAudio?.();
@@ -612,14 +626,14 @@ async function runAutoMp4Revolution(label, id) {
     let result = { ok: false, bytes: 0 };
     if (canvasRecorder?.isActive()) result = await canvasRecorder.stop();
     wallScene?.stopRevolution?.();
-    if (result.ok) {
-      markAutoMp4Done(id);
+    if (result.ok && (result.seconds ?? 0) >= 45) {
+      markAutoMp4Done(id, result);
       const sec = Math.round(result.seconds || 0);
       if (VIEW === 'wall') {
         setStatus(`Auto MP4 saved (${label}) · ${sec}s · ${(result.bytes / 1024 / 1024).toFixed(1)} MB`);
       }
     } else if (VIEW === 'wall') {
-      setStatus(`Auto MP4 empty (${label}) — press R and record ~90 s manually`);
+      setStatus(`Auto MP4 too short (${label}, ${Math.round(result.seconds || 0)}s) — will retry on refresh or press R`);
     }
   }, REVOLUTION_MS);
 }
@@ -635,7 +649,7 @@ function scheduleAutoMp4Recordings() {
   const now = Date.now();
 
   const queue = (atMs, id, label) => {
-    if (autoMp4Done(id)) return;
+    if (autoMp4Success(id)) return;
     const delay = atMs - now;
     if (delay <= 0) {
       if (now < atMs + REVOLUTION_MS && showPhase() === 'live') {
@@ -648,6 +662,21 @@ function scheduleAutoMp4Recordings() {
 
   queue(openAt, openId, 'show open 2:00 PM');
   queue(closeAt, closeId, 'show close ~2:58 PM');
+
+  // Missed or failed 2:00 PM take — auto-record once after boot during live show.
+  if (
+    !autoMp4CatchUpQueued
+    && showPhase() === 'live'
+    && !autoMp4Success(openId)
+    && !canvasRecorder?.isActive?.()
+  ) {
+    autoMp4CatchUpQueued = true;
+    setTimeout(() => {
+      if (showPhase() === 'live' && !autoMp4Success(openId) && !canvasRecorder?.isActive?.()) {
+        void runAutoMp4Revolution('show catch-up', openId);
+      }
+    }, 8000);
+  }
 
   if (showPhase() !== 'after') {
     const nextPoll = Math.min(
