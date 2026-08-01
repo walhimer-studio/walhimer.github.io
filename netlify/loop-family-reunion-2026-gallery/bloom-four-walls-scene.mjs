@@ -120,13 +120,16 @@ export function createBloomFourWallsScene(opts = {}) {
     }
   }
 
-  const TOTAL_BLOOMS = GARDEN.TOTAL_BLOOMS;
-  const SPAWN_INTERVAL = GARDEN.SPAWN_INTERVAL;
-  const HOLD_AFTER_FULL = GARDEN.HOLD_AFTER_FULL;
-  const TOTAL_LIFE = GARDEN.TOTAL_BLOOMS * GARDEN.SPAWN_INTERVAL
-    + GARDEN.HOLD_AFTER_FULL + GARDEN.FADE_TAIL_MS;
+  const GARDEN_CFG = opts.gardenConfig ?? GARDEN;
+  const TOTAL_BLOOMS = GARDEN_CFG.TOTAL_BLOOMS;
+  const SPAWN_INTERVAL = GARDEN_CFG.SPAWN_INTERVAL;
+  const HOLD_AFTER_FULL = GARDEN_CFG.HOLD_AFTER_FULL;
+  const FADE_TAIL_MS = GARDEN_CFG.FADE_TAIL_MS;
+  const TOTAL_LIFE = opts.showDurationMs
+    ?? (TOTAL_BLOOMS * SPAWN_INTERVAL + HOLD_AFTER_FULL + FADE_TAIL_MS);
   const FIRST_SPAWN_MS = 600;
   const DIE_STAGGER_MS = 600;
+  const AUTO_ROTATE_RATE = 0.0003;
 
   function spawnCountAt(cycleElapsed) {
     if (cycleElapsed < FIRST_SPAWN_MS) return 0;
@@ -458,6 +461,8 @@ export function createBloomFourWallsScene(opts = {}) {
   let autoRotate = true;
   let running = true;
   let lastT = null;
+  let revolutionAccum = 0;
+  let revolutionCallback = null;
   const keys = { forward: false, back: false, left: false, right: false };
   const MAX_VIEW_DIST = HALF - (opts.maxViewInset ?? 0.12);
   const PINCH_GAIN = opts.pinchGain ?? 0.085;
@@ -688,6 +693,12 @@ export function createBloomFourWallsScene(opts = {}) {
     autoRotate = false;
   }
 
+  function startRevolution(onComplete) {
+    autoRotate = true;
+    revolutionAccum = 0;
+    revolutionCallback = onComplete ?? null;
+  }
+
   function zoomBy(factor) {
     nudgeView((1 - factor) * ZOOM_STEP);
   }
@@ -704,14 +715,30 @@ export function createBloomFourWallsScene(opts = {}) {
     if (keys.left) yaw += step;
     if (keys.right) yaw -= step;
 
-    if (autoRotate) yaw += 0.0003;
+    if (autoRotate) {
+      yaw += AUTO_ROTATE_RATE;
+      if (revolutionCallback) {
+        revolutionAccum += AUTO_ROTATE_RATE;
+        if (revolutionAccum >= Math.PI * 2) {
+          const done = revolutionCallback;
+          revolutionCallback = null;
+          done();
+        }
+      }
+    }
 
     gardenUpdate(t, dt);
     gardenDraw(t);
     panTex.needsUpdate = true;
     wallTextures.forEach((tex) => { tex.needsUpdate = true; });
 
+    if (opts.getShowLifePct) {
+      lifePct = opts.getShowLifePct();
+    }
     if (lifebarEl) lifebarEl.style.width = `${lifePct.toFixed(2)}%`;
+    if (opts.lifebarLabelEl && opts.getShowLifebarLabel) {
+      opts.lifebarLabelEl.textContent = opts.getShowLifebarLabel();
+    }
     if (machineDnaEl) {
       machineDnaEl.textContent = formatMachineDnaLine(machineDna.express(), lifePct);
     }
@@ -745,5 +772,6 @@ export function createBloomFourWallsScene(opts = {}) {
     getBlooms: () => blooms.map((b) => ({ note: b.note, dead: b.dead })),
     getPiano: () => piano,
     ensurePiano,
+    startRevolution,
   };
 }

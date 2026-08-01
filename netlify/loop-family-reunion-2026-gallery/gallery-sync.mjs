@@ -56,10 +56,19 @@ async function postNetlifyFunction(path, body) {
   }
 }
 
-export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
+export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove, sessionOpts = {}) {
   const cfg = await loadGalleryFirebaseConfig();
   if (!cfg) return { mode: 'local', error: 'missing firebase-config.mjs' };
   const { firebaseConfig, galleryRoot } = cfg;
+  const scheduledStartMs = sessionOpts.scheduledStartMs ?? null;
+  const showDurationMs = sessionOpts.showDurationMs ?? null;
+  const getScheduledElapsedMs = sessionOpts.getScheduledElapsedMs ?? null;
+
+  function clampElapsed(elapsed) {
+    if (!Number.isFinite(elapsed)) return 0;
+    if (showDurationMs != null) return Math.max(0, Math.min(showDurationMs, elapsed));
+    return Math.max(0, elapsed);
+  }
 
   try {
   const fb = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js');
@@ -86,7 +95,10 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
       await fs.runTransaction(async (tx) => {
         const snap = await tx.get(roomDocRef);
         if (snap.exists() && snap.data()?.gardenStartedAt) return;
-        tx.set(roomDocRef, { gardenStartedAt: fs.serverTimestamp() }, { merge: true });
+        const startedAt = scheduledStartMs != null
+          ? fs.Timestamp.fromMillis(scheduledStartMs)
+          : fs.serverTimestamp();
+        tx.set(roomDocRef, { gardenStartedAt: startedAt }, { merge: true });
       });
       return { ok: true };
     } catch (err) {
@@ -98,8 +110,13 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   }
 
   function getGardenElapsedMs() {
-    if (gardenEpochMs == null) return null;
-    return Math.max(0, Date.now() - gardenEpochMs);
+    if (gardenEpochMs != null) {
+      return clampElapsed(Date.now() - gardenEpochMs);
+    }
+    if (getScheduledElapsedMs) {
+      return clampElapsed(getScheduledElapsedMs());
+    }
+    return null;
   }
 
   function slotPayload(slotId, data) {
