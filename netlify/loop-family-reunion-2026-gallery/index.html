@@ -420,7 +420,7 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-auto';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-orbit';
 import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
 import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260801-rec';
 import {
@@ -533,14 +533,14 @@ async function runAutoMp4Revolution(label, id) {
   wallScene?.ensurePiano?.();
   wallScene?.startRevolution?.(() => {
     wallScene?.stopRevolution?.();
-  });
+  }, REVOLUTION_MS);
   const started = await canvasRecorder.start();
   if (!started) {
     wallScene?.stopRevolution?.();
     return;
   }
   markAutoMp4Done(id);
-  setStatus(`Auto-recording MP4 (${label})… one orbit`);
+  setStatus(`Auto-recording MP4 (${label})… full room orbit (~90 s)`);
   setTimeout(() => {
     if (canvasRecorder?.isActive()) canvasRecorder.stop();
     wallScene?.stopRevolution?.();

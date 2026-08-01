@@ -16,7 +16,7 @@ export const SHOW_DURATION_MS = 60 * 60 * 1000;
 /** Add ?mod=aug1-2026 to gallery/phone URL for pre-show uploads. */
 export const SHOW_MOD_PARAM = 'aug1-2026';
 
-/** One full auto-rotate orbit for MP4 (~90 s at default wall speed). */
+/** One full auto-rotate orbit for MP4 — all four walls in 90 s. */
 export const REVOLUTION_MS = 90 * 1000;
 
 /** Second orbit recording starts this many ms before show end (≈ 2:58:30 PM). */

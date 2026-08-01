@@ -691,16 +691,20 @@ export function createBloomFourWallsScene(opts = {}) {
     autoRotate = false;
   }
 
-  function startRevolution(onComplete) {
+  let revolutionDurationMs = null;
+
+  function startRevolution(onComplete, durationMs = null) {
     autoRotate = true;
     revolutionAccum = 0;
     revolutionCallback = onComplete ?? null;
+    revolutionDurationMs = durationMs != null && durationMs > 0 ? durationMs : null;
   }
 
   function stopRevolution() {
     autoRotate = false;
     revolutionAccum = 0;
     revolutionCallback = null;
+    revolutionDurationMs = null;
   }
 
   function zoomBy(factor) {
@@ -720,13 +724,16 @@ export function createBloomFourWallsScene(opts = {}) {
     if (keys.right) yaw -= step;
 
     if (autoRotate) {
-      yaw += AUTO_ROTATE_RATE;
-      if (revolutionCallback) {
-        revolutionAccum += AUTO_ROTATE_RATE;
+      const deltaYaw = revolutionDurationMs
+        ? ((Math.PI * 2) / revolutionDurationMs) * dt
+        : AUTO_ROTATE_RATE;
+      yaw += deltaYaw;
+      if (revolutionCallback || revolutionDurationMs) {
+        revolutionAccum += deltaYaw;
         if (revolutionAccum >= Math.PI * 2) {
           const done = revolutionCallback;
           revolutionCallback = null;
-          done();
+          if (done) done();
         }
       }
     }
