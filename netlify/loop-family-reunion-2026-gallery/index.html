@@ -279,6 +279,54 @@
     html.show-wait-pending #wall-counter,
     html.show-wait-pending #recordMp4,
     html.show-wait-pending #lifebar-wrap { visibility: hidden; }
+    #showCountdown {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 55;
+      pointer-events: none;
+      text-align: center;
+      padding: 20px 28px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      min-width: min(320px, calc(100vw - 32px));
+    }
+    #showCountdown.on { display: block; }
+    #showCountdown.final-five {
+      border-color: rgba(200, 80, 40, 0.55);
+      background: rgba(255, 252, 248, 0.97);
+    }
+    #showCountdownLabel {
+      margin: 0 0 8px;
+      font: 600 13px/1.35 system-ui, sans-serif;
+      letter-spacing: 0.02em;
+      color: rgba(0, 0, 0, 0.62);
+    }
+    #showCountdownTime {
+      margin: 0;
+      font: 600 52px/1 ui-monospace, monospace;
+      letter-spacing: 0.06em;
+      color: rgba(0, 0, 0, 0.88);
+    }
+    #showCountdown.final-five #showCountdownTime {
+      color: rgba(160, 55, 30, 0.95);
+    }
+    #showCountdownSub {
+      margin: 10px 0 0;
+      font: 11px/1.45 ui-monospace, monospace;
+      color: rgba(0, 0, 0, 0.45);
+    }
+    body.view-phone #showCountdown {
+      top: calc(88px + env(safe-area-inset-top));
+      transform: translate(-50%, 0);
+      padding: 14px 20px;
+      min-width: min(280px, calc(100vw - 24px));
+    }
+    body.view-phone #showCountdownTime { font-size: 40px; }
+    body.piece-detail-open #showCountdown { display: none !important; }
     #panel #artistLink,
     #panel #artworkName {
       flex: 1 1 100%;
@@ -381,6 +429,11 @@
       document.getElementById('showWaitScreen')?.setAttribute('aria-hidden', 'false');
     }
   </script>
+  <div id="showCountdown" aria-live="polite" aria-hidden="true" hidden>
+    <p id="showCountdownLabel">Co-Curate opens in</p>
+    <p id="showCountdownTime">0:00</p>
+    <p id="showCountdownSub">2:00 – 3:00 PM ET · Aug 1, 2026</p>
+  </div>
   <div id="wall-counter">Wall 1 · North</div>
   <button type="button" id="recordMp4" aria-pressed="false">Record MP4</button>
   <div id="machine-dna" aria-hidden="true"></div>
@@ -432,9 +485,9 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-corners';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-rec2';
 import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
-import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260801-rec';
+import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260801-rec2';
 import {
   REVOLUTION_MS,
   RECORD_BEFORE_END_MS,
@@ -515,6 +568,7 @@ let pendingMeta = null;
 let firebaseSync = null;
 let wallScene = null;
 let canvasRecorder = null;
+let recorderFrameHook = () => {};
 let isModerator = false;
 let bootReady = false;
 let cloudLoadFailures = 0;
@@ -549,14 +603,20 @@ async function runAutoMp4Revolution(label, id) {
   const started = await canvasRecorder.start();
   if (!started) {
     wallScene?.stopRevolution?.();
+    setStatus('Auto MP4 failed to start — press R to record manually');
     return;
   }
-  markAutoMp4Done(id);
   setStatus(`Auto-recording MP4 (${label})… full room orbit (~90 s)`);
-  setTimeout(() => {
-    if (canvasRecorder?.isActive()) canvasRecorder.stop();
+  setTimeout(async () => {
+    let result = { ok: false, bytes: 0 };
+    if (canvasRecorder?.isActive()) result = await canvasRecorder.stop();
     wallScene?.stopRevolution?.();
-    if (VIEW === 'wall') setStatus(`Auto MP4 saved (${label})`);
+    if (result.ok) {
+      markAutoMp4Done(id);
+      if (VIEW === 'wall') setStatus(`Auto MP4 saved (${label}) · ${(result.bytes / 1024 / 1024).toFixed(1)} MB`);
+    } else if (VIEW === 'wall') {
+      setStatus(`Auto MP4 empty (${label}) — press R and record ~90 s manually`);
+    }
   }, REVOLUTION_MS);
 }
 
@@ -618,6 +678,21 @@ function scheduleUploadGateRefresh() {
     updateUploadUI();
     scheduleUploadGateRefresh();
   }, 15000);
+}
+
+let showCountdownTimer = null;
+function scheduleShowCountdownTick() {
+  if (showCountdownTimer) clearInterval(showCountdownTimer);
+  syncShowCountdown();
+  const phase = showPhase();
+  if (phase === 'after') return;
+  showCountdownTimer = setInterval(() => {
+    syncShowCountdown();
+    if (showPhase() === 'after') {
+      clearInterval(showCountdownTimer);
+      showCountdownTimer = null;
+    }
+  }, 1000);
 }
 
 function onRemoteSlot(data) {
@@ -729,7 +804,14 @@ async function toggleRecordMp4() {
   wallScene?.ensurePiano?.();
   if (!canvasRecorder) return;
   const on = await canvasRecorder.toggle();
-  setStatus(on ? 'Recording MP4… (Stop MP4 or R to stop)' : 'Recording saved');
+  if (on) {
+    setStatus('Recording MP4… (Stop MP4 or R to stop)');
+  } else {
+    const result = canvasRecorder.lastResult?.() || { ok: false, bytes: 0 };
+    setStatus(result.ok
+      ? `Recording saved · ${(result.bytes / 1024 / 1024).toFixed(1)} MB`
+      : 'Recording failed (0 bytes) — keep tab focused and try again');
+  }
   if (!on && VIEW === 'wall') updateUploadUI();
 }
 
@@ -1280,6 +1362,60 @@ async function prepareJPEG(file) {
   };
 }
 
+function formatCountdownMs(ms) {
+  if (ms <= 0) return '0:00';
+  const totalSec = Math.ceil(ms / 1000);
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function syncShowCountdown() {
+  const el = document.getElementById('showCountdown');
+  const labelEl = document.getElementById('showCountdownLabel');
+  const timeEl = document.getElementById('showCountdownTime');
+  const subEl = document.getElementById('showCountdownSub');
+  if (!el || !labelEl || !timeEl) return;
+
+  const phase = showPhase();
+  const now = Date.now();
+  const fiveMin = 5 * 60 * 1000;
+
+  if (phase === 'before') {
+    const ms = showStartMs() - now;
+    el.hidden = false;
+    el.classList.add('on');
+    el.classList.toggle('final-five', ms > 0 && ms <= fiveMin);
+    el.setAttribute('aria-hidden', 'false');
+    labelEl.textContent = ms <= fiveMin ? 'Final 5 minutes · opens at 2:00 PM ET' : 'Co-Curate opens in';
+    timeEl.textContent = formatCountdownMs(ms);
+    if (subEl) subEl.textContent = '2:00 – 3:00 PM ET · Aug 1, 2026';
+    return;
+  }
+
+  if (phase === 'live') {
+    const ms = showEndMs() - now;
+    const inFinalFive = ms > 0 && ms <= fiveMin;
+    if (!inFinalFive) {
+      el.hidden = true;
+      el.classList.remove('on', 'final-five');
+      el.setAttribute('aria-hidden', 'true');
+      return;
+    }
+    el.hidden = false;
+    el.classList.add('on', 'final-five');
+    el.setAttribute('aria-hidden', 'false');
+    labelEl.textContent = 'Final 5 minutes · show ends 3:00 PM ET';
+    timeEl.textContent = formatCountdownMs(ms);
+    if (subEl) subEl.textContent = showLifebarLabel();
+    return;
+  }
+
+  el.hidden = true;
+  el.classList.remove('on', 'final-five');
+  el.setAttribute('aria-hidden', 'true');
+}
+
 function syncShowGateBanner() {
   const waitPoster = showWaitScreenActive() && !isShowModerator();
   document.body.classList.toggle('show-wait-screen', waitPoster);
@@ -1300,6 +1436,7 @@ function syncShowGateBanner() {
       showGateBanner.textContent = '';
     }
   }
+  syncShowCountdown();
 }
 
 function updateUploadUI() {
@@ -1566,6 +1703,7 @@ async function boot() {
       const cap = GRID_COLS * GRID_ROWS * WALL_ORDER.length;
       return cap > 0 ? slots.size / cap : 0;
     },
+    onAfterRender: () => recorderFrameHook(),
   });
   const { frameMaxW, frameMaxH, frameMinH } = wallScene.maxFrameSize();
   FRAME_MAX_W = frameMaxW;
@@ -1580,6 +1718,7 @@ async function boot() {
     onActiveChange: setRecActive,
     getAudioStream: () => wallScene?.getPiano()?.getAudioStream?.(),
   });
+  recorderFrameHook = () => canvasRecorder?.notifyFrame?.();
 
   if (MOD_TOKEN) {
     try {
@@ -1628,6 +1767,7 @@ async function boot() {
 
   bootReady = true;
   updateUploadUI();
+  scheduleShowCountdownTick();
   scheduleUploadGateRefresh();
   scheduleAutoMp4Recordings();
   wallScene.getCanvas()?.focus({ preventScroll: true });
@@ -1636,6 +1776,7 @@ async function boot() {
 boot().catch((err) => {
   console.error(err);
   syncShowGateBanner();
+  scheduleShowCountdownTick();
   setStatus(err.message || 'Failed to start gallery');
 });
   </script>

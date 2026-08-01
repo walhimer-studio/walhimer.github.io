@@ -802,6 +802,7 @@ export function createBloomFourWallsScene(opts = {}) {
     camera.quaternion.copy(qY.multiply(qP));
     updateWallLabel();
     renderer.render(scene, camera);
+    opts.onAfterRender?.();
   }
   requestAnimationFrame(tick);
 
