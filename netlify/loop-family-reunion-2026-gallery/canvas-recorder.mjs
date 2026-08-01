@@ -1,12 +1,12 @@
 /**
  * Canvas → MP4/WebM download via MediaRecorder (Safari mp4, Chrome webm fallback).
- * captureStream(fps) + requestFrame() each render tick for WebGL; video-only by default.
+ * captureStream(fps) + requestFrame() each render tick for WebGL.
  */
 
 export function createCanvasRecorder(getCanvas, opts = {}) {
   const filePrefix = opts.filePrefix ?? 'loop-gallery';
   const getAudioStream = opts.getAudioStream ?? null;
-  const includeAudio = opts.includeAudio === true;
+  const includeAudio = opts.includeAudio !== false && !!getAudioStream;
   const captureFps = opts.captureFps ?? 30;
   const onActiveChange = opts.onActiveChange ?? null;
 
@@ -93,15 +93,29 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
     if (includeAudio && getAudioStream) {
       try {
         const audioStream = await getAudioStream();
-        if (audioStream?.getAudioTracks?.().length) {
+        const audioTracks = audioStream?.getAudioTracks?.() || [];
+        if (audioTracks.length) {
           mediaStream = new MediaStream([
             ...videoStream.getVideoTracks(),
-            ...audioStream.getAudioTracks(),
+            ...audioTracks,
           ]);
         }
       } catch (err) {
         console.warn('CanvasRecorder: audio unavailable, recording video only', err);
+        mimeType = pickMimeForVideoOnly();
       }
+    }
+
+    function pickMimeForVideoOnly() {
+      const types = [
+        'video/mp4;codecs=avc1.42E01E',
+        'video/mp4;codecs=avc1',
+        'video/mp4',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm',
+      ];
+      return types.find((t) => MediaRecorder.isTypeSupported(t)) || mimeType;
     }
 
     chunks = [];
@@ -126,7 +140,7 @@ export function createCanvasRecorder(getCanvas, opts = {}) {
       } else {
         console.warn('CanvasRecorder: recording empty — no file saved');
       }
-      mediaStream?.getTracks().forEach((t) => t.stop());
+      mediaStream?.getVideoTracks().forEach((t) => t.stop());
       videoTrack = null;
       mediaStream = null;
       setActive(false);
