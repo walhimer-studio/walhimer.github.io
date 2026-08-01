@@ -44,7 +44,10 @@ service cloud.firestore {
         && request.resource.data.side in ['L','R']
         && (!('artistLink' in request.resource.data)
           || (request.resource.data.artistLink is string
-            && request.resource.data.artistLink.matches('https://.*')));
+            && request.resource.data.artistLink.matches('https://.*')))
+        && (!('artworkName' in request.resource.data)
+          || (request.resource.data.artworkName is string
+            && request.resource.data.artworkName.size() <= 120));
       allow delete: if false;
     }
     match /loopGalleryRooms/{roomId}/limits/{ipHash} {

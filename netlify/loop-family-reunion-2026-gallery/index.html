@@ -216,7 +216,8 @@
     }
     #lifebar { height: 100%; width: 0%; background: rgba(0, 0, 0, 0.32); transition: width 0.1s linear; }
     body.view-phone #wall-counter { top: 10px; right: 12px; }
-    #panel #artistLink {
+    #panel #artistLink,
+    #panel #artworkName {
       flex: 1 1 100%;
       min-width: 0;
       border: 1px solid rgba(0, 0, 0, 0.14);
@@ -262,6 +263,13 @@
       word-break: break-all;
     }
     #pieceDetailLink.on { display: inline-block; }
+    #pieceDetailTitle {
+      display: none;
+      margin: 0 0 10px;
+      font: 600 18px/1.3 system-ui, sans-serif;
+      color: #111;
+    }
+    #pieceDetailTitle.on { display: block; }
     body.piece-detail-open #panel,
     body.piece-detail-open #panPad,
     body.piece-detail-open #hint { display: none; }
@@ -290,6 +298,7 @@
   </div>
   <div id="pieceDetail" aria-hidden="true">
     <button type="button" id="pieceBack">← Back to gallery</button>
+    <h2 id="pieceDetailTitle"></h2>
     <img id="pieceDetailImg" alt="" />
     <a id="pieceDetailLink" href="#" target="_blank" rel="noopener noreferrer"></a>
   </div>
@@ -305,6 +314,7 @@
     <div class="row panel-upload">
       <label class="btn" for="fileInput">Choose image</label>
       <input id="fileInput" type="file" accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
+      <input id="artworkName" type="text" autocapitalize="words" spellcheck="true" maxlength="120" placeholder="Artwork name (optional)" />
       <input id="artistLink" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https:// link — portfolio, Instagram, X (optional)" />
       <img id="preview" alt="" />
       <button type="button" id="hangWall" class="primary" disabled>Hang on wall</button>
@@ -324,7 +334,7 @@ import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
 import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260801-hangfix';
+} from './gallery-sync.mjs?v=20260801-name';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -363,7 +373,9 @@ const hangWall = document.getElementById('hangWall');
 const deleteNearest = document.getElementById('deleteNearest');
 const modBadge = document.getElementById('modBadge');
 const artistLinkInput = document.getElementById('artistLink');
+const artworkNameInput = document.getElementById('artworkName');
 const pieceDetailEl = document.getElementById('pieceDetail');
+const pieceDetailTitle = document.getElementById('pieceDetailTitle');
 const pieceDetailImg = document.getElementById('pieceDetailImg');
 const pieceDetailLink = document.getElementById('pieceDetailLink');
 const pieceBackBtn = document.getElementById('pieceBack');
@@ -556,6 +568,12 @@ function normalizeArtistLink(raw) {
   }
 }
 
+function normalizeArtworkName(raw) {
+  const trimmed = (raw || '').replace(/\s+/g, ' ').trim();
+  if (!trimmed) return '';
+  return trimmed.slice(0, 120);
+}
+
 function slotImageUrl(slot) {
   return slot.previewUrl || slot.thumbData || slot.url || '';
 }
@@ -588,7 +606,15 @@ function openPieceDetail(slotId) {
   const imgUrl = slotImageUrl(slot);
   if (!imgUrl) return;
   pieceDetailImg.src = imgUrl;
-  pieceDetailImg.alt = `Artwork ${slotId}`;
+  const title = slot.artworkName?.trim();
+  pieceDetailImg.alt = title || `Artwork ${slotId}`;
+  if (title) {
+    pieceDetailTitle.textContent = title;
+    pieceDetailTitle.classList.add('on');
+  } else {
+    pieceDetailTitle.textContent = '';
+    pieceDetailTitle.classList.remove('on');
+  }
   const link = slot.artistLink;
   if (link) {
     pieceDetailLink.href = link;
@@ -609,6 +635,8 @@ function closePieceDetail() {
   pieceDetailEl.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('piece-detail-open');
   pieceDetailImg.removeAttribute('src');
+  pieceDetailTitle.textContent = '';
+  pieceDetailTitle.classList.remove('on');
 }
 
 function tryOpenPieceAt(clientX, clientY) {
@@ -727,11 +755,11 @@ function loadLocalSlots() {
 function saveLocalSlots() {
   try {
     const arr = [...slots.values()].map(({
-      slotId, wall, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH, artistLink,
+      slotId, wall, side, worldZ, col, row, url, storagePath, aspect, frameW, frameH, artistLink, artworkName,
     }) => {
       const cleanUrl = url?.startsWith('blob:') || url?.startsWith('data:') ? undefined : url;
       return {
-        slotId, side, worldZ, col, row, url: cleanUrl, storagePath, aspect, frameW, frameH, artistLink,
+        slotId, side, worldZ, col, row, url: cleanUrl, storagePath, aspect, frameW, frameH, artistLink, artworkName,
       };
     });
     localStorage.setItem(SLOTS_KEY, JSON.stringify(arr));
@@ -1057,6 +1085,7 @@ async function hang() {
     return;
   }
   pendingMeta.artistLink = artistLink || undefined;
+  pendingMeta.artworkName = normalizeArtworkName(artworkNameInput?.value ?? '') || undefined;
   if (uploadCount >= MAX_UPLOADS) {
     setStatus('Upload limit reached — 100 per browser for this room');
     return;
@@ -1113,6 +1142,7 @@ async function hang() {
       frameW: pendingMeta.frameW,
       frameH: pendingMeta.frameH,
       artistLink: pendingMeta.artistLink,
+      artworkName: pendingMeta.artworkName,
     });
     if (!hung && !slots.has(slot.slotId)) return;
 
@@ -1123,6 +1153,7 @@ async function hang() {
     pendingMeta = null;
     fileInput.value = '';
     if (artistLinkInput) artistLinkInput.value = '';
+    if (artworkNameInput) artworkNameInput.value = '';
     previewEl.style.display = 'none';
     updateUploadUI();
     const wallLabel = { N: 'North', E: 'East', S: 'South', W: 'West' }[slot.wall] || slot.wall;
