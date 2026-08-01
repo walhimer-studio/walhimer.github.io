@@ -49,11 +49,23 @@ export function createBloomPentatonicPiano(opts = {}) {
 
       let done = 0;
       for (const key of SAMPLE_KEYS) {
-        const res = await fetch(`${baseUrl}${key}.mp3`);
-        if (!res.ok) throw new Error(`Failed to load piano sample ${key}.mp3`);
-        audioBuffers[key] = await actx.decodeAudioData(await res.arrayBuffer());
+        try {
+          const res = await fetch(`${baseUrl}${key}.mp3`);
+          if (!res.ok) {
+            console.warn(`Piano sample missing: ${key}.mp3`);
+            continue;
+          }
+          audioBuffers[key] = await actx.decodeAudioData(await res.arrayBuffer());
+        } catch (err) {
+          console.warn(`Piano sample failed: ${key}.mp3`, err);
+        }
         done += 1;
         onProgress?.(done / SAMPLE_KEYS.length);
+      }
+
+      if (!Object.keys(audioBuffers).length) {
+        console.warn('No piano samples loaded — run install_salamander_samples.py and copy mp3 roots into ./samples/');
+        return false;
       }
 
       masterGain = actx.createGain();

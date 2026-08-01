@@ -272,13 +272,16 @@
     #pieceDetailTitle.on { display: block; }
     body.piece-detail-open #panel,
     body.piece-detail-open #panPad,
-    body.piece-detail-open #hint { display: none; }
+    body.piece-detail-open #hint,
+    body.piece-detail-open #qrOverlay,
+    body.piece-detail-open #wall-counter,
+    body.piece-detail-open #recordMp4 { display: none; }
   </style>
 </head>
 <body>
   <div id="hint">
     <span class="hint-title hint-title-gallery">Loop Gallery · Family Reunion Friday Gallery</span><span class="hint-title hint-title-phone">Loop Gallery · Family Reunion Friday Phone</span><br>
-    <span id="hintControls">Drag to look · pinch or +/− to move closer · tap art for link · R record MP4</span><br>
+    <span id="hintControls">Drag to look · pinch or +/− to move closer · click or tap art for name &amp; link · R record MP4</span><br>
     Choose image → Hang on wall · max 100 uploads · max 8 MB export
   </div>
   <div id="wall-counter">Wall 1 · North</div>
@@ -329,12 +332,12 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-rows4';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-sync';
 import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
 import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260801-name';
+} from './gallery-sync.mjs?v=20260801-sync';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -382,7 +385,7 @@ const pieceBackBtn = document.getElementById('pieceBack');
 
 const raycaster = new THREE.Raycaster();
 const pickNdc = new THREE.Vector2();
-let phoneTapStart = null;
+let artTapStart = null;
 
 let uploadCount = 0;
 let pendingFile = null;
@@ -640,35 +643,55 @@ function closePieceDetail() {
 }
 
 function tryOpenPieceAt(clientX, clientY) {
-  if (VIEW !== 'phone') return;
   const slotId = pickSlotAt(clientX, clientY);
   if (slotId) openPieceDetail(slotId);
 }
 
-function bindPhoneArtTap() {
-  if (VIEW !== 'phone') return;
+function bindArtTap() {
   const canvas = wallScene?.getCanvas?.();
   if (!canvas) return;
-  canvas.addEventListener('touchstart', (e) => {
-    if (e.touches.length !== 1 || pieceDetailEl.classList.contains('open')) {
-      phoneTapStart = null;
+
+  const isTap = (start, x, y) => {
+    if (!start) return false;
+    const dx = x - start.x;
+    const dy = y - start.y;
+    return Math.hypot(dx, dy) <= 16 && Date.now() - start.t <= 500;
+  };
+
+  canvas.addEventListener('mousedown', (e) => {
+    if (e.button !== 0 || pieceDetailEl.classList.contains('open')) {
+      artTapStart = null;
       return;
     }
-    phoneTapStart = {
+    artTapStart = { x: e.clientX, y: e.clientY, t: Date.now() };
+  });
+  canvas.addEventListener('mouseup', (e) => {
+    if (e.button !== 0 || !artTapStart || pieceDetailEl.classList.contains('open')) return;
+    const start = artTapStart;
+    artTapStart = null;
+    if (!isTap(start, e.clientX, e.clientY)) return;
+    e.preventDefault();
+    tryOpenPieceAt(e.clientX, e.clientY);
+  });
+
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1 || pieceDetailEl.classList.contains('open')) {
+      artTapStart = null;
+      return;
+    }
+    artTapStart = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
       t: Date.now(),
     };
   }, { passive: true });
   canvas.addEventListener('touchend', (e) => {
-    if (!phoneTapStart || pieceDetailEl.classList.contains('open')) return;
+    if (!artTapStart || pieceDetailEl.classList.contains('open')) return;
     const t = e.changedTouches[0];
     if (!t) return;
-    const start = phoneTapStart;
-    phoneTapStart = null;
-    const dx = t.clientX - start.x;
-    const dy = t.clientY - start.y;
-    if (Math.hypot(dx, dy) > 16 || Date.now() - start.t > 500) return;
+    const start = artTapStart;
+    artTapStart = null;
+    if (!isTap(start, t.clientX, t.clientY)) return;
     tryOpenPieceAt(t.clientX, t.clientY);
   }, { passive: true });
 }
@@ -1247,6 +1270,7 @@ async function boot() {
     maxViewInset: VIEW === 'phone' ? 0.08 : 0.12,
     pinchGain: VIEW === 'phone' ? 0.12 : 0.085,
     zoomStep: VIEW === 'phone' ? 18 : 14,
+    getGardenElapsedMs: () => firebaseSync?.getGardenElapsedMs?.() ?? null,
     getScarLoad: () => {
       const cap = GRID_COLS * GRID_ROWS * WALL_ORDER.length;
       return cap > 0 ? slots.size / cap : 0;
@@ -1284,12 +1308,16 @@ async function boot() {
       onRemoteSlot,
       (id) => removeFrame(id)
     );
+    if (firebaseSync.mode === 'firebase') {
+      await firebaseSync.ensureGardenSession?.();
+    }
   } catch (_) {
     firebaseSync = { mode: 'local' };
   }
 
   loadLocalSlots();
-  bindPhoneArtTap();
+  bindArtTap();
+  if (VIEW === 'wall') void wallScene.ensurePiano?.();
 
   bootReady = true;
   updateUploadUI();

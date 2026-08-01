@@ -125,6 +125,60 @@ export function createBloomFourWallsScene(opts = {}) {
   const HOLD_AFTER_FULL = GARDEN.HOLD_AFTER_FULL;
   const TOTAL_LIFE = GARDEN.TOTAL_BLOOMS * GARDEN.SPAWN_INTERVAL
     + GARDEN.HOLD_AFTER_FULL + GARDEN.FADE_TAIL_MS;
+  const FIRST_SPAWN_MS = 600;
+  const DIE_STAGGER_MS = 600;
+
+  function spawnCountAt(cycleElapsed) {
+    if (cycleElapsed < FIRST_SPAWN_MS) return 0;
+    return Math.min(TOTAL_BLOOMS, Math.floor((cycleElapsed - FIRST_SPAWN_MS) / SPAWN_INTERVAL) + 1);
+  }
+
+  function dieStartAt() {
+    return FIRST_SPAWN_MS + (TOTAL_BLOOMS - 1) * SPAWN_INTERVAL + HOLD_AFTER_FULL;
+  }
+
+  function applyBloomTimeline(bloom, ageMs, cycleElapsed, index, totalCount) {
+    const growMs = Math.max(400, (1 / bloom.growSpeed) * 16.67 * 0.85);
+    if (ageMs < growMs) {
+      bloom.currentR = bloom.maxR * Math.max(0, ageMs / growMs);
+      bloom.growing = true;
+    } else {
+      bloom.currentR = bloom.maxR;
+      bloom.growing = false;
+    }
+    const dieStart = dieStartAt();
+    if (totalCount >= TOTAL_BLOOMS && cycleElapsed >= dieStart) {
+      const reverseIdx = totalCount - 1 - index;
+      const myDieStart = dieStart + reverseIdx * DIE_STAGGER_MS;
+      if (cycleElapsed >= myDieStart) {
+        bloom.dying = true;
+        bloom.growing = false;
+        const dieAge = cycleElapsed - myDieStart;
+        bloom.fadeAlpha = Math.max(0, 1 - dieAge * bloom.fadeSpeed / 16.67);
+        if (bloom.fadeAlpha <= 0) bloom.dead = true;
+      }
+    }
+  }
+
+  function playBloomSpawnNote(index) {
+    const note = noteAssignments[index];
+    if (!note) return;
+    void ensurePiano().then(() => {
+      piano.playNote(note, 0.22 + Math.random() * 0.1);
+    });
+  }
+
+  function playBloomDieNotes(totalCount) {
+    void ensurePiano().then(() => {
+      for (let i = 0; i < totalCount; i += 1) {
+        const note = noteAssignments[totalCount - 1 - i];
+        if (!note) continue;
+        setTimeout(() => {
+          piano.playNote(note, 0.14 + Math.random() * 0.08);
+        }, i * DIE_STAGGER_MS);
+      }
+    });
+  }
 
   const panCanvas = document.createElement('canvas');
   panCanvas.width = PAN_W;
@@ -152,40 +206,150 @@ export function createBloomFourWallsScene(opts = {}) {
   let dyingStarted = false;
   let startTime = null;
   let lifePct = 0;
+  let syncedCycleIndex = -1;
+  let lastDerivedSpawnCount = 0;
+  let lastDyingTriggered = false;
+  let gardenSyncInitialized = false;
+  let lastSyncedCycleIndex = -1;
+  let cycleBloomProtos = { cycleIndex: -1, protos: [] };
+
+  function cloneBloomVisual(src) {
+    const bloom = Object.create(Bloom.prototype);
+    Object.assign(bloom, src, {
+      layers: src.layers.map((l) => ({ ...l })),
+      c1: [...src.c1],
+      c2: [...src.c2],
+      c3: [...src.c3],
+      currentR: 0,
+      growing: true,
+      dying: false,
+      fadeAlpha: 1,
+      dead: false,
+    });
+    return bloom;
+  }
+
+  function ensureCycleBloomProtos(cycleIndex) {
+    if (cycleBloomProtos.cycleIndex === cycleIndex) return;
+    const baseRng = new Rand(machineDna.seed);
+    let assignments = shuffleNotePool(baseRng);
+    for (let c = 0; c < cycleIndex; c += 1) {
+      for (let i = 0; i < TOTAL_BLOOMS; i += 1) {
+        new Bloom(baseRng, assignments[i]);
+      }
+      assignments = shuffleNotePool(baseRng);
+    }
+    const protos = [];
+    for (let i = 0; i < TOTAL_BLOOMS; i += 1) {
+      protos.push(new Bloom(baseRng, assignments[i]));
+    }
+    noteAssignments = assignments;
+    rng.s = baseRng.s;
+    cycleBloomProtos = { cycleIndex, protos };
+  }
+
+  function syncMachineDnaCycle(cycleIndex) {
+    let gen = machineDna.express().generation;
+    while (gen < cycleIndex) {
+      machineDna.onGardenCycleComplete();
+      gen += 1;
+    }
+  }
+
+  function prepareSyncedCycle(cycleIndex) {
+    if (cycleIndex === syncedCycleIndex) return;
+    ensureCycleBloomProtos(cycleIndex);
+    syncedCycleIndex = cycleIndex;
+    syncMachineDnaCycle(cycleIndex);
+  }
+
+  function rebuildBloomsForElapsed(cycleElapsed, count, cycleIndex) {
+    ensureCycleBloomProtos(cycleIndex);
+    const next = [];
+    for (let i = 0; i < count; i += 1) {
+      const spawnAt = FIRST_SPAWN_MS + i * SPAWN_INTERVAL;
+      const bloom = cloneBloomVisual(cycleBloomProtos.protos[i]);
+      applyBloomTimeline(bloom, cycleElapsed - spawnAt, cycleElapsed, i, count);
+      if (!bloom.dead) next.push(bloom);
+    }
+    blooms = next;
+    spawnCount = count;
+    gardenFull = count >= TOTAL_BLOOMS;
+    fullAt = gardenFull ? FIRST_SPAWN_MS + (TOTAL_BLOOMS - 1) * SPAWN_INTERVAL : -1;
+    dyingStarted = count >= TOTAL_BLOOMS && cycleElapsed >= dieStartAt();
+  }
 
   function gardenReset(t) {
     blooms = [];
     spawnCount = 0;
-    nextSpawn = t + 600;
+    nextSpawn = t + FIRST_SPAWN_MS;
     gardenFull = false;
     fullAt = -1;
     dyingStarted = false;
     startTime = t;
     noteAssignments = shuffleNotePool(rng);
     machineDna.onGardenCycleComplete();
+    syncedCycleIndex = -1;
+    lastDerivedSpawnCount = 0;
+    lastDyingTriggered = false;
   }
 
-  function gardenUpdate(t, dt) {
+  function gardenUpdateSynced(elapsedMs, t, dt) {
+    const cycleIndex = Math.floor(elapsedMs / TOTAL_LIFE);
+    const cycleElapsed = elapsedMs % TOTAL_LIFE;
+    prepareSyncedCycle(cycleIndex);
+    const count = spawnCountAt(cycleElapsed);
+    const dieStart = dieStartAt();
+
+    if (!gardenSyncInitialized) {
+      lastDerivedSpawnCount = count;
+      lastDyingTriggered = count >= TOTAL_BLOOMS && cycleElapsed >= dieStart;
+      gardenSyncInitialized = true;
+      lastSyncedCycleIndex = cycleIndex;
+    } else {
+      if (cycleIndex !== lastSyncedCycleIndex) {
+        lastDerivedSpawnCount = 0;
+        lastDyingTriggered = false;
+        lastSyncedCycleIndex = cycleIndex;
+      }
+      if (count > lastDerivedSpawnCount) {
+        for (let i = lastDerivedSpawnCount; i < count; i += 1) playBloomSpawnNote(i);
+      }
+      if (count >= TOTAL_BLOOMS && cycleElapsed >= dieStart && !lastDyingTriggered) {
+        lastDyingTriggered = true;
+        playBloomDieNotes(count);
+      }
+      lastDerivedSpawnCount = count;
+    }
+
+    rebuildBloomsForElapsed(cycleElapsed, count, cycleIndex);
+    blooms.forEach((b) => {
+      if (!b.dead && !b.dying) b.update(dt);
+      else if (b.dying) b.update(dt);
+    });
+
+    lifePct = Math.min(cycleElapsed / TOTAL_LIFE * 100, 100);
+    machineDna.syncGardenAge(cycleElapsed / 1000);
+    machineDna.update(dt / 1000, { scarLoad: opts.getScarLoad?.() ?? 0 });
+  }
+
+  function gardenUpdateLocal(t, dt) {
     if (!startTime) startTime = t;
     const elapsed = t - startTime;
     if (BLOOMS_ENABLED) {
       if (spawnCount < TOTAL_BLOOMS && t > nextSpawn) {
         const bloom = new Bloom(rng, noteAssignments[spawnCount]);
         blooms.push(bloom);
-        void ensurePiano().then(() => {
-          piano.playNote(bloom.note, 0.22 + Math.random() * 0.1);
-        });
+        playBloomSpawnNote(spawnCount);
         spawnCount += 1;
         nextSpawn = t + SPAWN_INTERVAL;
         if (spawnCount === TOTAL_BLOOMS) { gardenFull = true; fullAt = t; }
       }
       if (gardenFull && !dyingStarted && t > fullAt + HOLD_AFTER_FULL) {
         dyingStarted = true;
+        playBloomDieNotes(blooms.length);
         [...blooms].reverse().forEach((b, i) => {
-          setTimeout(() => {
-            b.startDying();
-            piano.playNote(b.note, 0.14 + Math.random() * 0.08);
-          }, i * 600);
+          setTimeout(() => { b.startDying(); }, i * DIE_STAGGER_MS);
         });
       }
       blooms.forEach((b) => b.update(dt));
@@ -196,6 +360,23 @@ export function createBloomFourWallsScene(opts = {}) {
     lifePct = Math.min(elapsed / TOTAL_LIFE * 100, 100);
     machineDna.syncGardenAge(elapsed / 1000);
     machineDna.update(dt / 1000, { scarLoad: opts.getScarLoad?.() ?? 0 });
+  }
+
+  function gardenUpdate(t, dt) {
+    const syncedElapsed = opts.getGardenElapsedMs?.();
+    const syncedNow = syncedElapsed != null;
+    if (syncedNow && !gardenUpdate._wasSynced) {
+      gardenSyncInitialized = false;
+      syncedCycleIndex = -1;
+      lastSyncedCycleIndex = -1;
+      cycleBloomProtos = { cycleIndex: -1, protos: [] };
+    }
+    gardenUpdate._wasSynced = syncedNow;
+    if (syncedNow) {
+      gardenUpdateSynced(syncedElapsed, t, dt);
+      return;
+    }
+    gardenUpdateLocal(t, dt);
   }
 
   function gardenDraw(t) {

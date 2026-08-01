@@ -71,6 +71,28 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   const storage = st.getStorage(app);
   // loopGallery/{roomId}/slots/{slotId} — valid col/doc/col/doc path
   const slotsCol = fs.collection(db, galleryRoot, roomId, 'slots');
+  const roomDocRef = fs.doc(db, galleryRoot, roomId);
+  let gardenEpochMs = null;
+
+  fs.onSnapshot(roomDocRef, (snap) => {
+    const ts = snap.data()?.gardenStartedAt;
+    if (ts && typeof ts.toMillis === 'function') {
+      gardenEpochMs = ts.toMillis();
+    }
+  });
+
+  async function ensureGardenSession() {
+    await fs.runTransaction(async (tx) => {
+      const snap = await tx.get(roomDocRef);
+      if (snap.exists() && snap.data()?.gardenStartedAt) return;
+      tx.set(roomDocRef, { gardenStartedAt: fs.serverTimestamp() }, { merge: true });
+    });
+  }
+
+  function getGardenElapsedMs() {
+    if (gardenEpochMs == null) return null;
+    return Math.max(0, Date.now() - gardenEpochMs);
+  }
 
   function slotPayload(slotId, data) {
     const mWall = /^([NESW])-(\d+)-(\d+)(?:-.*)?$/.exec(slotId || '');
@@ -193,7 +215,16 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
     return res.json();
   }
 
-  return { mode: 'firebase', galleryRoot, uploadJPEG, deleteSlot, objectUrlForSlot, configSource: cfg.source };
+  return {
+    mode: 'firebase',
+    galleryRoot,
+    uploadJPEG,
+    deleteSlot,
+    objectUrlForSlot,
+    ensureGardenSession,
+    getGardenElapsedMs,
+    configSource: cfg.source,
+  };
   } catch (err) {
     return { mode: 'local', error: err?.message || 'firebase init failed' };
   }

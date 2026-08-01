@@ -37,6 +37,11 @@ If hang shows **Missing or insufficient permissions**, paste both rule sets belo
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /loopGallery/{roomId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasOnly(['gardenStartedAt'])
+        && request.resource.data.gardenStartedAt is timestamp;
+    }
     match /loopGallery/{roomId}/slots/{slotId} {
       allow read: if true;
       allow create, update: if request.resource.data.keys().hasAll(['side','worldZ','aspect','url'])
