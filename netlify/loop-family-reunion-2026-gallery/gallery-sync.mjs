@@ -82,11 +82,19 @@ export async function initGallerySync(roomId, onRemoteSlot, onRemoteRemove) {
   });
 
   async function ensureGardenSession() {
-    await fs.runTransaction(async (tx) => {
-      const snap = await tx.get(roomDocRef);
-      if (snap.exists() && snap.data()?.gardenStartedAt) return;
-      tx.set(roomDocRef, { gardenStartedAt: fs.serverTimestamp() }, { merge: true });
-    });
+    try {
+      await fs.runTransaction(async (tx) => {
+        const snap = await tx.get(roomDocRef);
+        if (snap.exists() && snap.data()?.gardenStartedAt) return;
+        tx.set(roomDocRef, { gardenStartedAt: fs.serverTimestamp() }, { merge: true });
+      });
+      return { ok: true };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err?.message || err?.code || 'permission-denied',
+      };
+    }
   }
 
   function getGardenElapsedMs() {

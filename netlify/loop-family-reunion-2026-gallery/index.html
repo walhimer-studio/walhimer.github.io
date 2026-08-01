@@ -337,7 +337,7 @@ import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
 import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
-} from './gallery-sync.mjs?v=20260801-sync';
+} from './gallery-sync.mjs?v=20260801-bootfix';
 
 const THREE = window.THREE;
 const params = new URLSearchParams(location.search);
@@ -398,8 +398,8 @@ let bootReady = false;
 let cloudLoadFailures = 0;
 
 function onRemoteSlot(data) {
-  void addFrame(data, true, VIEW !== 'wall').then((ok) => {
-    if (!ok) {
+  void addFrame(data, true, VIEW !== 'wall').then((result) => {
+    if (result === 'failed') {
       cloudLoadFailures += 1;
       if (VIEW === 'wall') {
         setStatus(`Cloud piece ${data.slotId} failed to load · ${cloudLoadFailures} failed · hard refresh monitor`);
@@ -906,11 +906,11 @@ function cellOccupiedByOther(wall, col, row, slotId) {
 }
 
 function addFrame(data, persist = true, quiet = false) {
-  if (slots.has(data.slotId)) return Promise.resolve(false);
+  if (slots.has(data.slotId)) return Promise.resolve('duplicate');
   const { wall, col, row } = parseCell(data);
   if (cellOccupiedByOther(wall, col, row, data.slotId)) {
     console.warn('Skipping duplicate cell', wall, col, row, data.slotId);
-    return Promise.resolve(false);
+    return Promise.resolve('duplicate');
   }
   const frameW = data.frameW ?? FRAME_MAX_W;
   const frameH = data.frameH ?? FRAME_MAX_H;
@@ -946,11 +946,11 @@ function addFrame(data, persist = true, quiet = false) {
       saveCachedPreview(data.slotId, data.thumbData || data.previewUrl);
     }
     updateUploadUI();
-    return true;
+    return 'ok';
   }).catch((err) => {
     console.error(err);
     if (!quiet) setStatus(err.message || 'Could not show image on wall');
-    return false;
+    return 'failed';
   });
 }
 
@@ -1055,7 +1055,9 @@ function updateUploadUI() {
     ? ` · synced${firebaseSync.configSource ? ` (${firebaseSync.configSource})` : ''}`
     : ` · local only — refresh loses images${firebaseSync?.error ? ` · ${firebaseSync.error}` : ''}`;
   const mod = isModerator ? ' · mod' : '';
-  const failed = cloudLoadFailures > 0 ? ` · ${cloudLoadFailures} cloud load failed` : '';
+  const failed = cloudLoadFailures > 0
+    ? ` · ${cloudLoadFailures} cloud load failed — wipe stale slots or hard refresh`
+    : '';
   const wallLine = `${GALLERY_WALL_TITLE} · ${slots.size} on wall${sync}${failed}${mod}`;
   const urlBarSync = document.getElementById('urlBarSync');
   if (urlBarSync) urlBarSync.textContent = wallLine;
@@ -1167,7 +1169,7 @@ async function hang() {
       artistLink: pendingMeta.artistLink,
       artworkName: pendingMeta.artworkName,
     });
-    if (!hung && !slots.has(slot.slotId)) return;
+    if (hung !== 'ok' && !slots.has(slot.slotId)) return;
 
     wallScene?.focusCell?.(slot.wall, slot.col, slot.row);
     uploadCount += 1;
@@ -1308,14 +1310,25 @@ async function boot() {
       onRemoteSlot,
       (id) => removeFrame(id)
     );
-    if (firebaseSync.mode === 'firebase') {
-      await firebaseSync.ensureGardenSession?.();
-    }
-  } catch (_) {
-    firebaseSync = { mode: 'local' };
+  } catch (err) {
+    console.error('Firebase init failed', err);
+    firebaseSync = { mode: 'local', error: err?.message || 'firebase init failed' };
   }
 
-  loadLocalSlots();
+  if (firebaseSync?.mode === 'firebase') {
+    try {
+      const session = await firebaseSync.ensureGardenSession?.();
+      if (session?.ok === false) {
+        console.warn('Garden session clock not saved:', session.error);
+      }
+    } catch (err) {
+      console.warn('Garden session clock not saved — check Firestore rule for loopGallery/{roomId}', err);
+    }
+  }
+
+  if (firebaseSync?.mode !== 'firebase') {
+    loadLocalSlots();
+  }
   bindArtTap();
   if (VIEW === 'wall') void wallScene.ensurePiano?.();
 
