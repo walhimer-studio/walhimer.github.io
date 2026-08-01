@@ -413,7 +413,7 @@ import {
   SHOW_OPEN_MESSAGE,
   showWaitScreenActive,
   showElapsedMs,
-} from './show-schedule.mjs?v=20260801-wait';
+} from './show-schedule.mjs?v=20260801-close';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260801-gate';
@@ -493,7 +493,7 @@ function uploadsAllowed() {
 
 function scheduleUploadGateRefresh() {
   if (uploadGateTimer) clearTimeout(uploadGateTimer);
-  if (showPhase() !== 'before') return;
+  if (showPhase() === 'after') return;
   uploadGateTimer = setTimeout(() => {
     updateUploadUI();
     scheduleUploadGateRefresh();
@@ -1154,10 +1154,18 @@ function syncShowGateBanner() {
   const showWaitEl = document.getElementById('showWaitScreen');
   if (showWaitEl) showWaitEl.setAttribute('aria-hidden', waitPoster ? 'false' : 'true');
 
-  const closed = showPhase() === 'before' && !isShowModerator();
-  document.body.classList.toggle('show-gate-closed', closed && !waitPoster);
+  const phase = showPhase();
+  const beforeClosed = phase === 'before' && !isShowModerator();
+  const afterClosed = phase === 'after';
+  document.body.classList.toggle('show-gate-closed', (beforeClosed || afterClosed) && !waitPoster);
   if (showGateBanner) {
-    showGateBanner.textContent = closed && !waitPoster ? SHOW_OPEN_MESSAGE : '';
+    if (beforeClosed && !waitPoster) {
+      showGateBanner.textContent = SHOW_OPEN_MESSAGE;
+    } else if (afterClosed) {
+      showGateBanner.textContent = uploadBlockedMessage();
+    } else {
+      showGateBanner.textContent = '';
+    }
   }
 }
 
@@ -1188,6 +1196,10 @@ function updateUploadUI() {
   }
   if (showPhase() === 'before' && !isShowModerator()) {
     setStatus(SHOW_OPEN_MESSAGE);
+    return;
+  }
+  if (showPhase() === 'after') {
+    setStatus(uploadBlockedMessage());
     return;
   }
   const hint = allowed && remaining > 0 && !pendingFile ? ' · choose image first' : '';

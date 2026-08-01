@@ -43,7 +43,7 @@ export function showEndMs() {
 /** @returns {'before'|'live'|'after'} */
 export function showPhase(now = Date.now()) {
   if (now < showStartMs(now)) return 'before';
-  if (now > showEndMs()) return 'after';
+  if (now >= showEndMs()) return 'after';
   return 'live';
 }
 
