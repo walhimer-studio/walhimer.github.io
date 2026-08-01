@@ -24,8 +24,13 @@ export const RECORD_BEFORE_END_MS = 90 * 1000;
 
 export const MAX_UPLOADS_PER_ARTIST = 5;
 
-/** Shown on phone + status before 2 PM Eastern. */
-export const SHOW_OPEN_MESSAGE = 'Co-Curate will open at 2 pm EST, join us then to upload artwork';
+/** Shown on phone status before 2 PM Eastern (full poster has full copy). */
+export const SHOW_OPEN_MESSAGE = 'Co-Curate will open for artwork uploads · 2 pm to 3 pm EST Saturday August 1, 2026';
+
+/** Full-screen poster until 1:59 PM Eastern; gallery visible 1:59–2:00, uploads at 2:00. */
+export function showWaitScreenActive(now = Date.now()) {
+  return now < showStartMs(now) - 60 * 1000;
+}
 
 export function showStartMs(now = Date.now()) {
   return new Date(SHOW_START_ISO).getTime();

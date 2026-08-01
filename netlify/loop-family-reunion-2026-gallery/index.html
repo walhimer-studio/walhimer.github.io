@@ -242,6 +242,31 @@
       pointer-events: none;
     }
     body.view-phone.show-gate-closed #showGateBanner { display: block; }
+    body.show-wait-screen #showGateBanner { display: none !important; }
+    #showWaitScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: #fff;
+      align-items: center;
+      justify-content: center;
+      padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+    }
+    body.show-wait-screen #showWaitScreen { display: flex; }
+    #showWaitScreen img {
+      width: min(100%, 920px);
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    body.show-wait-screen #panel,
+    body.show-wait-screen #panPad,
+    body.show-wait-screen #hint,
+    body.show-wait-screen #qrOverlay,
+    body.show-wait-screen #wall-counter,
+    body.show-wait-screen #recordMp4,
+    body.show-wait-screen #lifebar-wrap { visibility: hidden; }
     #panel #artistLink,
     #panel #artworkName {
       flex: 1 1 100%;
@@ -311,6 +336,14 @@
     Choose image → Hang on wall · max 5 uploads · max 8 MB export
   </div>
   <div id="showGateBanner" aria-live="polite"></div>
+  <div id="showWaitScreen" aria-hidden="true">
+    <img
+      src="/netlify/loop-family-reunion-2026-gallery/images/co-curate-opens-2pm.png"
+      alt="Co-Curate will open for artwork uploads. 2 pm to 3 pm EST Saturday August 1, 2026."
+      width="920"
+      height="920"
+    />
+  </div>
   <div id="wall-counter">Wall 1 · North</div>
   <button type="button" id="recordMp4" aria-pressed="false">Record MP4</button>
   <div id="machine-dna" aria-hidden="true"></div>
@@ -378,8 +411,9 @@ import {
   canUploadNow as showCanUpload,
   uploadBlockedMessage,
   SHOW_OPEN_MESSAGE,
+  showWaitScreenActive,
   showElapsedMs,
-} from './show-schedule.mjs?v=20260801-gate2';
+} from './show-schedule.mjs?v=20260801-wait';
 import {
   initGallerySync, checkUploadLimit, commitUploadLimit, checkModerator,
 } from './gallery-sync.mjs?v=20260801-gate';
@@ -1115,10 +1149,15 @@ async function prepareJPEG(file) {
 }
 
 function syncShowGateBanner() {
+  const waitPoster = showWaitScreenActive() && !isShowModerator();
+  document.body.classList.toggle('show-wait-screen', waitPoster);
+  const showWaitEl = document.getElementById('showWaitScreen');
+  if (showWaitEl) showWaitEl.setAttribute('aria-hidden', waitPoster ? 'false' : 'true');
+
   const closed = showPhase() === 'before' && !isShowModerator();
-  document.body.classList.toggle('show-gate-closed', closed);
+  document.body.classList.toggle('show-gate-closed', closed && !waitPoster);
   if (showGateBanner) {
-    showGateBanner.textContent = closed ? SHOW_OPEN_MESSAGE : '';
+    showGateBanner.textContent = closed && !waitPoster ? SHOW_OPEN_MESSAGE : '';
   }
 }
 
