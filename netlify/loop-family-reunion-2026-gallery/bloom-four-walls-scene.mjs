@@ -19,12 +19,10 @@ export function createBloomFourWallsScene(opts = {}) {
   const ROOM = BASE_ROOM * 5;
   const HALF = ROOM / 2;
   const BLOOMS_ENABLED = opts.bloomsEnabled !== false;
-  const COLS = 4;
+  const COLS = 10;
   const ROWS = 4;
   const CELL_W = ROOM / COLS;
   const CELL_H = ROOM / ROWS;
-  const FRAME_CELL_W = BASE_ROOM / COLS;
-  const FRAME_CELL_H = BASE_ROOM / ROWS;
   const PAN_W = 4096;
   const PAN_H = 1024;
   const WALL_ORDER = ['N', 'E', 'S', 'W'];
@@ -671,9 +669,9 @@ export function createBloomFourWallsScene(opts = {}) {
 
   function maxFrameSize() {
     return {
-      frameMaxW: FRAME_CELL_W * 0.88,
-      frameMaxH: FRAME_CELL_H * 0.88,
-      frameMinH: FRAME_CELL_H * 0.35,
+      frameMaxW: CELL_W * 0.88,
+      frameMaxH: CELL_H * 0.88,
+      frameMinH: CELL_H * 0.35,
     };
   }
 
@@ -766,7 +764,7 @@ export function createBloomFourWallsScene(opts = {}) {
     cellTransform,
     maxFrameSize,
     slotIdForCell,
-    layout: { ROOM, BASE_ROOM, COLS, ROWS, CELL_W, CELL_H, FRAME_CELL_W, FRAME_CELL_H, WALL_ORDER },
+    layout: { ROOM, BASE_ROOM, COLS, ROWS, CELL_W, CELL_H, WALL_ORDER },
     getMachineDna: () => machineDna.express(),
     getGardenLifePct: () => lifePct,
     getBlooms: () => blooms.map((b) => ({ note: b.note, dead: b.dead })),

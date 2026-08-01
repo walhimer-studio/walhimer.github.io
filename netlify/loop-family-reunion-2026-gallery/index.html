@@ -420,7 +420,7 @@
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
   <script type="module">
-import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-gate';
+import { createBloomFourWallsScene } from './bloom-four-walls-scene.mjs?v=20260801-10x4';
 import { parseSeed } from './co-create-machine-dna.mjs?v=20260730-piano';
 import { createCanvasRecorder } from './canvas-recorder.mjs?v=20260730-recbtn';
 import {
@@ -1034,6 +1034,17 @@ function cellOccupiedByOther(wall, col, row, slotId) {
   return false;
 }
 
+function resolveFrameSize(data) {
+  const aspect = data.aspect ?? (data.frameW && data.frameH ? data.frameW / data.frameH : null);
+  if (aspect && Number.isFinite(aspect) && aspect > 0) {
+    return fitFrameToWall(aspect);
+  }
+  return {
+    frameW: data.frameW ?? FRAME_MAX_W,
+    frameH: data.frameH ?? FRAME_MAX_H,
+  };
+}
+
 function addFrame(data, persist = true, quiet = false) {
   if (slots.has(data.slotId)) return Promise.resolve('duplicate');
   const { wall, col, row } = parseCell(data);
@@ -1041,8 +1052,9 @@ function addFrame(data, persist = true, quiet = false) {
     console.warn('Skipping duplicate cell', wall, col, row, data.slotId);
     return Promise.resolve('duplicate');
   }
-  const frameW = data.frameW ?? FRAME_MAX_W;
-  const frameH = data.frameH ?? FRAME_MAX_H;
+  const sized = resolveFrameSize(data);
+  const frameW = sized.frameW;
+  const frameH = sized.frameH;
 
   return loadSlotTexture(data).then((tex) => {
     const built = makeFrameMesh(wall, col, row, frameW, frameH, tex);
