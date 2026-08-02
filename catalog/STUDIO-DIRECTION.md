@@ -35,6 +35,8 @@ Repo path: [`practice/artwork-pipeline.html`](../practice/artwork-pipeline.html)
 | [`machine-aesthetic/emergent-dna/README.md`](../machine-aesthetic/emergent-dna/README.md) | Machine DNA kernel vocabulary |
 | [`docs/submission-and-series-structure.md`](../docs/submission-and-series-structure.md) | Folder layout, frozen submissions |
 | [`docs/unified-catalog.md`](../docs/unified-catalog.md) | `data/catalog.json` refresh |
+| [`docs/wall-screen-edition/README.md`](../docs/wall-screen-edition/README.md) | Wall screen editions — hub (plan · installer · art advisor) |
+| [`docs/wall-screen-edition-plan.md`](../docs/wall-screen-edition-plan.md) | Full product & install technical plan |
 
 ---
 
