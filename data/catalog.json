@@ -13162,7 +13162,50 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Gradients & Color:centered-july-17-2026",
+      "id": "urn:walhimer:sketch:Centered:catalog-centered-readme",
+      "dublin_core": {
+        "title": "../catalog/centered/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000337"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/centered/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "../catalog/centered/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/centered/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:centered-july-17-2026",
       "dublin_core": {
         "title": "centered-july-17-2026",
         "creator": "Mark Walhimer",
@@ -13193,7 +13236,7 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Gradients & Color",
+          "series": "Centered",
           "file": "centered-july-17-2026.html"
         }
       },
