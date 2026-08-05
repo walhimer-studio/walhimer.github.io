@@ -22,10 +22,12 @@ https://mark-walhimer.com/sketches/loop-snippets/loop-machine-aesthetic/index.ht
 5. `python3 _scripts/refresh_catalog.py`
 6. `python3 _scripts/check_self_contained.py` (full repo, exit 0)
 
-## Wall framing (43″ / 55″)
+## Wall framing (43″ / 55″ portrait)
 
-Studio chronicle for Ghost / gravity machines on Hisense-class panels:  
-[`ghost_dense_77823_gravity_sliders_43.md`](./ghost_dense_77823_gravity_sliders_43.md) — full-window canvas, machine scale via camera pull-back, white margin; same aspect for 43″ and 55″.
+Studio chronicle for Ghost / gravity machines on Hisense-class **portrait** panels:  
+[`ghost_dense_77823_gravity_sliders_43.md`](./ghost_dense_77823_gravity_sliders_43.md)  
+
+**Wall URL:** `sketches/loop-snippets/ghost_dense_77823_gravity_sliders_43_portrait.html` (software rotate) · art core `…_43.html`.
 
 ## Machine DNA (fill in for new work)
 

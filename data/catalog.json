@@ -8597,6 +8597,49 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
+      "dublin_core": {
+        "title": "loop-snippets/ghost dense 77823 gravity sliders 43 portrait",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000340"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/ghost dense 77823 gravity sliders 43 portrait",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/ghost_dense_77823_gravity_sliders_43_portrait.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders_43_portrait.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43",
       "dublin_core": {
         "title": "loop-snippets/ghost dense 77823 gravity sliders 43",

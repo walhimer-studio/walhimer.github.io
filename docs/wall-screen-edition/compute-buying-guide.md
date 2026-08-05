@@ -146,7 +146,7 @@ Same Amazon listing (**B0CQ4C9ZY1**) can default to the **i3 G3 Pro**. Read the 
 
 **Centered** — p5 WEBGL · AP seed **`867535358`** · wall kiosk in `.local/centered-july-17-kiosk/` (gitignored).
 
-**Ghost 77823 gravity · sliders · 43″** — framing chronicle for Surrender/Ghost machines on **43″ and 55″** (same aspect, full-window canvas, camera pull-back for white margin): `sketches/loop-snippets/ghost_dense_77823_gravity_sliders_43.html` · [catalog statement](../../catalog/loop-snippets/ghost_dense_77823_gravity_sliders_43.md).
+**Ghost 77823 gravity · sliders · 43″ portrait** — wall chronicle for Surrender/Ghost on **43″ and 55″**: use **`…_43_portrait.html`** (software rotate for landscape HDMI). Art core `…_43.html`. [Catalog](../../catalog/loop-snippets/ghost_dense_77823_gravity_sliders_43.md).
 
 | Display | Role | Compute |
 |---------|------|---------|
