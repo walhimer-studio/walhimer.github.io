@@ -1,0 +1,49 @@
+---
+description: 43″/55″ portrait wall — copy template, paste art copy, edit only *_portrait.html; no fetch, no art-core edits.
+alwaysApply: true
+---
+
+# Wall-screen portrait (43″ / 55″)
+
+**Source of truth:** `docs/wall-screen-edition/templates/README.md`  
+**Mechanical gate:** `.cursor/hooks.json` + `.cursor/ALLOW_EDIT`
+
+---
+
+## Three files, three rules
+
+| File | Rule |
+|------|------|
+| Starters under `docs/wall-screen-edition/templates/` | **Canonical** — update when improving shell; **never edit per piece** |
+| Art core (`sketches/…/your-piece.html`) | **Never changed** for wall wiring |
+| New `sketches/…/your-piece_portrait.html` | **Only file you create/edit** — must be listed in `.cursor/ALLOW_EDIT` |
+
+---
+
+## Hard stops
+
+1. **No fetch, iframe, or `?src=`** in published `*_portrait.html` — copy+paste only.
+2. **No art-core edits** for HUD, seed, rotate, resize.
+3. **No template edits per piece** — copy the starter.
+4. **No rotate/stretch for composition** — portrait panel; square art centered inside.
+5. **No legacy fetch portrait patterns** as a model.
+
+Hooks **deny** protected-path writes unless the exact path is in `.cursor/ALLOW_EDIT`.
+
+---
+
+## Before any write to `*_portrait.html`
+
+1. Read `docs/wall-screen-edition/templates/README.md`.
+2. User adds path to `.cursor/ALLOW_EDIT`.
+3. State template copied, art core (read-only), portrait path, square vs full-bleed starter.
+4. List every change. Wait for user OK.
+
+---
+
+## Starters
+
+| File | Use |
+|------|-----|
+| `portrait-wall.starter.html` | Full-bleed art |
+| `portrait-wall.starter-square.html` | Square art centered in portrait |
