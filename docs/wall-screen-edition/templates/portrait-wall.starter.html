@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ARTWORK TITLE — 43″ / 55″ portrait wall</title>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PORTRAIT SHELL — copied from docs/wall-screen-edition/templates/
+       Do not edit here unless the canonical template was updated and you
+       re-copied this file. See templates/README.md
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <style id="portrait-shell">
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+    }
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .hud {
+      position: fixed;
+      left: 50%;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: min(92vw, 92vh);
+      pointer-events: none;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #888;
+      z-index: 1000;
+    }
+    .hud .seed {
+      letter-spacing: 0.12em;
+      text-transform: none;
+      color: #aaa;
+    }
+  </style>
+  <style id="kiosk-portrait-rotate">
+    html.kiosk-rot {
+      margin: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: #fff !important;
+      overflow: hidden !important;
+    }
+    html.kiosk-rot body {
+      position: fixed !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      background: #fff !important;
+      transform-origin: top left !important;
+    }
+    html.kiosk-rot canvas {
+      display: block !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       ARTWORK HEAD — paste from your art core below this line.
+       Copy: <style> blocks and <script src="…"> tags from the art file.
+       Do NOT paste <html>, <head>, <body>, or <title> from the art file.
+       Do NOT edit the original art file — paste a copy here.
+       ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- PASTE ARTWORK HEAD HERE -->
+
+  <!-- ═══ END ARTWORK HEAD ═══ -->
+</head>
+<body>
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PORTRAIT HUD — edit title and seed in THIS file only (not in art core)
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="hud">
+    <span>ARTWORK TITLE</span>
+    <span class="seed" id="hud-seed">seed —</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       ARTWORK BODY — paste from your art core below this line.
+       Copy: everything inside the art file's <body> (usually the sketch
+       <script> block). Do NOT edit the original art file — paste a copy here.
+       ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- PASTE ARTWORK BODY HERE -->
+
+  <!-- ═══ END ARTWORK BODY ═══ -->
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       PORTRAIT SHELL — rotate logic (43″ / 55″ Hisense-class panels)
+       HDMI mismatch only — not art composition. See README.md
+       Rotate: auto (default) | ?rotate=90 | ?rotate=270 | ?rotate=0
+       Do not edit here unless the canonical template was updated.
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <script>
+  (function () {
+    var p = new URLSearchParams(location.search);
+    var rotParam = p.get("rotate");
+    var rot =
+      rotParam === "270" ? "270" : rotParam === "0" ? "0" : rotParam === "90" ? "90" : "auto";
+
+    function physW() { return document.documentElement.clientWidth; }
+    function physH() { return document.documentElement.clientHeight; }
+    function chooseRot() {
+      if (rot === "0" || rot === "90" || rot === "270") return rot;
+      return physW() >= physH() ? "90" : "0";
+    }
+
+    var ROT = chooseRot();
+    var nativesPatched = false;
+
+    function patchNatives() {
+      if (nativesPatched || ROT === "0") return;
+      nativesPatched = true;
+      document.documentElement.classList.add("kiosk-rot");
+      Object.defineProperty(window, "innerWidth", {
+        configurable: true,
+        get: function () { return physH(); }
+      });
+      Object.defineProperty(window, "innerHeight", {
+        configurable: true,
+        get: function () { return physW(); }
+      });
+    }
+
+    var applying = false;
+    function layout() {
+      if (applying) return;
+      ROT = chooseRot();
+      var W = physW(), H = physH(), b = document.body;
+      if (!b || !W || !H) return;
+      applying = true;
+      try {
+        if (ROT === "0") {
+          document.documentElement.classList.remove("kiosk-rot");
+          b.style.removeProperty("width");
+          b.style.removeProperty("height");
+          b.style.removeProperty("top");
+          b.style.removeProperty("left");
+          b.style.removeProperty("transform");
+        } else {
+          patchNatives();
+          b.style.setProperty("width", H + "px", "important");
+          b.style.setProperty("height", W + "px", "important");
+          if (ROT === "270") {
+            b.style.setProperty("top", W + "px", "important");
+            b.style.setProperty("left", "0px", "important");
+            b.style.setProperty("transform", "rotate(-90deg)", "important");
+          } else {
+            b.style.setProperty("top", "0px", "important");
+            b.style.setProperty("left", W + "px", "important");
+            b.style.setProperty("transform", "rotate(90deg)", "important");
+          }
+        }
+        window.dispatchEvent(new Event("resize"));
+      } finally {
+        applying = false;
+      }
+    }
+
+    window.addEventListener("resize", layout, true);
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", layout);
+    } else {
+      layout();
+    }
+    window.addEventListener("load", function () {
+      requestAnimationFrame(layout);
+    });
+  })();
+  </script>
+</body>
+</html>
