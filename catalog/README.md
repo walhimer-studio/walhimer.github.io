@@ -60,6 +60,8 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 
 | Folder | Description |
 |--------|-------------|
+| [loop-snippets/](./loop-snippets/) | loop snippets |
+| [centered/](./centered/) | centered |
 | [digital-twin/](./digital-twin/) | digital twin |
 | [loop-art-critique-alumni-show-2026/](./loop-art-critique-alumni-show-2026/) | loop art critique alumni show 2026 |
 | [invisible-layer/](./invisible-layer/) | invisible layer |
@@ -70,7 +72,6 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 | [light-art/](./light-art/) | light art |
 | [loop-art-critique-2026/](./loop-art-critique-2026/) | loop art critique 2026 |
 | [technical/](./technical/) | technical |
-| [loop-snippets/](./loop-snippets/) | loop snippets |
 | [breathing-columns/](./breathing-columns/) | breathing columns |
 | [spatial-orchestrator/](./spatial-orchestrator/) | spatial orchestrator |
 | [miscellaneous/](./miscellaneous/) | miscellaneous |

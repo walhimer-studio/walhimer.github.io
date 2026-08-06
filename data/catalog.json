@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-04",
+  "updated": "2026-08-05",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -8511,24 +8511,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-three",
       "dublin_core": {
-        "title": "../catalog/loop-snippets/README.md",
+        "title": "loop-snippets/surrender-machines-three",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:surrender-machines-three",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000288"
+        "catalog_number": "WS-000215"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-catalog-loop-snippets-readme",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-surrender-machines-three",
         "type": "HumanMadeObject",
-        "_label": "../catalog/loop-snippets/README.md",
+        "_label": "loop-snippets/surrender-machines-three",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -8543,12 +8543,14 @@
         ],
         "sketch": {
           "series": "Loop Snippets",
-          "file": "../catalog/loop-snippets/README.md"
+          "file": "loop-snippets/surrender-machines-three.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/loop-snippets/README.md"
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js",
+          "sketches/loop-snippets/surrender-machines-three.html"
         ],
         "external_urls": []
       }
@@ -8592,139 +8594,6 @@
       "artifacts": {
         "repo_paths": [
           "catalog/loop-snippets/ghost_dense_77823_gravity_sliders_43.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
-      "dublin_core": {
-        "title": "loop-snippets/ghost dense 77823 gravity sliders 43 portrait",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000340"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
-        "type": "HumanMadeObject",
-        "_label": "loop-snippets/ghost dense 77823 gravity sliders 43 portrait",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/ghost_dense_77823_gravity_sliders_43_portrait.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders_43_portrait.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43",
-      "dublin_core": {
-        "title": "loop-snippets/ghost dense 77823 gravity sliders 43",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000339"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-ghost_dense_77823_gravity_sliders_43",
-        "type": "HumanMadeObject",
-        "_label": "loop-snippets/ghost dense 77823 gravity sliders 43",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/ghost_dense_77823_gravity_sliders_43.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders_43.html",
-          "sketches/loop-snippets/js/OrbitControls.js",
-          "sketches/loop-snippets/js/three.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-three",
-      "dublin_core": {
-        "title": "loop-snippets/surrender-machines-three",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:surrender-machines-three",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000215"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-surrender-machines-three",
-        "type": "HumanMadeObject",
-        "_label": "loop-snippets/surrender-machines-three",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/surrender-machines-three.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/js/OrbitControls.js",
-          "sketches/loop-snippets/js/three.min.js",
-          "sketches/loop-snippets/surrender-machines-three.html"
         ],
         "external_urls": []
       }
@@ -8777,6 +8646,137 @@
         "repo_paths": [
           "sketches/js/p5-1.11.2.min.js",
           "sketches/loop-snippets/surrender-machines.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+      "dublin_core": {
+        "title": "../catalog/loop-snippets/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:catalog-loop-snippets-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000288"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-catalog-loop-snippets-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/loop-snippets/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "../catalog/loop-snippets/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/loop-snippets/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43",
+      "dublin_core": {
+        "title": "loop-snippets/ghost dense 77823 gravity sliders 43",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000339"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-ghost_dense_77823_gravity_sliders_43",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/ghost dense 77823 gravity sliders 43",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/ghost_dense_77823_gravity_sliders_43.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders_43.html",
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
+      "dublin_core": {
+        "title": "loop-snippets/ghost dense 77823 gravity sliders 43 portrait",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000340"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-ghost_dense_77823_gravity_sliders_43_portrait",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/ghost dense 77823 gravity sliders 43 portrait",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/ghost_dense_77823_gravity_sliders_43_portrait.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders_43_portrait.html"
         ],
         "external_urls": []
       }
@@ -13288,6 +13288,50 @@
         "repo_paths": [
           "sketches/audioscape001.html",
           "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:one-row",
+      "dublin_core": {
+        "title": "one-row",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:one-row",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000341"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-one-row",
+        "type": "HumanMadeObject",
+        "_label": "one-row",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "one-row.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
+          "sketches/one-row.html"
         ],
         "external_urls": []
       }

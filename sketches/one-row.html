@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>One Row</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; }
+    canvas { display: block; margin: 0 auto; }
+  </style>
+  <script src="js/p5-1.11.2.min.js"></script>
+</head>
+<body>
+<script>
+let city = [];
+let cols = 1;
+let rows = 30;
+let spacing = 109;
+let palette = [310, 45, 30, 210, 270];
+
+let camZ = 2000;
+let targetCamZ = 2000;
+let camSpeed = 0.5;
+
+let gradientTextures = [];
+
+function setup() {
+  createCanvas(1000, 1000, WEBGL);
+  pixelDensity(2);
+  frameRate(60);
+  colorMode(HSB, 360, 100, 100, 255);
+  noStroke();
+  setAttributes('alpha', true);
+
+  // Pre-generate shared gradient textures
+  for (let i = 0; i < 10; i++) {
+    let hue1 = random(palette);
+    let hue2 = random(palette);
+    let tex = createGraphics(64, 256);
+    tex.colorMode(HSB, 360, 100, 100, 255);
+    for (let y = 0; y < tex.height; y++) {
+      let inter = map(y, 0, tex.height, 0, 1);
+      let hBlend = lerp(hue1, hue2, inter);
+      tex.stroke(hBlend, 100, 100, 100);
+      tex.line(0, y, tex.width, y);
+    }
+    gradientTextures.push(tex);
+  }
+
+  // Generate city
+  for (let z = -rows / 2; z < rows / 2; z++) {
+    for (let x = -cols / 2; x < cols / 2; x++) {
+      let w = random(100, 200);
+      let d = random(100, 200);
+      let h = random(100, 300);
+      let tex = random(gradientTextures);
+      // Force x = 0 to center the single column
+      city.push({ x: 0, z: z * spacing, w, h, d, tex });
+    }
+  }
+}
+
+function draw() {
+  background(0, 0, 100);
+
+  // Smooth camera movement
+  targetCamZ -= camSpeed;
+  camZ = lerp(camZ, targetCamZ, 0.05);
+
+  let camX = 0;
+  let camY = 50;
+  let lookZ = camZ - 100;
+  let lookX = 0;
+  camera(camX, camY, camZ, lookX, camY, lookZ, 0, 1, 0);
+
+  ambientLight(255);
+  directionalLight(255, 255, 255, 0.3, -1, -0.5);
+  blendMode(BLEND);
+
+  for (let b of city) {
+    push();
+    texture(b.tex);
+    translate(b.x, 160 - b.h / 2, b.z);
+    box(b.w, b.h, b.d);
+    pop();
+  }
+}
+</script>
+</body>
+</html>
