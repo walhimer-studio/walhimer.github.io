@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Viscosities — 2160×3840</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  canvas {
+    width: min(100vw, calc(100vh * 2160 / 3840));
+    height: min(100vh, calc(100vw * 3840 / 2160));
+    touch-action: none;
+    cursor: crosshair;
+  }
+  #hud {
+    position: fixed;
+    left: 14px;
+    bottom: 12px;
+    font: 11px/1.6 ui-monospace, Menlo, monospace;
+    color: rgba(30, 34, 48, 0.45);
+    pointer-events: none;
+    user-select: none;
+  }
+  #hud[data-rec="1"] { color: #d1197a; }
+  #err {
+    position: fixed;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font: 14px ui-monospace, Menlo, monospace;
+    color: #333;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<canvas id="c" width="2160" height="3840"></canvas>
+<div id="hud">two fluids · R record · N reset · SPACE pause · drag to nudge · H hide</div>
+<div id="err">WebGL2 float render targets unavailable in this browser.</div>
+<script>
+"use strict";
+
+// ============================================================
+// Two fluids in a 2160 x 3840 vessel. Different viscosities,
+// different colours, one boundary that cannot come apart.
+//
+// WHY IT CANNOT COME APART
+//
+// The usual way to carry two fluids on a grid is a phase field: a
+// number per cell saying how much of each fluid is there. That
+// representation allows the boundary to change shape freely, which
+// also means it allows the boundary to change *topology* — a neck
+// thins until it severs, a fold closes and seals a pocket. Those
+// changes are one-way, so any amount of flow slowly grinds the two
+// fluids into droplets and foam. Surface tension, viscosity and
+// damping only slow it down; nothing in that representation
+// forbids it.
+//
+// So the boundary is not stored as a fill fraction here. It is
+// stored as one height per column, h(x): the level where pink ends
+// and blue begins. A height is single valued, so the boundary is
+// always exactly one connected curve running wall to wall. There
+// is no arrangement of numbers in h that represents a droplet, a
+// bubble or a second piece. It is not that fragmenting is
+// discouraged — it is unrepresentable.
+//
+// The fluid itself is still a real 2D solve, so the viscosity
+// difference is real: the thick fluid resists and lags, the thin
+// one follows. The vessel rocks slowly to keep it moving.
+//
+// Every rate is written in canvas pixels and pixels/second, then
+// converted once into the solver's 0..1 space. Change the canvas
+// size and the motion keeps the same apparent speed.
+// ============================================================
+
+const CANVAS_PX = 1000;  // solver conversion from the square original
+const CANVAS_W  = 2160;  // recorder composite — native portrait, no rotation
+const CANVAS_H  = 3840;
+const RECORD_FPS = 60;
+
+const SIM_RES = 512;      // velocity / pressure grid
+const H_RES   = 1024;     // columns across the boundary
+const DT      = 1 / 60;
+
+// Viscosity ceiling: the implicit diffusion is solved by Jacobi
+// iteration, whose per-step coefficient is nu*dt/dx^2. At this grid
+// that stays solvable up to roughly 1100 px^2/s; above it the solver
+// returns half-diffused, grid-aligned residue that prints visible
+// streaks into the fluid. Contrast comes from the ratio, not from
+// chasing large absolute numbers.
+const NU_THIN_PX  = 25;      // fluid A, px^2/s
+const NU_THICK_PX = 1000;    // fluid B, px^2/s — 40x thicker
+
+const GRAVITY_PX  = 240;     // px/s^2 across the density difference
+const TILT_DEG    = 18;      // how far the vessel rocks
+const ROCK_PERIOD = 16;      // seconds per full rock
+
+// Friction from the plates of the thin cell. Because the boundary now
+// cannot come apart no matter how hard it is pushed, this is set for
+// looks rather than for safety: low enough that the fluid sloshes and
+// overshoots instead of just tilting, high enough that it does not ring
+// forever. Raise it for a stiffer, slower fluid.
+const DRAG_RATE   = 0.6;     // 1/s
+
+// Surface tension, acting on a height field, is curvature smoothing.
+// Stability caps it at 0.5*dx^2/dt, about 28 px^2/s at this grid.
+const TENSION_PX  = 11;      // px^2/s
+const TENSION_ITER = 2;
+
+// Striations frozen into each fluid and carried by the flow. They show
+// the thin fluid racing while the thick one barely creeps, which is the
+// viscosity difference made visible. They cannot affect the boundary.
+const GRAIN_RELAX = 0.05;    // 1/s, how fast the pattern reforms
+const GRAIN_FREQ  = 150.0;
+const GRAIN_AMT   = 0.075;
+
+const DRAG_RADIUS_PX = 70;   // pointer nudge, deliberately soft
+const DRAG_LIMIT_PX  = 90;   // px/s — cap so a fast drag stays gentle
+const MAX_SPEED_PX   = 220;  // px/s
+const EDGE_PX        = 2.0;  // drawn softness of the boundary
+const DEPTH_PX       = 90;   // how far in before a fluid reads fully solid
+const VISC_ITER  = 24;
+const PRESS_ITER = 32;
+
+// px -> solver units
+const px  = (v) => v / CANVAS_PX;
+const px2 = (v) => v / (CANVAS_PX * CANVAS_PX);
+const NU_THIN   = px2(NU_THIN_PX);
+const NU_THICK  = px2(NU_THICK_PX);
+const TENSION   = px2(TENSION_PX);
+const GRAVITY   = px(GRAVITY_PX);
+const MAX_SPEED = px(MAX_SPEED_PX);
+const DRAG_LIMIT = px(DRAG_LIMIT_PX);
+const DRAG_R2   = px(DRAG_RADIUS_PX) * px(DRAG_RADIUS_PX);
+const EDGE      = px(EDGE_PX);
+const DEPTH     = px(DEPTH_PX);
+
+// ============================================================
+// canonical CanvasRecorder — copied from
+// sketches/blackdove/centered/one-row-square-record.html
+// Video-only. Portrait 2160×3840 composite, so no rotation.
+// See .cursor/MACHINE_DNA_CANON.md
+// ============================================================
+const CanvasRecorder = (getCanvas) => {
+  let recorder = null;
+  let chunks = [];
+  let active = false;
+  let compositeCanvas = null;
+  let compositeCtx = null;
+  let videoTrack = null;
+  let mediaStream = null;
+
+  const ensureComposite = () => {
+    if (!compositeCanvas) {
+      compositeCanvas = document.createElement('canvas');
+      compositeCanvas.setAttribute('aria-hidden', 'true');
+      compositeCanvas.style.cssText = 'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+      document.body.appendChild(compositeCanvas);
+    }
+    if (compositeCanvas.width !== CANVAS_W || compositeCanvas.height !== CANVAS_H) {
+      compositeCanvas.width = CANVAS_W;
+      compositeCanvas.height = CANVAS_H;
+      compositeCtx = compositeCanvas.getContext('2d');
+    } else if (!compositeCtx) {
+      compositeCtx = compositeCanvas.getContext('2d');
+    }
+  };
+
+  const notifyFrame = () => {
+    if (!active || !compositeCtx || !compositeCanvas) return;
+    const srcCanvas = getCanvas();
+    if (!srcCanvas) return;
+    compositeCtx.fillStyle = '#ffffff';
+    compositeCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    compositeCtx.drawImage(srcCanvas, 0, 0, CANVAS_W, CANVAS_H);
+    if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+  };
+
+  const pickMime = () => {
+    const types = [
+      'video/mp4;codecs=hvc1.1.6.L153.B0',
+      'video/mp4;codecs=avc1.640034',
+      'video/mp4;codecs=avc1.42E01E',
+      'video/mp4;codecs=avc1',
+      'video/mp4',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
+  };
+
+  const recExt = (mimeType) => (mimeType.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+  const start = async () => {
+    if (active) return false;
+    const srcCanvas = getCanvas();
+    if (!srcCanvas) return false;
+
+    const mimeType = pickMime();
+    if (!mimeType) {
+      console.warn('MediaRecorder: no supported mp4/webm mime type');
+      return false;
+    }
+
+    ensureComposite();
+    active = true;
+    notifyFrame();
+
+    mediaStream = compositeCanvas.captureStream(RECORD_FPS);
+    videoTrack = mediaStream.getVideoTracks()[0] || null;
+    if (videoTrack) {
+      videoTrack.onended = () => {
+        console.warn('CanvasRecorder: video track ended');
+      };
+    }
+
+    chunks = [];
+    recorder = new MediaRecorder(mediaStream, {
+      mimeType,
+      videoBitsPerSecond: 60_000_000
+    });
+    recorder.ondataavailable = (e) => {
+      if (e.data.size) chunks.push(e.data);
+    };
+    recorder.onerror = (e) => {
+      console.error('CanvasRecorder error', e);
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: mimeType.split(';')[0] });
+      if (blob.size > 0) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        a.href = url;
+        a.download = `two-viscosities-portrait-${ts}.${recExt(mimeType)}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        console.warn('CanvasRecorder: recording empty — no file saved');
+      }
+      mediaStream?.getTracks().forEach((t) => t.stop());
+      videoTrack = null;
+      mediaStream = null;
+      active = false;
+    };
+
+    recorder.start(250);
+    notifyFrame();
+    return true;
+  };
+
+  const stop = () => {
+    if (!active || !recorder) return;
+    try {
+      if (recorder.state === 'recording') recorder.requestData();
+    } catch (_) {}
+    setTimeout(() => {
+      if (recorder && recorder.state !== 'inactive') recorder.stop();
+      recorder = null;
+    }, 300);
+  };
+
+  const toggle = async () => {
+    if (active) {
+      stop();
+      return false;
+    }
+    return start();
+  };
+
+  return { toggle, isActive: () => active, notifyFrame };
+};
+
+const canvas = document.getElementById("c");
+const rec = CanvasRecorder(() => canvas);
+
+// ============================================================
+// gl setup
+// ============================================================
+const gl = canvas.getContext("webgl2", {
+  alpha: false,
+  antialias: false,
+  preserveDrawingBuffer: true // the recorder reads the canvas back
+});
+if (!gl || !gl.getExtension("EXT_color_buffer_float")) {
+  document.getElementById("err").style.display = "block";
+  throw new Error("WebGL2 + EXT_color_buffer_float required");
+}
+
+const vbo = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+const VERT = `#version 300 es
+precision highp float;
+layout(location=0) in vec2 aPos;
+out vec2 vUv;
+void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+
+function program(fragSrc) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {};
+  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) {
+    const name = gl.getActiveUniform(p, i).name;
+    u[name] = gl.getUniformLocation(p, name);
+  }
+  return { p, u };
+}
+
+const HEAD = `#version 300 es
+precision highp float;
+in vec2 vUv;
+out vec4 frag;`;
+
+// Which fluid is at this point: read the boundary height for this
+// column and compare. This is the only place the two fluids are told
+// apart, and it can only ever answer "below the line" or "above it".
+const PHASE = `
+uniform sampler2D uH;
+float heightAt(float x) { return texture(uH, vec2(x, 0.5)).x; }
+float phaseAt(vec2 uv, float edge) {
+  return 1.0 - smoothstep(heightAt(uv.x) - edge, heightAt(uv.x) + edge, uv.y);
+}`;
+
+// ============================================================
+// shaders
+// ============================================================
+
+// heavier fluid below, long gentle swell to start the rocking off
+const initHProg = program(`${HEAD}
+void main() {
+  frag = vec4(0.5
+            + 0.055 * sin(vUv.x * 6.283 + 0.6)
+            + 0.020 * sin(vUv.x * 12.566 + 2.1), 0.0, 0.0, 1.0);
+}`);
+
+// Carry the boundary with the flow. Rather than differencing dh/dx,
+// which would cap the speed at one cell per step, the column is traced
+// back along the flow and the height read from where it came from. That
+// is unconditionally stable, so the fluid can move as briskly as it
+// likes without the boundary blowing up.
+const hAdvectProg = program(`${HEAD}
+uniform sampler2D uH;
+uniform sampler2D uVel;
+uniform float uDt;
+void main() {
+  float x = vUv.x;
+  float h = texture(uH, vec2(x, 0.5)).x;
+  float xs = x - uDt * texture(uVel, vec2(x, h)).x;
+  float hs = texture(uH, vec2(xs, 0.5)).x;
+  float vy = texture(uVel, vec2(xs, hs)).y;
+  frag = vec4(clamp(hs + uDt * vy, 0.015, 0.985), 0.0, 0.0, 1.0);
+}`);
+
+// surface tension on a height field: smooth the curvature
+const hTensionProg = program(`${HEAD}
+uniform sampler2D uH;
+uniform float uDx;
+uniform float uDt;
+uniform float uTension;
+void main() {
+  float x = vUv.x;
+  float h  = texture(uH, vec2(x, 0.5)).x;
+  float hL = texture(uH, vec2(x - uDx, 0.5)).x;
+  float hR = texture(uH, vec2(x + uDx, 0.5)).x;
+  float lap = (hL + hR - 2.0 * h) / (uDx * uDx);
+  frag = vec4(clamp(h + uDt * uTension * lap, 0.015, 0.985), 0.0, 0.0, 1.0);
+}`);
+
+const advectProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform sampler2D uSrc;
+uniform float uDt;
+void main() {
+  vec2 v0 = texture(uVel, vUv).xy;
+  vec2 mid = vUv - 0.5 * uDt * v0;
+  vec2 pos = vUv - uDt * texture(uVel, mid).xy;
+  frag = texture(uSrc, pos);
+}`);
+
+// Where each parcel of fluid started out. Carried along by the flow and
+// eased back towards rest, so the grain stretches and folds with the
+// motion without smearing away to nothing.
+const initGrainProg = program(`${HEAD}
+void main() { frag = vec4(vUv, 0.0, 1.0); }`);
+
+const grainProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform sampler2D uGrain;
+uniform float uDt;
+uniform float uRelax;
+void main() {
+  vec2 v0 = texture(uVel, vUv).xy;
+  vec2 mid = vUv - 0.5 * uDt * v0;
+  vec2 pos = vUv - uDt * texture(uVel, mid).xy;
+  vec2 m = texture(uGrain, pos).xy;
+  frag = vec4(mix(m, vUv, clamp(uDt * uRelax, 0.0, 1.0)), 0.0, 1.0);
+}`);
+
+// rocking gravity + plate friction
+const forcesProg = program(`${HEAD}
+${PHASE}
+uniform sampler2D uVel;
+uniform vec2 uGravityDir;
+uniform float uDt;
+uniform float uGravity;
+uniform float uDrag;
+uniform float uEdge;
+uniform float uMaxSpeed;
+void main() {
+  vec2 v = texture(uVel, vUv).xy;
+  float c = phaseAt(vUv, uEdge);
+
+  // (c - 0.5) drives the two in opposite directions along the tilt, so
+  // the heavy one always seeks the low corner and the light one rises
+  v += uDt * uGravity * (c - 0.5) * uGravityDir;
+  v /= 1.0 + uDt * uDrag;
+
+  frag = vec4(clamp(v, vec2(-uMaxSpeed), vec2(uMaxSpeed)), 0.0, 1.0);
+}`);
+
+// soft pointer nudge: fluid near the cursor is carried along with it
+const rodProg = program(`${HEAD}
+uniform sampler2D uSrc;
+uniform vec2 uPoint;
+uniform vec2 uRodVel;
+uniform float uRadius2;
+void main() {
+  vec2 d = vUv - uPoint;
+  float g = clamp(exp(-dot(d, d) / uRadius2), 0.0, 1.0);
+  frag = vec4(mix(texture(uSrc, vUv).xy, uRodVel, g), 0.0, 1.0);
+}`);
+
+// implicit variable-viscosity diffusion: (I - dt nu(c) Lap) u = u0
+const viscProg = program(`${HEAD}
+${PHASE}
+uniform sampler2D uX;
+uniform sampler2D uB;
+uniform vec2 uTexel;
+uniform float uNuA;
+uniform float uNuB;
+uniform float uDtOverDx2;
+uniform float uEdge;
+void main() {
+  float a = mix(uNuA, uNuB, phaseAt(vUv, uEdge)) * uDtOverDx2;
+  vec2 L = texture(uX, vUv - vec2(uTexel.x, 0.0)).xy;
+  vec2 R = texture(uX, vUv + vec2(uTexel.x, 0.0)).xy;
+  vec2 B = texture(uX, vUv - vec2(0.0, uTexel.y)).xy;
+  vec2 T = texture(uX, vUv + vec2(0.0, uTexel.y)).xy;
+  frag = vec4((texture(uB, vUv).xy + a * (L + R + T + B)) / (1.0 + 4.0 * a), 0.0, 1.0);
+}`);
+
+const divergenceProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform vec2 uTexel;
+void main() {
+  float L = texture(uVel, vUv - vec2(uTexel.x, 0.0)).x;
+  float R = texture(uVel, vUv + vec2(uTexel.x, 0.0)).x;
+  float B = texture(uVel, vUv - vec2(0.0, uTexel.y)).y;
+  float T = texture(uVel, vUv + vec2(0.0, uTexel.y)).y;
+  frag = vec4(0.5 * (R - L + T - B), 0.0, 0.0, 1.0);
+}`);
+
+const pressureProg = program(`${HEAD}
+uniform sampler2D uPressure;
+uniform sampler2D uDivergence;
+uniform vec2 uTexel;
+void main() {
+  float L = texture(uPressure, vUv - vec2(uTexel.x, 0.0)).x;
+  float R = texture(uPressure, vUv + vec2(uTexel.x, 0.0)).x;
+  float B = texture(uPressure, vUv - vec2(0.0, uTexel.y)).x;
+  float T = texture(uPressure, vUv + vec2(0.0, uTexel.y)).x;
+  frag = vec4((L + R + B + T - texture(uDivergence, vUv).x) * 0.25, 0.0, 0.0, 1.0);
+}`);
+
+const gradientProg = program(`${HEAD}
+uniform sampler2D uPressure;
+uniform sampler2D uVel;
+uniform vec2 uTexel;
+uniform float uMaxSpeed;
+void main() {
+  float L = texture(uPressure, vUv - vec2(uTexel.x, 0.0)).x;
+  float R = texture(uPressure, vUv + vec2(uTexel.x, 0.0)).x;
+  float B = texture(uPressure, vUv - vec2(0.0, uTexel.y)).x;
+  float T = texture(uPressure, vUv + vec2(0.0, uTexel.y)).x;
+  vec2 v = texture(uVel, vUv).xy - 0.5 * vec2(R - L, T - B);
+  vec2 wall = step(1.5 * uTexel, vUv) * step(vUv, 1.0 - 1.5 * uTexel);
+  v *= wall.x * wall.y;
+  frag = vec4(clamp(v, vec2(-uMaxSpeed), vec2(uMaxSpeed)), 0.0, 1.0);
+}`);
+
+// glass on white paper: each fluid a vivid gradient, thin near the
+// boundary and saturated deep inside
+const displayProg = program(`${HEAD}
+${PHASE}
+uniform sampler2D uGrain;
+uniform float uDx;
+uniform float uEdge;
+uniform float uDepth;
+uniform float uGrainFreq;
+uniform float uGrainAmt;
+void main() {
+  float h = heightAt(vUv.x);
+  float m = 1.0 - smoothstep(h - uEdge, h + uEdge, vUv.y);
+
+  float gx = clamp(vUv.x * 0.62 + vUv.y * 0.38, 0.0, 1.0);
+  float gy = clamp(vUv.y * 0.74 + (1.0 - vUv.x) * 0.26, 0.0, 1.0);
+  vec3 blue = mix(vec3(0.05, 0.85, 1.00), vec3(0.10, 0.22, 0.98), gy);
+  blue = mix(blue, vec3(0.30, 0.98, 0.92), 0.28 * (1.0 - gx));
+  vec3 pink = mix(vec3(1.00, 0.05, 0.45), vec3(1.00, 0.46, 0.86), gx);
+  pink = mix(pink, vec3(0.88, 0.14, 1.00), 0.38 * gy);
+  vec3 tint = mix(blue, pink, m);
+
+  float depth = clamp(abs(vUv.y - h) / uDepth, 0.0, 1.0);
+  float alpha = mix(mix(0.62, 0.90, depth), mix(0.70, 0.96, depth), m);
+  vec3 col = mix(vec3(1.0), tint, alpha);
+
+  // grain, stretched by however far the fluid has travelled
+  vec2 g = texture(uGrain, vUv).xy;
+  float grain = sin(g.y * uGrainFreq + 0.7 * sin(g.x * uGrainFreq * 0.31))
+              + 0.4 * sin(g.y * uGrainFreq * 2.3 + 1.7);
+  col *= 1.0 + uGrainAmt * grain * (0.35 + 0.65 * depth);
+
+  // where the two press together the pigment reads denser, with a
+  // sheen rolling along the slope of the boundary
+  float band = exp(-pow((vUv.y - h) / (7.0 * uEdge), 2.0));
+  col = mix(col, tint * 0.60, band * 0.5);
+  float slope = (heightAt(vUv.x + uDx) - heightAt(vUv.x - uDx)) / (2.0 * uDx);
+  vec3 nrm = normalize(vec3(slope * 0.35, 1.0, 0.0));
+  float spec = pow(max(dot(nrm, normalize(vec3(-0.5, 0.86, 0.0))), 0.0), 18.0);
+  col = mix(col, vec3(1.0), spec * 0.35 * band);
+
+  frag = vec4(col, 1.0);
+}`);
+
+// ============================================================
+// framebuffers
+// ============================================================
+function createFBO(w, h) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+  const fbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  return { tex, fbo, w, h };
+}
+function doubleFBO(w, h) {
+  return { a: createFBO(w, h), b: createFBO(w, h), swap() { [this.a, this.b] = [this.b, this.a]; } };
+}
+
+const velocity   = doubleFBO(SIM_RES, SIM_RES);
+const pressure   = doubleFBO(SIM_RES, SIM_RES);
+const divergence = createFBO(SIM_RES, SIM_RES);
+const velRhs     = createFBO(SIM_RES, SIM_RES);
+const grain      = doubleFBO(SIM_RES, SIM_RES);
+const height     = doubleFBO(H_RES, 1);   // the boundary, one value per column
+
+let unit = 0;
+function bindTex(tex, loc) {
+  gl.activeTexture(gl.TEXTURE0 + unit);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.uniform1i(loc, unit);
+  unit++;
+}
+function blit(target, prog, binder) {
+  unit = 0;
+  gl.useProgram(prog.p);
+  if (binder) binder(prog.u);
+  if (target) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+    gl.viewport(0, 0, target.w, target.h);
+  } else {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+const SIM_TEXEL = 1 / SIM_RES;
+const H_DX = 1 / H_RES;
+const DT_OVER_DX2 = DT * SIM_RES * SIM_RES;
+
+// ============================================================
+// simulation
+// ============================================================
+let simTime = 0;
+let paused = false;
+
+function reset() {
+  blit(height.a, initHProg);
+  blit(height.b, initHProg);
+  blit(grain.a, initGrainProg);
+  blit(grain.b, initGrainProg);
+  for (const f of [velocity.a, velocity.b, pressure.a, pressure.b]) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f.fbo);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+  simTime = 0;
+}
+
+const pointer = { down: false, x: 0.5, y: 0.5, vx: 0, vy: 0, active: false };
+function applyPointer() {
+  if (!pointer.active) return;
+  const s = Math.hypot(pointer.vx, pointer.vy);
+  const k = s > DRAG_LIMIT ? DRAG_LIMIT / s : 1;
+  blit(velocity.b, rodProg, (u) => {
+    bindTex(velocity.a.tex, u.uSrc);
+    gl.uniform2f(u.uPoint, pointer.x, pointer.y);
+    gl.uniform2f(u.uRodVel, pointer.vx * k, pointer.vy * k);
+    gl.uniform1f(u.uRadius2, DRAG_R2);
+  });
+  velocity.swap();
+  pointer.active = false;
+}
+
+function step() {
+  blit(velocity.b, advectProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(velocity.a.tex, u.uSrc);
+    gl.uniform1f(u.uDt, DT);
+  });
+  velocity.swap();
+
+  // the vessel rocks: gravity swings through +/- TILT_DEG
+  const tilt = (TILT_DEG * Math.PI / 180) * Math.sin((2 * Math.PI * simTime) / ROCK_PERIOD);
+  blit(velocity.b, forcesProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(height.a.tex, u.uH);
+    gl.uniform2f(u.uGravityDir, Math.sin(tilt), -Math.cos(tilt));
+    gl.uniform1f(u.uDt, DT);
+    gl.uniform1f(u.uGravity, GRAVITY);
+    gl.uniform1f(u.uDrag, DRAG_RATE);
+    gl.uniform1f(u.uEdge, EDGE);
+    gl.uniform1f(u.uMaxSpeed, MAX_SPEED);
+  });
+  velocity.swap();
+
+  applyPointer();
+
+  blit(velRhs, advectProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(velocity.a.tex, u.uSrc);
+    gl.uniform1f(u.uDt, 0);
+  });
+  for (let i = 0; i < VISC_ITER; i++) {
+    blit(velocity.b, viscProg, (u) => {
+      bindTex(velocity.a.tex, u.uX);
+      bindTex(velRhs.tex, u.uB);
+      bindTex(height.a.tex, u.uH);
+      gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+      gl.uniform1f(u.uNuA, NU_THIN);
+      gl.uniform1f(u.uNuB, NU_THICK);
+      gl.uniform1f(u.uDtOverDx2, DT_OVER_DX2);
+      gl.uniform1f(u.uEdge, EDGE);
+    });
+    velocity.swap();
+  }
+
+  blit(divergence, divergenceProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+  });
+  for (let i = 0; i < PRESS_ITER; i++) {
+    blit(pressure.b, pressureProg, (u) => {
+      bindTex(pressure.a.tex, u.uPressure);
+      bindTex(divergence.tex, u.uDivergence);
+      gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+    });
+    pressure.swap();
+  }
+  blit(velocity.b, gradientProg, (u) => {
+    bindTex(pressure.a.tex, u.uPressure);
+    bindTex(velocity.a.tex, u.uVel);
+    gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+    gl.uniform1f(u.uMaxSpeed, MAX_SPEED);
+  });
+  velocity.swap();
+
+  blit(grain.b, grainProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(grain.a.tex, u.uGrain);
+    gl.uniform1f(u.uDt, DT);
+    gl.uniform1f(u.uRelax, GRAIN_RELAX);
+  });
+  grain.swap();
+
+  // move the boundary, then let surface tension smooth it
+  blit(height.b, hAdvectProg, (u) => {
+    bindTex(height.a.tex, u.uH);
+    bindTex(velocity.a.tex, u.uVel);
+    gl.uniform1f(u.uDt, DT);
+  });
+  height.swap();
+
+  for (let i = 0; i < TENSION_ITER; i++) {
+    blit(height.b, hTensionProg, (u) => {
+      bindTex(height.a.tex, u.uH);
+      gl.uniform1f(u.uDx, H_DX);
+      gl.uniform1f(u.uDt, DT);
+      gl.uniform1f(u.uTension, TENSION);
+    });
+    height.swap();
+  }
+
+  simTime += DT;
+}
+
+// ============================================================
+// input
+// ============================================================
+function pointerUv(e) {
+  const r = canvas.getBoundingClientRect();
+  return [(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height];
+}
+canvas.addEventListener("pointerdown", (e) => {
+  const [x, y] = pointerUv(e);
+  pointer.down = true;
+  pointer.x = x;
+  pointer.y = y;
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (!pointer.down) return;
+  const [x, y] = pointerUv(e);
+  pointer.vx = (x - pointer.x) / DT;
+  pointer.vy = (y - pointer.y) / DT;
+  pointer.x = x;
+  pointer.y = y;
+  pointer.active = true;
+});
+addEventListener("pointerup", () => { pointer.down = false; });
+
+const hud = document.getElementById("hud");
+addEventListener("keydown", (e) => {
+  if (e.key === "r" || e.key === "R") {
+    rec.toggle().then(() => { hud.dataset.rec = rec.isActive() ? "1" : ""; });
+    return;
+  }
+  if (rec.isActive()) return;
+  if (e.key === " ") { paused = !paused; e.preventDefault(); }
+  else if (e.key === "n" || e.key === "N") reset();
+  else if (e.key === "h" || e.key === "H") {
+    hud.style.display = hud.style.display === "none" ? "" : "none";
+  }
+});
+
+// ============================================================
+// loop
+//
+// The solver takes fixed DT steps, but frames do not arrive every DT:
+// a 120Hz display delivers twice as many. Stepping once per frame would
+// run the whole piece at double speed there and make every px/s figure
+// above a lie about half the machines. So steps are drawn from elapsed
+// real time instead, with a ceiling on catch-up so a stall cannot
+// trigger a burst of steps.
+// ============================================================
+const MAX_STEPS_PER_FRAME = 4;
+let lastMs = performance.now();
+let accumulator = 0;
+
+function frame() {
+  const now = performance.now();
+  const elapsed = Math.min((now - lastMs) / 1000, 0.25);
+  lastMs = now;
+
+  if (!paused) {
+    accumulator += elapsed;
+    let steps = 0;
+    while (accumulator >= DT && steps < MAX_STEPS_PER_FRAME) {
+      step();
+      accumulator -= DT;
+      steps++;
+    }
+    if (accumulator > DT * MAX_STEPS_PER_FRAME) accumulator = 0;
+  }
+
+  blit(null, displayProg, (u) => {
+    bindTex(height.a.tex, u.uH);
+    bindTex(grain.a.tex, u.uGrain);
+    gl.uniform1f(u.uDx, H_DX);
+    gl.uniform1f(u.uEdge, EDGE);
+    gl.uniform1f(u.uDepth, DEPTH);
+    gl.uniform1f(u.uGrainFreq, GRAIN_FREQ);
+    gl.uniform1f(u.uGrainAmt, GRAIN_AMT);
+  });
+  if (rec.isActive()) rec.notifyFrame();
+  requestAnimationFrame(frame);
+}
+
+reset();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

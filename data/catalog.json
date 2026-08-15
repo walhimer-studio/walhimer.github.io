@@ -53,6 +53,8 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html",
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html",
             "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
             "sketches/fluid-dynamics/index.html"
           ],
@@ -677,49 +679,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
-      "dublin_core": {
-        "title": "fluid-dynamics/fluid-mix-two-viscosities-v2",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000342"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-v2",
-        "type": "HumanMadeObject",
-        "_label": "fluid-dynamics/fluid-mix-two-viscosities-v2",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "fluid-dynamics/fluid-mix-two-viscosities-v2.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
       "dublin_core": {
         "title": "../catalog/fluid-dynamics/README.md",
@@ -758,6 +717,135 @@
       "artifacts": {
         "repo_paths": [
           "catalog/fluid-dynamics/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000344"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-landscape",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-landscape",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-landscape.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-portrait",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-portrait",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-portrait",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000345"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-portrait",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-portrait",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-portrait.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-v2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000342"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-v2",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-v2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-v2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html"
         ],
         "external_urls": []
       }
