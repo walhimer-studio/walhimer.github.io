@@ -60,8 +60,9 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 
 | Folder | Description |
 |--------|-------------|
-| [loop-snippets/](./loop-snippets/) | loop snippets |
+| [fluid-dynamics/](./fluid-dynamics/) | fluid dynamics |
 | [centered/](./centered/) | centered |
+| [loop-snippets/](./loop-snippets/) | loop snippets |
 | [digital-twin/](./digital-twin/) | digital twin |
 | [loop-art-critique-alumni-show-2026/](./loop-art-critique-alumni-show-2026/) | loop art critique alumni show 2026 |
 | [invisible-layer/](./invisible-layer/) | invisible layer |

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-06",
+  "updated": "2026-08-15",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Digital twin",
-          "file": "digital-twin/index.html"
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,50 +53,8 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/digital-twin/README.md",
-            "sketches/digital-twin/emotion-mirror-1s.html",
-            "sketches/digital-twin/emotion-mirror.html",
-            "sketches/digital-twin/face-signal-portrait-replay.html",
-            "sketches/digital-twin/face-signal-replay.html",
-            "sketches/digital-twin/face-signal-study.html",
-            "sketches/digital-twin/face-signal-thought-replay.html",
-            "sketches/digital-twin/index.html",
-            "sketches/digital-twin/js/face-api/face-api.min.js",
-            "sketches/digital-twin/js/face-api/models/face_expression_model-shard1",
-            "sketches/digital-twin/js/face-api/models/face_expression_model-weights_manifest.json",
-            "sketches/digital-twin/js/face-api/models/tiny_face_detector_model-shard1",
-            "sketches/digital-twin/js/face-api/models/tiny_face_detector_model-weights_manifest.json",
-            "sketches/digital-twin/sessions/README.md",
-            "sketches/digital-twin/sessions/emotion-map.json",
-            "sketches/digital-twin/sessions/happy.json",
-            "sketches/digital-twin/sessions/happy.png",
-            "sketches/digital-twin/sessions/mood-anchors.json",
-            "sketches/digital-twin/sessions/neutral.json",
-            "sketches/digital-twin/sessions/neutral.png",
-            "sketches/digital-twin/sessions/sad.json",
-            "sketches/digital-twin/sessions/sad.png",
-            "sketches/digital-twin/sessions/surprise.json",
-            "sketches/digital-twin/sessions/surprise.png",
-            "sketches/digital-twin/sessions/think.json",
-            "sketches/digital-twin/sessions/think.png",
-            "sketches/digital-twin/sessions/thought-map.json",
-            "sketches/digital-twin/sessions/thoughts/angry.json",
-            "sketches/digital-twin/sessions/thoughts/disgust.json",
-            "sketches/digital-twin/sessions/thoughts/fear.json",
-            "sketches/digital-twin/sessions/thoughts/happy.json",
-            "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/grief.json",
-            "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/love.json",
-            "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/think.json",
-            "sketches/digital-twin/sessions/thoughts/neutral.json",
-            "sketches/digital-twin/sessions/thoughts/sad.json",
-            "sketches/digital-twin/sessions/thoughts/surprise.json",
-            "sketches/digital-twin/sessions/witness-mirror-ml-1s.json",
-            "sketches/digital-twin/sessions/witness-mirror-ml.json",
-            "sketches/digital-twin/witness-mirror-1s.html",
-            "sketches/digital-twin/witness-mirror-5s.html",
-            "sketches/digital-twin/witness-mirror-deepface-live.html",
-            "sketches/digital-twin/witness-mirror-live.html",
-            "sketches/digital-twin/witness-mirror.html"
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
+            "sketches/fluid-dynamics/index.html"
           ],
           "external_urls": []
         },
@@ -719,6 +677,92 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-v2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000342"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-v2",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-v2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-v2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
+      "dublin_core": {
+        "title": "../catalog/fluid-dynamics/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000343"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-catalog-fluid-dynamics-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/fluid-dynamics/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "../catalog/fluid-dynamics/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/fluid-dynamics/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Digital twin:catalog-digital-twin-witness-mirror-deepface-live",
       "dublin_core": {
         "title": "../catalog/digital-twin/witness-mirror-deepface-live.md",
@@ -1198,6 +1242,100 @@
           "sketches/digital-twin/witness-mirror-1s.html",
           "sketches/digital-twin/witness-mirror-5s.html",
           "sketches/digital-twin/witness-mirror-live.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Digital twin:digital-twin-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Digital twin",
+          "file": "digital-twin/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/digital-twin/README.md",
+          "sketches/digital-twin/emotion-mirror-1s.html",
+          "sketches/digital-twin/emotion-mirror.html",
+          "sketches/digital-twin/face-signal-portrait-replay.html",
+          "sketches/digital-twin/face-signal-replay.html",
+          "sketches/digital-twin/face-signal-study.html",
+          "sketches/digital-twin/face-signal-thought-replay.html",
+          "sketches/digital-twin/index.html",
+          "sketches/digital-twin/js/face-api/face-api.min.js",
+          "sketches/digital-twin/js/face-api/models/face_expression_model-shard1",
+          "sketches/digital-twin/js/face-api/models/face_expression_model-weights_manifest.json",
+          "sketches/digital-twin/js/face-api/models/tiny_face_detector_model-shard1",
+          "sketches/digital-twin/js/face-api/models/tiny_face_detector_model-weights_manifest.json",
+          "sketches/digital-twin/sessions/README.md",
+          "sketches/digital-twin/sessions/emotion-map.json",
+          "sketches/digital-twin/sessions/happy.json",
+          "sketches/digital-twin/sessions/happy.png",
+          "sketches/digital-twin/sessions/mood-anchors.json",
+          "sketches/digital-twin/sessions/neutral.json",
+          "sketches/digital-twin/sessions/neutral.png",
+          "sketches/digital-twin/sessions/sad.json",
+          "sketches/digital-twin/sessions/sad.png",
+          "sketches/digital-twin/sessions/surprise.json",
+          "sketches/digital-twin/sessions/surprise.png",
+          "sketches/digital-twin/sessions/think.json",
+          "sketches/digital-twin/sessions/think.png",
+          "sketches/digital-twin/sessions/thought-map.json",
+          "sketches/digital-twin/sessions/thoughts/angry.json",
+          "sketches/digital-twin/sessions/thoughts/disgust.json",
+          "sketches/digital-twin/sessions/thoughts/fear.json",
+          "sketches/digital-twin/sessions/thoughts/happy.json",
+          "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/grief.json",
+          "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/love.json",
+          "sketches/digital-twin/sessions/thoughts/legacy-self-labeled/think.json",
+          "sketches/digital-twin/sessions/thoughts/neutral.json",
+          "sketches/digital-twin/sessions/thoughts/sad.json",
+          "sketches/digital-twin/sessions/thoughts/surprise.json",
+          "sketches/digital-twin/sessions/witness-mirror-ml-1s.json",
+          "sketches/digital-twin/sessions/witness-mirror-ml.json",
+          "sketches/digital-twin/witness-mirror-1s.html",
+          "sketches/digital-twin/witness-mirror-5s.html",
+          "sketches/digital-twin/witness-mirror-deepface-live.html",
+          "sketches/digital-twin/witness-mirror-live.html",
+          "sketches/digital-twin/witness-mirror.html"
         ],
         "external_urls": []
       }
