@@ -53,6 +53,7 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
+            "sketches/fluid-dynamics/assets/two-viscosities.png",
             "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html",
             "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html",
             "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
