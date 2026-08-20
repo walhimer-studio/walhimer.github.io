@@ -3,34 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Immersive digital art — a guide for museums and civic arts staff</title>
+<meta name="color-scheme" content="light">
+<title>Screens, Code, &amp; Museums — Mark Walhimer</title>
 <meta name="description" content="Immersive digital art and digital art installations explained: generative art, new media art, cost, public art, and how a small museum or city can bring this work home.">
 <link rel="canonical" href="https://mark-walhimer.com/guide/index.html">
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/cathedral-shell.css">
+<link rel="stylesheet" href="series.css">
 </head>
-<body>
+<body class="shell-page">
 
 <nav>
-  <div class="inner">
-    <span class="site">Screens, Code, and Museums</span>
-    <a class="here" href="index.html">Start</a>
+  <a href="/" class="nav-name">Mark Walhimer</a>
+  <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
+    <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
+  </button>
+  <div class="nav-links" id="site-nav-links">
+    <a href="/guide/index.html" class="active series-nav">Screens, Code, &amp; Museums</a>
+    <a href="/sketches/index.html">Catalog</a>
+    <a href="/contact/index.html" class="nav-acquire">Contact</a>
+  </div>
+</nav>
+
+<main class="article-main">
+  <div class="article-series">
+    <a href="index.html" class="here">Start</a>
     <a href="immersive-digital-art.html">Immersive digital art</a>
     <a href="what-is-it-called.html">What is it called</a>
     <a href="where-it-came-from.html">Where it came from</a>
     <a href="where-its-going.html">Where it's going</a>
+    <a href="article-1-what-is-new-media-art.html">What is new media art</a>
   </div>
-</nav>
 
-<main>
-
-  <p class="kicker">For museum, gallery, and civic arts staff</p>
+  <p class="kicker">Screens, Code, &amp; Museums</p>
 
   <h1>Immersive digital art — what you saw, and how to talk about bringing it home</h1>
 
   <p class="lede">You saw a room or a wall of moving image in a museum, a lobby, or a
   public space. The words that get you started are
   <strong>immersive digital art</strong> and
-  <strong>digital art installation</strong>. This guide teaches the sharper
+  <strong>digital art installation</strong>. This series teaches the sharper
   vocabulary next, then the practical questions — cost, public art, small museum —
   that decide whether anything happens.</p>
 
@@ -38,28 +50,28 @@
   the institutional history, and the maintenance questions are not.</p>
 
   <div class="note">
-    <strong>Start here for the test article:</strong>
+    <strong>Start here:</strong>
     <a href="immersive-digital-art.html">Immersive digital art and digital art
-    installations</a> — opens with her search terms, teaches generative art and
-    new media art, closes with cost and civic process.
+    installations</a> — opens with search terms people actually use, teaches
+    generative art and new media art, closes with cost and civic process.
   </div>
 
-  <h2>Also in this guide</h2>
+  <h2>Also in this series</h2>
 
-  <div class="cards">
-    <div class="card">
+  <div class="article-cards">
+    <div class="article-card">
       <div class="t">What is it called?</div>
       <p>Video art, new media art, generative art, immersive, interactive,
       time-based media — which word to use in which room.</p>
       <p style="margin-top:12px"><a href="what-is-it-called.html">The vocabulary →</a></p>
     </div>
-    <div class="card">
+    <div class="article-card">
       <div class="t">Where did it come from?</div>
       <p>Artists were making rule-based and computer work by the 1960s. Useful when
       someone calls it a fad.</p>
       <p style="margin-top:12px"><a href="where-it-came-from.html">The history →</a></p>
     </div>
-    <div class="card">
+    <div class="article-card">
       <div class="t">Where is it going?</div>
       <p>Predictions about the next decade, labeled as opinion.</p>
       <p style="margin-top:12px"><a href="where-its-going.html">What happens next →</a></p>
@@ -68,11 +80,30 @@
 
 </main>
 
-<footer>
-  <div class="inner">
-    Mark Walhimer · Immersive digital art · digital art installation · generative art · new media art
-  </div>
+<footer class="shell-footer">
+  Mark Walhimer · Screens, Code, &amp; Museums
 </footer>
 
+<script>
+(function () {
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  var btn = nav.querySelector('.nav-toggle');
+  var panel = document.getElementById('site-nav-links');
+  if (!btn || !panel) return;
+  btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('nav-open');
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  panel.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('nav-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open menu');
+    });
+  });
+})();
+</script>
 </body>
 </html>

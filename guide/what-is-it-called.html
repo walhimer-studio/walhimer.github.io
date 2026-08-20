@@ -3,24 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
 <title>What is it called? — Screens, Code, and Museums</title>
 <meta name="description" content="Video art, new media art, digital art, generative art, computational art, immersive, interactive, time-based media — what each term means and which one to use.">
-<link rel="stylesheet" href="style.css">
+<link rel="canonical" href="https://mark-walhimer.com/guide/what-is-it-called.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/cathedral-shell.css">
+<link rel="stylesheet" href="series.css">
 </head>
-<body>
+<body class="shell-page">
+
 <nav>
-  <div class="inner">
-    <span class="site">Screens, Code, and Museums</span>
-    <a href="index.html">Start</a>
-    <a href="immersive-digital-art.html">Immersive digital art</a>
-    <a class="here" href="what-is-it-called.html">What is it called</a>
-    <a href="where-it-came-from.html">Where it came from</a>
-    <a href="where-its-going.html">Where it's going</a>
+  <a href="/" class="nav-name">Mark Walhimer</a>
+  <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
+    <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
+  </button>
+  <div class="nav-links" id="site-nav-links">
+    <a href="/guide/index.html" class="active series-nav">Screens, Code, &amp; Museums</a>
+    <a href="/sketches/index.html">Catalog</a>
+    <a href="/contact/index.html" class="nav-acquire">Contact</a>
   </div>
 </nav>
 
-<main>
-
+<main class="article-main">
+  <div class="article-series">
+    <a href="index.html">Start</a>
+    <a href="immersive-digital-art.html">Immersive digital art</a>
+    <a href="what-is-it-called.html" class="here">What is it called</a>
+    <a href="where-it-came-from.html">Where it came from</a>
+    <a href="where-its-going.html">Where it's going</a>
+    <a href="article-1-what-is-new-media-art.html">What is new media art</a>
+  </div>
   <p class="kicker">One of four</p>
 
   <h1>What is it called?</h1>
@@ -147,21 +160,37 @@
   extensively and hold decades of it: <strong>Ars Electronica</strong> in Linz,
   Austria, and <strong>ZKM</strong> in Karlsruhe, Germany.</p>
 
-  <div class="slot">
-    <b>Draft note — your judgment goes here</b>
-    Which term do <em>you</em> use for your own work, and why? Stating your own
-    preference and reasoning is what turns a glossary into an expert document.
-    Also worth adding: one or two terms vendors use that should raise a flag.
-  </div>
+  
 
   <p><a href="where-it-came-from.html">Next: where it came from, and who the
   major figures are →</a></p>
-
 </main>
 
-<footer>
-  <div class="inner">Mark Walhimer · Screens, Code, and Museums</div>
+<footer class="shell-footer">
+  Mark Walhimer · Screens, Code, &amp; Museums
 </footer>
+
+<script>
+(function () {
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  var btn = nav.querySelector('.nav-toggle');
+  var panel = document.getElementById('site-nav-links');
+  if (!btn || !panel) return;
+  btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('nav-open');
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  panel.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('nav-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open menu');
+    });
+  });
+})();
+</script>
 
 </body>
 </html>

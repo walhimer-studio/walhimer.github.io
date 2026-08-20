@@ -3,27 +3,38 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Immersive digital art and digital art installations — a plain guide</title>
+<meta name="color-scheme" content="light">
+<title>Immersive digital art and digital art installations — Screens, Code, &amp; Museums</title>
 <meta name="description" content="What immersive digital art is, how it differs from generative art and new media art, and what it takes to bring a digital art installation to a small museum or public art program.">
 <link rel="canonical" href="https://mark-walhimer.com/guide/immersive-digital-art.html">
-<link rel="stylesheet" href="style.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/cathedral-shell.css">
+<link rel="stylesheet" href="series.css">
 </head>
-<body>
+<body class="shell-page">
 
 <nav>
-  <div class="inner">
-    <span class="site">Screens, Code, and Museums</span>
-    <a href="index.html">Start</a>
-    <a class="here" href="immersive-digital-art.html">Immersive digital art</a>
-    <a href="what-is-it-called.html">What is it called</a>
-    <a href="where-it-came-from.html">Where it came from</a>
-    <a href="where-its-going.html">Where it's going</a>
+  <a href="/" class="nav-name">Mark Walhimer</a>
+  <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
+    <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
+  </button>
+  <div class="nav-links" id="site-nav-links">
+    <a href="/guide/index.html" class="active series-nav">Screens, Code, &amp; Museums</a>
+    <a href="/sketches/index.html">Catalog</a>
+    <a href="/contact/index.html" class="nav-acquire">Contact</a>
   </div>
 </nav>
 
-<main>
-
-  <p class="kicker">Guide · the article to watch</p>
+<main class="article-main">
+  <div class="article-series">
+    <a href="index.html">Start</a>
+    <a href="immersive-digital-art.html" class="here">Immersive digital art</a>
+    <a href="what-is-it-called.html">What is it called</a>
+    <a href="where-it-came-from.html">Where it came from</a>
+    <a href="where-its-going.html">Where it's going</a>
+    <a href="article-1-what-is-new-media-art.html">What is new media art</a>
+  </div>
+  <p class="kicker">Screens, Code, &amp; Museums</p>
 
   <h1>Immersive digital art — what you saw, what it’s called, and how it gets to a small city</h1>
 
@@ -167,14 +178,33 @@
   space — write:
   <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Digital%20art%20installation">mark@walhimer.com</a>.
   Say what you saw and what building you have in mind. That is enough to start.</p>
-
 </main>
 
-<footer>
-  <div class="inner">
-    Mark Walhimer · Immersive digital art · digital art installation · generative art · new media art
-  </div>
+<footer class="shell-footer">
+  Mark Walhimer · Screens, Code, &amp; Museums
 </footer>
+
+<script>
+(function () {
+  var nav = document.querySelector('nav');
+  if (!nav) return;
+  var btn = nav.querySelector('.nav-toggle');
+  var panel = document.getElementById('site-nav-links');
+  if (!btn || !panel) return;
+  btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('nav-open');
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  panel.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('nav-open');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open menu');
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
