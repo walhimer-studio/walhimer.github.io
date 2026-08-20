@@ -18,6 +18,64 @@
   <title>Mark Walhimer — Digital Installation Artist</title>
   <meta name="description" content="Mark Walhimer — digital installation artist. Machine DNA — one seed, many bodies — as a way to think about acceptance, control, and agency. Available for institutional commissions and private collections." />
   <meta name="keywords" content="new media art, generative art, procedural art, creative coding, digital installation, Machine DNA, generative installation, p5.js, WebGL, GLSL, Mark Walhimer" />
+  <style>
+    /* DRAFT CANDIDATE ONLY — deployment map in the first screen */
+    .draft-banner {
+      background: #1c1d20; color: #fff; font-family: var(--mono, monospace);
+      font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+      padding: 7px 20px; text-align: center;
+    }
+    /* Installation photograph as a carousel slide — contain, not cover, so the
+       gallery wall text and didactic panel are never cropped out. Those are the
+       part that proves the work was installed in an institution. */
+    .install-slide-link { display: block; width: 100%; height: 100%; }
+    .install-slide-img {
+      display: block; width: 100%; height: 100%;
+      object-fit: contain; background: #f4f2ef;
+    }
+    /* The photo letterboxes in a portrait slot, so the caption can land on the
+       light band where the standard transparent-to-dark gradient has nothing to
+       darken. Give this one slide a solid backing instead. */
+    .slide-caption.install-slide-caption { background: rgba(20, 18, 16, 0.9); }
+    /* Heading resets. The page previously had no h1 and a single stray h2, so the
+       section labels below become real headings. Element+class selectors are used
+       deliberately: this block sits above the main stylesheet, and a bare class
+       would lose to it on source order. */
+    h1.artist-name { margin: 0 0 8px; font-weight: 300; }
+    h2.deploy-label,
+    h2.practice-label,
+    h2.bio-label {
+      margin-top: 0;
+      font-weight: 400;
+      font-family: var(--mono, monospace);
+    }
+
+    .deploy { margin-top: 26px; }
+    .deploy-group { margin-bottom: 22px; }
+    .deploy-label {
+      font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--muted, #6b6f76); margin-bottom: 9px;
+      padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+    .deploy-row {
+      display: flex; justify-content: space-between; gap: 16px;
+      align-items: baseline; padding: 5px 0; font-size: 14px; line-height: 1.4;
+    }
+    .deploy-work { flex: 1 1 auto; }
+    .deploy-work em { font-style: italic; }
+    .deploy-where {
+      flex: 0 0 auto; text-align: right; font-size: 12.5px;
+      color: var(--muted, #6b6f76); font-family: var(--mono, monospace);
+    }
+    .deploy-note {
+      margin-top: 18px; font-size: 13px; color: var(--muted, #6b6f76);
+    }
+    .deploy-note a { color: inherit; }
+    @media (max-width: 700px) {
+      .deploy-row { flex-direction: column; gap: 2px; }
+      .deploy-where { text-align: left; }
+    }
+  </style>
   <link rel="canonical" href="https://mark-walhimer.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Mark Walhimer — Digital Installation Artist" />
@@ -37,7 +95,7 @@
   <meta name="theme-color" content="#ffffff" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"VisualArtist","name":"Mark Walhimer","url":"https://mark-walhimer.com/","description":"Digital installation artist. Machine DNA — one seed, many bodies — as a way to think about acceptance, control, and agency.","email":"mark@walhimer.com","sameAs":["https://www.instagram.com/markwalhimer/","https://x.com/WalhimerArt","https://museumplanning.com"],"knowsAbout":["new media art","generative art","digital installation","Machine DNA","creative coding","WebGL","GLSL","p5.js"]}
+  {"@context":"https://schema.org","@type":"VisualArtist","name":"Mark Walhimer","url":"https://mark-walhimer.com/","description":"Digital installation artist. Machine DNA — one seed, many bodies — as a way to think about acceptance, control, and agency.","email":"mark@walhimer.com","sameAs":["https://www.instagram.com/markwalhimer/","https://x.com/WalhimerArt"],"knowsAbout":["new media art","generative art","digital installation","Machine DNA","creative coding","WebGL","GLSL","p5.js"]}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1080,22 +1138,52 @@
     <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
   </button>
   <div class="nav-links" id="site-nav-links">
-    <a href="/installations/">Installations</a>
-    <a href="/available/">Available</a>
+    <!-- DRAFT: nav reduced to three. Everything funnels to email, and at ~55
+         visitors/month fewer paths means less leakage. Installations, Exhibitions,
+         Practice, and Bio are all still reachable — as contextual links inside the
+         deployment map, where the evidence sits. /available/ dropped while it
+         reads "0 available now." -->
+    <a href="/guide/index.html">Guide</a>
     <a href="/sketches/index.html">Catalog</a>
-    <a href="#practice">Practice</a>
-    <a href="#bio">Bio</a>
-    <a href="#commission" class="nav-acquire">Acquire / Commission</a>
-    <a href="/contact/index.html">Contact</a>
+    <a href="/contact/index.html" class="nav-acquire">Contact</a>
   </div>
 </nav>
 
 <section class="featured" aria-label="Featured works and artist statement">
   <div class="featured-live">
+
     <div class="carousel-shell">
       <div class="carousel-viewport" id="carousel-viewport">
         <div class="carousel-track" id="carousel-track" role="list">
-          <!-- Slide 1: Surrender Machine 77823 — Loop Art Critique · ICA Miami -->
+          <!-- Slide 1: installation documentation — the work as shown at ICA Miami.
+               Placed first so the opening frame is the work installed in an
+               institution; the live embed of the same piece follows as slide 2. -->
+          <article class="carousel-slide" role="listitem" aria-label="Technical Objects Exist installed at ICA Miami">
+            <a
+              class="install-slide-link carousel-open-full"
+              href="/installations/"
+              aria-label="Open installations"
+            >
+              <img
+                class="install-slide-img"
+                src="/sketches/loop-art-critique-2026/assets/technical-objects-exist-installation.jpg"
+                width="917"
+                height="763"
+                alt="Surrender Machine 77823 installed in Technical Objects Exist at ICA Miami — screen on stand, plinth with headphones, didactic panel, and exhibition wall text"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
+              />
+            </a>
+            <div class="slide-caption install-slide-caption">
+              <div class="slide-caption-inner">
+                <span>Currently on view · ICA Miami</span>
+                <span class="slide-caption-desc">Technical Objects Exist — Loop Art Critique + ICA Miami, curated by Doreen Rios · through 5 October 2026</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Slide 2: Surrender Machine 77823 — Loop Art Critique · ICA Miami -->
           <article class="carousel-slide" role="listitem" aria-label="Surrender Machine 77823 — Mark Walhimer, 2026">
             <div class="chutes77823-slide-stack">
               <div class="chutes77823-embed-wrap" id="chutes77823-embed-wrap">
@@ -1392,16 +1480,54 @@
   <div class="featured-text">
     <div class="featured-eyebrow">Digital Installation · New Media Art</div>
     <div>
-      <div class="artist-name">Mark<br><em>Walhimer</em></div>
-      <p class="artist-thesis">Machine DNA — one seed, many bodies — as a way to think about acceptance, control, and agency.</p>
-      <div class="acquire-block">
-        <p class="acquire-line">Available for institutional commissions and private collections.</p>
-        <a href="mailto:mark@walhimer.com?subject=Acquisition Inquiry" class="acquire-link">Inquire about acquiring work →</a>
+      <h1 class="artist-name">Mark<br><em>Walhimer</em></h1>
+
+      <div class="deploy" id="exhibitions">
+        <div class="deploy-group">
+          <h2 class="deploy-label">Currently on view</h2>
+          <div class="deploy-row">
+            <span class="deploy-work"><em>Technical Objects Exist</em> — Surrender Machine 77823</span>
+            <span class="deploy-where">ICA Miami · through 5 Oct 2026</span>
+          </div>
+        </div>
+
+        <div class="deploy-group">
+          <h2 class="deploy-label">Recent</h2>
+          <div class="deploy-row">
+            <span class="deploy-work"><em>Miradas Tangentes</em></span>
+            <span class="deploy-where">Madrid · 2026</span>
+          </div>
+          <div class="deploy-row">
+            <span class="deploy-work"><em>The Wrong Biennale</em> — Eclipse</span>
+            <span class="deploy-where">Online · 2026</span>
+          </div>
+          <div class="deploy-row">
+            <span class="deploy-work"><em>Async Museum</em> — inaugural exhibition</span>
+            <span class="deploy-where">Online · 2026</span>
+          </div>
+        </div>
+
+        <div class="deploy-group">
+          <h2 class="deploy-label">Installations</h2>
+          <div class="deploy-row">
+            <span class="deploy-work"><em>Bloom / Four Walls</em></span>
+            <span class="deploy-where">Four-wall environment</span>
+          </div>
+          <div class="deploy-row">
+            <span class="deploy-work"><em>Living Commons</em></span>
+            <span class="deploy-where">Room-scale</span>
+          </div>
+        </div>
+
+        <p class="deploy-note">
+          <a href="/installations/">All installations</a> ·
+          <a href="/bio/index.html">Full CV</a>
+        </p>
       </div>
     </div>
     <div class="featured-caption">
-      Live works in carousel · Selected works 2023–2026<br>
-      p5.js · WebGL · GLSL shaders · Real-time systems
+      Works run live and generate in real time · self-contained, no external dependencies<br>
+      p5.js · WebGL · GLSL shaders
     </div>
   </div>
 </section>
@@ -1417,9 +1543,10 @@
 
 <section class="practice" id="practice">
   <div class="practice-inner reveal">
-    <div class="practice-label">Practice</div>
+    <h2 class="practice-label">Practice</h2>
     <p class="practice-statement">"I use code and real-time systems as a lens for acceptance, control, and agency."</p>
     <div class="practice-body">
+      <p><strong>Machine DNA</strong> — one seed, many bodies — as a way to think about acceptance, control, and agency.</p>
       <p>The early anchor was <strong>Surrender Machines</strong> — the question of whether a machine could surrender for us. What started as a pun became a serious structure for thinking about acceptance: what part of life can be controlled, and what has to be accepted?</p>
       <p>From abstract painting systems and geometric studies, the work evolved toward light-sculptural environments: cubes, rotating fields, color architecture. The shift was from producing static pictures to <strong>staging live behavior</strong>.</p>
       <p>After beginning blockchain-based digital work in 2022, the practice moved from platform-bound outputs toward site-native, browser-native systems built and hosted directly — outside any platform's control. <strong>Moon Walking</strong> and <strong>Bloom / Four Walls</strong> continue the same inquiry. The goal is to build perceptual situations where viewers can feel the tension between control and release, and decide how they want to participate.</p>
@@ -1436,7 +1563,7 @@
 <section class="bio" id="bio">
   <div class="bio-inner reveal">
     <div>
-      <div class="bio-label">Biography</div>
+      <h2 class="bio-label">Biography</h2>
       <div class="bio-text">
         <p>Mark Walhimer (b. 1964) is a digital installation artist whose practice uses real-time systems and generative code to build perceptual environments.</p>
         <p>He began in the studios of <em>Judy Pfaff</em> (1985) and <em>Donald Lipski</em> (1987). His institutional work spans three continents — a career spent designing spaces that respond to the people who inhabit them, which feeds directly into a studio practice concerned with co-creation, emergence, and shared space.</p>
@@ -1444,13 +1571,9 @@
       </div>
     </div>
     <div>
-      <div class="bio-label">Selected CV</div>
+      <h2 class="bio-label">Selected CV</h2>
       <div class="cv-group">
         <div class="cv-group-label">Exhibitions</div>
-        <div class="cv-row">
-          <span class="cv-item-name"><em>Prix Ars Electronica</em></span>
-          <span class="cv-item-detail">Interactive Art+ · 2026</span>
-        </div>
         <div class="cv-row">
           <span class="cv-item-name"><em>Miradas Tangentes</em></span>
           <span class="cv-item-detail">Madrid · 2026</span>
@@ -1505,6 +1628,15 @@
           <a href="mailto:mark@walhimer.com?subject=Acquisition Inquiry">mark@walhimer.com</a>
         </p>
         <p class="contact-line" style="font-size:14px;color:var(--muted)">Response within 48 hours.</p>
+        <!-- DRAFT: Phase 0 instrumentation. Distinct subject lines so each inquiry
+             classifies itself on arrival — sender type and interest without asking. -->
+        <p class="contact-line" style="font-size:13px;line-height:1.9;margin-top:14px;">
+          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Private%20collection">Private collection</a><br>
+          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Institutional%20acquisition">Institutional acquisition</a><br>
+          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Site-specific%20commission">Site-specific commission</a><br>
+          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Civic%20or%20public%20art">Civic / public art program</a><br>
+          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Exhibition%20or%20curatorial">Exhibition / curatorial</a>
+        </p>
       </div>
     </div>
     <div>
@@ -1527,7 +1659,7 @@
           <span class="ct-label">Commission</span>
           <div>
             <div class="ct-title">Site-Specific Commission</div>
-            <div class="ct-desc">New works developed for a specific architectural context, collection, or institution. Begin with a conversation about the site and the brief. Commissions start at $100,000.</div>
+            <div class="ct-desc">New works developed for a specific architectural context, collection, or institution. Begin with a conversation about the site and the brief.</div>
           </div>
         </li>
       </ul>
@@ -1537,8 +1669,7 @@
 
 <div class="consulting-note">
   <div class="consulting-note-inner">
-    <p class="cn-text"><strong>Mark Walhimer</strong> is also Managing Partner of Museum Planning LLC — museum planning consultants for feasibility studies, master planning, and strategic planning since 1999.</p>
-    <a href="https://museumplanning.com" class="cn-link">museumplanning.com →</a>
+    <p class="cn-text"><strong>Mark Walhimer</strong> is also Managing Partner of <a href="https://museumplanning.com">Museum Planning LLC</a>.</p>
   </div>
 </div>
 
@@ -1550,7 +1681,6 @@
     <a href="https://x.com/WalhimerArt" target="_blank" rel="noopener">X</a>
     <a href="/sketches/index.html">Catalog</a>
     <a href="/contact/index.html">Contact</a>
-    <a href="https://museumplanning.com">Museum Planning</a>
   </div>
   <span class="footer-meta" id="archive-updated">Archive updated · All works self-contained</span>
 </footer>
