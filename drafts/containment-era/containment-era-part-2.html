@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Has Actually Changed in 2026: A Clinical Read of the Funding Environment — The Containment Era, Part 2 — Museum Planning LLC</title>
+<meta name="description" content="Every museum director knows the grant environment has changed. Very few can say precisely how — and precision is the difference between a plan and a worry.">
+
+<!-- Museum Planning LLC content hosted on the artist domain. Kept out of the
+     index so mark-walhimer.com is not classified as a consulting site. -->
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep:    #111C27;
+  --gold:    #C9A84C;
+  --gold-lt: #E8D099;
+  --cream:   #F8F4EC;
+  --warm:    #EDE8DC;
+  --white:   #FFFFFF;
+  --ink:     #1A1A1A;
+  --mid:     #5A5A5A;
+  --rule:    #D4C8B0;
+  --serif:   'Playfair Display', Georgia, serif;
+  --mono:    'DM Mono', monospace;
+  --sans:    'Lato', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+nav.site-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--deep);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 56px;
+  z-index: 200;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 15px;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.nav-logo em { color: var(--gold); font-style: normal; }
+.nav-right {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+  align-items: center;
+}
+.nav-right a {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-right a:hover { color: var(--gold); }
+.nav-right .btn {
+  background: var(--gold);
+  color: var(--deep) !important;
+  padding: 8px 20px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  transition: background 0.2s;
+}
+.nav-right .btn:hover { background: var(--gold-lt); }
+
+.hero {
+  background: var(--deep);
+  color: white;
+  padding: 112px 56px 64px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+.hero-inner { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; }
+.series-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  animation: fadeUp 0.7s ease both;
+}
+.series-tag .pt { color: rgba(255, 255, 255, 0.4); }
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(30px, 4.4vw, 46px);
+  font-weight: 700;
+  line-height: 1.16;
+  margin-bottom: 20px;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.1s;
+}
+.hero h1 em { font-style: italic; color: var(--gold); }
+.hero-deck {
+  font-size: 18px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.62);
+  max-width: 600px;
+  margin-bottom: 30px;
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.2s;
+}
+.byline {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  animation: fadeUp 0.7s ease both;
+  animation-delay: 0.3s;
+  padding-bottom: 6px;
+}
+.byline strong { color: rgba(255, 255, 255, 0.7); font-weight: 500; }
+
+.progress {
+  background: var(--cream);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.progress-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px 56px;
+  display: flex;
+  gap: 8px;
+}
+.pstep {
+  flex: 1;
+  text-decoration: none;
+  padding: 8px 0 10px;
+  border-top: 2px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+  transition: color 0.2s, border-color 0.2s;
+}
+.pstep:hover { color: var(--deep); }
+.pstep.on { border-top-color: var(--gold); color: var(--deep); font-weight: 500; }
+
+.article { max-width: 760px; margin: 0 auto; padding: 64px 56px 24px; }
+.article > p { margin-bottom: 1.35em; max-width: 680px; }
+.article > p:first-of-type::first-letter {
+  font-family: var(--serif);
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--gold);
+  float: left;
+  line-height: 0.85;
+  padding: 6px 10px 0 0;
+}
+.article h3 {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 700;
+  color: var(--deep);
+  margin: 1.9em 0 0.7em;
+  line-height: 1.3;
+  position: relative;
+  padding-top: 18px;
+}
+.article h3::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 2px;
+  background: var(--gold);
+}
+strong { color: var(--deep); font-weight: 700; }
+
+.point {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 18px;
+  margin-bottom: 1.3em;
+  max-width: 680px;
+}
+.point-mark { font-family: var(--mono); font-size: 12px; color: var(--gold); padding-top: 5px; }
+.point p { margin: 0; }
+
+blockquote {
+  border-left: 3px solid var(--gold);
+  background: var(--cream);
+  margin: 2.3em 0;
+  padding: 24px 32px;
+  max-width: 680px;
+}
+blockquote p {
+  font-family: var(--serif);
+  font-size: 21px;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--deep);
+  margin: 0;
+}
+blockquote cite {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-style: normal;
+}
+
+.verify {
+  display: inline-block;
+  background: #fff3cd;
+  border: 1px solid #e8d48a;
+  color: #7a6212;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  padding: 1px 8px;
+  margin: 0 2px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.draft-note {
+  border: 1px dashed #e8d48a;
+  background: #fffbee;
+  padding: 16px 22px;
+  margin: 0 0 2.2em;
+  max-width: 680px;
+  font-size: 13.5px;
+  color: #7a6212;
+  line-height: 1.65;
+}
+.draft-note strong { color: #7a6212; }
+
+.author {
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--gold);
+  background: var(--cream);
+  padding: 28px 32px;
+  margin: 3em 0 0;
+  max-width: 680px;
+}
+.author-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 12px;
+}
+.author p { font-size: 14.5px; color: var(--mid); line-height: 1.7; margin: 0; }
+.author p strong { color: var(--deep); }
+
+.series-nav { max-width: 760px; margin: 0 auto; padding: 40px 56px 72px; }
+.sn-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 18px;
+}
+.sn-label::before { content: '\2014  '; color: var(--gold); }
+.sn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.sn-card {
+  border: 1px solid var(--rule);
+  background: var(--white);
+  padding: 18px 20px;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+.sn-card:hover { border-color: var(--gold); }
+.sn-card.on {
+  border-color: var(--gold);
+  border-top: 3px solid var(--gold);
+  background: var(--cream);
+}
+.sn-part {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 5px;
+}
+.sn-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--deep);
+  line-height: 1.35;
+}
+
+.article-cta {
+  background: var(--deep);
+  color: white;
+  padding: 44px 40px;
+  margin: 3em 0 0;
+  position: relative;
+  overflow: hidden;
+  max-width: 680px;
+}
+.article-cta::after {
+  content: 'MP';
+  position: absolute;
+  right: 28px;
+  bottom: -16px;
+  font-family: var(--serif);
+  font-size: 120px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.03);
+  pointer-events: none;
+  line-height: 1;
+}
+.article-cta h4 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  position: relative;
+}
+.article-cta h4 em { font-style: italic; color: var(--gold); }
+.article-cta p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 420px;
+  margin-bottom: 22px;
+  position: relative;
+}
+.btn-copper {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--deep);
+  text-decoration: none;
+  padding: 12px 28px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: background 0.2s;
+  position: relative;
+}
+.btn-copper:hover { background: var(--gold-lt); }
+
+footer {
+  background: var(--deep);
+  padding: 40px 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  border-top: 1px solid rgba(201, 168, 76, 0.1);
+}
+.footer-logo {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.footer-logo em { color: var(--gold); font-style: normal; }
+.footer-links { display: flex; gap: 24px; list-style: none; flex-wrap: wrap; }
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.25);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: rgba(255, 255, 255, 0.6); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+@media (max-width: 860px) {
+  nav.site-nav { padding: 0 24px; }
+  .hero { padding: 96px 24px 48px; }
+  .progress-inner { padding: 14px 24px; }
+  .pstep { font-size: 8px; }
+  .article { padding: 48px 24px 16px; }
+  .series-nav { padding: 32px 24px 56px; }
+  .sn-grid { grid-template-columns: 1fr; }
+  footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
+}
+</style>
+
+</head>
+<body>
+
+
+<nav class="site-nav">
+  <a href="https://museumplanning.com" class="nav-logo">Museum <em>Planning</em> LLC</a>
+  <ul class="nav-right">
+    <li><a href="https://museumplanning.com/services">Services</a></li>
+    <li><a href="https://museumplanning.com/books">Books</a></li>
+    <li><a href="mailto:mark@museumplanning.com" class="btn">Contact</a></li>
+  </ul>
+</nav>
+
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="series-tag">The Containment Era <span class="pt">&nbsp;·&nbsp; Part 2 of 4</span></div>
+    <h1>What Has Actually Changed in 2026: A Clinical Read of the <em>Funding Environment.</em></h1>
+    <p class="hero-deck">Every museum director knows the grant environment has changed. Very few can say precisely how — and precision is the difference between a plan and a worry.</p>
+    <div class="byline"><span><strong>Mark Walhimer</strong></span><span>Museum Planning LLC</span><span>2026</span><span>5 min read</span></div>
+  </div>
+</header>
+
+
+<div class="progress">
+  <div class="progress-inner">
+    <a class="pstep" href="containment-era-part-1.html">Part 1</a>
+    <a class="pstep on" href="containment-era-part-2.html">Part 2</a>
+    <a class="pstep" href="containment-era-part-3.html">Part 3</a>
+    <a class="pstep" href="containment-era-part-4.html">Part 4</a>
+  </div>
+</div>
+
+
+<article class="article">
+
+
+<div class="draft-note"><strong>DRAFT.</strong> All <span class="verify">VERIFY</span> items below are drawn from July 2026 research notes. Confirm docket status, dates, and litigation posture against the current record before publishing. If the rulemaking status changes materially, rewrite those passages rather than patching them.</div>
+
+<p>In Part 1, I argued that the current contraction rhymes with 1981, and that institutions which recognized permanence early made better decisions. This essay is the factual middle of the series: what has actually changed in the funding environment, described the way I'd describe a building system — clinically, without editorializing.</p>
+
+<p>Three structural shifts matter for institutional planning.</p>
+
+<h3>1. The federal grant framework is being rewritten</h3>
+<p>The Office of Management and Budget has proposed a comprehensive overhaul of 2 CFR Part 200 — the Uniform Guidance that governs how virtually all federal financial assistance is administered <span class="verify">VERIFY: docket OMB-2026-0034; proposed effective Oct 1, 2026</span>. Whatever one's view of the policy, the planning-relevant facts are these: the review process for awards is changing, the administrative compliance burden on grantees is expected to rise, and national nonprofit associations — including the National Council of Nonprofits — have filed formal opposition, which signals extended uncertainty regardless of outcome <span class="verify">VERIFY: current rulemaking &amp; litigation status</span>.</p>
+<p>For a museum or a municipal cultural office, the operational translation is simple: <strong>federal grant revenue can no longer be treated as predictable baseline in a multi-year plan.</strong> It has moved from the "reliable" column to the "contingent" column. Institutions whose operating models assume otherwise are carrying unpriced risk.</p>
+
+<h3>2. Compliance capacity is becoming a structural dividing line</h3>
+<p>Large institutions and universities have grants offices and accounting departments that can absorb a heavier reimbursement and documentation regime. Mid-sized and small museums — which is to say, most museums — do not. If the proposed shift toward incurred-cost reimbursement models proceeds <span class="verify">VERIFY</span>, the practical effect is that the cost of <em>receiving</em> federal money rises fastest for the institutions least able to pay it. Some will rationally conclude that certain grants no longer clear the bar. That is a planning decision, and it should be made deliberately rather than discovered accidentally.</p>
+
+<h3>3. The pressure has moved from programs to buildings</h3>
+<p>This is the shift I see least discussed and most often. When operating budgets freeze, the building becomes the largest fixed cost an institution cannot easily shed. Utilities, climate control, envelope deterioration, code obligations — these do not pause because revenue did. Across the sector we are seeing the same containment behaviors: hiring freezes, reduced open hours, closed galleries, and in the harder cases, entire wings mothballed to control utility load.</p>
+<p>None of these behaviors is a failure. They are rational responses to constraint. The failure mode is doing them <em>reactively</em> — closing the wrong wing, deferring the maintenance item that compounds, cutting the staff role that ticket revenue depended on.</p>
+
+<blockquote>
+  <p>Defensive capital still exists. Boards will still fund a roof. Councils will still fund the HVAC replacement, the code remediation, the consolidation that demonstrably lowers operating cost.</p>
+  <cite>The Containment Era · Part 2</cite>
+</blockquote>
+
+<h3>What still works</h3>
+<p>Here is the part that gets lost in sector-wide anxiety: <strong>defensive capital still exists.</strong> Capital improvement programs at the municipal level continue to function even where operating budgets are frozen, because they are separate money answering a different question.</p>
+<p>The institutions navigating 2026 well are the ones that have stopped asking "how do we get back to growth?" and started asking "which discrete, fundable projects reduce our risk and our operating burden, and in what order?"</p>
+<p>That second question is answerable. It requires knowing your building, your numbers, and your community the way an operator knows them — which is the subject of Part 3: the new math of the museum building.</p>
+
+
+
+<div class="author">
+  <div class="author-label">About the Author</div>
+  <p><strong>Mark Walhimer</strong> is the managing partner of Museum Planning LLC (est. 1999), the author of <em>Museums 101</em> and <em>Designing Museum Experiences</em>, and a former museum COO and interim director. He has worked on more than forty cultural projects worldwide and is based in New York and Mexico City.</p>
+</div>
+
+
+
+</article>
+
+
+<div class="series-nav">
+  <div class="sn-label">The Containment Era &mdash; Four Essays on the State of American Museums, 2026</div>
+  <div class="sn-grid">
+        <a class="sn-card" href="containment-era-part-1.html"><div class="sn-part">Part 1 of 4</div><div class="sn-title">We've Been Here Before</div></a>
+    <a class="sn-card on" href="containment-era-part-2.html"><div class="sn-part">Part 2 of 4 · You are here</div><div class="sn-title">What Has Actually Changed in 2026</div></a>
+    <a class="sn-card" href="containment-era-part-3.html"><div class="sn-part">Part 3 of 4</div><div class="sn-title">The New Math of the Museum Building</div></a>
+    <a class="sn-card" href="containment-era-part-4.html"><div class="sn-part">Part 4 of 4</div><div class="sn-title">Stewardship Is a Sequence</div></a>
+  </div>
+</div>
+
+
+
+<footer>
+  <div class="footer-logo">Museum <em>Planning</em> LLC — Est. 1999</div>
+  <ul class="footer-links">
+    <li><a href="https://museumplanning.com/services">Services</a></li>
+    <li><a href="https://museumplanning.com/books">Books</a></li>
+    <li><a href="mailto:mark@museumplanning.com">Contact</a></li>
+  </ul>
+</footer>
+
+
+</body>
+</html>

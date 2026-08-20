@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mark Walhimer — Artist</title>
+<meta name="description" content="Mark Walhimer, digital installation artist. Currently on view at ICA Miami. Plus plain-language guides to new media, blockchains, and collecting digital art.">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --ink: #17181a;
+    --muted: #6b6f76;
+    --rule: #d9dadd;
+    --bg: #fbfbfa;
+    --accent: #1d4ed8;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--serif); font-size: 18px; line-height: 1.6;
+  }
+  .draft-banner {
+    background: #1c1d20; color: #fff; font-family: var(--mono);
+    font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 7px 20px; text-align: center;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Above the line ─────────────────────────────── */
+  header.id { padding: 64px 0 0; }
+  .name {
+    font-size: 34px; letter-spacing: -0.015em; line-height: 1.1;
+  }
+  .name em { font-style: italic; }
+  .role {
+    font-family: var(--sans); font-size: 13px; letter-spacing: .04em;
+    color: var(--muted); margin-top: 10px;
+  }
+
+  figure.install { margin: 34px 0 0; }
+  figure.install img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid rgba(0,0,0,.1);
+  }
+  figure.install figcaption {
+    margin-top: 11px; font-size: 13.5px; line-height: 1.5; color: var(--muted);
+  }
+  figure.install figcaption strong { color: var(--ink); font-weight: 600; }
+
+  .deploy { margin-top: 40px; }
+  .deploy-group { margin-bottom: 24px; }
+  .deploy-label {
+    font-family: var(--sans); font-size: 10.5px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--muted);
+    padding-bottom: 6px; margin-bottom: 9px; border-bottom: 1px solid var(--rule);
+  }
+  .deploy-row {
+    display: flex; justify-content: space-between; gap: 16px;
+    align-items: baseline; padding: 5px 0; font-size: 15.5px; line-height: 1.45;
+  }
+  .deploy-work { flex: 1 1 auto; }
+  .deploy-where {
+    flex: 0 0 auto; text-align: right; font-family: var(--mono);
+    font-size: 12px; color: var(--muted);
+  }
+
+  .contact {
+    margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--rule);
+    font-family: var(--sans); font-size: 15px;
+  }
+  .contact a { color: var(--accent); text-decoration: none; }
+  .contact a:hover { text-decoration: underline; }
+  .contact .routes {
+    margin-top: 12px; font-size: 13px; line-height: 1.95; color: var(--muted);
+  }
+
+  /* ── The line ───────────────────────────────────── */
+  .divider { margin: 84px 0 0; border-top: 3px double var(--ink); }
+
+  /* ── Below the line ─────────────────────────────── */
+  section.teach { padding: 46px 0 110px; }
+  .teach-kicker {
+    font-family: var(--sans); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+  }
+  .teach h2 { font-size: 30px; font-weight: 400; letter-spacing: -0.01em; }
+  .teach .sub {
+    font-size: 19px; color: #33363b; margin-top: 14px; margin-bottom: 8px;
+  }
+  .cluster { margin-top: 44px; }
+  .cluster-title {
+    font-family: var(--sans); font-size: 14px; font-weight: 700;
+    letter-spacing: .02em; padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule); margin-bottom: 4px;
+  }
+  .q { border-bottom: 1px solid var(--rule); padding: 18px 0; }
+  .q:last-child { border-bottom: none; }
+  .q h3 { font-size: 20px; font-weight: 600; }
+  .q p { font-size: 16.5px; color: #3a3d42; margin-top: 7px; }
+  .q .status {
+    display: inline-block; font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+    border: 1px solid var(--rule); padding: 2px 7px; margin-top: 10px;
+  }
+  .slot {
+    background: #fffbe9; border: 1px dashed #c9ad4e;
+    padding: 16px 20px; margin: 22px 0;
+    font-family: var(--sans); font-size: 14.5px; line-height: 1.55; color: #574a17;
+  }
+  .slot b { display: block; margin-bottom: 5px; }
+  footer {
+    border-top: 1px solid var(--rule); padding: 26px 0 60px;
+    font-family: var(--sans); font-size: 13px; color: var(--muted);
+  }
+  @media (max-width: 640px) {
+    .name { font-size: 27px; }
+    .deploy-row { flex-direction: column; gap: 2px; }
+    .deploy-where { text-align: left; }
+    .divider { margin-top: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="draft-banner">Draft candidate B · streamlined · noindex · not published</div>
+
+<div class="wrap">
+
+  <!-- ═══════════ ABOVE THE LINE — the artist ═══════════ -->
+
+  <header class="id">
+    <div class="name">Mark <em>Walhimer</em></div>
+    <div class="role">Digital installation artist</div>
+  </header>
+
+  <figure class="install">
+    <img
+      src="../sketches/loop-art-critique-2026/assets/technical-objects-exist-installation.jpg"
+      alt="Surrender Machine 77823 installed in Technical Objects Exist at ICA Miami — screen, plinth, headphones, and exhibition wall text"
+      loading="eager" decoding="async" fetchpriority="high">
+    <figcaption>
+      <strong>Currently on view</strong> — <em>Technical Objects Exist</em>,
+      Loop Art Critique + ICA Miami, curated by Doreen Rios. Through 5 October 2026.
+    </figcaption>
+  </figure>
+
+  <div class="deploy">
+    <div class="deploy-group">
+      <div class="deploy-label">Recent</div>
+      <div class="deploy-row">
+        <span class="deploy-work"><em>Miradas Tangentes</em></span>
+        <span class="deploy-where">Madrid · 2026</span>
+      </div>
+      <div class="deploy-row">
+        <span class="deploy-work"><em>The Wrong Biennale</em> — Eclipse</span>
+        <span class="deploy-where">Online · 2026</span>
+      </div>
+      <div class="deploy-row">
+        <span class="deploy-work"><em>Async Museum</em> — inaugural exhibition</span>
+        <span class="deploy-where">Online · 2026</span>
+      </div>
+    </div>
+
+    <div class="deploy-group">
+      <div class="deploy-label">Installations</div>
+      <div class="deploy-row">
+        <span class="deploy-work"><em>Bloom / Four Walls</em></span>
+        <span class="deploy-where">Four-wall environment</span>
+      </div>
+      <div class="deploy-row">
+        <span class="deploy-work"><em>Living Commons</em></span>
+        <span class="deploy-where">Room-scale</span>
+      </div>
+    </div>
+
+    <div class="deploy-group">
+      <div class="deploy-label">More</div>
+      <div class="deploy-row">
+        <span class="deploy-work"><a href="/installations/">All installations</a></span>
+        <span class="deploy-where"></span>
+      </div>
+      <div class="deploy-row">
+        <span class="deploy-work"><a href="/sketches/index.html">Catalog</a></span>
+        <span class="deploy-where"></span>
+      </div>
+      <div class="deploy-row">
+        <span class="deploy-work"><a href="/bio/index.html">Bio / CV</a></span>
+        <span class="deploy-where"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact">
+    <a href="mailto:mark@walhimer.com">mark@walhimer.com</a>
+    <div class="routes">
+      <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Private%20collection">Private collection</a> ·
+      <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Institutional%20acquisition">Institutional acquisition</a> ·
+      <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Site-specific%20commission">Site-specific commission</a> ·
+      <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Civic%20or%20public%20art">Civic / public art</a> ·
+      <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Exhibition%20or%20curatorial">Exhibition / curatorial</a>
+    </div>
+  </div>
+
+  <!-- ═══════════ THE LINE ═══════════ -->
+  <div class="divider"></div>
+
+  <!-- ═══════════ BELOW THE LINE — the teaching ═══════════ -->
+
+  <section class="teach">
+    <div class="teach-kicker">Below the line</div>
+    <h2>How to — New Media</h2>
+    <p class="sub">Plain answers to the questions people actually ask me, written
+    for someone who has never done any of this and does not want to be sold
+    anything.</p>
+
+    <div class="slot">
+      <b>Draft note — the framing line goes here</b>
+      One or two sentences on why you wrote this: you hear the same questions in
+      every conversation, the existing explanations are written by people with
+      something to sell, and nobody should have to feel stupid asking. No
+      credentials, no consulting history.
+    </div>
+
+    <!-- ── Cluster 1: the fear cluster ── -->
+    <div class="cluster">
+      <div class="cluster-title">Blockchains, wallets, and whether you are about to lose your money</div>
+
+      <div class="q">
+        <h3>Am I going to lose all my money?</h3>
+        <p>The single most common thing said to me, usually in exactly those words.
+        It deserves a direct, honest answer rather than reassurance — including the
+        parts that genuinely are risky and the parts that are not.</p>
+        <span class="status">to write — lead with this one</span>
+      </div>
+
+      <div class="q">
+        <h3>What is a blockchain, in one paragraph?</h3>
+        <p>Without metaphors about ledgers and villages. What it actually does, why
+        anyone bothered, and what it means for an artwork.</p>
+        <span class="status">to write</span>
+      </div>
+
+      <div class="q">
+        <h3>What are the major blockchains, and why do artists use different ones?</h3>
+        <p>Ethereum, Tezos, and the others — what distinguishes them in practice,
+        including cost and energy, which is the objection that comes up second.</p>
+        <span class="status">to write</span>
+      </div>
+
+      <div class="q">
+        <h3>How do I set up a wallet?</h3>
+        <p>Step by step, with screenshots, assuming no prior knowledge. What a seed
+        phrase is, why it matters, and the specific mistakes that cause people to
+        actually lose things.</p>
+        <span class="status">to write</span>
+      </div>
+
+      <div class="q">
+        <h3>Is this scary?</h3>
+        <p>Partly yes. Which parts, why, and what to do about each. Saying so
+        plainly is what makes the rest of the page believable.</p>
+        <span class="status">to write</span>
+      </div>
+
+      <div class="q">
+        <h3>What are the advantages?</h3>
+        <p>What you get that you do not get otherwise — provenance, the artist's
+        system rather than a file, and being able to verify what you own.</p>
+        <span class="status">to write</span>
+      </div>
+
+      <div class="q">
+        <h3>If I buy a digital artwork, what do I actually own?</h3>
+        <p>The question institutions ask and collectors rarely do. The answer is
+        the same one conservation departments need, which is why it belongs here.</p>
+        <span class="status">to write</span>
+      </div>
+    </div>
+
+    <!-- ── Cluster 2: screens and rooms ── -->
+    <div class="cluster">
+      <div class="cluster-title">Screens, rooms, and what things cost</div>
+
+      <div class="q">
+        <h3>What is this called? Video art, new media, generative, immersive?</h3>
+        <p>Eight overlapping terms, and which one to use in which room.</p>
+        <span class="status">drafted — see the four-page guide</span>
+      </div>
+
+      <div class="q">
+        <h3>LCD, LED, refresh rate, portrait or landscape</h3>
+        <p>The vocabulary you need to read a quote and know whether you are being
+        oversold.</p>
+        <span class="status">to write</span>
+      </div>
+
+      <div class="q">
+        <h3>How much does a digital art installation cost?</h3>
+        <p>Real ranges by scale, what drives the number, and what is included.</p>
+        <span class="status">to write — highest intent of anything here</span>
+      </div>
+
+      <div class="q">
+        <h3>Who maintains it after it opens?</h3>
+        <p>The question that kills these projects. There is no honest published
+        answer anywhere, which is the reason to write one.</p>
+        <span class="status">to write</span>
+      </div>
+
+      <div class="q">
+        <h3>Where did this come from, and who are the major figures?</h3>
+        <p>It starts in the 1960s, not in 2021. Useful when someone calls it a fad.</p>
+        <span class="status">drafted — see the four-page guide</span>
+      </div>
+    </div>
+
+    <div class="slot">
+      <b>Structural note</b>
+      Two clusters, two different readers. The blockchain cluster removes the
+      friction stopping an individual from buying. The screens cluster reaches the
+      institutional and civic side. Worth watching which one produces email —
+      that is the same question this whole experiment is asking, just split in two.
+    </div>
+
+  </section>
+
+  <footer>
+    Draft candidate B — streamlined. Compare against
+    <code>homepage-deployment-map-candidate.html</code> (candidate A) and live
+    <code>index.html</code>.
+  </footer>
+
+</div>
+
+</body>
+</html>
