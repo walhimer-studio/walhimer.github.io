@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-15",
+  "updated": "2026-08-19",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -4368,6 +4368,49 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Bloom:bloom-seeded-flower",
+      "dublin_core": {
+        "title": "Artificial Flower",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:bloom-seeded-flower",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000348"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-bloom-seeded-flower",
+        "type": "HumanMadeObject",
+        "_label": "Artificial Flower",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/seeded-flower.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/seeded-flower.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Bloom:catalog-bloom-readme",
       "dublin_core": {
         "title": "../catalog/bloom/README.md",
@@ -4687,7 +4730,8 @@
           "sketches/bloom/index.html",
           "sketches/bloom/installation-builder-bloom.html",
           "sketches/bloom/orchestrator-bloom.html",
-          "sketches/bloom/radial-gradient.html"
+          "sketches/bloom/radial-gradient.html",
+          "sketches/bloom/seeded-flower.html"
         ],
         "external_urls": []
       }
@@ -13607,6 +13651,136 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Centered:catalog-centered-one-row-v2",
+      "dublin_core": {
+        "title": "../catalog/centered/one-row-v2.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-one-row-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000344"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-one-row-v2",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/centered/one-row-v2.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "../catalog/centered/one-row-v2.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/centered/one-row-v2.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:one-row-v2",
+      "dublin_core": {
+        "title": "one-row-v2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:one-row-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000345"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-one-row-v2",
+        "type": "HumanMadeObject",
+        "_label": "one-row-v2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "one-row-v2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
+          "sketches/one-row-v2.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:catalog-centered-mix",
+      "dublin_core": {
+        "title": "../catalog/centered/mix.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-mix",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000346"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-mix",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/centered/mix.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "../catalog/centered/mix.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/centered/mix.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Centered:centered-july-17-2026",
       "dublin_core": {
         "title": "centered-july-17-2026",
@@ -13646,6 +13820,50 @@
         "repo_paths": [
           "sketches/centered-july-17-2026.html",
           "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:mix",
+      "dublin_core": {
+        "title": "mix",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:mix",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000347"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-mix",
+        "type": "HumanMadeObject",
+        "_label": "mix",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "mix.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/p5-1.11.2.min.js",
+          "sketches/mix.html"
         ],
         "external_urls": []
       }
