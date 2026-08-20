@@ -387,6 +387,83 @@ They care about foot traffic, looking forward-looking, what peer cities did, cos
 maintenance, and whether it works in five years. **The canon problem is not a
 blocker for the civic door.**
 
+## Watch page — immersive digital art article (shipped 2026-08-20)
+
+**URL:** https://mark-walhimer.com/guide/immersive-digital-art.html
+
+**Structure (keyword test):**
+1. Open — `immersive digital art` / `digital art installation`
+2. Middle — `generative art` / `new media art` (+ teach `time-based media`)
+3. Close — cost · public art · small museum · three questions before signing
+
+**Metric:** Search Console queries + clicks to this URL; emails with subject
+`Inquiry - Digital art installation`. Do not judge by social.
+
+## The Youngstown search path — exact keywords (user, 2026-08-20)
+
+**Persona restated:** 45-year-old mother of two, Youngstown. Summer trip to New
+York for Broadway with her daughter. At MoMA she sees large-scale work —
+**Sasha Stiles** and (especially) the wall-scale generative piece associated with
+**Refik Anadol** (*Unsupervised*). She later hears about Anadol’s **DATALAND**
+in Los Angeles. Daughter thinks it’s cool. She takes photos. Back home she wants
+to understand it — and maybe mention it at the next public-arts / city-council
+meeting. **What does she type?**
+
+### Stage 1 — she does not know the field’s words yet
+
+These are the *first* queries. Imprecise, name-driven, or “the thing I saw”:
+
+| She types | Why |
+|---|---|
+| `digital art MoMA` | She knows the museum, not the medium |
+| `AI art MoMA` / `AI art museum` | What the wall looked like / what the press called it |
+| `swirling digital art` / `immersive digital art museum` | Visual memory, not vocabulary |
+| `Sasha Stiles` | If she caught a name on a wall label |
+| `Refik Anadol` / `Refik Anadol MoMA` | Same |
+| `DATALAND Los Angeles` / `AI art museum Los Angeles` | If someone named the LA project |
+| `what is generative art` | After one article taught her a word |
+
+### Stage 2 — she learns what to call it
+
+After one decent explainer, searches get sharper:
+
+- `generative art`
+- `new media art`
+- `digital art installation`
+- `immersive art installation` (funders love this word; curators may wince)
+- `time-based media` (she only learns this from *you*)
+- `creative coding`
+- `video art vs generative art`
+
+### Stage 3 — “how do I bring this to Youngstown?”
+
+This is the money cluster for the experiment — civic / institutional intent:
+
+| She types | Intent |
+|---|---|
+| `public art digital installation` | City / outdoor / lobby |
+| `bring digital art to small museum` | Local museum path |
+| `digital art for city council` / `public art proposal digital` | Meeting next month |
+| `how much does a digital art installation cost` | Budget realism |
+| `percent for art digital media` | Funding mechanism |
+| `commission generative art` | Getting close to email |
+| `LED wall art museum` / `museum LED installation` | Hardware she’s picturing |
+| `interactive art installation for community center` | Civic building, not MoMA |
+
+### What this means for the guide
+
+**Rank for Stage 1 and Stage 3.** Stage 2 is the bridge *you* teach.
+
+- Article / guide titles and openings should include the words she already has:
+  **digital art, AI art, MoMA, immersive, generative art, new media art.**
+- Mid-page, introduce the precise terms (**time-based media, creative coding,
+  system vs recording**).
+- End pages / related links should answer Stage 3 without a hard sell:
+  **cost, maintenance, public art, city council, small museum.**
+
+If she searches `bring digital art to small museum` and lands on your guide, the
+funnel worked. If she only finds vendor pages and Anadol press, you lost her.
+
 ## The Youngstown mechanism
 
 Observed repeatedly in consulting practice:
