@@ -1054,8 +1054,15 @@ addEventListener("keydown", (e) => {
 // trigger a burst of steps.
 // ============================================================
 const MAX_STEPS_PER_FRAME = 4;
+// Cold start looks unnatural for ~5–10s of sim time; advance before first paint.
+const WARMUP_SECONDS = 8;
 let lastMs = performance.now();
 let accumulator = 0;
+
+function warmUp(seconds = WARMUP_SECONDS) {
+  const n = Math.round(seconds / DT);
+  for (let i = 0; i < n; i++) step();
+}
 
 function frame() {
   const now = performance.now();
@@ -1088,6 +1095,9 @@ function frame() {
 }
 
 reset();
+warmUp();
+lastMs = performance.now();
+accumulator = 0;
 requestAnimationFrame(frame);
 </script>
 </body>
