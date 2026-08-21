@@ -54,6 +54,7 @@
         "sketch_entry": {
           "repo_paths": [
             "sketches/fluid-dynamics/assets/two-viscosities.png",
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html",
             "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html",
             "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html",
             "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
@@ -718,6 +719,49 @@
       "artifacts": {
         "repo_paths": [
           "catalog/fluid-dynamics/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000350"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html"
         ],
         "external_urls": []
       }
@@ -4368,6 +4412,69 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Bloom:bloom-index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/bloom-four-walls.html",
+          "sketches/bloom/bloom-garden.html",
+          "sketches/bloom/bloom-release-cathedral/index.html",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg",
+          "sketches/bloom/bloom-release.html",
+          "sketches/bloom/bloom-surrender.html",
+          "sketches/bloom/bloom.html",
+          "sketches/bloom/index.html",
+          "sketches/bloom/installation-builder-bloom.html",
+          "sketches/bloom/orchestrator-bloom.html",
+          "sketches/bloom/radial-gradient.html",
+          "sketches/bloom/seeded-flower.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Bloom:bloom-seeded-flower",
       "dublin_core": {
         "title": "Artificial Flower",
@@ -4669,69 +4776,6 @@
         "repo_paths": [
           "sketches/bloom/bloom-garden.html",
           "sketches/js/p5-1.9.0.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom-four-walls.html",
-          "sketches/bloom/bloom-garden.html",
-          "sketches/bloom/bloom-release-cathedral/index.html",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg",
-          "sketches/bloom/bloom-release.html",
-          "sketches/bloom/bloom-surrender.html",
-          "sketches/bloom/bloom.html",
-          "sketches/bloom/index.html",
-          "sketches/bloom/installation-builder-bloom.html",
-          "sketches/bloom/orchestrator-bloom.html",
-          "sketches/bloom/radial-gradient.html",
-          "sketches/bloom/seeded-flower.html"
         ],
         "external_urls": []
       }
@@ -10120,6 +10164,63 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Living Commons:living-commons-artwork",
+      "dublin_core": {
+        "title": "living-commons-artwork",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Living Commons:living-commons-artwork",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000038"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Living Commons-living-commons-artwork",
+        "type": "HumanMadeObject",
+        "_label": "living-commons-artwork",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Living Commons",
+          "file": "living-commons-artwork.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "bio/index.html",
+          "contact/index.html",
+          "index.html",
+          "sketches/index.html",
+          "sketches/js/p5-1.11.2.min.js",
+          "sketches/living-commons-artwork.html"
+        ],
+        "external_urls": [
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com",
+          "https://museumplanning.com",
+          "https://objkt.com/@markwalhimer",
+          "https://www.fxhash.xyz/u/MarkWalhimer",
+          "https://www.instagram.com/markwalhimer",
+          "https://www.mark-walhimer.com",
+          "https://x.com/WalhimerArt"
+        ]
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Living Commons:catalog-living-commons-readme",
       "dublin_core": {
         "title": "../catalog/living-commons/README.md",
@@ -10295,63 +10396,6 @@
           "sketches/the_commons.html"
         ],
         "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Living Commons:living-commons-artwork",
-      "dublin_core": {
-        "title": "living-commons-artwork",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Living Commons:living-commons-artwork",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000038"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Living Commons-living-commons-artwork",
-        "type": "HumanMadeObject",
-        "_label": "living-commons-artwork",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Living Commons",
-          "file": "living-commons-artwork.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "bio/index.html",
-          "contact/index.html",
-          "index.html",
-          "sketches/index.html",
-          "sketches/js/p5-1.11.2.min.js",
-          "sketches/living-commons-artwork.html"
-        ],
-        "external_urls": [
-          "https://fonts.googleapis.com",
-          "https://fonts.gstatic.com",
-          "https://museumplanning.com",
-          "https://objkt.com/@markwalhimer",
-          "https://www.fxhash.xyz/u/MarkWalhimer",
-          "https://www.instagram.com/markwalhimer",
-          "https://www.mark-walhimer.com",
-          "https://x.com/WalhimerArt"
-        ]
       }
     },
     {
@@ -13564,6 +13608,93 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Centered:catalog-centered-one-row-v2",
+      "dublin_core": {
+        "title": "../catalog/centered/one-row-v2.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-one-row-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000344"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-one-row-v2",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/centered/one-row-v2.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "../catalog/centered/one-row-v2.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/centered/one-row-v2.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60",
+      "dublin_core": {
+        "title": "blackdove/centered/one-row-v2-record-60",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000349"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60",
+        "type": "HumanMadeObject",
+        "_label": "blackdove/centered/one-row-v2-record-60",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "blackdove/centered/one-row-v2-record-60.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove/centered/one-row-v2-record-60.html",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Centered:one-row",
       "dublin_core": {
         "title": "one-row",
@@ -13651,49 +13782,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Centered:catalog-centered-one-row-v2",
-      "dublin_core": {
-        "title": "../catalog/centered/one-row-v2.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-one-row-v2",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000344"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-one-row-v2",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/centered/one-row-v2.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Centered",
-          "file": "../catalog/centered/one-row-v2.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/centered/one-row-v2.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Centered:one-row-v2",
       "dublin_core": {
         "title": "one-row-v2",
@@ -13733,50 +13821,6 @@
         "repo_paths": [
           "sketches/js/p5-1.11.2.min.js",
           "sketches/one-row-v2.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60",
-      "dublin_core": {
-        "title": "blackdove/centered/one-row-v2-record-60",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000349"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60",
-        "type": "HumanMadeObject",
-        "_label": "blackdove/centered/one-row-v2-record-60",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Centered",
-          "file": "blackdove/centered/one-row-v2-record-60.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/blackdove/centered/one-row-v2-record-60.html",
-          "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
       }

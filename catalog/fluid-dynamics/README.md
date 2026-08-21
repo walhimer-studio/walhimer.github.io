@@ -16,6 +16,7 @@
 | Two Viscosities — 1000×1000 | `sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html` | August 15, 2026 |
 | Two Viscosities — 2160×3840 | `sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html` | August 15, 2026 |
 | Two Viscosities — 3840×2160 | `sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html` | August 15, 2026 |
+| Two Viscosities — rock landscape 3840×2160 | `sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html` | August 21, 2026 |
 
 ## Two Viscosities
 
