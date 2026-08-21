@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Row V2 — 60 fps frame recorder</title>
+  <style>
+    html, body { margin: 0; background: #0a0a0a; }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      max-width: 100vw;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+    .hud {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      z-index: 10;
+      color: #f0ede6;
+      font: 12px/1.45 ui-monospace, Menlo, monospace;
+      background: rgba(10, 10, 10, 0.78);
+      padding: 10px 12px;
+      max-width: min(520px, 92vw);
+    }
+    .hud button {
+      margin-top: 8px;
+      font: inherit;
+      color: #0a0a0a;
+      background: #f0ede6;
+      border: 0;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .hud button.recording { background: #c45c4a; color: #fff; }
+    #save-link {
+      display: inline-block;
+      margin-top: 8px;
+      margin-left: 8px;
+      color: #0a0a0a;
+      background: #c8a882;
+      text-decoration: none;
+      padding: 6px 10px;
+    }
+    #save-link[hidden] { display: none; }
+    .lifeline {
+      margin-top: 8px;
+      height: 4px;
+      background: #2a2a2a;
+    }
+    #lifeline-fill { height: 100%; width: 0; background: #f0ede6; }
+  </style>
+  <script src="../../js/p5-1.11.2.min.js"></script>
+</head>
+<body>
+  <div class="hud">
+    <div id="hud-seed">seed —</div>
+    <div id="hud-rec">R · record 60 fps (frame-step, not realtime)</div>
+    <div class="lifeline"><div id="lifeline-fill"></div></div>
+    <button id="record-btn" type="button">Record</button>
+    <a id="save-link" hidden>Save MP4</a>
+  </div>
+<script>
+/** One Row V2 — 60 fps frame-step recorder.
+ *  Art copied from one-row-v2-portrait.html (city, camera, cards). Do not edit that file from here.
+ *  ?seed=101430031&format=portrait|landscape|square&seconds=60
+ */
+const LIFESPAN_MS = 480000;
+const RECORD_FPS = 60;
+const FORMAT_SIZES = {
+  portrait: [2160, 3840],
+  landscape: [3840, 2160],
+  square: [2160, 2160]
+};
+
+function parseFormatFromUrl() {
+  try {
+    const raw = (new URLSearchParams(location.search).get('format') || 'portrait').toLowerCase();
+    if (raw in FORMAT_SIZES) return raw;
+  } catch (e) {}
+  return 'portrait';
+}
+
+function parseSecondsFromUrl() {
+  try {
+    const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
+    if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+  } catch (e) {}
+  return 60;
+}
+
+const FORMAT = parseFormatFromUrl();
+const RECORD_SECONDS = parseSecondsFromUrl();
+const CANVAS_W = FORMAT_SIZES[FORMAT][0];
+const CANVAS_H = FORMAT_SIZES[FORMAT][1];
+
+let city = [];
+let cols = 1;
+let rows = 30;
+let spacing = 200;
+let palette = [310, 45, 30, 210, 270];
+
+let camZ = 2000;
+let targetCamZ = 2000;
+let camSpeed = 0.5;
+
+let gradientTextures = [];
+let artMidY = 0;
+let artSeed;
+let lifeStart;
+let lifelineFill;
+let hudSeed;
+let hudRec;
+let recordBtn;
+let hudEl;
+let saveLink;
+let hudSticky = null;
+
+function u32(n) {
+  return new Uint8Array([(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255]);
+}
+
+function concatBytes(parts) {
+  let len = 0;
+  for (const p of parts) len += p.length;
+  const out = new Uint8Array(len);
+  let o = 0;
+  for (const p of parts) {
+    out.set(p, o);
+    o += p.length;
+  }
+  return out;
+}
+
+function copyBytes(src) {
+  const view = src instanceof Uint8Array ? src : new Uint8Array(src);
+  const out = new Uint8Array(view.byteLength);
+  out.set(view);
+  return out;
+}
+
+function writeStream(stream, bytes) {
+  return stream.write(new Blob([copyBytes(bytes)]));
+}
+
+function seekStream(stream, position) {
+  return stream.write({ type: 'seek', position });
+}
+
+function box(type, payload) {
+  const t = new TextEncoder().encode(type);
+  const size = 8 + payload.length;
+  const out = new Uint8Array(size);
+  out.set(u32(size), 0);
+  out.set(t, 4);
+  out.set(payload, 8);
+  return out;
+}
+
+function buildMoov({ width, height, fps, avcC, sampleSizes, keyIndexes, chunkOffset }) {
+  const n = sampleSizes.length;
+  const timescale = fps;
+  const duration = n;
+  const stsdEntry = concatBytes([
+    u32(1),
+    box('avc1', concatBytes([
+      new Uint8Array(6),
+      new Uint8Array([0, 1]),
+      new Uint8Array(16),
+      new Uint8Array([(width >> 8) & 255, width & 255, (height >> 8) & 255, height & 255]),
+      new Uint8Array([0, 0x48, 0, 0, 0, 0x48, 0, 0, 0, 0, 0, 0, 0, 1]),
+      new Uint8Array(32),
+      new Uint8Array([0, 0x18, 0xff, 0xff]),
+      box('avcC', avcC)
+    ]))
+  ]);
+  const stts = box('stts', concatBytes([u32(0), u32(1), u32(n), u32(1)]));
+  const stsc = box('stsc', concatBytes([u32(0), u32(1), u32(1), u32(n), u32(1)]));
+  const stsz = box('stsz', concatBytes([u32(0), u32(0), u32(n), concatBytes(sampleSizes.map(u32))]));
+  const stco = box('stco', concatBytes([u32(0), u32(1), u32(chunkOffset)]));
+  const stss = box('stss', concatBytes([u32(0), u32(keyIndexes.length), concatBytes(keyIndexes.map(u32))]));
+  const stsd = box('stsd', concatBytes([u32(0), stsdEntry]));
+  const stbl = box('stbl', concatBytes([stsd, stts, stsc, stsz, stco, stss]));
+  const vmhd = box('vmhd', concatBytes([u32(1), u32(0), u32(0)]));
+  const hdlr = box('hdlr', concatBytes([
+    u32(0), u32(0),
+    new TextEncoder().encode('vide'),
+    u32(0), u32(0), u32(0),
+    new TextEncoder().encode('VideoHandler\0')
+  ]));
+  const mdhd = box('mdhd', concatBytes([u32(0), u32(0), u32(0), u32(timescale), u32(duration), u32(0)]));
+  const minf = box('minf', concatBytes([
+    vmhd,
+    box('dinf', box('dref', concatBytes([u32(0), u32(1), box('url ', u32(1))]))),
+    stbl
+  ]));
+  const mdia = box('mdia', concatBytes([mdhd, hdlr, minf]));
+  const tkhd = box('tkhd', concatBytes([
+    u32(0xf), u32(0), u32(0), u32(1), u32(0), u32(duration),
+    u32(0), u32(0), u32(0), u32(0),
+    new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0, 0, 0]),
+    new Uint8Array([(width >> 8) & 255, width & 255, 0, 0, (height >> 8) & 255, height & 255, 0, 0])
+  ]));
+  const trak = box('trak', concatBytes([tkhd, mdia]));
+  const mvhd = box('mvhd', concatBytes([
+    u32(0), u32(0), u32(0), u32(timescale), u32(duration),
+    u32(0x00010000), new Uint8Array([0x01, 0x00]),
+    u32(0), u32(0),
+    new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x40, 0, 0, 0]),
+    u32(0), u32(0), u32(0), u32(0), u32(0), u32(0),
+    u32(2)
+  ]));
+  return box('moov', concatBytes([mvhd, trak]));
+}
+
+const CanvasRecorder = (getCanvas) => {
+  let active = false;
+  let abort = false;
+  let frameIndex = 0;
+  let totalFrames = 0;
+  let compositeCanvas = null;
+  let compositeCtx = null;
+
+  const ensureComposite = () => {
+    if (!compositeCanvas) {
+      compositeCanvas = document.createElement('canvas');
+      compositeCanvas.setAttribute('aria-hidden', 'true');
+      compositeCanvas.style.cssText = 'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+      document.body.appendChild(compositeCanvas);
+    }
+    if (compositeCanvas.width !== CANVAS_W || compositeCanvas.height !== CANVAS_H) {
+      compositeCanvas.width = CANVAS_W;
+      compositeCanvas.height = CANVAS_H;
+      compositeCtx = compositeCanvas.getContext('2d');
+    } else if (!compositeCtx) {
+      compositeCtx = compositeCanvas.getContext('2d');
+    }
+  };
+
+  const notifyFrame = () => {
+    if (!active || !compositeCtx || !compositeCanvas) return;
+    const srcCanvas = getCanvas();
+    if (!srcCanvas) return;
+    compositeCtx.fillStyle = '#ffffff';
+    compositeCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    compositeCtx.drawImage(srcCanvas, 0, 0, CANVAS_W, CANVAS_H);
+  };
+
+  const elapsedMs = () => (totalFrames ? (frameIndex / RECORD_FPS) * 1000 : 0);
+
+  const pickCodec = async () => {
+    if (typeof VideoEncoder === 'undefined') {
+      throw new Error('VideoEncoder is missing — use Chrome or Safari 16.4+');
+    }
+    const codecs = ['avc1.640034', 'avc1.640033', 'avc1.4D0034'];
+    for (const codec of codecs) {
+      try {
+        if (VideoEncoder.isConfigSupported) {
+          const test = await VideoEncoder.isConfigSupported({
+            codec, width: CANVAS_W, height: CANVAS_H, bitrate: 16_000_000, framerate: RECORD_FPS,
+            avc: { format: 'avc' }, hardwareAcceleration: 'prefer-software'
+          });
+          if (!test || !test.supported) continue;
+        }
+        return codec;
+      } catch (e) {}
+    }
+    return codecs[0];
+  };
+
+  const start = async () => {
+    if (active) return false;
+    const srcCanvas = getCanvas();
+    if (!srcCanvas) return false;
+    if (typeof redraw !== 'function') return false;
+
+    const filename = `one-row-v2-${FORMAT}-seed${artSeed}-60fps-${RECORD_SECONDS}s.webm`;
+    let saveHandle = null;
+    if (typeof window.showSaveFilePicker === 'function') {
+      try {
+        saveHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{ description: 'WebM video', accept: { 'video/webm': ['.webm'] } }]
+        });
+      } catch (e) {
+        if (e && e.name === 'AbortError') return false;
+      }
+    }
+    if (!saveHandle) {
+      hudSticky = 'Chrome Save dialog was cancelled — no file';
+      updateHud();
+      return false;
+    }
+
+    const mimeType = [
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ].find((t) => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)) || '';
+    if (!mimeType) {
+      hudSticky = 'MediaRecorder webm not supported — use Chrome';
+      updateHud();
+      return false;
+    }
+
+    abort = false;
+    active = true;
+    hudSticky = null;
+    if (saveLink) {
+      saveLink.hidden = true;
+      saveLink.removeAttribute('href');
+    }
+    totalFrames = RECORD_SECONDS * RECORD_FPS;
+    frameIndex = 0;
+    setRecordingUi(true);
+    noLoop();
+    rebirth(artSeed);
+    ensureComposite();
+    notifyFrame();
+
+    let writable = null;
+    let recorder = null;
+    let mediaStream = null;
+    let videoTrack = null;
+    let writeChain = Promise.resolve();
+    let payloadBytes = 0;
+    let recErr = null;
+
+    try {
+      writable = await saveHandle.createWritable({ keepExistingData: false });
+      mediaStream = compositeCanvas.captureStream(0);
+      videoTrack = mediaStream.getVideoTracks()[0] || null;
+      recorder = new MediaRecorder(mediaStream, {
+        mimeType,
+        videoBitsPerSecond: 16_000_000
+      });
+      recorder.ondataavailable = (e) => {
+        if (!e.data || !e.data.size) return;
+        payloadBytes += e.data.size;
+        const blob = e.data;
+        writeChain = writeChain.then(() => writable.write({ type: 'write', data: blob }));
+      };
+      recorder.onerror = (e) => {
+        recErr = e.error || new Error('MediaRecorder error');
+      };
+
+      recorder.start(500);
+      if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+      for (let i = 0; i < totalFrames; i++) {
+        if (abort) break;
+        if (recErr) throw recErr;
+        frameIndex = i;
+        redraw();
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+        if (hudRec) {
+          hudRec.textContent = 'recording ' + FORMAT + '  ' + i + '/' + totalFrames + '  ' + (payloadBytes / 1000000).toFixed(1) + ' MB';
+        }
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+
+      await new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+        try {
+          if (recorder.state === 'recording') recorder.requestData();
+        } catch (e) {}
+        recorder.stop();
+      });
+      await writeChain;
+      await writable.close();
+      writable = null;
+      if (abort) {
+        hudSticky = 'stopped — file may be incomplete';
+      } else {
+        hudSticky = 'saved ' + filename + '  ' + (payloadBytes / 1000000).toFixed(1) + ' MB';
+      }
+    } catch (err) {
+      console.error(err);
+      hudSticky = String(err && err.message ? err.message : err);
+      if (writable) {
+        try { await writable.close(); } catch (e) {}
+        writable = null;
+      }
+    } finally {
+      try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch (e) {}
+      try { mediaStream && mediaStream.getTracks().forEach((t) => t.stop()); } catch (e) {}
+      try { if (writable) await writable.close(); } catch (e) {}
+      active = false;
+      frameIndex = 0;
+      totalFrames = 0;
+      setRecordingUi(false);
+      loop();
+    }
+    return true;
+  };
+
+  const stop = () => {
+    if (!active) return;
+    abort = true;
+  };
+
+  const toggle = async () => {
+    if (active) {
+      stop();
+      return false;
+    }
+    return start();
+  };
+
+  return {
+    toggle,
+    isActive: () => active,
+    notifyFrame,
+    elapsedMs,
+    frameIndex: () => frameIndex,
+    totalFrames: () => totalFrames
+  };
+};
+
+let artCanvas;
+const rec = CanvasRecorder(() => artCanvas || document.querySelector('canvas'));
+
+function setRecordingUi(on) {
+  document.body.classList.toggle('is-recording', on);
+  if (recordBtn) {
+    recordBtn.textContent = on ? 'Stop' : 'Record';
+    recordBtn.classList.toggle('recording', on);
+  }
+  if (hudEl) hudEl.classList.toggle('recording', on);
+  updateHud();
+}
+
+function parseSeedFromUrl() {
+  try {
+    const raw = new URLSearchParams(location.search).get('seed');
+    if (raw === null || raw === '') return null;
+    const n = parseInt(raw, 10);
+    if (Number.isFinite(n) && n >= 0) return n;
+  } catch (e) {}
+  return null;
+}
+
+function updateHud() {
+  if (hudSeed) hudSeed.textContent = 'seed ' + artSeed;
+  if (!hudRec) return;
+  if (rec.isActive()) {
+    const i = rec.frameIndex();
+    const n = rec.totalFrames();
+    hudRec.textContent = 'recording ' + FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H + '  ' + i + '/' + n + '  (60 fps step)';
+  } else if (hudSticky) {
+    hudRec.textContent = hudSticky;
+  } else {
+    hudRec.textContent = FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H + ' · ' + RECORD_SECONDS + 's @ 60 fps · R to record · G next · N new';
+  }
+}
+
+function artTimeMs() {
+  if (rec.isActive()) return rec.elapsedMs();
+  return millis() - lifeStart;
+}
+
+function updateLifeline() {
+  if (!lifelineFill) return;
+  const pct = min(100, (artTimeMs() / LIFESPAN_MS) * 100);
+  lifelineFill.style.width = pct.toFixed(2) + '%';
+  if (!rec.isActive() && millis() - lifeStart >= LIFESPAN_MS) rebirth(artSeed + 1);
+}
+
+function buildGradientTextures() {
+  gradientTextures = [];
+  for (let i = 0; i < 10; i++) {
+    let hue1 = random(palette);
+    let hue2 = random(palette);
+    let tex = createGraphics(64, 256);
+    tex.colorMode(HSB, 360, 100, 100, 255);
+    for (let y = 0; y < tex.height; y++) {
+      let inter = map(y, 0, tex.height, 0, 1);
+      let hBlend = lerp(hue1, hue2, inter);
+      tex.stroke(hBlend, 100, 100, 100);
+      tex.line(0, y, tex.width, y);
+    }
+    gradientTextures.push(tex);
+  }
+}
+
+function buildCity() {
+  city = [];
+  for (let z = -rows / 2; z < rows / 2; z++) {
+    for (let x = -cols / 2; x < cols / 2; x++) {
+      let w = random(1000, 2500);
+      let d = random(1000, 2000);
+      let h = random(1500, 4000);
+      let tex = random(gradientTextures);
+      city.push({ x: 0, z: z * spacing, w, h, d, tex });
+    }
+  }
+
+  let topY = Infinity;
+  for (const b of city) topY = min(topY, 160 - b.h);
+  artMidY = (160 + topY) / 2;
+}
+
+function rebirth(seed) {
+  artSeed = seed ?? floor(random(1e9));
+  randomSeed(artSeed);
+  noiseSeed(artSeed);
+  lifeStart = millis();
+  camZ = 2000;
+  targetCamZ = 2000;
+  buildGradientTextures();
+  buildCity();
+  updateHud();
+  if (lifelineFill) lifelineFill.style.width = '0%';
+}
+
+function setup() {
+  lifelineFill = document.getElementById('lifeline-fill');
+  hudSeed = document.getElementById('hud-seed');
+  hudRec = document.getElementById('hud-rec');
+  recordBtn = document.getElementById('record-btn');
+  saveLink = document.getElementById('save-link');
+  hudEl = document.querySelector('.hud');
+  if (recordBtn) recordBtn.addEventListener('click', () => rec.toggle());
+
+  setAttributes('alpha', true);
+  setAttributes('preserveDrawingBuffer', true);
+  createCanvas(CANVAS_W, CANVAS_H, WEBGL);
+  artCanvas = document.querySelector('canvas');
+  pixelDensity(1);
+  frameRate(60);
+  colorMode(HSB, 360, 100, 100, 255);
+  noStroke();
+
+  rebirth(parseSeedFromUrl());
+  document.title = 'One Row V2 — ' + FORMAT + ' 60 fps';
+}
+
+function draw() {
+  updateLifeline();
+
+  background(0, 0, 4);
+
+  targetCamZ -= camSpeed;
+  camZ = lerp(camZ, targetCamZ, 0.05);
+
+  camera(0, 0, camZ, 0, 0, camZ - 100, 0, 1, 0);
+
+  ambientLight(255);
+  directionalLight(255, 255, 255, 0.3, -1, -0.5);
+
+  const goneDist = camSpeed * 60 * 0.2;
+  const shrinkStartDist = camSpeed * 60 * 0.5;
+
+  for (let b of city) {
+    const y = 160 - b.h / 2 - artMidY;
+    const cardZ = b.z - b.d / 2 - 2;
+    const nearFaceZ = b.z + b.d / 2;
+    const dist = camZ - nearFaceZ;
+    let cardScale = 1;
+    if (dist <= goneDist) cardScale = 0;
+    else if (dist < shrinkStartDist) {
+      cardScale = map(dist, goneDist, shrinkStartDist, 0, 1);
+    }
+
+    if (cardScale > 0.001) {
+      push();
+      translate(b.x, y, cardZ);
+      emissiveMaterial(255);
+      fill(0, 0, 100);
+      plane(b.w * cardScale, b.h * cardScale);
+      pop();
+    }
+
+    push();
+    texture(b.tex);
+    translate(b.x, y, b.z);
+    box(b.w, b.h, b.d);
+    pop();
+  }
+
+  if (rec.isActive()) rec.notifyFrame();
+}
+
+function keyPressed() {
+  if (key === 'r' || key === 'R') rec.toggle();
+  if (rec.isActive()) return;
+  if (key === 'g' || key === 'G') rebirth(artSeed + 1);
+  if (key === 'n' || key === 'N') rebirth(floor(random(1e9)));
+}
+</script>
+</body>
+</html>

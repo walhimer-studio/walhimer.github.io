@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-19",
+  "updated": "2026-08-21",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -13733,6 +13733,50 @@
         "repo_paths": [
           "sketches/js/p5-1.11.2.min.js",
           "sketches/one-row-v2.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60",
+      "dublin_core": {
+        "title": "blackdove/centered/one-row-v2-record-60",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000349"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60",
+        "type": "HumanMadeObject",
+        "_label": "blackdove/centered/one-row-v2-record-60",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "blackdove/centered/one-row-v2-record-60.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove/centered/one-row-v2-record-60.html",
+          "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
       }
