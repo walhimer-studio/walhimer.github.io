@@ -1055,13 +1055,29 @@ addEventListener("keydown", (e) => {
 // ============================================================
 const MAX_STEPS_PER_FRAME = 4;
 // Cold start looks unnatural for ~5–10s of sim time; advance before first paint.
-const WARMUP_SECONDS = 8;
+const WARMUP_SECONDS = 5;
+const WARMUP_BATCH = 30;
 let lastMs = performance.now();
 let accumulator = 0;
 
 function warmUp(seconds = WARMUP_SECONDS) {
   const n = Math.round(seconds / DT);
   for (let i = 0; i < n; i++) step();
+}
+
+/** Yield between batches so the tab stays responsive during warm-up. */
+function warmUpAsync(seconds = WARMUP_SECONDS) {
+  const n = Math.round(seconds / DT);
+  let i = 0;
+  return new Promise((resolve) => {
+    function batch() {
+      const end = Math.min(i + WARMUP_BATCH, n);
+      for (; i < end; i++) step();
+      if (i < n) requestAnimationFrame(batch);
+      else resolve();
+    }
+    batch();
+  });
 }
 
 function frame() {
@@ -1095,10 +1111,11 @@ function frame() {
 }
 
 reset();
-warmUp();
-lastMs = performance.now();
-accumulator = 0;
-requestAnimationFrame(frame);
+warmUpAsync().then(() => {
+  lastMs = performance.now();
+  accumulator = 0;
+  requestAnimationFrame(frame);
+});
 </script>
 </body>
 </html>

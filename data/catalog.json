@@ -681,49 +681,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
-      "dublin_core": {
-        "title": "../catalog/fluid-dynamics/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000343"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-catalog-fluid-dynamics-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/fluid-dynamics/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "../catalog/fluid-dynamics/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/fluid-dynamics/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
       "dublin_core": {
         "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
@@ -762,6 +719,49 @@
       "artifacts": {
         "repo_paths": [
           "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
+      "dublin_core": {
+        "title": "../catalog/fluid-dynamics/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000343"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-catalog-fluid-dynamics-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/fluid-dynamics/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "../catalog/fluid-dynamics/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/fluid-dynamics/README.md"
         ],
         "external_urls": []
       }
@@ -7105,7 +7105,6 @@
           "https://mark-walhimer.com/sketches/artist-commons/walhimer-artist-commons-deck.html",
           "https://mark-walhimer.com/sketches/bloom/bloom-four-walls.html",
           "https://mark-walhimer.com/sketches/digital-twin/witness-mirror-live.html",
-          "https://mark-walhimer.com/sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html",
           "https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-july-14-2026.html",
           "https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html",
           "https://mark-walhimer.com/sketches/loop-art-critique-2026/machine-aesthetic/surrender-machines.html"

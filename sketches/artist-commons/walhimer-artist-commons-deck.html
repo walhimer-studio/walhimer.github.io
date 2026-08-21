@@ -234,8 +234,8 @@ body{
   </section>
 
 
-<section class="slide" data-run="fluid dynamics"
-    data-note="Title card. Say the name, then advance — next slide auto-loads Fluid Dynamics full screen."
+<section class="slide" data-run="fluid dynamics" data-preload-next="1"
+    data-note="Title card — live piece preloads in the background (warm-up). Linger ~5–10s, then advance."
     data-time="~30 sec">
     <div class="topbar"><span class="run">Fluid Dynamics</span><span class="count"></span></div>
     <div class="stage">
@@ -250,7 +250,7 @@ body{
     </div>
   </section>
 
-<section class="slide bare" data-run="fluid dynamics live" data-src="https://mark-walhimer.com/sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html" data-autorun="1"
+<section class="slide bare" data-run="fluid dynamics live" data-src="https://mark-walhimer.com/sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html?v=warmup5b" data-autorun="1"
     data-note="Auto-loads on entry — full-screen Fluid Dynamics, no overlay text."
     data-time="~2 min">
     <div class="topbar"><span class="run"></span><span class="count"></span></div>
@@ -466,11 +466,17 @@ function focusLiveFrame(s){
 
 function show(n){
   const prev=slides[i];
+  const prevIdx=i;
+  let nextIdx=n;
+  if(n<0) nextIdx=slides.length-1;
+  else if(n>=slides.length) nextIdx=0;
   if(prev && prev.dataset.src) unload(prev);
+  if(prev && prev.dataset.preloadNext==='1'){
+    const warmed=slides[prevIdx+1];
+    if(warmed && warmed!==slides[nextIdx] && warmed.dataset.src) unload(warmed);
+  }
   setInteract(false);
-  if(n<0) i=slides.length-1;
-  else if(n>=slides.length) i=0;
-  else i=n;
+  i=nextIdx;
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));
   const s=slides[i];
   meter.style.width=((i+1)/slides.length*100)+'%';
@@ -483,6 +489,10 @@ function show(n){
     requestAnimationFrame(()=>focusLiveFrame(s));
   } else {
     deck.focus({preventScroll:true});
+  }
+  if(s.dataset.preloadNext==='1'){
+    const nxt=slides[i+1];
+    if(nxt && nxt.dataset.src) loadLive(nxt);
   }
 }
 
