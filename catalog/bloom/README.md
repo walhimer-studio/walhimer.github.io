@@ -13,6 +13,13 @@
 
 https://mark-walhimer.com/sketches/bloom/index.html
 
+## Works
+
+| Title | Sketch |
+|-------|--------|
+| Artificial Flower | `sketches/bloom/seeded-flower.html` |
+| Artificial Flower V2 | `sketches/bloom/seeded-flower-v2.html` |
+
 ## Publish checklist
 
 1. Update this README and any `{artwork}.md` in this folder

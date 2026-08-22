@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-21",
+  "updated": "2026-08-22",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "fluid-dynamics/index.html"
+          "series": "Bloom",
+          "file": "bloom/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,12 +53,28 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/fluid-dynamics/assets/two-viscosities.png",
-            "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html",
-            "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html",
-            "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html",
-            "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
-            "sketches/fluid-dynamics/index.html"
+            "sketches/bloom/bloom-four-walls.html",
+            "sketches/bloom/bloom-garden.html",
+            "sketches/bloom/bloom-release-cathedral/index.html",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
+            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg",
+            "sketches/bloom/bloom-release.html",
+            "sketches/bloom/bloom-surrender.html",
+            "sketches/bloom/bloom.html",
+            "sketches/bloom/index.html",
+            "sketches/bloom/installation-builder-bloom.html",
+            "sketches/bloom/orchestrator-bloom.html",
+            "sketches/bloom/radial-gradient.html",
+            "sketches/bloom/seeded-flower-v2.html",
+            "sketches/bloom/seeded-flower.html"
           ],
           "external_urls": []
         },
@@ -108,8 +124,8 @@
           "inlined"
         ],
         "sketch": {
-          "series": "Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)",
-          "file": "loop-art-critique-2026/bloom-four-walls.html"
+          "series": "Async Museum",
+          "file": "bloom/bloom-four-walls.html"
         },
         "surfaces": [
           "installation",
@@ -119,10 +135,7 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/js/three-0.128.0.min.js",
-            "sketches/loop-art-critique-2026/bloom-four-walls.html",
-            "sketches/loop-art-critique-2026/critique-hub.html",
-            "sketches/loop-art-critique-2026/index.html"
+            "sketches/bloom/bloom-four-walls.html"
           ],
           "external_urls": []
         },
@@ -681,6 +694,451 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Bloom:catalog-bloom-readme",
+      "dublin_core": {
+        "title": "../catalog/bloom/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:catalog-bloom-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000242"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-catalog-bloom-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/bloom/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "../catalog/bloom/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/bloom/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-seeded-flower",
+      "dublin_core": {
+        "title": "Artificial Flower",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:bloom-seeded-flower",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000348"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-bloom-seeded-flower",
+        "type": "HumanMadeObject",
+        "_label": "Artificial Flower",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/seeded-flower.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/seeded-flower.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-seeded-flower-v2",
+      "dublin_core": {
+        "title": "bloom/seeded-flower-v2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:bloom-seeded-flower-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000351"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-bloom-seeded-flower-v2",
+        "type": "HumanMadeObject",
+        "_label": "bloom/seeded-flower-v2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/seeded-flower-v2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/seeded-flower-v2.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-orchestrator-bloom",
+      "dublin_core": {
+        "title": "orchestrator-bloom",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Spatial Orchestrator:orchestrator-bloom",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000052"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Spatial Orchestrator-orchestrator-bloom",
+        "type": "HumanMadeObject",
+        "_label": "orchestrator-bloom",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/orchestrator-bloom.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/orchestrator-bloom.html",
+          "sketches/js/three-0.128.0.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-surrender",
+      "dublin_core": {
+        "title": "bloom-surrender",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Spatial Orchestrator:bloom-surrender",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000055"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Spatial Orchestrator-bloom-surrender",
+        "type": "HumanMadeObject",
+        "_label": "bloom-surrender",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/bloom-surrender.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/bloom-surrender.html",
+          "sketches/js/three-0.128.0.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-radial-gradient",
+      "dublin_core": {
+        "title": "radial-gradient",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:radial-gradient",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000011"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-radial-gradient",
+        "type": "HumanMadeObject",
+        "_label": "radial-gradient",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/radial-gradient.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/radial-gradient.html",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom",
+      "dublin_core": {
+        "title": "bloom",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:bloom",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000010"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-bloom",
+        "type": "HumanMadeObject",
+        "_label": "bloom",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/bloom.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/bloom.html",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-garden",
+      "dublin_core": {
+        "title": "bloom-garden",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:bloom-garden",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000009"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-bloom-garden",
+        "type": "HumanMadeObject",
+        "_label": "bloom-garden",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/bloom-garden.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/bloom-garden.html",
+          "sketches/js/p5-1.9.0.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-release-cathedral-index",
+      "dublin_core": {
+        "title": "technical-drawing-chronicle/index",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000180"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
+        "type": "HumanMadeObject",
+        "_label": "technical-drawing-chronicle/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/bloom-release-cathedral/index.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/bloom-release-cathedral/index.html",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-installation-builder-bloom",
+      "dublin_core": {
+        "title": "installation-builder-bloom",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Bloom:installation-builder-bloom",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000012"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Bloom-installation-builder-bloom",
+        "type": "HumanMadeObject",
+        "_label": "installation-builder-bloom",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/installation-builder-bloom.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/installation-builder-bloom.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
       "dublin_core": {
         "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
@@ -762,6 +1220,62 @@
       "artifacts": {
         "repo_paths": [
           "catalog/fluid-dynamics/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/assets/two-viscosities.png",
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html",
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html",
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html",
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
+          "sketches/fluid-dynamics/index.html"
         ],
         "external_urls": []
       }
@@ -3554,6 +4068,60 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):loop-art-critique-2026-bloom-four-walls",
+      "dublin_core": {
+        "title": "Bloom / Four Walls",
+        "creator": "Mark Walhimer",
+        "date": "2026-03-15",
+        "description": "",
+        "identifier": "urn:walhimer:work:bloom-four-walls",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000003"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/bloom-four-walls",
+        "type": "HumanMadeObject",
+        "_label": "Bloom / Four Walls",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)",
+          "file": "loop-art-critique-2026/bloom-four-walls.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL",
+          "inlined"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/js/three-0.128.0.min.js",
+          "sketches/loop-art-critique-2026/bloom-four-walls.html",
+          "sketches/loop-art-critique-2026/critique-hub.html",
+          "sketches/loop-art-critique-2026/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):loop-art-critique-2026-machine-aesthetic-index",
       "dublin_core": {
         "title": "technical-drawing-chronicle/index",
@@ -4407,522 +4975,6 @@
       "artifacts": {
         "repo_paths": [
           "sketches/loop-machine-aesthetic/counterproduction-essay-v2.pdf"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom-four-walls.html",
-          "sketches/bloom/bloom-garden.html",
-          "sketches/bloom/bloom-release-cathedral/index.html",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg",
-          "sketches/bloom/bloom-release.html",
-          "sketches/bloom/bloom-surrender.html",
-          "sketches/bloom/bloom.html",
-          "sketches/bloom/index.html",
-          "sketches/bloom/installation-builder-bloom.html",
-          "sketches/bloom/orchestrator-bloom.html",
-          "sketches/bloom/radial-gradient.html",
-          "sketches/bloom/seeded-flower.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-seeded-flower",
-      "dublin_core": {
-        "title": "Artificial Flower",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Bloom:bloom-seeded-flower",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000348"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Bloom-bloom-seeded-flower",
-        "type": "HumanMadeObject",
-        "_label": "Artificial Flower",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/seeded-flower.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/seeded-flower.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:catalog-bloom-readme",
-      "dublin_core": {
-        "title": "../catalog/bloom/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Bloom:catalog-bloom-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000242"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Bloom-catalog-bloom-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/bloom/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "../catalog/bloom/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/bloom/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-orchestrator-bloom",
-      "dublin_core": {
-        "title": "orchestrator-bloom",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Spatial Orchestrator:orchestrator-bloom",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000052"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Spatial Orchestrator-orchestrator-bloom",
-        "type": "HumanMadeObject",
-        "_label": "orchestrator-bloom",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/orchestrator-bloom.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/orchestrator-bloom.html",
-          "sketches/js/three-0.128.0.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-surrender",
-      "dublin_core": {
-        "title": "bloom-surrender",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Spatial Orchestrator:bloom-surrender",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000055"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Spatial Orchestrator-bloom-surrender",
-        "type": "HumanMadeObject",
-        "_label": "bloom-surrender",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/bloom-surrender.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom-surrender.html",
-          "sketches/js/three-0.128.0.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-radial-gradient",
-      "dublin_core": {
-        "title": "radial-gradient",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Bloom:radial-gradient",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000011"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Bloom-radial-gradient",
-        "type": "HumanMadeObject",
-        "_label": "radial-gradient",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/radial-gradient.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/radial-gradient.html",
-          "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-bloom",
-      "dublin_core": {
-        "title": "bloom",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Bloom:bloom",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000010"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Bloom-bloom",
-        "type": "HumanMadeObject",
-        "_label": "bloom",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/bloom.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom.html",
-          "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-garden",
-      "dublin_core": {
-        "title": "bloom-garden",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Bloom:bloom-garden",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000009"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Bloom-bloom-garden",
-        "type": "HumanMadeObject",
-        "_label": "bloom-garden",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/bloom-garden.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom-garden.html",
-          "sketches/js/p5-1.9.0.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-release-cathedral-index",
-      "dublin_core": {
-        "title": "technical-drawing-chronicle/index",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Technical Drawing — chronicle:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000180"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Technical Drawing — chronicle-index",
-        "type": "HumanMadeObject",
-        "_label": "technical-drawing-chronicle/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/bloom-release-cathedral/index.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom-release-cathedral/index.html",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
-          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-bloom-four-walls",
-      "dublin_core": {
-        "title": "Bloom / Four Walls",
-        "creator": "Mark Walhimer",
-        "date": "2026-03-15",
-        "description": "",
-        "identifier": "urn:walhimer:work:bloom-four-walls",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000003"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/bloom-four-walls",
-        "type": "HumanMadeObject",
-        "_label": "Bloom / Four Walls",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/bloom-four-walls.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL",
-          "inlined"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom-four-walls.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Bloom:bloom-installation-builder-bloom",
-      "dublin_core": {
-        "title": "installation-builder-bloom",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Bloom:installation-builder-bloom",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000012"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Bloom-installation-builder-bloom",
-        "type": "HumanMadeObject",
-        "_label": "installation-builder-bloom",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Bloom",
-          "file": "bloom/installation-builder-bloom.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/installation-builder-bloom.html"
         ],
         "external_urls": []
       }
@@ -7374,57 +7426,6 @@
       "artifacts": {
         "repo_paths": [
           "sketches/async-museums/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Async Museum:bloom-bloom-four-walls",
-      "dublin_core": {
-        "title": "Bloom / Four Walls",
-        "creator": "Mark Walhimer",
-        "date": "2026-03-15",
-        "description": "",
-        "identifier": "urn:walhimer:work:bloom-four-walls",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000003"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/bloom-four-walls",
-        "type": "HumanMadeObject",
-        "_label": "Bloom / Four Walls",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Async Museum",
-          "file": "bloom/bloom-four-walls.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL",
-          "inlined"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/bloom/bloom-four-walls.html"
         ],
         "external_urls": []
       }

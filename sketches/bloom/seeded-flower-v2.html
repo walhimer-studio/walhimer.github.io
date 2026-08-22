@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flower — 3D study V2</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #f4f4f6;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      touch-action: none;
+      cursor: grab;
+    }
+    canvas:active { cursor: grabbing; }
+    #hint {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      margin: 0;
+      font: 11px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: rgba(0, 0, 0, 0.38);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <p id="hint">v2 · drag to rotate · space for a new flower</p>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../js/three-0.170.0.module.js",
+        "three/addons/": "../js/three-0.170.0-jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+    import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { BokehPass } from "three/addons/postprocessing/BokehPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+    import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
+
+    const TAU = Math.PI * 2;
+    const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+
+    const rng = Math.random;
+    const uniform = (a, b) => a + rng() * (b - a);
+    const randint = (a, b) => a + Math.floor(rng() * (b - a + 1));
+    const chance = (p) => rng() < p;
+
+    // Focal length and aperture decide how much this reads as a photograph
+    // rather than a render.
+    const LENS = { fov: 32, aperture: 0.0011, maxblur: 0.017 };
+
+    // ----------------------------------------------------------------- colour
+
+    /**
+     * Multi-stop ramp travelling along a blade. A wide sweep gives the
+     * magenta-to-cyan blades; a narrow one gives a single-hue petal.
+     */
+    function makeRamp(hue, sweep, sat, light, stops) {
+      const ramp = [];
+      for (let i = 0; i < stops; i++) {
+        const t = stops === 1 ? 0 : i / (stops - 1);
+        ramp.push(
+          new THREE.Color().setHSL(
+            (((hue + sweep * t) % 1) + 1) % 1,
+            clamp01(sat * uniform(0.88, 1.06)),
+            clamp01(light * uniform(0.94, 1.06))
+          )
+        );
+      }
+      return ramp;
+    }
+
+    function sampleRamp(ramp, t, out) {
+      if (ramp.length === 1) return out.copy(ramp[0]);
+      const s = clamp01(t) * (ramp.length - 1);
+      const i = Math.min(ramp.length - 2, Math.floor(s));
+      return out.copy(ramp[i]).lerp(ramp[i + 1], s - i);
+    }
+
+    // --------------------------------------------------------------- surfaces
+
+    function sheetGeometry(segU, segV, pointFn, colorFn) {
+      const positions = [];
+      const colors = [];
+      const indices = [];
+      const c = new THREE.Color();
+      const p = new THREE.Vector3();
+
+      for (let i = 0; i <= segU; i++) {
+        const u = i / segU;
+        for (let j = 0; j <= segV; j++) {
+          const v = (j / segV) * 2 - 1;
+          pointFn(u, v, p);
+          positions.push(p.x, p.y, p.z);
+          colorFn(u, v, c);
+          colors.push(c.r, c.g, c.b);
+        }
+      }
+
+      const row = segV + 1;
+      for (let i = 0; i < segU; i++) {
+        for (let j = 0; j < segV; j++) {
+          const a = i * row + j;
+          const b = a + row;
+          indices.push(a, b, a + 1, b, b + 1, a + 1);
+        }
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+      geo.setIndex(indices);
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    /**
+     * Blade surface. Width swells and tapers with a slow undulation along the
+     * edge, a raised midrib runs the length, and the blade curls and twists
+     * away from its stem. `lift` floats a copy just above the surface so veins
+     * can sit on the skin without z-fighting.
+     */
+    function makeBladeFn(o, lift) {
+      const off = lift || 0;
+      return function (u, v, out) {
+        const shaped = Math.pow(u, o.skew);
+        let half = o.width * Math.pow(Math.sin(Math.PI * shaped), o.tipPinch);
+        half *= 1 + o.waveAmp * Math.sin(u * o.waveFreq * TAU + o.wavePhase);
+        const x = v * half;
+        const y = u * o.length;
+        const ridge = o.ridge * Math.pow(1 - Math.abs(v), 2) * Math.sin(Math.PI * u);
+        const z = o.curl * u * u + o.cup * v * v * u + ridge + off;
+        const a = o.twist * u;
+        const ca = Math.cos(a);
+        const sa = Math.sin(a);
+        out.set(x * ca - z * sa, y, x * sa + z * ca);
+      };
+    }
+
+    /** Translucent gel body. Overlaps accumulate colour; the env map is the gloss. */
+    function bladeMaterial() {
+      return new THREE.MeshPhysicalMaterial({
+        vertexColors: true,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.68,
+        depthWrite: false,
+        roughness: 0.11,
+        metalness: 0,
+        ior: 1.45,
+        clearcoat: 1,
+        clearcoatRoughness: 0.05,
+        iridescence: 0.3,
+        iridescenceIOR: 1.3,
+        sheen: 0.45,
+        sheenColor: new THREE.Color(0xffffff),
+        specularIntensity: 1,
+        envMapIntensity: 1.15
+      });
+    }
+
+    /**
+     * Rim bead along one edge of a blade — a thin tube rather than a line, so
+     * it takes real highlights and blurs correctly in the depth of field.
+     */
+    function rimTube(fn, radius, ramp, side) {
+      const pts = [];
+      const p = new THREE.Vector3();
+      const N = 40;
+      for (let i = 0; i <= N; i++) {
+        fn(i / N, side, p);
+        pts.push(p.clone());
+      }
+      const tubular = 48;
+      const radial = 4;
+      const geo = new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3(pts),
+        tubular,
+        radius,
+        radial,
+        false
+      );
+
+      const rows = tubular + 1;
+      const cols = radial + 1;
+      const colors = new Float32Array(rows * cols * 3);
+      const c = new THREE.Color();
+      for (let i = 0; i < rows; i++) {
+        sampleRamp(ramp, i / (rows - 1), c);
+        c.multiplyScalar(0.82);
+        for (let j = 0; j < cols; j++) {
+          const k = (i * cols + j) * 3;
+          colors[k] = c.r;
+          colors[k + 1] = c.g;
+          colors[k + 2] = c.b;
+        }
+      }
+      geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+      return new THREE.Mesh(
+        geo,
+        new THREE.MeshPhysicalMaterial({
+          vertexColors: true,
+          roughness: 0.08,
+          metalness: 0,
+          clearcoat: 1,
+          clearcoatRoughness: 0.04,
+          envMapIntensity: 1.35
+        })
+      );
+    }
+
+    function veinMesh(pts, radius, ramp, at, darken) {
+      const c = new THREE.Color();
+      sampleRamp(ramp, at, c);
+      c.multiplyScalar(darken);
+      return new THREE.Mesh(
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), pts.length * 2, radius, 3, false),
+        new THREE.MeshPhysicalMaterial({
+          color: c,
+          roughness: 0.3,
+          metalness: 0,
+          clearcoat: 0.6,
+          transparent: true,
+          opacity: 0.72
+        })
+      );
+    }
+
+    /** Midrib plus laterals, riding just above the blade surface. */
+    function addVeins(group, o, ramp) {
+      const fn = makeBladeFn(o, o.veinLift);
+      const p = new THREE.Vector3();
+
+      const mid = [];
+      for (let i = 0; i <= 24; i++) {
+        fn(0.03 + (i / 24) * 0.93, 0, p);
+        mid.push(p.clone());
+      }
+      group.add(veinMesh(mid, o.veinRadius * 1.35, ramp, 0.5, 0.5));
+
+      const n = o.veins;
+      for (let k = 1; k <= n; k++) {
+        const u0 = 0.16 + (k / (n + 1)) * 0.6;
+        for (let s = -1; s <= 1; s += 2) {
+          const pts = [];
+          for (let i = 0; i <= 8; i++) {
+            const t = i / 8;
+            fn(u0 + 0.17 * t * t, s * 0.86 * Math.pow(t, 0.8), p);
+            pts.push(p.clone());
+          }
+          group.add(veinMesh(pts, o.veinRadius, ramp, u0, 0.46));
+        }
+      }
+    }
+
+    function buildBlade(o, ramp) {
+      const group = new THREE.Group();
+      const fn = makeBladeFn(o);
+      const white = new THREE.Color(1, 1, 1);
+
+      const geo = sheetGeometry(40, 18, fn, (u, v, out) => {
+        sampleRamp(ramp, u, out);
+        // Thin edges read lighter, as if lit from behind.
+        out.lerp(white, Math.pow(Math.abs(v), 4) * 0.26);
+      });
+      group.add(new THREE.Mesh(geo, bladeMaterial()));
+
+      group.add(rimTube(fn, o.rim, ramp, 1));
+      group.add(rimTube(fn, o.rim, ramp, -1));
+
+      if (o.veins > 0) addVeins(group, o, ramp);
+      return group;
+    }
+
+    // ------------------------------------------------------------ blade kinds
+
+    function petalOpts(size) {
+      return {
+        length: uniform(0.3, 0.5) * size,
+        width: uniform(0.08, 0.16) * size,
+        curl: uniform(-0.1, 0.04) * size,
+        cup: uniform(0.05, 0.16) * size,
+        ridge: uniform(0.01, 0.04) * size,
+        twist: uniform(-0.22, 0.22),
+        skew: uniform(0.9, 1.15),
+        tipPinch: uniform(0.55, 0.95),
+        waveAmp: uniform(0.03, 0.11),
+        waveFreq: uniform(0.8, 1.9),
+        wavePhase: rng() * TAU,
+        rim: 0.0032 * size,
+        veins: chance(0.35) ? randint(2, 3) : 0,
+        veinRadius: 0.0018 * size,
+        veinLift: 0.004 * size
+      };
+    }
+
+    /** The broad ovate blade — the big rainbow leaf in the reference. */
+    function ovateOpts(size) {
+      return {
+        length: uniform(0.62, 0.95) * size,
+        width: uniform(0.2, 0.3) * size,
+        curl: uniform(-0.08, 0.08) * size,
+        cup: uniform(0.05, 0.14) * size,
+        ridge: uniform(0.03, 0.07) * size,
+        twist: uniform(-0.2, 0.2),
+        skew: uniform(0.78, 0.95),
+        tipPinch: uniform(0.42, 0.62),
+        waveAmp: uniform(0.02, 0.07),
+        waveFreq: uniform(0.7, 1.4),
+        wavePhase: rng() * TAU,
+        rim: 0.0042 * size,
+        veins: randint(4, 7),
+        veinRadius: 0.0022 * size,
+        veinLift: 0.005 * size
+      };
+    }
+
+    function leafOpts(size) {
+      return {
+        length: uniform(0.45, 0.8) * size,
+        width: uniform(0.09, 0.15) * size,
+        curl: uniform(-0.12, 0.12) * size,
+        cup: uniform(0.04, 0.1) * size,
+        ridge: uniform(0.02, 0.05) * size,
+        twist: uniform(-0.3, 0.3),
+        skew: uniform(0.9, 1.15),
+        tipPinch: uniform(0.45, 0.7),
+        waveAmp: uniform(0.02, 0.08),
+        waveFreq: uniform(0.7, 1.5),
+        wavePhase: rng() * TAU,
+        rim: 0.0034 * size,
+        veins: randint(3, 6),
+        veinRadius: 0.002 * size,
+        veinLift: 0.0045 * size
+      };
+    }
+
+    // ------------------------------------------------------------------ stems
+
+    /** Tapered glass stem: thick at the base, thinning toward the tip. */
+    function stemMesh(curve, r0, r1, hue, sat, light) {
+      const tubular = 48;
+      const radial = 10;
+      const frames = curve.computeFrenetFrames(tubular, false);
+      const positions = [];
+      const normals = [];
+      const indices = [];
+      const P = new THREE.Vector3();
+
+      for (let i = 0; i <= tubular; i++) {
+        const t = i / tubular;
+        curve.getPointAt(t, P);
+        const N = frames.normals[i];
+        const B = frames.binormals[i];
+        const r = r0 + (r1 - r0) * t;
+        for (let j = 0; j <= radial; j++) {
+          const a = (j / radial) * TAU;
+          const sn = Math.sin(a);
+          const cs = -Math.cos(a);
+          const nx = cs * N.x + sn * B.x;
+          const ny = cs * N.y + sn * B.y;
+          const nz = cs * N.z + sn * B.z;
+          const len = Math.hypot(nx, ny, nz) || 1;
+          normals.push(nx / len, ny / len, nz / len);
+          positions.push(P.x + r * nx, P.y + r * ny, P.z + r * nz);
+        }
+      }
+
+      const row = radial + 1;
+      for (let i = 0; i < tubular; i++) {
+        for (let j = 0; j < radial; j++) {
+          const a = i * row + j;
+          const b = (i + 1) * row + j;
+          indices.push(a, b, a + 1, b, b + 1, a + 1);
+        }
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      geo.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+      geo.setIndex(indices);
+
+      return new THREE.Mesh(
+        geo,
+        new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color().setHSL(hue, sat, light),
+          roughness: 0.13,
+          metalness: 0,
+          clearcoat: 1,
+          clearcoatRoughness: 0.06,
+          envMapIntensity: 1.25
+        })
+      );
+    }
+
+    /** Glassy filament curling off a bloom. */
+    function buildTendril(hue, size) {
+      const turns = uniform(1.2, 3);
+      const radius = uniform(0.05, 0.16) * size;
+      const rise = uniform(0.12, 0.4) * size;
+      const pts = [];
+      for (let i = 0; i <= 40; i++) {
+        const t = i / 40;
+        const a = t * TAU * turns;
+        const r = radius * Math.pow(t, 0.8);
+        pts.push(new THREE.Vector3(Math.cos(a) * r, rise * t, Math.sin(a) * r * 0.7));
+      }
+      return new THREE.Mesh(
+        new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 56, 0.0042 * size, 4, false),
+        new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color().setHSL(hue, 0.95, 0.55),
+          roughness: 0.07,
+          metalness: 0,
+          clearcoat: 1,
+          clearcoatRoughness: 0.04,
+          envMapIntensity: 1.45
+        })
+      );
+    }
+
+    // ----------------------------------------------------------------- blooms
+
+    function buildFlower(hue, size, blooms) {
+      const group = new THREE.Group();
+      const petals = randint(4, 9);
+      const sat = uniform(0.72, 1);
+      const light = uniform(0.52, 0.64);
+      const sweep = chance(0.22)
+        ? uniform(0.18, 0.42) * (chance(0.5) ? 1 : -1)
+        : uniform(-0.06, 0.06);
+      const openness = uniform(0.4, 1.2);
+      const phase = rng() * TAU;
+
+      for (let i = 0; i < petals; i++) {
+        const blade = buildBlade(petalOpts(size), makeRamp(hue, sweep, sat, light, 4));
+        blade.rotation.y = phase + (i / petals) * TAU + uniform(-0.1, 0.1);
+        blade.rotation.z = uniform(-0.16, 0.16);
+        blade.rotateOnAxis(new THREE.Vector3(1, 0, 0), openness + uniform(-0.15, 0.15));
+        group.add(blade);
+      }
+
+      const centreMat = new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color().setHSL((((hue + uniform(-0.1, 0.1)) % 1) + 1) % 1, 0.9, 0.62),
+        roughness: 0.16,
+        metalness: 0,
+        clearcoat: 1,
+        clearcoatRoughness: 0.05,
+        envMapIntensity: 1.3
+      });
+      const centreGeo = new THREE.IcosahedronGeometry(0.014 * size, 1);
+      const count = randint(7, 16);
+      for (let i = 0; i < count; i++) {
+        const blob = new THREE.Mesh(centreGeo, centreMat);
+        blob.position.set(
+          uniform(-0.045, 0.045) * size,
+          uniform(0, 0.055) * size,
+          uniform(-0.045, 0.045) * size
+        );
+        blob.scale.setScalar(uniform(0.7, 2));
+        group.add(blob);
+      }
+
+      const tendrils = randint(1, 4);
+      for (let i = 0; i < tendrils; i++) {
+        const t = buildTendril((((hue + uniform(-0.09, 0.09)) % 1) + 1) % 1, size);
+        t.rotation.y = rng() * TAU;
+        t.rotation.z = uniform(-0.8, 0.8);
+        group.add(t);
+      }
+
+      blooms.push(group);
+      return group;
+    }
+
+    function buildBud(hue, size) {
+      const group = new THREE.Group();
+      const n = randint(3, 5);
+      const sat = uniform(0.65, 0.95);
+      const light = uniform(0.5, 0.62);
+      for (let i = 0; i < n; i++) {
+        const o = petalOpts(size * 0.45);
+        o.curl = uniform(0.03, 0.07) * size;
+        o.veins = 0;
+        const blade = buildBlade(o, makeRamp(hue, uniform(-0.05, 0.05), sat, light, 3));
+        blade.rotation.y = (i / n) * TAU + rng();
+        blade.rotateOnAxis(new THREE.Vector3(1, 0, 0), uniform(0.06, 0.22));
+        group.add(blade);
+      }
+      return group;
+    }
+
+    // --------------------------------------------------------------- branches
+
+    function buildBranch(origin, dir, length, hue, size, blooms, depth) {
+      const group = new THREE.Group();
+
+      const up = new THREE.Vector3(0, 1, 0);
+      const pts = [new THREE.Vector3(0, 0, 0)];
+      const steps = 4;
+      const cur = new THREE.Vector3();
+      const step = dir.clone().normalize().multiplyScalar(length / steps);
+      for (let i = 1; i <= steps; i++) {
+        cur.add(step);
+        cur.addScaledVector(up, uniform(0, 0.09) * length);
+        cur.x += uniform(-0.06, 0.06) * length;
+        cur.z += uniform(-0.06, 0.06) * length;
+        pts.push(cur.clone());
+      }
+      const curve = new THREE.CatmullRomCurve3(pts);
+      group.add(
+        stemMesh(curve, 0.016 * size, 0.008 * size, hue, uniform(0.6, 0.95), uniform(0.4, 0.56))
+      );
+
+      const count = randint(1, 3);
+      for (let i = 0; i < count; i++) {
+        const t = i === 0 ? 1 : uniform(0.55, 0.95);
+        const flower = buildFlower(hue + uniform(-0.04, 0.04), size * uniform(0.85, 1.2), blooms);
+        flower.position.copy(curve.getPointAt(t));
+        flower.rotation.set(uniform(-0.5, 0.5), rng() * TAU, uniform(-0.5, 0.5));
+        group.add(flower);
+      }
+
+      const buds = randint(0, 3);
+      for (let i = 0; i < buds; i++) {
+        const bud = buildBud(hue + uniform(-0.09, 0.09), size * uniform(0.9, 1.5));
+        bud.position.copy(curve.getPointAt(uniform(0.3, 0.9)));
+        bud.rotation.set(uniform(-0.8, 0.8), rng() * TAU, uniform(-0.8, 0.8));
+        group.add(bud);
+      }
+
+      if (chance(0.55)) {
+        const o = chance(0.45) ? ovateOpts(size) : leafOpts(size);
+        const sweep = chance(0.4) ? uniform(0.3, 0.62) * (chance(0.5) ? 1 : -1) : uniform(-0.1, 0.1);
+        const blade = buildBlade(
+          o,
+          makeRamp(hue + uniform(-0.2, 0.2), sweep, uniform(0.6, 0.95), uniform(0.55, 0.68), 5)
+        );
+        blade.position.copy(curve.getPointAt(uniform(0.15, 0.55)));
+        blade.rotation.set(uniform(0.5, 1.5), rng() * TAU, uniform(-0.5, 0.5));
+        group.add(blade);
+      }
+
+      if (depth < 1 && chance(0.5)) {
+        const a = rng() * TAU;
+        const spread = uniform(0.5, 1);
+        group.add(
+          buildBranch(
+            curve.getPointAt(uniform(0.35, 0.7)),
+            new THREE.Vector3(Math.cos(a) * spread, uniform(0.6, 1.4), Math.sin(a) * spread),
+            length * uniform(0.45, 0.7),
+            hue + uniform(-0.08, 0.08),
+            size * uniform(0.7, 0.9),
+            blooms,
+            depth + 1
+          )
+        );
+      }
+
+      group.position.copy(origin);
+      return group;
+    }
+
+    function growPlant(blooms) {
+      const plant = new THREE.Group();
+
+      const height = uniform(2.1, 2.9);
+      const baseHue = rng();
+      const hueSpread = uniform(0.5, 1);
+
+      const mainPts = [];
+      const segs = 6;
+      let x = 0;
+      let z = 0;
+      for (let i = 0; i <= segs; i++) {
+        const t = i / segs;
+        x += uniform(-0.05, 0.05);
+        z += uniform(-0.05, 0.05);
+        mainPts.push(new THREE.Vector3(x * t, t * height, z * t));
+      }
+      const mainCurve = new THREE.CatmullRomCurve3(mainPts);
+      plant.add(
+        stemMesh(mainCurve, 0.03, 0.014, (baseHue + 0.1) % 1, uniform(0.7, 0.95), uniform(0.42, 0.55))
+      );
+
+      const branches = randint(3, 6);
+      for (let i = 0; i < branches; i++) {
+        const a = (i / branches) * TAU + uniform(-0.45, 0.45);
+        const outward = uniform(0.55, 1.1);
+        plant.add(
+          buildBranch(
+            mainCurve.getPointAt(uniform(0.32, 0.98)),
+            new THREE.Vector3(Math.cos(a) * outward, uniform(0.5, 1.4), Math.sin(a) * outward),
+            uniform(0.55, 1.25),
+            (baseHue + (i / branches) * hueSpread) % 1,
+            uniform(0.9, 1.35),
+            blooms,
+            0
+          )
+        );
+      }
+
+      const basal = randint(1, 3);
+      for (let i = 0; i < basal; i++) {
+        const blade = buildBlade(
+          leafOpts(uniform(1.2, 1.9)),
+          makeRamp(uniform(0.24, 0.4), uniform(-0.12, 0.12), uniform(0.4, 0.75), uniform(0.55, 0.68), 4)
+        );
+        blade.position.copy(mainCurve.getPointAt(uniform(0.04, 0.3)));
+        blade.rotation.set(uniform(0.8, 1.45), rng() * TAU, uniform(-0.4, 0.4));
+        plant.add(blade);
+      }
+
+      return plant;
+    }
+
+    // ------------------------------------------------------------------ scene
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(LENS.fov, 1, 0.05, 200);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.NeutralToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    document.body.appendChild(renderer.domElement);
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environmentIntensity = 1;
+
+    /** Soft studio backdrop as real geometry, so it blurs with everything else. */
+    function backdropTexture() {
+      const c = document.createElement("canvas");
+      c.width = 4;
+      c.height = 512;
+      const ctx = c.getContext("2d");
+      const g = ctx.createLinearGradient(0, 0, 0, 512);
+      g.addColorStop(0, "#e4e4e8");
+      g.addColorStop(0.45, "#f7f7f8");
+      g.addColorStop(0.72, "#fdfdfd");
+      g.addColorStop(1, "#ececed");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 4, 512);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    scene.add(
+      new THREE.Mesh(
+        new THREE.SphereGeometry(48, 32, 24),
+        new THREE.MeshBasicMaterial({ map: backdropTexture(), side: THREE.BackSide })
+      )
+    );
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xdedee6, 0.45));
+    const key = new THREE.DirectionalLight(0xffffff, 1.5);
+    key.position.set(2.2, 4.5, 3.2);
+    scene.add(key);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.1);
+    rimLight.position.set(-2.4, 2.2, -3.6);
+    scene.add(rimLight);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.enablePan = false;
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bokeh = new BokehPass(scene, camera, {
+      focus: 6,
+      aperture: LENS.aperture,
+      maxblur: LENS.maxblur
+    });
+    composer.addPass(bokeh);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.22, 0.7, 0.92);
+    composer.addPass(bloomPass);
+    composer.addPass(new OutputPass());
+    composer.addPass(new SMAAPass(1, 1));
+
+    let plantGroup = null;
+    const focusPoint = new THREE.Vector3();
+
+    function disposeObject3D(root) {
+      root.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          mats.forEach((m) => m.dispose());
+        }
+      });
+    }
+
+    function frameCamera(group) {
+      const box = new THREE.Box3().setFromObject(group);
+      const size = box.getSize(new THREE.Vector3());
+      const centre = box.getCenter(new THREE.Vector3());
+      const radius = Math.max(size.x, size.y, size.z) * 0.5;
+      const dist = (radius / Math.sin((camera.fov * Math.PI) / 360)) * 1.15;
+      controls.target.copy(centre);
+      camera.position.set(centre.x, centre.y + size.y * 0.1, centre.z + dist);
+      camera.updateProjectionMatrix();
+      controls.update();
+    }
+
+    /** Focus on whichever bloom sits nearest the opening camera position. */
+    function pickFocus(blooms) {
+      focusPoint.copy(controls.target);
+      let best = Infinity;
+      const p = new THREE.Vector3();
+      for (let i = 0; i < blooms.length; i++) {
+        blooms[i].getWorldPosition(p);
+        const d = p.distanceTo(camera.position);
+        if (d < best) {
+          best = d;
+          focusPoint.copy(p);
+        }
+      }
+    }
+
+    function buildScene() {
+      if (plantGroup) {
+        scene.remove(plantGroup);
+        disposeObject3D(plantGroup);
+        plantGroup = null;
+      }
+      const blooms = [];
+      plantGroup = growPlant(blooms);
+      scene.add(plantGroup);
+      frameCamera(plantGroup);
+      plantGroup.updateWorldMatrix(true, true);
+      pickFocus(blooms);
+    }
+
+    function onResize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
+      bloomPass.setSize(w, h);
+    }
+
+    function tick() {
+      requestAnimationFrame(tick);
+      controls.update();
+      bokeh.uniforms.focus.value = camera.position.distanceTo(focusPoint);
+      composer.render();
+    }
+
+    buildScene();
+    onResize();
+    window.addEventListener("resize", onResize);
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault();
+        buildScene();
+      }
+    });
+    tick();
+  </script>
+</body>
+</html>
