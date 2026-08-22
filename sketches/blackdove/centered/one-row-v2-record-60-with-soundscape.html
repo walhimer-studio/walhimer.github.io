@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>One Row V2 — with soundscape (PoC)</title>
+  <style>
+    html, body { margin: 0; background: #0a0a0a; }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      max-width: 100vw;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+    .hud {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      z-index: 10;
+      color: #f0ede6;
+      font: 12px/1.45 ui-monospace, Menlo, monospace;
+      background: rgba(10, 10, 10, 0.78);
+      padding: 10px 12px;
+      max-width: min(520px, 92vw);
+    }
+    .hud button {
+      margin-top: 8px;
+      margin-right: 8px;
+      font: inherit;
+      color: #0a0a0a;
+      background: #f0ede6;
+      border: 0;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    .hud button.recording { background: #c45c4a; color: #fff; }
+    .hud button.muted { opacity: 0.55; }
+    #save-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: #0a0a0a;
+      background: #c8a882;
+      text-decoration: none;
+      padding: 6px 10px;
+    }
+    #save-link[hidden] { display: none; }
+    .lifeline {
+      margin-top: 8px;
+      height: 4px;
+      background: #2a2a2a;
+    }
+    #lifeline-fill { height: 100%; width: 0; background: #f0ede6; }
+  </style>
+  <script src="../../js/p5-1.11.2.min.js"></script>
+</head>
+<body>
+  <div class="hud">
+    <div id="hud-seed">seed —</div>
+    <div id="hud-rec">PoC · watch with sound · R records realtime A/V</div>
+    <div class="lifeline"><div id="lifeline-fill"></div></div>
+    <button id="sound-btn" type="button">Sound</button>
+    <button id="record-btn" type="button">Record</button>
+    <a id="save-link" hidden>Save</a>
+  </div>
+<script>
+/** One Row V2 + soundscape PoC (Centered nest).
+ *  NEW FILE — does not edit one-row-v2-record-60.html.
+ *  Visual art mirrors the silent recorder; sound co-created from same seed.
+ *  ?seed=N&format=portrait|landscape|square&seconds=120
+ *
+ *  Watch live (sound + picture). When happy: R / Record — same seed, realtime
+ *  A/V for `seconds` (default 120). Not Salamander; long-decay pentatonic Web Audio.
+ */
+const LIFESPAN_MS = 480000; // Centered catalog timer for HUD only — life ≠ this number
+const RECORD_FPS = 60;
+const FORMAT_SIZES = {
+  portrait: [2160, 3840],
+  landscape: [3840, 2160],
+  square: [2160, 2160]
+};
+
+function parseFormatFromUrl() {
+  try {
+    const raw = (new URLSearchParams(location.search).get('format') || 'square').toLowerCase();
+    if (raw in FORMAT_SIZES) return raw;
+  } catch (e) {}
+  return 'square';
+}
+
+function parseSecondsFromUrl() {
+  try {
+    const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
+    if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+  } catch (e) {}
+  return 120;
+}
+
+const FORMAT = parseFormatFromUrl();
+const RECORD_SECONDS = parseSecondsFromUrl();
+const CANVAS_W = FORMAT_SIZES[FORMAT][0];
+const CANVAS_H = FORMAT_SIZES[FORMAT][1];
+
+let city = [];
+let cols = 1;
+let rows = 30;
+let spacing = 200;
+let palette = [310, 45, 30, 210, 270];
+
+let camZ = 2000;
+let targetCamZ = 2000;
+let camSpeed = 0.5;
+let soundCamNudge = 0;
+
+let gradientTextures = [];
+let artMidY = 0;
+let artSeed;
+let lifeStart;
+let lifelineFill;
+let hudSeed;
+let hudRec;
+let recordBtn;
+let soundBtn;
+let hudEl;
+let saveLink;
+let hudSticky = null;
+
+/** Seeded PRNG for sound only — independent of p5 random draws. */
+function makeSoundRng(seed) {
+  let s = (seed >>> 0) || 1;
+  return {
+    next() {
+      s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
+      return s / 4294967296;
+    },
+    range(a, b) {
+      return a + this.next() * (b - a);
+    },
+    pick(arr) {
+      return arr[Math.floor(this.next() * arr.length) % arr.length];
+    }
+  };
+}
+
+/** Long-decay pentatonic bed — co-created from seed + life phase + camera drift. */
+const Soundscape = () => {
+  const PENT = [0, 2, 4, 7, 9]; // major pentatonic semitone offsets
+  const ROOT = 48; // C3
+  let ctx = null;
+  let master = null;
+  let wet = null;
+  let dry = null;
+  let dest = null;
+  let convolver = null;
+  let muted = true;
+  let armed = false;
+  let rng = makeSoundRng(1);
+  let nextNoteAt = 0;
+  let lastPulse = 0;
+  let energy = 0.2;
+
+  function makeImpulse(seconds) {
+    const rate = ctx.sampleRate;
+    const len = Math.floor(rate * seconds);
+    const buf = ctx.createBuffer(2, len, rate);
+    for (let c = 0; c < 2; c++) {
+      const data = buf.getChannelData(c);
+      for (let i = 0; i < len; i++) {
+        const t = i / len;
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2.8) * 0.55;
+      }
+    }
+    return buf;
+  }
+
+  async function ensure() {
+    if (ctx) return ctx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0.22;
+    dry = ctx.createGain();
+    dry.gain.value = 0.45;
+    wet = ctx.createGain();
+    wet.gain.value = 0.7;
+    convolver = ctx.createConvolver();
+    convolver.buffer = makeImpulse(4.5);
+    dest = ctx.createMediaStreamDestination();
+    dry.connect(master);
+    convolver.connect(wet);
+    wet.connect(master);
+    master.connect(ctx.destination);
+    master.connect(dest);
+    return ctx;
+  }
+
+  function midiToHz(m) {
+    return 440 * Math.pow(2, (m - 69) / 12);
+  }
+
+  function noteMidi() {
+    const octave = Math.floor(rng.range(0, 3));
+    return ROOT + octave * 12 + rng.pick(PENT);
+  }
+
+  function playTone(now, midi, dur, gain) {
+    if (!ctx || muted) return;
+    const freq = midiToHz(midi);
+    const osc = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const g = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    osc.type = 'sine';
+    osc2.type = 'triangle';
+    osc.frequency.value = freq;
+    osc2.frequency.value = freq * 1.002;
+    filter.type = 'lowpass';
+    filter.frequency.value = 900 + energy * 1800;
+    filter.Q.value = 0.6;
+    const peak = Math.max(0.02, Math.min(0.18, gain));
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(peak, now + 0.08);
+    g.gain.exponentialRampToValueAtTime(peak * 0.35, now + Math.min(1.2, dur * 0.25));
+    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    osc.connect(filter);
+    osc2.connect(filter);
+    filter.connect(g);
+    g.connect(dry);
+    g.connect(convolver);
+    osc.start(now);
+    osc2.start(now);
+    osc.stop(now + dur + 0.05);
+    osc2.stop(now + dur + 0.05);
+  }
+
+  function setSeed(seed) {
+    rng = makeSoundRng((seed >>> 0) ^ 0x9e3779b9);
+    nextNoteAt = 0;
+    lastPulse = 0;
+    energy = 0.15 + rng.next() * 0.25;
+  }
+
+  /** Same-tick expression: life phase + cam drift shape density; sound nudges cam slightly. */
+  function express(snapshot) {
+    if (!ctx || !armed || muted || ctx.state !== 'running') {
+      soundCamNudge = 0;
+      return;
+    }
+    const now = ctx.currentTime;
+    const life01 = Math.max(0, Math.min(1, snapshot.life01));
+    // Narrative arc: sparse → denser mid → sparse again (crescent inside the life)
+    const arc = Math.sin(Math.PI * life01);
+    const density = 0.35 + arc * 0.9 + snapshot.camDrift * 0.4;
+    energy = 0.12 + arc * 0.55 + snapshot.camDrift * 0.2;
+
+    if (now >= nextNoteAt) {
+      const midi = noteMidi();
+      const dur = rng.range(2.5, 7.5);
+      const gain = rng.range(0.04, 0.14) * (0.5 + energy);
+      playTone(now, midi, dur, gain);
+      if (rng.next() < 0.35 + arc * 0.3) {
+        playTone(now + 0.04, midi + 12, dur * 0.85, gain * 0.45);
+      }
+      const gap = rng.range(0.9, 3.2) / Math.max(0.35, density);
+      nextNoteAt = now + gap;
+      lastPulse = now;
+    }
+
+    const pulseAge = now - lastPulse;
+    soundCamNudge = (pulseAge < 0.6 ? (0.6 - pulseAge) : 0) * energy * 0.15;
+  }
+
+  async function unmute() {
+    await ensure();
+    if (ctx.state === 'suspended') await ctx.resume();
+    muted = false;
+    armed = true;
+    if (soundBtn) soundBtn.classList.remove('muted');
+    if (soundBtn) soundBtn.textContent = 'Sound on';
+  }
+
+  function mute() {
+    muted = true;
+    if (soundBtn) soundBtn.classList.add('muted');
+    if (soundBtn) soundBtn.textContent = 'Sound';
+  }
+
+  async function toggleMute() {
+    if (muted) await unmute();
+    else mute();
+    updateHud();
+  }
+
+  function getStream() {
+    return dest ? dest.stream : null;
+  }
+
+  function isMuted() {
+    return muted;
+  }
+
+  return { setSeed, express, toggleMute, unmute, mute, getStream, isMuted, ensure };
+};
+
+const soundscape = Soundscape();
+
+const CanvasRecorder = (getCanvas) => {
+  let active = false;
+  let abort = false;
+  let startedAt = 0;
+  let compositeCanvas = null;
+  let compositeCtx = null;
+
+  const ensureComposite = () => {
+    if (!compositeCanvas) {
+      compositeCanvas = document.createElement('canvas');
+      compositeCanvas.setAttribute('aria-hidden', 'true');
+      compositeCanvas.style.cssText = 'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+      document.body.appendChild(compositeCanvas);
+    }
+    if (compositeCanvas.width !== CANVAS_W || compositeCanvas.height !== CANVAS_H) {
+      compositeCanvas.width = CANVAS_W;
+      compositeCanvas.height = CANVAS_H;
+      compositeCtx = compositeCanvas.getContext('2d');
+    } else if (!compositeCtx) {
+      compositeCtx = compositeCanvas.getContext('2d');
+    }
+  };
+
+  const notifyFrame = () => {
+    if (!active || !compositeCtx || !compositeCanvas) return;
+    const srcCanvas = getCanvas();
+    if (!srcCanvas) return;
+    compositeCtx.fillStyle = '#0a0a0a';
+    compositeCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    compositeCtx.drawImage(srcCanvas, 0, 0, CANVAS_W, CANVAS_H);
+  };
+
+  const elapsedMs = () => (active ? performance.now() - startedAt : 0);
+
+  const start = async () => {
+    if (active) return false;
+    const srcCanvas = getCanvas();
+    if (!srcCanvas) return false;
+
+    await soundscape.ensure();
+    await soundscape.unmute();
+
+    const filename = `one-row-v2-soundscape-${FORMAT}-seed${artSeed}-${RECORD_SECONDS}s.webm`;
+    let saveHandle = null;
+    if (typeof window.showSaveFilePicker === 'function') {
+      try {
+        saveHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{ description: 'WebM A/V', accept: { 'video/webm': ['.webm'] } }]
+        });
+      } catch (e) {
+        if (e && e.name === 'AbortError') return false;
+      }
+    }
+    if (!saveHandle) {
+      hudSticky = 'Chrome Save dialog was cancelled — no file';
+      updateHud();
+      return false;
+    }
+
+    const mimeCandidates = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    const mimeType = mimeCandidates.find(
+      (t) => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
+    ) || '';
+    if (!mimeType) {
+      hudSticky = 'MediaRecorder webm not supported — use Chrome';
+      updateHud();
+      return false;
+    }
+
+    abort = false;
+    active = true;
+    hudSticky = null;
+    if (saveLink) {
+      saveLink.hidden = true;
+      saveLink.removeAttribute('href');
+    }
+    setRecordingUi(true);
+    rebirth(artSeed);
+    startedAt = performance.now();
+    ensureComposite();
+    notifyFrame();
+
+    let writable = null;
+    let recorder = null;
+    let mediaStream = null;
+    let writeChain = Promise.resolve();
+    let payloadBytes = 0;
+    let recErr = null;
+    let timerId = null;
+
+    try {
+      writable = await saveHandle.createWritable({ keepExistingData: false });
+      mediaStream = compositeCanvas.captureStream(RECORD_FPS);
+      const audioStream = soundscape.getStream();
+      if (audioStream) {
+        audioStream.getAudioTracks().forEach((t) => mediaStream.addTrack(t));
+      }
+      recorder = new MediaRecorder(mediaStream, {
+        mimeType,
+        videoBitsPerSecond: 16_000_000,
+        audioBitsPerSecond: 192_000
+      });
+      recorder.ondataavailable = (e) => {
+        if (!e.data || !e.data.size) return;
+        payloadBytes += e.data.size;
+        const blob = e.data;
+        writeChain = writeChain.then(() => writable.write({ type: 'write', data: blob }));
+      };
+      recorder.onerror = (e) => {
+        recErr = e.error || new Error('MediaRecorder error');
+      };
+
+      recorder.start(500);
+      await new Promise((resolve, reject) => {
+        timerId = setInterval(() => {
+          if (abort || recErr) {
+            clearInterval(timerId);
+            timerId = null;
+            try {
+              if (recorder.state === 'recording') recorder.requestData();
+            } catch (e) {}
+            recorder.stop();
+            return;
+          }
+          const ms = performance.now() - startedAt;
+          if (hudRec) {
+            hudRec.textContent =
+              'recording A/V ' + FORMAT + '  ' +
+              (ms / 1000).toFixed(1) + '/' + RECORD_SECONDS + 's  ' +
+              (payloadBytes / 1000000).toFixed(1) + ' MB';
+          }
+          if (ms >= RECORD_SECONDS * 1000) {
+            clearInterval(timerId);
+            timerId = null;
+            try {
+              if (recorder.state === 'recording') recorder.requestData();
+            } catch (e) {}
+            recorder.stop();
+          }
+        }, 200);
+        recorder.onstop = resolve;
+        recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+      });
+      if (timerId) clearInterval(timerId);
+      await writeChain;
+      await writable.close();
+      writable = null;
+      if (abort) {
+        hudSticky = 'stopped — file may be incomplete';
+      } else {
+        hudSticky = 'saved ' + filename + '  ' + (payloadBytes / 1000000).toFixed(1) + ' MB';
+      }
+    } catch (err) {
+      console.error(err);
+      hudSticky = String(err && err.message ? err.message : err);
+      if (writable) {
+        try { await writable.close(); } catch (e) {}
+        writable = null;
+      }
+    } finally {
+      try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch (e) {}
+      try {
+        // Stop only canvas capture tracks — do not stop soundscape destination tracks.
+        if (mediaStream) {
+          mediaStream.getVideoTracks().forEach((t) => t.stop());
+        }
+      } catch (e) {}
+      try { if (writable) await writable.close(); } catch (e) {}
+      active = false;
+      startedAt = 0;
+      setRecordingUi(false);
+    }
+    return true;
+  };
+
+  const stop = () => {
+    if (!active) return;
+    abort = true;
+  };
+
+  const toggle = async () => {
+    if (active) {
+      stop();
+      return false;
+    }
+    return start();
+  };
+
+  return {
+    toggle,
+    isActive: () => active,
+    notifyFrame,
+    elapsedMs,
+    frameIndex: () => 0,
+    totalFrames: () => RECORD_SECONDS * RECORD_FPS
+  };
+};
+
+let artCanvas;
+const rec = CanvasRecorder(() => artCanvas || document.querySelector('canvas'));
+
+function setRecordingUi(on) {
+  document.body.classList.toggle('is-recording', on);
+  if (recordBtn) {
+    recordBtn.textContent = on ? 'Stop' : 'Record';
+    recordBtn.classList.toggle('recording', on);
+  }
+  if (hudEl) hudEl.classList.toggle('recording', on);
+  updateHud();
+}
+
+function parseSeedFromUrl() {
+  try {
+    const raw = new URLSearchParams(location.search).get('seed');
+    if (raw === null || raw === '') return null;
+    const n = parseInt(raw, 10);
+    if (Number.isFinite(n) && n >= 0) return n;
+  } catch (e) {}
+  return null;
+}
+
+function updateHud() {
+  if (hudSeed) {
+    hudSeed.textContent =
+      'seed ' + artSeed +
+      (soundscape.isMuted() ? ' · sound off (click Sound)' : ' · sound on');
+  }
+  if (!hudRec) return;
+  if (rec.isActive()) {
+    const sec = (rec.elapsedMs() / 1000).toFixed(1);
+    hudRec.textContent =
+      'recording A/V ' + FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H +
+      '  ' + sec + '/' + RECORD_SECONDS + 's';
+  } else if (hudSticky) {
+    hudRec.textContent = hudSticky;
+  } else {
+    hudRec.textContent =
+      FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H +
+      ' · ' + RECORD_SECONDS + 's realtime A/V · Sound · R record · G next · N new';
+  }
+}
+
+function artTimeMs() {
+  if (rec.isActive()) return rec.elapsedMs();
+  return millis() - lifeStart;
+}
+
+function updateLifeline() {
+  if (!lifelineFill) return;
+  const pct = min(100, (artTimeMs() / LIFESPAN_MS) * 100);
+  lifelineFill.style.width = pct.toFixed(2) + '%';
+  if (!rec.isActive() && millis() - lifeStart >= LIFESPAN_MS) rebirth(artSeed + 1);
+}
+
+function buildGradientTextures() {
+  gradientTextures = [];
+  for (let i = 0; i < 10; i++) {
+    let hue1 = random(palette);
+    let hue2 = random(palette);
+    let tex = createGraphics(64, 256);
+    tex.colorMode(HSB, 360, 100, 100, 255);
+    for (let y = 0; y < tex.height; y++) {
+      let inter = map(y, 0, tex.height, 0, 1);
+      let hBlend = lerp(hue1, hue2, inter);
+      tex.stroke(hBlend, 100, 100, 100);
+      tex.line(0, y, tex.width, y);
+    }
+    gradientTextures.push(tex);
+  }
+}
+
+function buildCity() {
+  city = [];
+  for (let z = -rows / 2; z < rows / 2; z++) {
+    for (let x = -cols / 2; x < cols / 2; x++) {
+      let w = random(1000, 2500);
+      let d = random(1000, 2000);
+      let h = random(1500, 4000);
+      let tex = random(gradientTextures);
+      city.push({ x: 0, z: z * spacing, w, h, d, tex });
+    }
+  }
+
+  let topY = Infinity;
+  for (const b of city) topY = min(topY, 160 - b.h);
+  artMidY = (160 + topY) / 2;
+}
+
+function rebirth(seed) {
+  artSeed = seed ?? floor(random(1e9));
+  randomSeed(artSeed);
+  noiseSeed(artSeed);
+  soundscape.setSeed(artSeed);
+  lifeStart = millis();
+  camZ = 2000;
+  targetCamZ = 2000;
+  soundCamNudge = 0;
+  buildGradientTextures();
+  buildCity();
+  updateHud();
+  if (lifelineFill) lifelineFill.style.width = '0%';
+}
+
+function setup() {
+  lifelineFill = document.getElementById('lifeline-fill');
+  hudSeed = document.getElementById('hud-seed');
+  hudRec = document.getElementById('hud-rec');
+  recordBtn = document.getElementById('record-btn');
+  soundBtn = document.getElementById('sound-btn');
+  saveLink = document.getElementById('save-link');
+  hudEl = document.querySelector('.hud');
+  if (recordBtn) recordBtn.addEventListener('click', () => rec.toggle());
+  if (soundBtn) {
+    soundBtn.classList.add('muted');
+    soundBtn.addEventListener('click', () => soundscape.toggleMute());
+  }
+
+  setAttributes('alpha', true);
+  setAttributes('preserveDrawingBuffer', true);
+  createCanvas(CANVAS_W, CANVAS_H, WEBGL);
+  artCanvas = document.querySelector('canvas');
+  pixelDensity(1);
+  frameRate(60);
+  colorMode(HSB, 360, 100, 100, 255);
+  noStroke();
+
+  rebirth(parseSeedFromUrl());
+  document.title = 'One Row V2 soundscape — ' + FORMAT;
+}
+
+function draw() {
+  updateLifeline();
+
+  const life01 = constrain(artTimeMs() / LIFESPAN_MS, 0, 1);
+  const camDrift = constrain((2000 - camZ) / 8000, 0, 1);
+  soundscape.express({ life01, camDrift, seed: artSeed });
+
+  background(0, 0, 4);
+
+  const speed = camSpeed + soundCamNudge;
+  targetCamZ -= speed;
+  camZ = lerp(camZ, targetCamZ, 0.05);
+
+  camera(0, 0, camZ, 0, 0, camZ - 100, 0, 1, 0);
+
+  ambientLight(255);
+  directionalLight(255, 255, 255, 0.3, -1, -0.5);
+
+  const goneDist = speed * 60 * 0.2;
+  const shrinkStartDist = speed * 60 * 0.5;
+
+  for (let b of city) {
+    const y = 160 - b.h / 2 - artMidY;
+    const cardZ = b.z - b.d / 2 - 2;
+    const nearFaceZ = b.z + b.d / 2;
+    const dist = camZ - nearFaceZ;
+    let cardScale = 1;
+    if (dist <= goneDist) cardScale = 0;
+    else if (dist < shrinkStartDist) {
+      cardScale = map(dist, goneDist, shrinkStartDist, 0, 1);
+    }
+
+    if (cardScale > 0.001) {
+      push();
+      translate(b.x, y, cardZ);
+      emissiveMaterial(255);
+      fill(0, 0, 100);
+      plane(b.w * cardScale, b.h * cardScale);
+      pop();
+    }
+
+    push();
+    texture(b.tex);
+    translate(b.x, y, b.z);
+    box(b.w, b.h, b.d);
+    pop();
+  }
+
+  if (rec.isActive()) rec.notifyFrame();
+}
+
+function keyPressed() {
+  if (key === 'm' || key === 'M') soundscape.toggleMute();
+  if (key === 'r' || key === 'R') rec.toggle();
+  if (rec.isActive()) return;
+  if (key === 'g' || key === 'G') rebirth(artSeed + 1);
+  if (key === 'n' || key === 'N') rebirth(floor(random(1e9)));
+}
+</script>
+</body>
+</html>

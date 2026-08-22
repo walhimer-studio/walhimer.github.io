@@ -18,7 +18,7 @@
 | Lifeline | 8 min (`480000` ms) · bar HUD · auto rebirth at `seed+1` |
 | Narrative | Arc inside life; Black Dove ≤2 min = **slice**, not the whole life |
 | Bodies | browser · N150 (full life) · Black Dove MP4 (solidified slice) · `?format=square\|portrait\|landscape` |
-| Sound | Co-created with visual (pending); not reactive Salamander-default |
+| Sound | Co-created major pentatonic PoC — `one-row-v2-record-60-with-soundscape.html` (not Salamander) |
 | Render | 30 rows · 60 fps · pixel density 1 · canvas 3840×2160 · surround `#0a0a0a` · per-cube white card |
 
 ## Statement

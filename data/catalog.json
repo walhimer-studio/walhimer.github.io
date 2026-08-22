@@ -13652,6 +13652,93 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Centered:catalog-centered-one-column-815802903",
+      "dublin_core": {
+        "title": "../catalog/centered/one-column-815802903.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-one-column-815802903",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000352"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-one-column-815802903",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/centered/one-column-815802903.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "../catalog/centered/one-column-815802903.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/centered/one-column-815802903.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape",
+      "dublin_core": {
+        "title": "blackdove/centered/one-row-v2-record-60-with-soundscape",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000353"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60-with-soundscape",
+        "type": "HumanMadeObject",
+        "_label": "blackdove/centered/one-row-v2-record-60-with-soundscape",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "blackdove/centered/one-row-v2-record-60-with-soundscape.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove/centered/one-row-v2-record-60-with-soundscape.html",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60",
       "dublin_core": {
         "title": "blackdove/centered/one-row-v2-record-60",
