@@ -1,0 +1,25 @@
+---
+description: Machine DNA lifeline + CanvasRecorder — SPEC-LOCK is law; check_machine_dna.py on commit.
+alwaysApply: true
+---
+
+# Machine DNA — canonical only
+
+**Read `docs/SPEC-LOCK.md` first.** User spec beats file contents.
+
+## Copy sources
+
+1. **Lifeline pattern (One Row family only):** `sketches/one-row.html` — time-driven bar + `rebirth(artSeed + 1)`. **`LIFESPAN_MS = 480000` is One Row catalog, not studio law** — read `catalog/{artwork}.md` per species.
+2. **Record (V3 portrait):** `CanvasRecorder(getCanvas)` video-only, composite at `CANVAS_W×CANVAS_H`, `RECORD_FPS`, `notifyFrame` in `draw()`.
+
+## Hard stops
+
+- No invented lifeline (`lifeEnded`, `rowEndZ`, `lifespanMs`, camera-driven bar).
+- No invented recorder (`setupRecording`, inline `MediaRecorder`, viewport `captureStream` sizing).
+- No display scale systems (`#art-stage`, `layoutArtStage`, `scale(`) on V3 — see SPEC-LOCK.
+- **ALLOW_EDIT** empty by default.
+
+## Enforcement
+
+- Hook: `guard-artwork-write.py`
+- Commit: `python3 _scripts/check_machine_dna.py`

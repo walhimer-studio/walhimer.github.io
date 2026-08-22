@@ -8350,49 +8350,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Machine DNA — studio system:catalog-studio-direction",
-      "dublin_core": {
-        "title": "../catalog/STUDIO-DIRECTION.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Machine DNA — studio system:catalog-studio-direction",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000264"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Machine DNA — studio system-catalog-studio-direction",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/STUDIO-DIRECTION.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Machine DNA — studio system",
-          "file": "../catalog/STUDIO-DIRECTION.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/STUDIO-DIRECTION.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Machine DNA — studio system:practice-artwork-pipeline",
       "dublin_core": {
         "title": "../practice/artwork-pipeline",
@@ -8433,8 +8390,53 @@
           "practice/artwork-pipeline.html"
         ],
         "external_urls": [
+          "https://github.com/walhimer-studio/Machine-DNA",
+          "https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md",
           "https://mark-walhimer.com/practice/artwork-pipeline.html"
         ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Machine DNA — studio system:catalog-studio-direction",
+      "dublin_core": {
+        "title": "../catalog/STUDIO-DIRECTION.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Machine DNA — studio system:catalog-studio-direction",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000264"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Machine DNA — studio system-catalog-studio-direction",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/STUDIO-DIRECTION.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Machine DNA — studio system",
+          "file": "../catalog/STUDIO-DIRECTION.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/STUDIO-DIRECTION.md"
+        ],
+        "external_urls": []
       }
     },
     {

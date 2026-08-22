@@ -9,10 +9,16 @@
 
 ## Machine DNA
 
+**Meaning:** [Machine-DNA chronicle](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md) · [site worked example](../../docs/machine-dna-chronicle.md)
+
 | Field | Value |
 |-------|--------|
+| DNA type | Type 1 — Seeded |
 | Seed | `?seed=N` · random at birth · **G** rebirth `N+1` · **N** new random |
 | Lifeline | 8 min (`480000` ms) · bar HUD · auto rebirth at `seed+1` |
+| Narrative | Arc inside life; Black Dove ≤2 min = **slice**, not the whole life |
+| Bodies | browser · N150 (full life) · Black Dove MP4 (solidified slice) · `?format=square\|portrait\|landscape` |
+| Sound | Co-created with visual (pending); not reactive Salamander-default |
 | Render | 30 rows · 60 fps · pixel density 1 · canvas 3840×2160 · surround `#0a0a0a` · per-cube white card |
 
 ## Statement

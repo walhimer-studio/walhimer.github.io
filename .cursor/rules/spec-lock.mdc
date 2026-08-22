@@ -1,0 +1,15 @@
+---
+description: User non-negotiable specs — SPEC-LOCK is law over code; commit checks enforce.
+alwaysApply: true
+---
+
+# SPEC-LOCK (binding)
+
+**Read `docs/SPEC-LOCK.md` before any sketch/installation edit.**
+
+- User spec beats current file contents. Do not answer sizing or lifeline questions from code alone.
+- **One Row V3:** 3840×2160, pixelDensity 4, record 60 fps — no viewport canvas, no scale wrappers (`#art-stage`, `layoutArtStage`, `scale(`).
+- **ALLOW_EDIT** empty by default — add one path per session only.
+- Pre-commit: `python3 _scripts/check_machine_dna.py` must pass.
+
+See `AGENTS.md`.

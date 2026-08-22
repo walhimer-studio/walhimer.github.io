@@ -52,6 +52,8 @@ These are **not** nested Git repos; they are folders in the site repo, linked fr
 - **Public entry URL:** descriptive filename (e.g. `seed-77823-rooms.html`), not internal build names.
 - **Details:** See **[submission-and-series-structure.md](./submission-and-series-structure.md)**.
 
+**Machine DNA (species / genome across works):** Canonical → **[Machine-DNA `docs/CHRONICLE.md`](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md)**. Site mirror + examples → **[machine-dna-chronicle.md](./machine-dna-chronicle.md)**.
+
 ---
 
 ## Workflow (short)
