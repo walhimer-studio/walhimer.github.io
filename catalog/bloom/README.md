@@ -19,6 +19,7 @@ https://mark-walhimer.com/sketches/bloom/index.html
 |-------|--------|
 | Artificial Flower | `sketches/bloom/seeded-flower.html` |
 | Artificial Flower V2 | `sketches/bloom/seeded-flower-v2.html` |
+| Artificial Flower V3 | `sketches/bloom/seeded-flower-v3.html` |
 
 ## Publish checklist
 
