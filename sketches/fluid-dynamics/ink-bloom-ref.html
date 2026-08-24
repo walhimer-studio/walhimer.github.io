@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ink Bloom — reference study</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #fff200;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  canvas {
+    /* 4K portrait 2160×3840 — fit viewport, keep aspect */
+    width: min(100vw, calc(100vh * 2160 / 3840));
+    height: min(100vh, calc(100vw * 3840 / 2160));
+    touch-action: none;
+    cursor: crosshair;
+  }
+  #hud {
+    position: fixed;
+    left: 14px;
+    bottom: 12px;
+    z-index: 10;
+    font: 11px/1.6 ui-monospace, Menlo, monospace;
+    color: #f0ede6;
+    background: rgba(10, 10, 10, 0.78);
+    padding: 10px 12px;
+    max-width: min(520px, 92vw);
+    user-select: none;
+  }
+  #hud button {
+    margin-top: 8px;
+    margin-right: 8px;
+    font: inherit;
+    color: #0a0a0a;
+    background: #f0ede6;
+    border: 0;
+    padding: 6px 10px;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  #hud button.recording { background: #c45c4a; color: #fff; }
+  #err {
+    position: fixed;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font: 14px ui-monospace, Menlo, monospace;
+    color: #333;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<canvas id="c" width="2160" height="3840"></canvas>
+<div id="hud">
+  <div id="hud-seed">seed —</div>
+  <div id="hud-rec">ink bloom · 60 fps frame-step</div>
+  <button id="record-btn" type="button">Record</button>
+</div>
+<div id="err">WebGL2 float render targets unavailable in this browser.</div>
+<script>
+"use strict";
+
+// ============================================================
+// Ink bloom — reference study
+// One viscous drop from the top. Tilted dish. Deep blue. 4K portrait.
+// Record: One Row path — frame-step 60 fps. ?seed=N&seconds=60
+// ============================================================
+
+const RECORD_FPS = 60;
+const CANVAS_W = 2160;  // 4K UHD portrait
+const CANVAS_H = 3840;
+
+function parseSecondsFromUrl() {
+  try {
+    const n = parseInt(new URLSearchParams(location.search).get("seconds"), 10);
+    if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+  } catch (_) {}
+  return 60;
+}
+const RECORD_SECONDS = parseSecondsFromUrl();
+
+const CANVAS_PX = 1000; // physics normalization — unchanged from square iteration
+const SIM_RES   = 768;
+const DYE_RES   = 1280;
+const DT        = 1 / RECORD_FPS;
+
+const NU_CLEAR_PX = 6;
+const NU_DYE_PX   = 280;
+const DRAG_RATE   = 0.5;
+const MAX_SPEED_PX = 220;
+const VISC_ITER   = 32;
+const PRESS_ITER  = 28;
+
+const DYE_DIFF_PX = 0.05;
+const DYE_FADE    = 0.0001;
+
+const SPREAD_PX   = 55;
+
+// Tilt + slow rock (same idea as Two Viscosities vessel lean)
+const GRAVITY_PX  = 150;
+const TILT_DEG    = 14;
+const ROCK_PERIOD = 18;
+
+const DROP_RADIUS_PX = 72;
+const DROP_FORCE_PX  = 10;
+const POINTER_R_PX   = 65;
+const POINTER_LIMIT_PX = 70;
+
+const px  = (v) => v / CANVAS_PX;
+const px2 = (v) => v / (CANVAS_PX * CANVAS_PX);
+const NU_CLEAR  = px2(NU_CLEAR_PX);
+const NU_DYE    = px2(NU_DYE_PX);
+const MAX_SPEED = px(MAX_SPEED_PX);
+const DYE_DIFF  = px2(DYE_DIFF_PX);
+const SPREAD    = px(SPREAD_PX);
+const GRAVITY   = px(GRAVITY_PX);
+const DROP_R2   = px(DROP_RADIUS_PX) * px(DROP_RADIUS_PX);
+const DROP_FORCE = px(DROP_FORCE_PX);
+const POINTER_R2 = px(POINTER_R_PX) * px(POINTER_R_PX);
+const POINTER_LIM = px(POINTER_LIMIT_PX);
+
+function mulberry32(a) {
+  return function () {
+    let t = (a += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function parseSeed() {
+  try {
+    const raw = new URLSearchParams(location.search).get("seed");
+    if (raw == null || raw === "") return (Math.random() * 0xffffffff) >>> 0;
+    const n = parseInt(raw, 10);
+    return Number.isFinite(n) ? (n >>> 0) : (Math.random() * 0xffffffff) >>> 0;
+  } catch (_) {
+    return (Math.random() * 0xffffffff) >>> 0;
+  }
+}
+
+let artSeed = parseSeed();
+let rng = mulberry32(artSeed);
+
+const PALETTE = [
+  [0.01, 0.04, 0.22],
+  [0.02, 0.06, 0.32],
+  [0.00, 0.08, 0.38],
+  [0.03, 0.10, 0.48],
+  [0.01, 0.12, 0.42],
+  [0.04, 0.14, 0.55]
+];
+
+/** One drop at the top — slides down under tilt. */
+function placeOneDrop() {
+  const color = PALETTE[Math.floor(rng() * PALETTE.length)];
+  splatDye(0.5, 0.90, color, 1.5, DROP_R2);
+  splatForce(0.5, 0.90, 0, -DROP_FORCE, DROP_R2 * 1.1, DROP_FORCE * 0.4);
+}
+
+const canvas = document.getElementById("c");
+const hud = document.getElementById("hud");
+const hudSeed = document.getElementById("hud-seed");
+const hudRec = document.getElementById("hud-rec");
+const recordBtn = document.getElementById("record-btn");
+let hudSticky = null;
+let liveLoop = true;
+
+const gl = canvas.getContext("webgl2", {
+  alpha: false,
+  antialias: false,
+  preserveDrawingBuffer: true
+});
+if (!gl || !gl.getExtension("EXT_color_buffer_float")) {
+  document.getElementById("err").style.display = "block";
+  throw new Error("WebGL2 + EXT_color_buffer_float required");
+}
+
+const vbo = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+const VERT = `#version 300 es
+precision highp float;
+layout(location=0) in vec2 aPos;
+out vec2 vUv;
+void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+
+function program(fragSrc) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const u = {};
+  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) {
+    const name = gl.getActiveUniform(p, i).name;
+    u[name] = gl.getUniformLocation(p, name);
+  }
+  return { p, u };
+}
+
+const HEAD = `#version 300 es
+precision highp float;
+in vec2 vUv;
+out vec4 frag;`;
+
+const advectProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform sampler2D uSrc;
+uniform float uDt;
+void main() {
+  vec2 v0 = texture(uVel, vUv).xy;
+  vec2 mid = vUv - 0.5 * uDt * v0;
+  vec2 pos = vUv - uDt * texture(uVel, mid).xy;
+  frag = texture(uSrc, pos);
+}`);
+
+const dragProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform float uDt;
+uniform float uDrag;
+uniform float uMaxSpeed;
+void main() {
+  vec2 v = texture(uVel, vUv).xy;
+  v /= 1.0 + uDt * uDrag;
+  frag = vec4(clamp(v, vec2(-uMaxSpeed), vec2(uMaxSpeed)), 0.0, 1.0);
+}`);
+
+// Gravity with slow rock (Two Viscosities–style lean)
+const gravityProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform sampler2D uDye;
+uniform float uDt;
+uniform vec2 uG;
+uniform float uMaxSpeed;
+void main() {
+  vec2 v = texture(uVel, vUv).xy;
+  vec3 dye = texture(uDye, vUv).rgb;
+  float dens = max(dye.r, max(dye.g, dye.b));
+  float w = smoothstep(0.02, 0.25, dens);
+  v += uDt * uG * (0.25 + 0.75 * w);
+  frag = vec4(clamp(v, vec2(-uMaxSpeed), vec2(uMaxSpeed)), 0.0, 1.0);
+}`);
+
+const forceSplatProg = program(`${HEAD}
+uniform sampler2D uSrc;
+uniform vec2 uPoint;
+uniform vec2 uForce;
+uniform float uRadius2;
+uniform float uRadial;
+void main() {
+  vec2 d = vUv - uPoint;
+  float g = clamp(exp(-dot(d, d) / uRadius2), 0.0, 1.0);
+  vec2 radial = length(d) > 1e-5 ? normalize(d) * uRadial : vec2(0.0);
+  frag = vec4(texture(uSrc, vUv).xy + (uForce + radial) * g, 0.0, 1.0);
+}`);
+
+const dyeSplatProg = program(`${HEAD}
+uniform sampler2D uSrc;
+uniform vec2 uPoint;
+uniform vec3 uColor;
+uniform float uRadius2;
+uniform float uAmount;
+void main() {
+  vec2 d = vUv - uPoint;
+  float cov = clamp(exp(-dot(d, d) / uRadius2) * uAmount, 0.0, 1.0);
+  vec3 prev = texture(uSrc, vUv).rgb;
+  frag = vec4(mix(prev, uColor, cov), 1.0);
+}`);
+
+const dyeFadeProg = program(`${HEAD}
+uniform sampler2D uSrc;
+uniform float uKeep;
+void main() {
+  frag = vec4(texture(uSrc, vUv).rgb * uKeep, 1.0);
+}`);
+
+// Thickness → lobed front
+const oilSpreadProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform sampler2D uOil;
+uniform vec2 uTexel;
+uniform float uDt;
+uniform float uSpread;
+uniform float uMaxSpeed;
+void main() {
+  vec2 v = texture(uVel, vUv).xy;
+  float h  = max(texture(uOil, vUv).r, max(texture(uOil, vUv).g, texture(uOil, vUv).b));
+  vec3 oL = texture(uOil, vUv - vec2(uTexel.x, 0.0)).rgb;
+  vec3 oR = texture(uOil, vUv + vec2(uTexel.x, 0.0)).rgb;
+  vec3 oB = texture(uOil, vUv - vec2(0.0, uTexel.y)).rgb;
+  vec3 oT = texture(uOil, vUv + vec2(0.0, uTexel.y)).rgb;
+  float hL = max(oL.r, max(oL.g, oL.b));
+  float hR = max(oR.r, max(oR.g, oR.b));
+  float hB = max(oB.r, max(oB.g, oB.b));
+  float hT = max(oT.r, max(oT.g, oT.b));
+  vec2 grad = 0.5 * vec2(hR - hL, hT - hB) / max(uTexel.x, 1e-6);
+  float w = smoothstep(0.02, 0.22, h);
+  float front = smoothstep(0.5, 0.08, h) * smoothstep(0.0, 0.14, h);
+  v -= uDt * uSpread * grad * (w + front * 1.6);
+  frag = vec4(clamp(v, vec2(-uMaxSpeed), vec2(uMaxSpeed)), 0.0, 1.0);
+}`);
+
+const dyeDiffProg = program(`${HEAD}
+uniform sampler2D uX;
+uniform sampler2D uB;
+uniform vec2 uTexel;
+uniform float uA;
+void main() {
+  vec3 L = texture(uX, vUv - vec2(uTexel.x, 0.0)).rgb;
+  vec3 R = texture(uX, vUv + vec2(uTexel.x, 0.0)).rgb;
+  vec3 B = texture(uX, vUv - vec2(0.0, uTexel.y)).rgb;
+  vec3 T = texture(uX, vUv + vec2(0.0, uTexel.y)).rgb;
+  frag = vec4((texture(uB, vUv).rgb + uA * (L + R + T + B)) / (1.0 + 4.0 * uA), 1.0);
+}`);
+
+// Variable viscosity: dye body thick, clear field thinner
+const viscVarProg = program(`${HEAD}
+uniform sampler2D uX;
+uniform sampler2D uB;
+uniform sampler2D uDye;
+uniform vec2 uTexel;
+uniform float uAClear;
+uniform float uADye;
+void main() {
+  vec3 dye = texture(uDye, vUv).rgb;
+  float dens = max(dye.r, max(dye.g, dye.b));
+  // dens↑ → dye viscosity (thick ink holds veins)
+  float a = mix(uAClear, uADye, smoothstep(0.03, 0.35, dens));
+  vec2 L = texture(uX, vUv - vec2(uTexel.x, 0.0)).xy;
+  vec2 R = texture(uX, vUv + vec2(uTexel.x, 0.0)).xy;
+  vec2 B = texture(uX, vUv - vec2(0.0, uTexel.y)).xy;
+  vec2 T = texture(uX, vUv + vec2(0.0, uTexel.y)).xy;
+  frag = vec4((texture(uB, vUv).xy + a * (L + R + T + B)) / (1.0 + 4.0 * a), 0.0, 1.0);
+}`);
+
+const divergenceProg = program(`${HEAD}
+uniform sampler2D uVel;
+uniform vec2 uTexel;
+void main() {
+  float L = texture(uVel, vUv - vec2(uTexel.x, 0.0)).x;
+  float R = texture(uVel, vUv + vec2(uTexel.x, 0.0)).x;
+  float B = texture(uVel, vUv - vec2(0.0, uTexel.y)).y;
+  float T = texture(uVel, vUv + vec2(0.0, uTexel.y)).y;
+  frag = vec4(0.5 * (R - L + T - B), 0.0, 0.0, 1.0);
+}`);
+
+const pressureProg = program(`${HEAD}
+uniform sampler2D uPressure;
+uniform sampler2D uDivergence;
+uniform vec2 uTexel;
+void main() {
+  float L = texture(uPressure, vUv - vec2(uTexel.x, 0.0)).x;
+  float R = texture(uPressure, vUv + vec2(uTexel.x, 0.0)).x;
+  float B = texture(uPressure, vUv - vec2(0.0, uTexel.y)).x;
+  float T = texture(uPressure, vUv + vec2(0.0, uTexel.y)).x;
+  frag = vec4((L + R + B + T - texture(uDivergence, vUv).x) * 0.25, 0.0, 0.0, 1.0);
+}`);
+
+const gradientProg = program(`${HEAD}
+uniform sampler2D uPressure;
+uniform sampler2D uVel;
+uniform vec2 uTexel;
+uniform float uMaxSpeed;
+void main() {
+  float L = texture(uPressure, vUv - vec2(uTexel.x, 0.0)).x;
+  float R = texture(uPressure, vUv + vec2(uTexel.x, 0.0)).x;
+  float B = texture(uPressure, vUv - vec2(0.0, uTexel.y)).x;
+  float T = texture(uPressure, vUv + vec2(0.0, uTexel.y)).x;
+  vec2 v = texture(uVel, vUv).xy - 0.5 * vec2(R - L, T - B);
+  vec2 wall = step(1.5 * uTexel, vUv) * step(vUv, 1.0 - 1.5 * uTexel);
+  v *= wall.x * wall.y;
+  frag = vec4(clamp(v, vec2(-uMaxSpeed), vec2(uMaxSpeed)), 0.0, 1.0);
+}`);
+
+const brightProg = program(`${HEAD}
+uniform sampler2D uDye;
+uniform float uThresh;
+void main() {
+  vec3 dye = texture(uDye, vUv).rgb;
+  float dens = max(dye.r, max(dye.g, dye.b));
+  float m = smoothstep(uThresh, uThresh + 0.4, dens);
+  frag = vec4(dye * m * 0.65, 1.0);
+}`);
+
+const blurProg = program(`${HEAD}
+uniform sampler2D uSrc;
+uniform vec2 uDir;
+void main() {
+  vec3 c = texture(uSrc, vUv).rgb * 0.227027;
+  c += texture(uSrc, vUv + uDir * 1.384615).rgb * 0.316216;
+  c += texture(uSrc, vUv - uDir * 1.384615).rgb * 0.316216;
+  c += texture(uSrc, vUv + uDir * 3.230769).rgb * 0.070270;
+  c += texture(uSrc, vUv - uDir * 3.230769).rgb * 0.070270;
+  frag = vec4(c, 1.0);
+}`);
+
+// Pale lavender paper + transmission (ref optics) — no neon edge fake
+const displayProg = program(`${HEAD}
+uniform sampler2D uDye;
+uniform sampler2D uBloom;
+uniform float uBloomAmt;
+void main() {
+  vec3 dye = texture(uDye, vUv).rgb;
+  vec3 bloom = texture(uBloom, vUv).rgb;
+  float dens = max(dye.r, max(dye.g, dye.b));
+  vec3 tint = dye / max(dens, 1e-3);
+  vec3 bg = vec3(1.0, 0.96, 0.05);
+  float absorb = 1.0 - exp(-dens * 4.2);
+  vec3 through = mix(bg, tint, absorb * 0.94);
+  vec3 scatter = tint * smoothstep(0.02, 0.55, dens) * 0.28;
+  vec3 glow = bloom * uBloomAmt;
+  vec3 col = through + scatter + glow;
+  float presence = smoothstep(0.0, 0.04, dens);
+  col = mix(bg, min(col, vec3(1.25)), presence);
+  col = col / (1.0 + max(col - 1.0, 0.0) * 0.4);
+  frag = vec4(col, 1.0);
+}`);
+
+function createFBO(w, h) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, w, h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+  const fbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  return { tex, fbo, w, h };
+}
+function doubleFBO(w, h) {
+  return { a: createFBO(w, h), b: createFBO(w, h), swap() { [this.a, this.b] = [this.b, this.a]; } };
+}
+
+const velocity   = doubleFBO(SIM_RES, SIM_RES);
+const pressure   = doubleFBO(SIM_RES, SIM_RES);
+const divergence = createFBO(SIM_RES, SIM_RES);
+const velRhs     = createFBO(SIM_RES, SIM_RES);
+const dye        = doubleFBO(DYE_RES, DYE_RES);
+const dyeRhs     = createFBO(DYE_RES, DYE_RES);
+const BLOOM_RES  = 256;
+const bloom      = doubleFBO(BLOOM_RES, BLOOM_RES);
+const BLOOM_TEXEL = 1 / BLOOM_RES;
+const BLOOM_AMT  = 0.55;
+const BLOOM_THRESH = 0.18;
+const BLOOM_ITERS = 2;
+
+let unit = 0;
+function bindTex(tex, loc) {
+  gl.activeTexture(gl.TEXTURE0 + unit);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.uniform1i(loc, unit);
+  unit++;
+}
+function blit(target, prog, binder) {
+  unit = 0;
+  gl.useProgram(prog.p);
+  if (binder) binder(prog.u);
+  if (target) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+    gl.viewport(0, 0, target.w, target.h);
+  } else {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+const SIM_TEXEL = 1 / SIM_RES;
+const DYE_TEXEL = 1 / DYE_RES;
+const VISC_A_CLEAR = NU_CLEAR * DT * SIM_RES * SIM_RES;
+const VISC_A_DYE   = NU_DYE * DT * SIM_RES * SIM_RES;
+const DYE_A = DYE_DIFF * DT * DYE_RES * DYE_RES;
+
+let simTime = 0;
+let paused = false;
+
+function clearPair(pair) {
+  for (const f of [pair.a, pair.b]) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f.fbo);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }
+}
+
+function updateHud() {
+  if (hudSeed) hudSeed.textContent = "seed " + artSeed;
+  if (!hudRec) return;
+  if (rec.isActive()) {
+    hudRec.textContent =
+      "recording " + CANVAS_W + "×" + CANVAS_H + " 60fps  " +
+      rec.frameIndex() + "/" + rec.totalFrames();
+  } else if (hudSticky) {
+    hudRec.textContent = hudSticky;
+  } else {
+    hudRec.textContent =
+      "deep blue · 4K portrait · " + RECORD_SECONDS + "s@60 · R record · N · SPACE · H";
+  }
+}
+
+function setRecordingUi(on) {
+  if (recordBtn) {
+    recordBtn.textContent = on ? "Stop" : "Record";
+    recordBtn.classList.toggle("recording", on);
+  }
+  updateHud();
+}
+
+function reset(newSeed) {
+  if (newSeed) {
+    artSeed = (Math.random() * 0xffffffff) >>> 0;
+    rng = mulberry32(artSeed);
+    try {
+      const u = new URL(location.href);
+      u.searchParams.set("seed", String(artSeed));
+      history.replaceState(null, "", u);
+    } catch (_) {}
+  } else {
+    rng = mulberry32(artSeed);
+  }
+  clearPair(velocity);
+  clearPair(pressure);
+  clearPair(dye);
+  clearPair(bloom);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, divergence.fbo);
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  simTime = 0;
+  placeOneDrop();
+  hudSticky = null;
+  updateHud();
+}
+
+const pointer = { down: false, x: 0.5, y: 0.5, vx: 0, vy: 0, active: false };
+
+function splatForce(x, y, fx, fy, radius2, radial) {
+  blit(velocity.b, forceSplatProg, (u) => {
+    bindTex(velocity.a.tex, u.uSrc);
+    gl.uniform2f(u.uPoint, x, y);
+    gl.uniform2f(u.uForce, fx, fy);
+    gl.uniform1f(u.uRadius2, radius2);
+    gl.uniform1f(u.uRadial, radial);
+  });
+  velocity.swap();
+}
+
+function splatDye(x, y, color, amount, radius2) {
+  blit(dye.b, dyeSplatProg, (u) => {
+    bindTex(dye.a.tex, u.uSrc);
+    gl.uniform2f(u.uPoint, x, y);
+    gl.uniform3f(u.uColor, color[0], color[1], color[2]);
+    gl.uniform1f(u.uRadius2, radius2);
+    gl.uniform1f(u.uAmount, amount);
+  });
+  dye.swap();
+}
+
+function applyPointer() {
+  // Nudge only — never add more drops
+  if (!pointer.active) return;
+  const s = Math.hypot(pointer.vx, pointer.vy);
+  const k = s > POINTER_LIM ? POINTER_LIM / s : 1;
+  splatForce(pointer.x, pointer.y, pointer.vx * k * DT * 6, pointer.vy * k * DT * 6, POINTER_R2, 0);
+  pointer.active = false;
+}
+
+function step() {
+  blit(velocity.b, advectProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(velocity.a.tex, u.uSrc);
+    gl.uniform1f(u.uDt, DT);
+  });
+  velocity.swap();
+
+  blit(velocity.b, dragProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    gl.uniform1f(u.uDt, DT);
+    gl.uniform1f(u.uDrag, DRAG_RATE);
+    gl.uniform1f(u.uMaxSpeed, MAX_SPEED);
+  });
+  velocity.swap();
+
+  // Tilt + slow rock — gravity swings like Two Viscosities
+  const tilt = (TILT_DEG * Math.PI / 180) * Math.sin((2 * Math.PI * simTime) / ROCK_PERIOD);
+  const gX = GRAVITY * Math.sin(tilt);
+  const gY = -GRAVITY * Math.cos(tilt); // always mostly downhill (toward bottom)
+  blit(velocity.b, gravityProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(dye.a.tex, u.uDye);
+    gl.uniform1f(u.uDt, DT);
+    gl.uniform2f(u.uG, gX, gY);
+    gl.uniform1f(u.uMaxSpeed, MAX_SPEED);
+  });
+  velocity.swap();
+
+  applyPointer();
+
+  blit(velocity.b, oilSpreadProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(dye.a.tex, u.uOil);
+    gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+    gl.uniform1f(u.uDt, DT);
+    gl.uniform1f(u.uSpread, SPREAD);
+    gl.uniform1f(u.uMaxSpeed, MAX_SPEED);
+  });
+  velocity.swap();
+
+  blit(velRhs, advectProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(velocity.a.tex, u.uSrc);
+    gl.uniform1f(u.uDt, 0);
+  });
+  for (let i = 0; i < VISC_ITER; i++) {
+    blit(velocity.b, viscVarProg, (u) => {
+      bindTex(velocity.a.tex, u.uX);
+      bindTex(velRhs.tex, u.uB);
+      bindTex(dye.a.tex, u.uDye);
+      gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+      gl.uniform1f(u.uAClear, VISC_A_CLEAR);
+      gl.uniform1f(u.uADye, VISC_A_DYE);
+    });
+    velocity.swap();
+  }
+
+  blit(divergence, divergenceProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+  });
+  for (let i = 0; i < PRESS_ITER; i++) {
+    blit(pressure.b, pressureProg, (u) => {
+      bindTex(pressure.a.tex, u.uPressure);
+      bindTex(divergence.tex, u.uDivergence);
+      gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+    });
+    pressure.swap();
+  }
+  blit(velocity.b, gradientProg, (u) => {
+    bindTex(pressure.a.tex, u.uPressure);
+    bindTex(velocity.a.tex, u.uVel);
+    gl.uniform2f(u.uTexel, SIM_TEXEL, SIM_TEXEL);
+    gl.uniform1f(u.uMaxSpeed, MAX_SPEED);
+  });
+  velocity.swap();
+
+  blit(dye.b, advectProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(dye.a.tex, u.uSrc);
+    gl.uniform1f(u.uDt, DT);
+  });
+  dye.swap();
+
+  blit(dye.b, dyeFadeProg, (u) => {
+    bindTex(dye.a.tex, u.uSrc);
+    gl.uniform1f(u.uKeep, Math.max(0, 1 - DYE_FADE * DT));
+  });
+  dye.swap();
+
+  blit(dyeRhs, advectProg, (u) => {
+    bindTex(velocity.a.tex, u.uVel);
+    bindTex(dye.a.tex, u.uSrc);
+    gl.uniform1f(u.uDt, 0);
+  });
+  blit(dye.b, dyeDiffProg, (u) => {
+    bindTex(dye.a.tex, u.uX);
+    bindTex(dyeRhs.tex, u.uB);
+    gl.uniform2f(u.uTexel, DYE_TEXEL, DYE_TEXEL);
+    gl.uniform1f(u.uA, DYE_A);
+  });
+  dye.swap();
+
+  simTime += DT;
+}
+
+function renderFrame() {
+  blit(bloom.a, brightProg, (u) => {
+    bindTex(dye.a.tex, u.uDye);
+    gl.uniform1f(u.uThresh, BLOOM_THRESH);
+  });
+  for (let i = 0; i < BLOOM_ITERS; i++) {
+    blit(bloom.b, blurProg, (u) => {
+      bindTex(bloom.a.tex, u.uSrc);
+      gl.uniform2f(u.uDir, BLOOM_TEXEL, 0);
+    });
+    bloom.swap();
+    blit(bloom.b, blurProg, (u) => {
+      bindTex(bloom.a.tex, u.uSrc);
+      gl.uniform2f(u.uDir, 0, BLOOM_TEXEL);
+    });
+    bloom.swap();
+  }
+  blit(null, displayProg, (u) => {
+    bindTex(dye.a.tex, u.uDye);
+    bindTex(bloom.a.tex, u.uBloom);
+    gl.uniform1f(u.uBloomAmt, BLOOM_AMT);
+  });
+}
+
+// Frame-step 60 fps CanvasRecorder — One Row V2 path
+const CanvasRecorder = (getCanvas) => {
+  let active = false;
+  let abort = false;
+  let frameIndex = 0;
+  let totalFrames = 0;
+  let compositeCanvas = null;
+  let compositeCtx = null;
+
+  const ensureComposite = () => {
+    if (!compositeCanvas) {
+      compositeCanvas = document.createElement("canvas");
+      compositeCanvas.setAttribute("aria-hidden", "true");
+      compositeCanvas.style.cssText =
+        "position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1";
+      document.body.appendChild(compositeCanvas);
+    }
+    if (compositeCanvas.width !== CANVAS_W || compositeCanvas.height !== CANVAS_H) {
+      compositeCanvas.width = CANVAS_W;
+      compositeCanvas.height = CANVAS_H;
+      compositeCtx = compositeCanvas.getContext("2d");
+    } else if (!compositeCtx) {
+      compositeCtx = compositeCanvas.getContext("2d");
+    }
+  };
+
+  const notifyFrame = () => {
+    if (!active || !compositeCtx) return;
+    const src = getCanvas();
+    if (!src) return;
+    compositeCtx.fillStyle = "#fff200";
+    compositeCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    compositeCtx.drawImage(src, 0, 0, CANVAS_W, CANVAS_H);
+  };
+
+  const start = async () => {
+    if (active) return false;
+    const filename =
+      `ink-bloom-4k-portrait-seed${artSeed}-60fps-${RECORD_SECONDS}s.webm`;
+    let saveHandle = null;
+    if (typeof window.showSaveFilePicker === "function") {
+      try {
+        saveHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{ description: "WebM video", accept: { "video/webm": [".webm"] } }]
+        });
+      } catch (e) {
+        if (e && e.name === "AbortError") return false;
+      }
+    }
+    if (!saveHandle) {
+      hudSticky = "Chrome Save dialog cancelled — no file";
+      updateHud();
+      return false;
+    }
+    const mimeType = [
+      "video/webm;codecs=vp9",
+      "video/webm;codecs=vp8",
+      "video/webm"
+    ].find((t) => MediaRecorder.isTypeSupported(t)) || "";
+    if (!mimeType) {
+      hudSticky = "MediaRecorder webm not supported — use Chrome";
+      updateHud();
+      return false;
+    }
+
+    abort = false;
+    active = true;
+    hudSticky = null;
+    totalFrames = RECORD_SECONDS * RECORD_FPS;
+    frameIndex = 0;
+    liveLoop = false;
+    setRecordingUi(true);
+    reset(false);
+    ensureComposite();
+    renderFrame();
+    notifyFrame();
+
+    let writable = null;
+    let recorder = null;
+    let mediaStream = null;
+    let videoTrack = null;
+    let writeChain = Promise.resolve();
+    let payloadBytes = 0;
+    let recErr = null;
+
+    try {
+      writable = await saveHandle.createWritable({ keepExistingData: false });
+      mediaStream = compositeCanvas.captureStream(0);
+      videoTrack = mediaStream.getVideoTracks()[0] || null;
+      recorder = new MediaRecorder(mediaStream, {
+        mimeType,
+        videoBitsPerSecond: 40_000_000
+      });
+      recorder.ondataavailable = (e) => {
+        if (!e.data || !e.data.size) return;
+        payloadBytes += e.data.size;
+        const blob = e.data;
+        writeChain = writeChain.then(() => writable.write({ type: "write", data: blob }));
+      };
+      recorder.onerror = (e) => { recErr = e.error || new Error("MediaRecorder error"); };
+
+      recorder.start(500);
+      if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+      for (let i = 0; i < totalFrames; i++) {
+        if (abort) break;
+        if (recErr) throw recErr;
+        frameIndex = i;
+        step();
+        renderFrame();
+        notifyFrame();
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+        if (hudRec) {
+          hudRec.textContent =
+            "recording  " + i + "/" + totalFrames +
+            "  " + (payloadBytes / 1e6).toFixed(1) + " MB";
+        }
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+
+      await new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = (e) => reject(e.error || new Error("MediaRecorder error"));
+        try { if (recorder.state === "recording") recorder.requestData(); } catch (_) {}
+        recorder.stop();
+      });
+      await writeChain;
+      await writable.close();
+      writable = null;
+      hudSticky = abort
+        ? "stopped — file may be incomplete"
+        : "saved " + filename + "  " + (payloadBytes / 1e6).toFixed(1) + " MB";
+    } catch (err) {
+      console.error(err);
+      hudSticky = String(err && err.message ? err.message : err);
+      if (writable) { try { await writable.close(); } catch (_) {} }
+    } finally {
+      try { if (recorder && recorder.state !== "inactive") recorder.stop(); } catch (_) {}
+      try { mediaStream && mediaStream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+      active = false;
+      frameIndex = 0;
+      totalFrames = 0;
+      liveLoop = true;
+      setRecordingUi(false);
+    }
+    return true;
+  };
+
+  const stop = () => { if (active) abort = true; };
+  const toggle = async () => (active ? (stop(), false) : start());
+
+  return {
+    toggle,
+    isActive: () => active,
+    frameIndex: () => frameIndex,
+    totalFrames: () => totalFrames
+  };
+};
+
+const rec = CanvasRecorder(() => canvas);
+if (recordBtn) recordBtn.addEventListener("click", () => rec.toggle());
+
+function pointerUv(e) {
+  const r = canvas.getBoundingClientRect();
+  return [(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height];
+}
+canvas.addEventListener("pointerdown", (e) => {
+  if (rec.isActive()) return;
+  const [x, y] = pointerUv(e);
+  pointer.down = true;
+  pointer.x = x;
+  pointer.y = y;
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (!pointer.down || rec.isActive()) return;
+  const [x, y] = pointerUv(e);
+  pointer.vx = (x - pointer.x) / DT;
+  pointer.vy = (y - pointer.y) / DT;
+  pointer.x = x;
+  pointer.y = y;
+  pointer.active = true;
+});
+addEventListener("pointerup", () => { pointer.down = false; });
+
+addEventListener("keydown", (e) => {
+  if (e.key === "r" || e.key === "R") {
+    rec.toggle();
+    e.preventDefault();
+    return;
+  }
+  if (rec.isActive()) return;
+  if (e.key === " ") { paused = !paused; e.preventDefault(); }
+  else if (e.key === "n" || e.key === "N") reset(true);
+  else if (e.key === "h" || e.key === "H") {
+    hud.style.display = hud.style.display === "none" ? "" : "none";
+  }
+});
+
+const MAX_STEPS_PER_FRAME = 4;
+let lastMs = performance.now();
+let accumulator = 0;
+
+function frame() {
+  const now = performance.now();
+  const elapsed = Math.min((now - lastMs) / 1000, 0.25);
+  lastMs = now;
+
+  if (liveLoop && !paused) {
+    accumulator += elapsed;
+    let steps = 0;
+    while (accumulator >= DT && steps < MAX_STEPS_PER_FRAME) {
+      step();
+      accumulator -= DT;
+      steps++;
+    }
+    if (accumulator > DT * MAX_STEPS_PER_FRAME) accumulator = 0;
+  }
+
+  if (liveLoop) renderFrame();
+  requestAnimationFrame(frame);
+}
+
+reset(false);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

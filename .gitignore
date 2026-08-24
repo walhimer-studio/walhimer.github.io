@@ -21,7 +21,14 @@ sketches/2026-lumen-prize-machine-aesthetic/ghost_dense_77823_room.glb
 # Local Netlify folder
 .netlify
 
+# Pi / wall kiosk experiments (local only — not published)
+.local/
+
 # Digital twin — large local video (not published to GitHub Pages)
 sketches/digital-twin/sessions/testimony/*.mov
 sketches/digital-twin/sessions/testimony/*.mp4
 sketches/digital-twin/sessions/clips/*.mp4
+
+# Fluid dynamics — local recordings (HTML only on GitHub)
+sketches/fluid-dynamics/*.mp4
+sketches/fluid-dynamics/*.webm

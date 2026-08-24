@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Bloom",
-          "file": "bloom/index.html"
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,29 +53,13 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/bloom/bloom-four-walls.html",
-            "sketches/bloom/bloom-garden.html",
-            "sketches/bloom/bloom-release-cathedral/index.html",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
-            "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg",
-            "sketches/bloom/bloom-release.html",
-            "sketches/bloom/bloom-surrender.html",
-            "sketches/bloom/bloom.html",
-            "sketches/bloom/index.html",
-            "sketches/bloom/installation-builder-bloom.html",
-            "sketches/bloom/orchestrator-bloom.html",
-            "sketches/bloom/radial-gradient.html",
-            "sketches/bloom/seeded-flower-v2.html",
-            "sketches/bloom/seeded-flower-v3.html",
-            "sketches/bloom/seeded-flower.html"
+            "sketches/fluid-dynamics/assets/two-viscosities.png",
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html",
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html",
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html",
+            "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
+            "sketches/fluid-dynamics/index.html",
+            "sketches/fluid-dynamics/ink-bloom-ref.html"
           ],
           "external_urls": []
         },
@@ -695,6 +679,337 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
+      "dublin_core": {
+        "title": "../catalog/fluid-dynamics/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000343"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-catalog-fluid-dynamics-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/fluid-dynamics/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "../catalog/fluid-dynamics/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/fluid-dynamics/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-ink-bloom-ref",
+      "dublin_core": {
+        "title": "fluid-dynamics/ink-bloom-ref",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-ink-bloom-ref",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000355"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-ink-bloom-ref",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/ink-bloom-ref",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/ink-bloom-ref.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/ink-bloom-ref.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000350"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000344"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-landscape",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-landscape",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-landscape.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-portrait",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-portrait",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-portrait",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000345"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-portrait",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-portrait",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-portrait.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
+      "dublin_core": {
+        "title": "fluid-dynamics/fluid-mix-two-viscosities-v2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000342"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-v2",
+        "type": "HumanMadeObject",
+        "_label": "fluid-dynamics/fluid-mix-two-viscosities-v2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Fluid Dynamics",
+          "file": "fluid-dynamics/fluid-mix-two-viscosities-v2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Bloom:bloom-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Bloom",
+          "file": "bloom/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/bloom/bloom-four-walls.html",
+          "sketches/bloom/bloom-garden.html",
+          "sketches/bloom/bloom-release-cathedral/index.html",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/A4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/C4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/D4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/E4.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G3.ogg",
+          "sketches/bloom/bloom-release-cathedral/tedagame-pentatonic/G4.ogg",
+          "sketches/bloom/bloom-release.html",
+          "sketches/bloom/bloom-surrender.html",
+          "sketches/bloom/bloom.html",
+          "sketches/bloom/index.html",
+          "sketches/bloom/installation-builder-bloom.html",
+          "sketches/bloom/orchestrator-bloom.html",
+          "sketches/bloom/radial-gradient.html",
+          "sketches/bloom/seeded-flower-v2.html",
+          "sketches/bloom/seeded-flower-v3.html",
+          "sketches/bloom/seeded-flower.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Bloom:catalog-bloom-readme",
       "dublin_core": {
         "title": "../catalog/bloom/README.md",
@@ -1178,278 +1493,6 @@
       "artifacts": {
         "repo_paths": [
           "sketches/bloom/installation-builder-bloom.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
-      "dublin_core": {
-        "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000350"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-landscape-rock",
-        "type": "HumanMadeObject",
-        "_label": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
-      "dublin_core": {
-        "title": "../catalog/fluid-dynamics/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Fluid Dynamics:catalog-fluid-dynamics-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000343"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-catalog-fluid-dynamics-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/fluid-dynamics/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "../catalog/fluid-dynamics/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/fluid-dynamics/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "fluid-dynamics/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/fluid-dynamics/assets/two-viscosities.png",
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html",
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html",
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html",
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html",
-          "sketches/fluid-dynamics/index.html",
-          "sketches/fluid-dynamics/ink-bloom-4k-portrait-seed67-60fps-60s.mp4"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape",
-      "dublin_core": {
-        "title": "fluid-dynamics/fluid-mix-two-viscosities-landscape",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-landscape",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000344"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-landscape",
-        "type": "HumanMadeObject",
-        "_label": "fluid-dynamics/fluid-mix-two-viscosities-landscape",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "fluid-dynamics/fluid-mix-two-viscosities-landscape.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-portrait",
-      "dublin_core": {
-        "title": "fluid-dynamics/fluid-mix-two-viscosities-portrait",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-portrait",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000345"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-portrait",
-        "type": "HumanMadeObject",
-        "_label": "fluid-dynamics/fluid-mix-two-viscosities-portrait",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "fluid-dynamics/fluid-mix-two-viscosities-portrait.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
-      "dublin_core": {
-        "title": "fluid-dynamics/fluid-mix-two-viscosities-v2",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Fluid Dynamics:fluid-dynamics-fluid-mix-two-viscosities-v2",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000342"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Fluid Dynamics-fluid-dynamics-fluid-mix-two-viscosities-v2",
-        "type": "HumanMadeObject",
-        "_label": "fluid-dynamics/fluid-mix-two-viscosities-v2",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Fluid Dynamics",
-          "file": "fluid-dynamics/fluid-mix-two-viscosities-v2.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html"
         ],
         "external_urls": []
       }
