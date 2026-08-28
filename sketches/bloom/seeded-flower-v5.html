@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flower — 3D study V5</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #fbfbfb;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    canvas {
+      display: block;
+      touch-action: none;
+      cursor: grab;
+    }
+    canvas:active { cursor: grabbing; }
+    #hint {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      margin: 0;
+      font: 11px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: rgba(0, 0, 0, 0.42);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      pointer-events: none;
+      user-select: none;
+    }
+    #hud {
+      position: fixed;
+      left: 14px;
+      bottom: 12px;
+      font: 11px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: rgba(0, 0, 0, 0.42);
+      pointer-events: none;
+      user-select: none;
+    }
+    body.is-recording #hud { color: #c41e6a; }
+    #record-btn {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 20;
+      font: 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: rgba(255, 255, 255, 0.92);
+      color: rgba(0, 0, 0, 0.55);
+      cursor: pointer;
+    }
+    #record-btn.recording {
+      border-color: #c41e6a;
+      color: #c41e6a;
+    }
+  </style>
+</head>
+<body>
+  <button type="button" id="record-btn" title="Record · 60 fps frame-step · R">Record</button>
+  <div id="hud">
+    <div id="hud-seed">seed —</div>
+    <div id="hud-rec">R · record 60 fps (frame-step, not realtime)</div>
+  </div>
+  <p id="hint">v5 · drag · R record · N new seed</p>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../js/three-0.170.0.module.js",
+        "three/addons/": "../js/three-0.170.0-jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    /** ?seed=N&format=portrait|landscape|square&seconds=60 */
+    const FORMAT_SIZES = {
+      portrait: [2160, 3840],
+      landscape: [3840, 2160],
+      square: [2160, 2160]
+    };
+
+    function parseFormatFromUrl() {
+      try {
+        const raw = (new URLSearchParams(location.search).get("format") || "portrait").toLowerCase();
+        if (raw in FORMAT_SIZES) return raw;
+      } catch (_) {}
+      return "portrait";
+    }
+
+    const FORMAT = parseFormatFromUrl();
+    const CANVAS_W = FORMAT_SIZES[FORMAT][0];
+    const CANVAS_H = FORMAT_SIZES[FORMAT][1];
+    const RECORD_FPS = 60;
+
+    function parseSecondsFromUrl() {
+      try {
+        const n = parseInt(new URLSearchParams(location.search).get("seconds"), 10);
+        if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+      } catch (_) {}
+      return 60;
+    }
+    const RECORD_SECONDS = parseSecondsFromUrl();
+
+    const TAU = Math.PI * 2;
+
+    function mulberry32(a) {
+      return function () {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    let artSeed;
+    let rng;
+    const uniform = (a, b) => a + rng() * (b - a);
+    const randint = (a, b) => a + Math.floor(rng() * (b - a + 1));
+    const chance = (p) => rng() < p;
+
+    function parseSeedFromUrl() {
+      try {
+        const raw = new URLSearchParams(location.search).get("seed");
+        if (raw === null || raw === "") return null;
+        const n = parseInt(raw, 10);
+        if (Number.isFinite(n) && n >= 0) return n;
+      } catch (_) {}
+      return null;
+    }
+
+    function updateHud() {
+      const el = document.getElementById("hud-seed");
+      if (el) el.textContent = "seed " + artSeed;
+    }
+
+    function rebirth(seed) {
+      const next = seed == null || !Number.isFinite(Number(seed))
+        ? Math.floor(Math.random() * 1e9)
+        : Math.floor(Number(seed));
+      artSeed = next >>> 0; // keep in uint32 range for mulberry32
+      rng = mulberry32(artSeed);
+      updateHud();
+      buildScene();
+    }
+
+    let liveLoopPaused = false;
+    let hudSticky = null;
+
+    // Black Dove / one-row-v2-record-60 CanvasRecorder pattern:
+    // save-first · composite · captureStream(0) · fixed RECORD_FPS frame loop
+    const CanvasRecorder = (getCanvas) => {
+      let active = false;
+      let abort = false;
+      let frameIndex = 0;
+      let totalFrames = 0;
+      let compositeCanvas = null;
+      let compositeCtx = null;
+
+      const ensureComposite = () => {
+        if (!compositeCanvas) {
+          compositeCanvas = document.createElement("canvas");
+          compositeCanvas.setAttribute("aria-hidden", "true");
+          compositeCanvas.style.cssText =
+            "position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1";
+          document.body.appendChild(compositeCanvas);
+        }
+        if (compositeCanvas.width !== CANVAS_W || compositeCanvas.height !== CANVAS_H) {
+          compositeCanvas.width = CANVAS_W;
+          compositeCanvas.height = CANVAS_H;
+          compositeCtx = compositeCanvas.getContext("2d");
+        } else if (!compositeCtx) {
+          compositeCtx = compositeCanvas.getContext("2d");
+        }
+      };
+
+      const notifyFrame = () => {
+        if (!active || !compositeCtx || !compositeCanvas) return;
+        const srcCanvas = getCanvas();
+        if (!srcCanvas) return;
+        compositeCtx.fillStyle = "#fbfbfb";
+        compositeCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        compositeCtx.drawImage(srcCanvas, 0, 0, CANVAS_W, CANVAS_H);
+      };
+
+      const start = async () => {
+        if (active) return false;
+        const srcCanvas = getCanvas();
+        if (!srcCanvas) return false;
+
+        const filename =
+          `seeded-flower-v5-${FORMAT}-seed${artSeed}-60fps-${RECORD_SECONDS}s.webm`;
+        let saveHandle = null;
+        if (typeof window.showSaveFilePicker === "function") {
+          try {
+            saveHandle = await window.showSaveFilePicker({
+              suggestedName: filename,
+              types: [
+                { description: "WebM video", accept: { "video/webm": [".webm"] } }
+              ]
+            });
+          } catch (e) {
+            if (e && e.name === "AbortError") return false;
+          }
+        }
+        if (!saveHandle) {
+          hudSticky = "Chrome Save dialog was cancelled — no file";
+          updateRecHud();
+          return false;
+        }
+
+        const mimeType = [
+          "video/webm;codecs=vp9",
+          "video/webm;codecs=vp8",
+          "video/webm"
+        ].find(
+          (t) =>
+            typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t)
+        ) || "";
+        if (!mimeType) {
+          hudSticky = "MediaRecorder webm not supported — use Chrome";
+          updateRecHud();
+          return false;
+        }
+
+        abort = false;
+        active = true;
+        hudSticky = null;
+        totalFrames = RECORD_SECONDS * RECORD_FPS;
+        frameIndex = 0;
+        setRecordingUi(true);
+        liveLoopPaused = true;
+        rebirth(artSeed);
+        ensureComposite();
+        // One deterministic step so composite has a frame before MediaRecorder starts
+        controls.update(1 / RECORD_FPS);
+        renderer.render(scene, camera);
+        notifyFrame();
+
+        let writable = null;
+        let recorder = null;
+        let mediaStream = null;
+        let videoTrack = null;
+        let writeChain = Promise.resolve();
+        let payloadBytes = 0;
+        let recErr = null;
+
+        try {
+          writable = await saveHandle.createWritable({ keepExistingData: false });
+          mediaStream = compositeCanvas.captureStream(0);
+          videoTrack = mediaStream.getVideoTracks()[0] || null;
+          recorder = new MediaRecorder(mediaStream, {
+            mimeType,
+            videoBitsPerSecond: 16_000_000
+          });
+          recorder.ondataavailable = (e) => {
+            if (!e.data || !e.data.size) return;
+            payloadBytes += e.data.size;
+            const blob = e.data;
+            writeChain = writeChain.then(() =>
+              writable.write({ type: "write", data: blob })
+            );
+          };
+          recorder.onerror = (e) => {
+            recErr = e.error || new Error("MediaRecorder error");
+          };
+
+          recorder.start(500);
+          if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+          for (let i = 0; i < totalFrames; i++) {
+            if (abort) break;
+            if (recErr) throw recErr;
+            frameIndex = i;
+            controls.update(1 / RECORD_FPS);
+            renderer.render(scene, camera);
+            notifyFrame();
+            if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+            updateRecHud(
+              "recording  " +
+                i +
+                "/" +
+                totalFrames +
+                "  " +
+                (payloadBytes / 1000000).toFixed(1) +
+                " MB"
+            );
+            await new Promise((r) => requestAnimationFrame(r));
+          }
+
+          await new Promise((resolve, reject) => {
+            recorder.onstop = resolve;
+            recorder.onerror = (e) =>
+              reject(e.error || new Error("MediaRecorder error"));
+            try {
+              if (recorder.state === "recording") recorder.requestData();
+            } catch (_) {}
+            recorder.stop();
+          });
+          await writeChain;
+          await writable.close();
+          writable = null;
+          if (abort) {
+            hudSticky = "stopped — file may be incomplete";
+          } else {
+            hudSticky =
+              "saved " +
+              filename +
+              "  " +
+              (payloadBytes / 1000000).toFixed(1) +
+              " MB";
+          }
+        } catch (err) {
+          console.error(err);
+          hudSticky = String(err && err.message ? err.message : err);
+          if (writable) {
+            try {
+              await writable.close();
+            } catch (_) {}
+            writable = null;
+          }
+        } finally {
+          try {
+            if (recorder && recorder.state !== "inactive") recorder.stop();
+          } catch (_) {}
+          try {
+            mediaStream && mediaStream.getTracks().forEach((t) => t.stop());
+          } catch (_) {}
+          try {
+            if (writable) await writable.close();
+          } catch (_) {}
+          active = false;
+          frameIndex = 0;
+          totalFrames = 0;
+          liveLoopPaused = false;
+          setRecordingUi(false);
+          updateRecHud();
+        }
+        return true;
+      };
+
+      const stop = () => {
+        if (!active) return;
+        abort = true;
+      };
+
+      const toggle = async () => {
+        if (active) {
+          stop();
+          return false;
+        }
+        return start();
+      };
+
+      return {
+        toggle,
+        isActive: () => active,
+        notifyFrame,
+        frameIndex: () => frameIndex,
+        totalFrames: () => totalFrames
+      };
+    };
+
+    let renderer;
+    let controls;
+    let scene;
+    let camera;
+    const recordBtn = document.getElementById("record-btn");
+    const hudRec = document.getElementById("hud-rec");
+    const hintEl = document.getElementById("hint");
+    const rec = CanvasRecorder(() => renderer?.domElement);
+
+    function updateFormatUi() {
+      document.title = `Flower — 3D study V5 · ${FORMAT} · ${CANVAS_W}×${CANVAS_H}`;
+      if (recordBtn) {
+        recordBtn.title =
+          `Record · ${FORMAT} · ${CANVAS_W}×${CANVAS_H} · 60 fps frame-step · R`;
+      }
+      if (hintEl) {
+        hintEl.textContent =
+          `v5 · ${FORMAT} · ${CANVAS_W}×${CANVAS_H} · drag · R record · N new seed`;
+      }
+    }
+
+    function updateRecHud(msg) {
+      if (!hudRec) return;
+      if (msg) {
+        hudRec.textContent = msg;
+        return;
+      }
+      if (hudSticky) {
+        hudRec.textContent = hudSticky;
+        return;
+      }
+      hudRec.textContent =
+        FORMAT +
+        " " +
+        CANVAS_W +
+        "×" +
+        CANVAS_H +
+        " · R · record 60 fps (frame-step, not realtime) · " +
+        RECORD_SECONDS +
+        "s · ?format= · ?seconds=";
+    }
+
+    function setRecordingUi(on) {
+      document.body.classList.toggle("is-recording", on);
+      if (recordBtn) {
+        recordBtn.textContent = on ? "Stop" : "Record";
+        recordBtn.classList.toggle("recording", on);
+      }
+    }
+
+    // ---------------------------------------------------------------- surfaces
+
+    /**
+     * Parametric sheet over u (root to tip) and v (across the width).
+     * Vertex colours let one petal hold a gradient rather than a flat hue.
+     */
+    function sheetGeometry(segU, segV, pointFn, colorFn) {
+      const positions = [];
+      const colors = [];
+      const indices = [];
+      const c = new THREE.Color();
+      const p = new THREE.Vector3();
+
+      for (let i = 0; i <= segU; i++) {
+        const u = i / segU;
+        for (let j = 0; j <= segV; j++) {
+          const v = (j / segV) * 2 - 1;
+          pointFn(u, v, p);
+          positions.push(p.x, p.y, p.z);
+          colorFn(u, v, c);
+          colors.push(c.r, c.g, c.b);
+        }
+      }
+
+      const row = segV + 1;
+      for (let i = 0; i < segU; i++) {
+        for (let j = 0; j < segV; j++) {
+          const a = i * row + j;
+          const b = a + row;
+          indices.push(a, b, a + 1, b, b + 1, a + 1);
+        }
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+      geo.setIndex(indices);
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    /** Boundary ring of the same sheet, for the hairline contour on each petal. */
+    function sheetOutlineGeometry(segU, pointFn) {
+      const pts = [];
+      const p = new THREE.Vector3();
+      for (let i = 0; i <= segU; i++) {
+        pointFn(i / segU, 1, p);
+        pts.push(p.clone());
+      }
+      for (let i = segU; i >= 0; i--) {
+        pointFn(i / segU, -1, p);
+        pts.push(p.clone());
+      }
+      return new THREE.BufferGeometry().setFromPoints(pts);
+    }
+
+    /**
+     * Petal / leaf blade. Width swells then tapers, the blade curls away from
+     * the stem, and a cross-section cup keeps it from reading as flat paper.
+     */
+    function makeBladeFn(opts) {
+      const { length, width, curl, cup, twist, skew, tipPinch } = opts;
+      return function (u, v, out) {
+        const shaped = Math.pow(u, skew);
+        const half = width * Math.pow(Math.sin(Math.PI * shaped), tipPinch);
+        const x = v * half;
+        const y = u * length;
+        const z = curl * u * u + cup * (v * v) * u;
+        const a = twist * u;
+        const ca = Math.cos(a);
+        const sa = Math.sin(a);
+        out.set(x * ca - z * sa, y, x * sa + z * ca);
+      };
+    }
+
+    function bladeMaterial() {
+      return new THREE.MeshPhysicalMaterial({
+        vertexColors: true,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.44,
+        depthWrite: false,
+        roughness: 0.28,
+        metalness: 0,
+        clearcoat: 0.7,
+        clearcoatRoughness: 0.25,
+        sheen: 0.6,
+        sheenColor: new THREE.Color(0xffffff)
+      });
+    }
+
+    /**
+     * One blade: translucent body plus its contour. Overlapping blades
+     * accumulate colour because depth writing is off, which is what gives
+     * the layered stained-glass read.
+     */
+    function buildBlade(opts, hueA, hueB, satA, satB, lightA, lightB) {
+      const group = new THREE.Group();
+      const fn = makeBladeFn(opts);
+      const cA = new THREE.Color().setHSL(hueA, satA, lightA);
+      const cB = new THREE.Color().setHSL(hueB, satB, lightB);
+      const white = new THREE.Color(1, 1, 1);
+
+      const geo = sheetGeometry(20, 10, fn, (u, v, out) => {
+        out.copy(cA).lerp(cB, u);
+        // Edges read lighter, as if lit from behind.
+        out.lerp(white, Math.pow(Math.abs(v), 3) * 0.35);
+      });
+      group.add(new THREE.Mesh(geo, bladeMaterial()));
+
+      group.add(
+        new THREE.Line(
+          sheetOutlineGeometry(20, fn),
+          new THREE.LineBasicMaterial({
+            color: new THREE.Color().setHSL(hueB, Math.min(1, satB + 0.25), lightB * 0.55),
+            transparent: true,
+            opacity: 0.7,
+            depthWrite: false
+          })
+        )
+      );
+      return group;
+    }
+
+    // ------------------------------------------------------------------ parts
+
+    function buildStem(curve, radius, hue, sat, light) {
+      return new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 40, radius, 8, false),
+        new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color().setHSL(hue, sat, light),
+          transparent: true,
+          opacity: 0.9,
+          roughness: 0.3,
+          metalness: 0,
+          clearcoat: 0.8,
+          clearcoatRoughness: 0.2
+        })
+      );
+    }
+
+    /** Hairline filament curling off a bloom. */
+    function buildTendril(hue) {
+      const turns = uniform(1.1, 2.6);
+      const radius = uniform(0.03, 0.1);
+      const rise = uniform(0.1, 0.34);
+      const pts = [];
+      const steps = 46;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const a = t * TAU * turns;
+        const r = radius * t;
+        pts.push(new THREE.Vector3(Math.cos(a) * r, rise * t, Math.sin(a) * r));
+      }
+      return new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({
+          color: new THREE.Color().setHSL(hue, 0.8, 0.55),
+          transparent: true,
+          opacity: 0.62,
+          depthWrite: false
+        })
+      );
+    }
+
+    /** Radial ring of petals plus a granular centre. */
+    function buildFlower(hue, size) {
+      const group = new THREE.Group();
+      const petals = randint(4, 9);
+      const hueDrift = uniform(-0.07, 0.07);
+      const sat = uniform(0.55, 0.95);
+      const openness = uniform(0.35, 1.25);
+      const petalLen = uniform(0.26, 0.46) * size;
+      const petalWid = uniform(0.07, 0.15) * size;
+      const phase = rng() * TAU;
+
+      for (let i = 0; i < petals; i++) {
+        const blade = buildBlade(
+          {
+            length: petalLen * uniform(0.82, 1.18),
+            width: petalWid * uniform(0.8, 1.2),
+            curl: uniform(-0.12, 0.05) * size,
+            cup: uniform(0.04, 0.16) * size,
+            twist: uniform(-0.5, 0.5),
+            skew: uniform(0.85, 1.25),
+            tipPinch: uniform(0.55, 1.0)
+          },
+          hue,
+          hue + hueDrift,
+          sat,
+          Math.min(1, sat + 0.1),
+          uniform(0.58, 0.74),
+          uniform(0.5, 0.66)
+        );
+        blade.rotation.y = phase + (i / petals) * TAU + uniform(-0.12, 0.12);
+        blade.rotation.z = uniform(-0.2, 0.2);
+        blade.rotateOnAxis(new THREE.Vector3(1, 0, 0), openness + uniform(-0.18, 0.18));
+        group.add(blade);
+      }
+
+      const centreMat = new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color().setHSL(hue + uniform(-0.12, 0.12), 0.85, 0.6),
+        transparent: true,
+        opacity: 0.85,
+        roughness: 0.35,
+        clearcoat: 0.6
+      });
+      const centreGeo = new THREE.IcosahedronGeometry(0.016 * size, 0);
+      const blobs = randint(5, 14);
+      for (let i = 0; i < blobs; i++) {
+        const blob = new THREE.Mesh(centreGeo, centreMat);
+        blob.position.set(
+          uniform(-0.05, 0.05) * size,
+          uniform(0, 0.06) * size,
+          uniform(-0.05, 0.05) * size
+        );
+        blob.scale.setScalar(uniform(0.7, 2.1));
+        group.add(blob);
+      }
+
+      const tendrils = randint(0, 4);
+      for (let i = 0; i < tendrils; i++) {
+        const t = buildTendril(hue + uniform(-0.1, 0.1));
+        t.rotation.y = rng() * TAU;
+        t.rotation.z = uniform(-0.7, 0.7);
+        t.scale.setScalar(size * uniform(0.7, 1.5));
+        group.add(t);
+      }
+
+      return group;
+    }
+
+    /** Tight, inward-folded blades: an unopened bud. */
+    function buildBud(hue, size) {
+      const group = new THREE.Group();
+      const n = randint(3, 5);
+      for (let i = 0; i < n; i++) {
+        const blade = buildBlade(
+          {
+            length: uniform(0.11, 0.19) * size,
+            width: uniform(0.035, 0.06) * size,
+            curl: uniform(0.02, 0.06) * size,
+            cup: uniform(0.05, 0.12) * size,
+            twist: uniform(-0.3, 0.3),
+            skew: 1.0,
+            tipPinch: 0.85
+          },
+          hue,
+          hue + uniform(-0.06, 0.06),
+          uniform(0.5, 0.85),
+          uniform(0.6, 0.9),
+          uniform(0.55, 0.7),
+          uniform(0.48, 0.62)
+        );
+        blade.rotation.y = (i / n) * TAU + rng();
+        blade.rotateOnAxis(new THREE.Vector3(1, 0, 0), uniform(0.08, 0.26));
+        group.add(blade);
+      }
+      return group;
+    }
+
+    function buildLeaf(hue, size) {
+      return buildBlade(
+        {
+          length: uniform(0.3, 0.62) * size,
+          width: uniform(0.06, 0.12) * size,
+          curl: uniform(-0.14, 0.14) * size,
+          cup: uniform(0.03, 0.1) * size,
+          twist: uniform(-0.6, 0.6),
+          skew: uniform(0.9, 1.2),
+          tipPinch: uniform(0.5, 0.8)
+        },
+        hue,
+        hue + uniform(-0.14, 0.14),
+        uniform(0.35, 0.8),
+        uniform(0.45, 0.9),
+        uniform(0.6, 0.75),
+        uniform(0.5, 0.68)
+      );
+    }
+
+    /** A branch: curved stem carrying buds, a leaf, and blooms at the tip. */
+    function buildBranch(origin, dir, length, hue, size) {
+      const group = new THREE.Group();
+
+      const up = new THREE.Vector3(0, 1, 0);
+      const pts = [new THREE.Vector3(0, 0, 0)];
+      const steps = 4;
+      const cur = new THREE.Vector3();
+      const step = dir.clone().normalize().multiplyScalar(length / steps);
+      for (let i = 1; i <= steps; i++) {
+        cur.add(step);
+        cur.addScaledVector(up, uniform(0, 0.08) * length);
+        cur.x += uniform(-0.05, 0.05) * length;
+        cur.z += uniform(-0.05, 0.05) * length;
+        pts.push(cur.clone());
+      }
+      const curve = new THREE.CatmullRomCurve3(pts);
+      group.add(buildStem(curve, 0.012 * size, hue, uniform(0.5, 0.9), uniform(0.42, 0.6)));
+
+      const blooms = randint(1, 3);
+      for (let i = 0; i < blooms; i++) {
+        const t = i === 0 ? 1 : uniform(0.55, 0.95);
+        const flower = buildFlower(hue + uniform(-0.05, 0.05), size * uniform(0.85, 1.25));
+        flower.position.copy(curve.getPointAt(t));
+        flower.rotation.set(uniform(-0.6, 0.6), rng() * TAU, uniform(-0.6, 0.6));
+        group.add(flower);
+      }
+
+      const buds = randint(0, 3);
+      for (let i = 0; i < buds; i++) {
+        const bud = buildBud(hue + uniform(-0.1, 0.1), size * uniform(0.8, 1.4));
+        bud.position.copy(curve.getPointAt(uniform(0.3, 0.9)));
+        bud.rotation.set(uniform(-0.9, 0.9), rng() * TAU, uniform(-0.9, 0.9));
+        group.add(bud);
+      }
+
+      if (chance(0.7)) {
+        const leaf = buildLeaf(uniform(0.22, 0.42), size);
+        leaf.position.copy(curve.getPointAt(uniform(0.15, 0.5)));
+        leaf.rotation.set(uniform(0.6, 1.5), rng() * TAU, uniform(-0.5, 0.5));
+        group.add(leaf);
+      }
+
+      group.position.copy(origin);
+      return group;
+    }
+
+
+    /** Minuscule green tubes — one shared patch for the composition. */
+    function buildGrassField(patchScale = 1) {
+      const count = randint(1400, 2400);
+      const bladeGeo = new THREE.CylinderGeometry(0.0011, 0.0024, 1, 4, 1);
+      bladeGeo.translate(0, 0.5, 0);
+
+      const mat = new THREE.MeshPhysicalMaterial({
+        roughness: 0.42,
+        metalness: 0,
+        clearcoat: 0.45,
+        clearcoatRoughness: 0.35
+      });
+
+      const mesh = new THREE.InstancedMesh(bladeGeo, mat, count);
+      const dummy = new THREE.Object3D();
+      const color = new THREE.Color();
+      const patch = uniform(0.75, 1.05) * patchScale;
+
+      for (let i = 0; i < count; i++) {
+        const ring = rng();
+        const r = Math.sqrt(ring) * patch * uniform(0.28, 1.05);
+        const a = rng() * TAU;
+        const h = uniform(0.028, 0.16) * (0.55 + 0.45 * (1 - ring));
+        dummy.position.set(
+          Math.cos(a) * r,
+          0,
+          Math.sin(a) * r
+        );
+        dummy.scale.set(
+          uniform(0.65, 1.35),
+          h,
+          uniform(0.65, 1.35)
+        );
+        dummy.rotation.set(
+          uniform(-0.42, 0.42),
+          rng() * TAU,
+          uniform(-0.42, 0.42)
+        );
+        dummy.updateMatrix();
+        mesh.setMatrixAt(i, dummy.matrix);
+
+        color.setHSL(
+          uniform(0.24, 0.38),
+          uniform(0.42, 0.78),
+          uniform(0.36, 0.58)
+        );
+        mesh.setColorAt(i, color);
+      }
+
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+      return mesh;
+    }
+
+    /** One flower: stem, branches, blooms, basal leaves — no ground patch. */
+    function growFlower() {
+      const plant = new THREE.Group();
+
+      const height = uniform(2.2, 3.2);
+      const baseHue = rng();
+      const hueSpread = uniform(0.45, 0.95);
+
+      const mainPts = [];
+      const segs = 6;
+      let x = 0;
+      let z = 0;
+      for (let i = 0; i <= segs; i++) {
+        const t = i / segs;
+        x += uniform(-0.05, 0.05);
+        z += uniform(-0.05, 0.05);
+        mainPts.push(new THREE.Vector3(x * t, t * height, z * t));
+      }
+      const mainCurve = new THREE.CatmullRomCurve3(mainPts);
+      plant.add(buildStem(mainCurve, 0.026, baseHue + 0.1, uniform(0.6, 0.95), uniform(0.45, 0.6)));
+
+      const branches = randint(2, 6);
+      for (let i = 0; i < branches; i++) {
+        const a = (i / branches) * TAU + uniform(-0.5, 0.5);
+        const outward = uniform(0.5, 1.0);
+        plant.add(
+          buildBranch(
+            mainCurve.getPointAt(uniform(0.3, 0.98)),
+            new THREE.Vector3(Math.cos(a) * outward, uniform(0.5, 1.5), Math.sin(a) * outward),
+            uniform(0.5, 1.3),
+            (baseHue + (i / branches) * hueSpread) % 1,
+            uniform(0.85, 1.35)
+          )
+        );
+      }
+
+      const basal = randint(1, 3);
+      for (let i = 0; i < basal; i++) {
+        const leaf = buildLeaf(uniform(0.24, 0.4), uniform(1.0, 1.8));
+        leaf.position.copy(mainCurve.getPointAt(uniform(0.05, 0.35)));
+        leaf.rotation.set(uniform(0.7, 1.4), rng() * TAU, uniform(-0.4, 0.4));
+        plant.add(leaf);
+      }
+
+      return plant;
+    }
+
+    function layoutBoundsForFormat() {
+      if (FORMAT === "landscape") {
+        return { xMin: -3.1, xMax: 3.1, zMin: -2.4, zMax: 1.5 };
+      }
+      if (FORMAT === "square") {
+        return { xMin: -2.0, xMax: 2.0, zMin: -2.0, zMax: 1.2 };
+      }
+      return { xMin: -1.5, xMax: 1.5, zMin: -2.2, zMax: 1.0 };
+    }
+
+    /** 3–15 flowers per seed — spread left/right and foreground/background. */
+    function growComposition() {
+      const group = new THREE.Group();
+      const flowerCount = randint(3, 15);
+      const bounds = layoutBoundsForFormat();
+      const spanX = bounds.xMax - bounds.xMin;
+      const spanZ = bounds.zMax - bounds.zMin;
+      const flowerScale = Math.min(1.12, 3.1 / Math.cbrt(flowerCount)) * 0.5;
+
+      const zones = [
+        { x0: 0.0, x1: 0.32, z0: 0.52, z1: 1.0 },
+        { x0: 0.32, x1: 0.68, z0: 0.52, z1: 1.0 },
+        { x0: 0.68, x1: 1.0, z0: 0.52, z1: 1.0 },
+        { x0: 0.0, x1: 0.32, z0: 0.0, z1: 0.52 },
+        { x0: 0.32, x1: 0.68, z0: 0.0, z1: 0.52 },
+        { x0: 0.68, x1: 1.0, z0: 0.0, z1: 0.52 }
+      ];
+
+      for (let i = 0; i < flowerCount; i++) {
+        const flower = growFlower();
+        const zone = zones[i % zones.length];
+        const x = bounds.xMin + uniform(zone.x0, zone.x1) * spanX;
+        const z = bounds.zMin + uniform(zone.z0, zone.z1) * spanZ;
+        const zNorm = (z - bounds.zMin) / spanZ;
+        const depthScale = 0.68 + zNorm * 0.46;
+        flower.position.set(x, 0, z);
+        flower.scale.setScalar(flowerScale * depthScale * uniform(0.9, 1.06));
+        group.add(flower);
+      }
+
+      const patchScale =
+        1.15 + Math.max(spanX, spanZ) * 0.38 + flowerCount * 0.035;
+      group.add(buildGrassField(patchScale));
+      return group;
+    }
+
+    // ------------------------------------------------------------------ scene
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xfbfbfb);
+
+    camera = new THREE.PerspectiveCamera(38, CANVAS_W / CANVAS_H, 0.05, 200);
+
+    renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      preserveDrawingBuffer: true
+    });
+    renderer.setPixelRatio(1);
+    renderer.setSize(CANVAS_W, CANVAS_H, false);
+    document.body.appendChild(renderer.domElement);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xe8e8ee, 1.5));
+    const key = new THREE.DirectionalLight(0xffffff, 2.1);
+    key.position.set(2.5, 5, 3.5);
+    scene.add(key);
+    const back = new THREE.DirectionalLight(0xffffff, 1.4);
+    back.position.set(-2, 2.5, -4);
+    scene.add(back);
+
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.enablePan = false;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = -0.6;
+
+    let plantGroup = null;
+
+    function disposeObject3D(root) {
+      root.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          mats.forEach((m) => m.dispose());
+        }
+      });
+    }
+
+    function frameCamera(group) {
+      if (FORMAT === "landscape") {
+        camera.fov = 39;
+        controls.target.set(0, 1.0, -0.55);
+        camera.position.set(0, 1.28, 5.6);
+        camera.updateProjectionMatrix();
+        controls.update();
+        return;
+      }
+
+      camera.fov = 38;
+      const box = new THREE.Box3().setFromObject(group);
+      const size = box.getSize(new THREE.Vector3());
+      const centre = box.getCenter(new THREE.Vector3());
+      const radius = Math.max(size.x, size.y, size.z) * 0.5;
+      const dist = (radius / Math.sin((camera.fov * Math.PI) / 360)) * 1.35;
+      controls.target.copy(centre);
+      camera.position.set(centre.x, centre.y + size.y * 0.08, centre.z + dist);
+      camera.updateProjectionMatrix();
+      controls.update();
+    }
+
+    function buildScene() {
+      if (plantGroup) {
+        scene.remove(plantGroup);
+        disposeObject3D(plantGroup);
+        plantGroup = null;
+      }
+      plantGroup = growComposition();
+      scene.add(plantGroup);
+      frameCamera(plantGroup);
+    }
+
+    /** Fit the fixed 4K buffer into the viewport without changing pixel size. */
+    function layoutDisplay() {
+      const scale = Math.min(window.innerWidth / CANVAS_W, window.innerHeight / CANVAS_H);
+      const cssW = Math.max(1, Math.floor(CANVAS_W * scale));
+      const cssH = Math.max(1, Math.floor(CANVAS_H * scale));
+      const el = renderer.domElement;
+      el.style.width = cssW + "px";
+      el.style.height = cssH + "px";
+    }
+
+    let lastTickMs = performance.now();
+
+    function tick(now) {
+      requestAnimationFrame(tick);
+      if (liveLoopPaused) return;
+      const t = typeof now === "number" ? now : performance.now();
+      const deltaSec = Math.min(0.05, Math.max(0, (t - lastTickMs) / 1000));
+      lastTickMs = t;
+      controls.update(deltaSec);
+      renderer.render(scene, camera);
+    }
+
+    recordBtn?.addEventListener("click", () => rec.toggle());
+
+    updateFormatUi();
+    layoutDisplay();
+    updateRecHud();
+    window.addEventListener("resize", layoutDisplay);
+    window.addEventListener("keydown", (e) => {
+      if (e.repeat) return;
+      if (e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        recordBtn?.blur();
+        rec.toggle();
+        return;
+      }
+      // N / Space advance seed even while the frame-step recorder is running
+      if (e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        recordBtn?.blur();
+        rebirth((artSeed + 1) >>> 0);
+      } else if (e.code === "Space" || e.key === " ") {
+        e.preventDefault();
+        recordBtn?.blur();
+        rebirth((artSeed + 1) >>> 0);
+      }
+    });
+
+    rebirth(parseSeedFromUrl());
+    tick();
+  </script>
+</body>
+</html>
