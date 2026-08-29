@@ -14,6 +14,7 @@
 | Work | File | Date |
 |------|------|------|
 | Ink Bloom — reference study (4K portrait) | `sketches/fluid-dynamics/ink-bloom-ref.html` | August 24, 2026 |
+| Ink Bloom — black on white | `sketches/fluid-dynamics/ink-bloom-ref-bw.html` | August 28, 2026 |
 | Two Viscosities — 1000×1000 | `sketches/fluid-dynamics/fluid-mix-two-viscosities-v2.html` | August 15, 2026 |
 | Two Viscosities — 2160×3840 | `sketches/fluid-dynamics/fluid-mix-two-viscosities-portrait.html` | August 15, 2026 |
 | Two Viscosities — 3840×2160 | `sketches/fluid-dynamics/fluid-mix-two-viscosities-landscape.html` | August 15, 2026 |
