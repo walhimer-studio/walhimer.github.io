@@ -181,11 +181,35 @@
 <script>
 const SERIES = [
   {
+    name: 'Invisible Layer',
+    files: [
+      {name:'../catalog/invisible-layer/README.md', title:'Invisible Layer — catalog statement', version:false},
+      {name:'invisible-layer/README.md', title:'Invisible Layer — README', version:false},
+      {name:'invisible-layer/index.html', title:'Invisible Layer — series index', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-august-29-2026.md', title:'Invisible Layer August-29-2026 — catalog statement', version:false},
+      {name:'invisible-layer/invisible-layer-august-29-2026.html', title:'August-29-2026 — Vol3D · format · seed · sound · lifeline · 60fps record', version:false},
+      {name:'invisible-layer/invisible-layer-july-14-2026.html', title:'July-14-2026 — baked 77823 palette · seed · sound · lifeline', version:false},
+      {name:'invisible-layer/invisible-layer-study-webgl.html', title:'Invisible Layer June-7-2026 (study)', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-july-14-2026.md', title:'Invisible Layer July-14-2026 — catalog statement', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-july-8-2026.md', title:'Invisible Layer July-8-2026 — catalog statement', version:false},
+      {name:'invisible-layer/invisible-layer-july-8-2026-piano-exp.html', title:'July-8-2026 · piano exp — Salamander · RGB→XYZ', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md', title:'Invisible Layer July-8-2026 · piano exp — catalog statement', version:false},
+      {name:'invisible-layer/invisible-layer-july-8-2026.html', title:'July-8-2026 — seed · sound · lifeline', version:false},
+      {name:'invisible-layer/invisible-layer-june-7-2026-2.html', title:'June-7-2026-2 — seed · sound · lifeline', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-june-7-2026-2.md', title:'Invisible Layer June-7-2026-2 — catalog statement', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-june-7-2026.md', title:'Invisible Layer June-7-2026 — catalog statement', version:false},
+      {name:'invisible-layer/invisible-layer-june-7-2026-vol3d.html', title:'June-7-2026 Vol3D — seed · sound · lifeline', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-june-7-2026-vol3d.md', title:'Invisible Layer June-7-2026 · Vol3D — catalog statement', version:false},
+      {name:'../catalog/invisible-layer/invisible-layer-vol3d.md', title:'Invisible Layer · Vol3D — catalog statement', version:false},
+      {name:'invisible-layer/invisible-layer-vol3d.html', title:'Vol3D — seed · sound · lifeline', version:false},
+    ]
+  },
+  {
     name: 'Fluid Dynamics',
     files: [
-      {name:'fluid-dynamics/ink-bloom-ref-bw.html', title:'Ink Bloom — black on white (?format=portrait|landscape|square)', version:false},
       {name:'../catalog/fluid-dynamics/README.md', title:'Fluid Dynamics — catalog statement', version:false},
       {name:'fluid-dynamics/index.html', title:'Fluid Dynamics — series index', version:false},
+      {name:'fluid-dynamics/ink-bloom-ref-bw.html', title:'Ink Bloom — black on white (?format=portrait|landscape|square)', version:false},
       {name:'fluid-dynamics/ink-bloom-ref.html', title:'Ink Bloom — reference study (4K portrait)', version:false},
       {name:'fluid-dynamics/fluid-mix-two-viscosities-landscape-rock.html', title:'Two Viscosities — rock landscape 3840×2160', version:false},
       {name:'fluid-dynamics/fluid-mix-two-viscosities-landscape.html', title:'Two Viscosities — 3840×2160', version:false},
@@ -248,28 +272,6 @@ const SERIES = [
       {name:'../catalog/loop-art-critique-alumni-show-2026/README.md', title:'Alumni Show #3 — catalog statement', version:false},
       {name:'../catalog/loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-concept.md', title:'Loop Alumni Show — Invisible Layer · concept', version:false},
       {name:'loop-art-critique-alumni-show-2026/loop-alumni-show-invisible-layer-poc.html', title:'Loop Alumni Show — Invisible Layer · POC', version:false},
-    ]
-  },
-  {
-    name: 'Invisible Layer',
-    files: [
-      {name:'invisible-layer/invisible-layer-study-webgl.html', title:'Invisible Layer June-7-2026 (study)', version:false},
-      {name:'invisible-layer/invisible-layer-july-14-2026.html', title:'July-14-2026 — baked 77823 palette · seed · sound · lifeline', version:false},
-      {name:'../catalog/invisible-layer/README.md', title:'Invisible Layer — catalog statement', version:false},
-      {name:'invisible-layer/README.md', title:'Invisible Layer — README', version:false},
-      {name:'invisible-layer/index.html', title:'Invisible Layer — series index', version:false},
-      {name:'../catalog/invisible-layer/invisible-layer-july-14-2026.md', title:'Invisible Layer July-14-2026 — catalog statement', version:false},
-      {name:'../catalog/invisible-layer/invisible-layer-july-8-2026.md', title:'Invisible Layer July-8-2026 — catalog statement', version:false},
-      {name:'invisible-layer/invisible-layer-july-8-2026-piano-exp.html', title:'July-8-2026 · piano exp — Salamander · RGB→XYZ', version:false},
-      {name:'../catalog/invisible-layer/invisible-layer-july-8-2026-piano-exp.md', title:'Invisible Layer July-8-2026 · piano exp — catalog statement', version:false},
-      {name:'invisible-layer/invisible-layer-july-8-2026.html', title:'July-8-2026 — seed · sound · lifeline', version:false},
-      {name:'invisible-layer/invisible-layer-june-7-2026-2.html', title:'June-7-2026-2 — seed · sound · lifeline', version:false},
-      {name:'../catalog/invisible-layer/invisible-layer-june-7-2026-2.md', title:'Invisible Layer June-7-2026-2 — catalog statement', version:false},
-      {name:'../catalog/invisible-layer/invisible-layer-june-7-2026.md', title:'Invisible Layer June-7-2026 — catalog statement', version:false},
-      {name:'invisible-layer/invisible-layer-june-7-2026-vol3d.html', title:'June-7-2026 Vol3D — seed · sound · lifeline', version:false},
-      {name:'../catalog/invisible-layer/invisible-layer-june-7-2026-vol3d.md', title:'Invisible Layer June-7-2026 · Vol3D — catalog statement', version:false},
-      {name:'../catalog/invisible-layer/invisible-layer-vol3d.md', title:'Invisible Layer · Vol3D — catalog statement', version:false},
-      {name:'invisible-layer/invisible-layer-vol3d.html', title:'Vol3D — seed · sound · lifeline', version:false},
     ]
   },
   {

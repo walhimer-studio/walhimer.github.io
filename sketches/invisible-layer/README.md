@@ -38,6 +38,7 @@ Path: `sketches/invisible-layer/`
 
 | File | Role |
 |------|------|
+| `invisible-layer-august-29-2026.html` | **August-29-2026** Vol3D · format URL · seed · sound · lifeline · frame-step 60fps record |
 | `pixel-recipes/` | Recipe spec · channel JSON · chunk-grid study |
 | `index.html` | Series hub — catalog visitors |
 | `invisible-layer-july-14-2026.html` | **July-14-2026** Vol3D · baked 77823 palette · seed · sound · lifeline |
