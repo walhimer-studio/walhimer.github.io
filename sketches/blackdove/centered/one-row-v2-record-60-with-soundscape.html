@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>One Row V2 — with soundscape (PoC)</title>
+  <title>One Row V2 — soundscape · frame-step 60 fps</title>
   <style>
     html, body { margin: 0; background: #0a0a0a; }
     canvas {
@@ -57,20 +57,17 @@
 <body>
   <div class="hud">
     <div id="hud-seed">seed —</div>
-    <div id="hud-rec">PoC · watch with sound · R records realtime A/V</div>
+    <div id="hud-rec">R · record 60 fps frame-step + soundscape</div>
     <div class="lifeline"><div id="lifeline-fill"></div></div>
     <button id="sound-btn" type="button">Sound</button>
     <button id="record-btn" type="button">Record</button>
     <a id="save-link" hidden>Save</a>
   </div>
 <script>
-/** One Row V2 + soundscape PoC (Centered nest).
- *  NEW FILE — does not edit one-row-v2-record-60.html.
- *  Visual art mirrors the silent recorder; sound co-created from same seed.
- *  ?seed=N&format=portrait|landscape|square&seconds=120
- *
- *  Watch live (sound + picture). When happy: R / Record — same seed, realtime
- *  A/V for `seconds` (default 120). Not Salamander; long-decay pentatonic Web Audio.
+/** One Row V2 + soundscape — Machine DNA record (august-29 frame-step).
+ *  Recorder transplanted from invisible-layer-august-29-2026.html.
+ *  Adapt only: getCanvas, soundscape getAudioStream, filename, rebirth(artSeed).
+ *  ?seed=N&format=portrait|landscape|square&seconds=60 (default 60; max 120)
  */
 const LIFESPAN_MS = 480000; // Centered catalog timer for HUD only — life ≠ this number
 const RECORD_FPS = 60;
@@ -93,7 +90,7 @@ function parseSecondsFromUrl() {
     const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
     if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
   } catch (e) {}
-  return 120;
+  return 60;
 }
 
 const FORMAT = parseFormatFromUrl();
@@ -304,12 +301,34 @@ const Soundscape = () => {
 
 const soundscape = Soundscape();
 
-const CanvasRecorder = (getCanvas) => {
+/** august-29 CanvasRecorder — frame-step seconds×60; soundscape audio kept. */
+const CanvasRecorder = (getCanvas, getAudioStream) => {
   let active = false;
   let abort = false;
-  let startedAt = 0;
+  let frameIndex = 0;
+  let totalFrames = 0;
   let compositeCanvas = null;
   let compositeCtx = null;
+  let videoTrack = null;
+  let mediaStream = null;
+
+  const pickMime = () => {
+    const types = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm',
+      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4',
+    ];
+    return types.find((t) =>
+      typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
+    ) || '';
+  };
+
+  const recExt = (mt) => (mt.startsWith('video/mp4') ? 'mp4' : 'webm');
 
   const ensureComposite = () => {
     if (!compositeCanvas) {
@@ -334,51 +353,51 @@ const CanvasRecorder = (getCanvas) => {
     compositeCtx.fillStyle = '#0a0a0a';
     compositeCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
     compositeCtx.drawImage(srcCanvas, 0, 0, CANVAS_W, CANVAS_H);
+    if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
   };
 
-  const elapsedMs = () => (active ? performance.now() - startedAt : 0);
+  const elapsedMs = () => (totalFrames ? (frameIndex / RECORD_FPS) * 1000 : 0);
 
   const start = async () => {
     if (active) return false;
     const srcCanvas = getCanvas();
     if (!srcCanvas) return false;
+    if (typeof redraw !== 'function') return false;
 
-    await soundscape.ensure();
-    await soundscape.unmute();
+    const mimeType = pickMime();
+    if (!mimeType) {
+      hudSticky = 'MediaRecorder not supported — use Chrome';
+      updateHud();
+      return false;
+    }
 
-    const filename = `one-row-v2-soundscape-${FORMAT}-seed${artSeed}-${RECORD_SECONDS}s.webm`;
+    const ext = recExt(mimeType);
+    let filename =
+      `one-row-v2-soundscape-${FORMAT}-seed${artSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
+
     let saveHandle = null;
     if (typeof window.showSaveFilePicker === 'function') {
       try {
         saveHandle = await window.showSaveFilePicker({
           suggestedName: filename,
-          types: [{ description: 'WebM A/V', accept: { 'video/webm': ['.webm'] } }]
+          types: [{
+            description: ext === 'mp4' ? 'MP4 A/V' : 'WebM A/V',
+            accept: ext === 'mp4'
+              ? { 'video/mp4': ['.mp4'] }
+              : { 'video/webm': ['.webm'] },
+          }],
         });
       } catch (e) {
         if (e && e.name === 'AbortError') return false;
+        throw e;
       }
     }
     if (!saveHandle) {
-      hudSticky = 'Chrome Save dialog was cancelled — no file';
+      hudSticky = 'Chrome Save dialog required — use Chrome';
       updateHud();
       return false;
     }
-
-    const mimeCandidates = [
-      'video/webm;codecs=vp9,opus',
-      'video/webm;codecs=vp8,opus',
-      'video/webm;codecs=vp9',
-      'video/webm;codecs=vp8',
-      'video/webm'
-    ];
-    const mimeType = mimeCandidates.find(
-      (t) => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
-    ) || '';
-    if (!mimeType) {
-      hudSticky = 'MediaRecorder webm not supported — use Chrome';
-      updateHud();
-      return false;
-    }
+    filename = saveHandle.name || filename;
 
     abort = false;
     active = true;
@@ -387,31 +406,34 @@ const CanvasRecorder = (getCanvas) => {
       saveLink.hidden = true;
       saveLink.removeAttribute('href');
     }
+    totalFrames = RECORD_SECONDS * RECORD_FPS;
+    frameIndex = 0;
     setRecordingUi(true);
+    noLoop();
     rebirth(artSeed);
-    startedAt = performance.now();
     ensureComposite();
+    redraw();
     notifyFrame();
 
     let writable = null;
     let recorder = null;
-    let mediaStream = null;
     let writeChain = Promise.resolve();
     let payloadBytes = 0;
     let recErr = null;
-    let timerId = null;
 
     try {
       writable = await saveHandle.createWritable({ keepExistingData: false });
-      mediaStream = compositeCanvas.captureStream(RECORD_FPS);
-      const audioStream = soundscape.getStream();
-      if (audioStream) {
-        audioStream.getAudioTracks().forEach((t) => mediaStream.addTrack(t));
-      }
+      const videoOnly = compositeCanvas.captureStream(0);
+      const audioStream = await getAudioStream();
+      mediaStream = new MediaStream([
+        ...videoOnly.getVideoTracks(),
+        ...(audioStream ? audioStream.getAudioTracks() : []),
+      ]);
+      videoTrack = mediaStream.getVideoTracks()[0] || null;
       recorder = new MediaRecorder(mediaStream, {
         mimeType,
-        videoBitsPerSecond: 16_000_000,
-        audioBitsPerSecond: 192_000
+        videoBitsPerSecond: 40_000_000,
+        audioBitsPerSecond: 192_000,
       });
       recorder.ondataavailable = (e) => {
         if (!e.data || !e.data.size) return;
@@ -424,44 +446,38 @@ const CanvasRecorder = (getCanvas) => {
       };
 
       recorder.start(500);
+      if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+      for (let i = 0; i < totalFrames; i++) {
+        if (abort) break;
+        if (recErr) throw recErr;
+        frameIndex = i;
+        redraw();
+        notifyFrame();
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+        if (hudRec) {
+          hudRec.textContent =
+            'recording ' + FORMAT + '  ' + (i + 1) + '/' + totalFrames +
+            '  ' + (payloadBytes / 1e6).toFixed(1) + ' MB → ' + filename;
+        }
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+
       await new Promise((resolve, reject) => {
-        timerId = setInterval(() => {
-          if (abort || recErr) {
-            clearInterval(timerId);
-            timerId = null;
-            try {
-              if (recorder.state === 'recording') recorder.requestData();
-            } catch (e) {}
-            recorder.stop();
-            return;
-          }
-          const ms = performance.now() - startedAt;
-          if (hudRec) {
-            hudRec.textContent =
-              'recording A/V ' + FORMAT + '  ' +
-              (ms / 1000).toFixed(1) + '/' + RECORD_SECONDS + 's  ' +
-              (payloadBytes / 1000000).toFixed(1) + ' MB';
-          }
-          if (ms >= RECORD_SECONDS * 1000) {
-            clearInterval(timerId);
-            timerId = null;
-            try {
-              if (recorder.state === 'recording') recorder.requestData();
-            } catch (e) {}
-            recorder.stop();
-          }
-        }, 200);
         recorder.onstop = resolve;
         recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+        try { if (recorder.state === 'recording') recorder.requestData(); } catch (_) {}
+        recorder.stop();
       });
-      if (timerId) clearInterval(timerId);
       await writeChain;
       await writable.close();
       writable = null;
       if (abort) {
-        hudSticky = 'stopped — file may be incomplete';
+        hudSticky = 'stopped — file may be incomplete · ' + filename;
       } else {
-        hudSticky = 'saved ' + filename + '  ' + (payloadBytes / 1000000).toFixed(1) + ' MB';
+        hudSticky =
+          'saved ' + filename + '  ' + (payloadBytes / 1e6).toFixed(1) +
+          ' MB · ' + totalFrames + 'f';
       }
     } catch (err) {
       console.error(err);
@@ -479,9 +495,13 @@ const CanvasRecorder = (getCanvas) => {
         }
       } catch (e) {}
       try { if (writable) await writable.close(); } catch (e) {}
+      videoTrack = null;
+      mediaStream = null;
       active = false;
-      startedAt = 0;
+      frameIndex = 0;
+      totalFrames = 0;
       setRecordingUi(false);
+      loop();
     }
     return true;
   };
@@ -504,13 +524,20 @@ const CanvasRecorder = (getCanvas) => {
     isActive: () => active,
     notifyFrame,
     elapsedMs,
-    frameIndex: () => 0,
-    totalFrames: () => RECORD_SECONDS * RECORD_FPS
+    frameIndex: () => frameIndex,
+    totalFrames: () => totalFrames
   };
 };
 
 let artCanvas;
-const rec = CanvasRecorder(() => artCanvas || document.querySelector('canvas'));
+const rec = CanvasRecorder(
+  () => artCanvas || document.querySelector('canvas'),
+  async () => {
+    await soundscape.ensure();
+    await soundscape.unmute();
+    return soundscape.getStream() || new MediaStream();
+  }
+);
 
 function setRecordingUi(on) {
   document.body.classList.toggle('is-recording', on);
@@ -540,16 +567,17 @@ function updateHud() {
   }
   if (!hudRec) return;
   if (rec.isActive()) {
-    const sec = (rec.elapsedMs() / 1000).toFixed(1);
+    const i = rec.frameIndex();
+    const n = rec.totalFrames();
     hudRec.textContent =
-      'recording A/V ' + FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H +
-      '  ' + sec + '/' + RECORD_SECONDS + 's';
+      'recording ' + FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H +
+      '  ' + i + '/' + n;
   } else if (hudSticky) {
     hudRec.textContent = hudSticky;
   } else {
     hudRec.textContent =
       FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H +
-      ' · ' + RECORD_SECONDS + 's realtime A/V · Sound · R record · G next · N new';
+      ' · ' + RECORD_SECONDS + 's · 60 fps frame-step + soundscape · R record · G next · N new';
   }
 }
 
