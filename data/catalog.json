@@ -13961,6 +13961,49 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Centered:catalog-centered-one-column-937305406",
+      "dublin_core": {
+        "title": "../catalog/centered/one-column-937305406.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-one-column-937305406",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000364"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-one-column-937305406",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/centered/one-column-937305406.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "../catalog/centered/one-column-937305406.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/centered/one-column-937305406.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Centered:catalog-centered-centered-august-27-2026",
       "dublin_core": {
         "title": "../catalog/centered/centered-august-27-2026.md",
