@@ -10,13 +10,16 @@ alwaysApply: true
 ## Copy sources
 
 1. **Lifeline pattern (One Row family only):** `sketches/one-row.html` — time-driven bar + `rebirth(artSeed + 1)`. **`LIFESPAN_MS = 480000` is One Row catalog, not studio law** — read `catalog/{artwork}.md` per species.
-2. **Record (V3 portrait):** `CanvasRecorder(getCanvas)` video-only, composite at `CANVAS_W×CANVAS_H`, `RECORD_FPS`, `notifyFrame` in `draw()`.
+2. **Record (two steps — both required):** `.cursor/MACHINE_DNA_CANON.md` — **COPY not invent** from `invisible-layer-august-29-2026.html` including **`?format=square|portrait|landscape`** (2160² / 2160×3840 / 3840×2160). **Step 2** ffmpeg `setpts=N/(60*TB)` → HEVC MP4. Not `surrender-machines-record.html`. WebM alone is not done.
+3. **Record One Row V3 portrait (SPEC-LOCK only):** `CanvasRecorder(getCanvas)` video-only — `docs/SPEC-LOCK.md`.
 
 ## Hard stops
 
+- **No invented recorder system** — “same as last night” = copy `invisible-layer-august-29-2026.html` verbatim; **never** grep-and-merge from `surrender-machines-record`, gallery `.mjs`, smoke-wisps, etc.
 - No invented lifeline (`lifeEnded`, `rowEndZ`, `lifespanMs`, camera-driven bar).
-- No invented recorder (`setupRecording`, inline `MediaRecorder`, viewport `captureStream` sizing).
+- No invented recorder plumbing (`setupRecording`, inline `MediaRecorder`, `paintRecordChrome`, viewport-only composite).
 - No display scale systems (`#art-stage`, `layoutArtStage`, `scale(`) on V3 — see SPEC-LOCK.
+- User correction / undo on recorder → **stop** · diff august-29 · transplant — do not ship another variant.
 - **ALLOW_EDIT** empty by default.
 
 ## Enforcement

@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surrender Machines — seed 77823 · gravity · August-30-2026</title>
+  <script>
+    (function () {
+      var p = new URLSearchParams(location.search);
+      if (p.get('view') === 'display') document.documentElement.classList.add('view-display');
+    })();
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; background: #fff; overflow: hidden; }
+    canvas { display: block; }
+    body:not(.format-fixed) canvas { width: 100% !important; height: 100% !important; }
+    body.format-fixed canvas {
+      position: static;
+      margin: 0 auto;
+      max-width: 100vw;
+      max-height: 100vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    .hud {
+      position: fixed; left: 50%; bottom: 14px;
+      transform: translateX(-50%);
+      display: flex; justify-content: space-between; align-items: flex-end;
+      width: min(92vw, 92vh);
+      pointer-events: none;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #888;
+    }
+    .hud .seed { letter-spacing: 0.12em; text-transform: none; color: #aaa; }
+    .hint {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.06em; color: #bbb;
+      pointer-events: none; text-align: center; line-height: 1.5;
+    }
+    .controls {
+      position: fixed; top: 42px; right: 14px; z-index: 10;
+      display: grid; gap: 10px;
+      width: min(240px, 42vw);
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #e8e8e8;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #888;
+    }
+    .controls label {
+      display: grid; gap: 6px;
+    }
+    .controls .ctrl-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .controls .ctrl-head span.val {
+      letter-spacing: 0.04em; text-transform: none; color: #aaa;
+    }
+    .controls input[type="range"] {
+      width: 100%; margin: 0; accent-color: #74b4dc;
+    }
+    .controls button {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d8d8d8;
+      background: #fff;
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #666;
+      cursor: pointer;
+    }
+    .controls button:hover { border-color: #74b4dc; color: #444; }
+    .controls button[aria-pressed="true"] {
+      background: #f4f8fb;
+      border-color: #74b4dc;
+      color: #444;
+    }
+    .controls .gravity-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .controls .gravity-btns button {
+      width: auto;
+      padding: 8px 4px;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+    }
+    .controls .transport-btns {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .controls .transport-btns button {
+      width: auto;
+      padding: 10px 8px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    #btn-record[aria-pressed="true"] {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+    #remote-hud {
+      display: none;
+      position: fixed; top: 14px; left: 14px; z-index: 10;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: #aaa; pointer-events: none;
+    }
+    html.view-display .controls,
+    html.view-display .hint { display: none !important; }
+    body.controls-hidden .controls { display: none !important; }
+    html.view-display #remote-hud { display: block; }
+    html.view-display .hud { bottom: calc(14px + env(safe-area-inset-bottom)); }
+    #lifebar-wrap {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 3px; z-index: 11;
+      background: rgba(0, 0, 0, 0.07);
+      pointer-events: none;
+    }
+    #lifebar {
+      height: 100%; width: 0%;
+      background: rgba(255, 16, 240, 0.55);
+      transition: width 0.12s linear;
+    }
+    .hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
+    @media (max-width: 720px) {
+      .controls {
+        top: auto; left: 0; right: 0; bottom: 0;
+        width: 100%; max-width: none;
+        max-height: min(52vh, 420px);
+        overflow-y: auto;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        border-top: 1px solid #e8e8e8;
+        border-left: none; border-right: none;
+      }
+      .controls input[type="range"] { height: 32px; }
+      .controls button { min-height: 44px; touch-action: manipulation; }
+      .hint { font-size: 9px; width: 92vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="hint" id="hint">drag orbit · scroll zoom · H hide controls · N new seed (paused · orbit) · R record · <code>?format=</code> · <code>?seconds=60</code></div>
+  <div id="lifebar-wrap"><div id="lifebar"></div></div>
+  <div id="remote-hud">remote · <span id="remote-status">connecting…</span></div>
+  <div class="controls" aria-label="Machine controls">
+    <label>
+      <span class="ctrl-head">Speed <span class="val" id="val-speed">1.0×</span></span>
+      <input type="range" id="sl-speed" min="10" max="300" value="100" aria-label="Speed">
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear size <span class="val" id="val-horizontal">1.00×</span></span>
+      <input type="range" id="sl-horizontal" min="25" max="200" value="100" aria-label="Horizontal gear size">
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear size <span class="val" id="val-vertical">1.00×</span></span>
+      <input type="range" id="sl-vertical" min="25" max="200" value="100" aria-label="Vertical gear size">
+    </label>
+    <label>
+      <span class="ctrl-head">Horizontal gear count <span class="val" id="val-h-count">40</span></span>
+      <input type="range" id="sl-h-count" min="0" max="40" value="40" aria-label="Horizontal gear count">
+    </label>
+    <label>
+      <span class="ctrl-head">Vertical gear count <span class="val" id="val-v-count">0</span></span>
+      <input type="range" id="sl-v-count" min="0" max="1" value="1" aria-label="Vertical gear count">
+    </label>
+    <div class="gravity-btns" aria-label="Gravity axes">
+      <button type="button" id="btn-gravity-x" aria-pressed="true">Gravity X</button>
+      <button type="button" id="btn-gravity-y" aria-pressed="true">Gravity Y</button>
+      <button type="button" id="btn-gravity-z" aria-pressed="true">Gravity Z</button>
+    </div>
+    <div class="transport-btns" aria-label="Transport">
+      <button type="button" id="btn-record" aria-pressed="false">Record</button>
+    </div>
+  </div>
+  <div class="hud">
+    <span>Surrender Machines</span>
+    <span class="seed" id="hud-seed">seed 77823 · gravity · August-30-2026</span>
+  </div>
+
+  <script src="js/three.min.js"></script>
+  <script src="js/OrbitControls.js"></script>
+  <script>
+(function () {
+  'use strict';
+
+  const INITIAL_SEED = 77823;
+  const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
+  const DEFAULT_VERTICAL_GEAR_COUNT = 40;
+  const MIN_HORIZONTAL_GEARS = 40;
+  const MIN_VERTICAL_GEARS = 40;
+  const PIVOT_Y = 0.55;
+  const PIVOT_X = 0.55;
+  const PIVOT_Z = 0.55;
+  const GRAVITY_PULL = 2.8;
+  const GRAVITY_RAMP = 0.022;
+  const GRAVITY_MAX = 1.0;
+  const GRAVITY_CYCLE = Math.PI / GRAVITY_RAMP;
+  const LIFESPAN_MS = 480000;
+  const RECORD_FPS = 60;
+  const parseSecondsFromUrl = () => {
+    try {
+      const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
+      if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+    } catch (_) {}
+    return 60;
+  };
+  const RECORD_SECONDS = parseSecondsFromUrl();
+  const FORMAT_SIZES = {
+    portrait: [2160, 3840],
+    landscape: [3840, 2160],
+    square: [2160, 2160],
+  };
+  const parseFormatFromUrl = () => {
+    try {
+      const raw = (new URLSearchParams(location.search).get('format') || '').toLowerCase();
+      if (raw && raw in FORMAT_SIZES) return raw;
+    } catch (_) {}
+    return null;
+  };
+  const FORMAT = parseFormatFromUrl();
+  const CANVAS_W = FORMAT ? FORMAT_SIZES[FORMAT][0] : null;
+  const CANVAS_H = FORMAT ? FORMAT_SIZES[FORMAT][1] : null;
+  if (FORMAT) document.body.classList.add('format-fixed');
+  const displaySize = () => {
+    if (FORMAT) return { w: CANVAS_W, h: CANVAS_H };
+    return { w: Math.floor(window.innerWidth), h: Math.floor(window.innerHeight) };
+  };
+  const STRETCH_MAX = 1.55;
+  const SMEAR_MAX = 0.014;
+  const TEAR_PULL = 1.15;
+
+  const VIEW = new URLSearchParams(location.search).get('view') || 'local';
+  const VENUE = new URLSearchParams(location.search).get('venue') || 'default';
+
+  const PALETTE = {
+    ink: 0x2c3034,
+    lightBlue: 0x74b4dc,
+    skyBlue: 0x80b8e8,
+    navy: 0x5a788c,
+    gold: 0xeca018,
+    maroon: 0x662020,
+  };
+
+  function makeRng(seed) {
+    let s = seed >>> 0;
+    return {
+      random() {
+        s = (s + 0x6d2b79f5) >>> 0;
+        let t = s;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      },
+      uniform(a, b) { return a + this.random() * (b - a); },
+      randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+      choice(arr) { return arr[this.randint(0, arr.length - 1)]; },
+      chance(p) { return this.random() < p; }
+    };
+  }
+
+  const TAU = Math.PI * 2;
+  const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+
+  function cpts(cx, cy, cz, r, plane, n) {
+    const pts = [];
+    for (let i = 0; i < n; i++) {
+      const a = TAU * i / n;
+      if (plane === 'xz') pts.push(v3(cx + r * Math.cos(a), cy, cz + r * Math.sin(a)));
+      else if (plane === 'xy') pts.push(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz));
+      else pts.push(v3(cx, cy + r * Math.sin(a), cz + r * Math.cos(a)));
+    }
+    return pts;
+  }
+
+  class WireBuilder {
+    constructor(root) {
+      this.root = root;
+      this.staticRoot = new THREE.Group();
+      this.baseRoot = new THREE.Group();
+      this.machineRoot = new THREE.Group();
+      this.towerPosts = new THREE.Group();
+      this.horizontalDiscs = new THREE.Group();
+      this.verticalFace = new THREE.Group();
+      this.root.add(this.staticRoot);
+      this.staticRoot.add(this.baseRoot);
+      this.staticRoot.add(this.machineRoot);
+      this.machineRoot.add(this.towerPosts);
+      this.machineRoot.add(this.horizontalDiscs);
+      this.machineRoot.add(this.verticalFace);
+      this.spinners = [];
+      this.horizontalGears = [];
+      this.verticalGears = [];
+      this.stack = [this.staticRoot];
+      this.current = this.staticRoot;
+      this.lineColor = PALETTE.ink;
+    }
+
+    pushTarget(group) {
+      this.stack.push(group);
+      this.current = group;
+    }
+
+    popTarget() {
+      if (this.stack.length <= 1) return;
+      this.stack.pop();
+      this.current = this.stack[this.stack.length - 1];
+    }
+
+    setColor(color) {
+      this.lineColor = color == null ? PALETTE.ink : color;
+    }
+
+    resetColor() {
+      this.lineColor = PALETTE.ink;
+    }
+
+    pushSpin(px, py, pz, axis, durationSec, reverse, gearKind, mount) {
+      const pivot = new THREE.Group();
+      pivot.position.set(px, py, pz);
+      const content = new THREE.Group();
+      pivot.add(content);
+      (mount || this.machineRoot).add(pivot);
+      const speed = (reverse ? -1 : 1) * (TAU / durationSec);
+      const height = Math.max(0, py - PIVOT_Y);
+      const distX = Math.max(0, Math.abs(px) - PIVOT_X * 0.5);
+      const distZ = Math.max(0, Math.abs(pz) - PIVOT_Z * 0.5);
+      const spinner = {
+        pivot, content, axis, speed, gearKind: gearKind || null,
+        homeX: px, homeY: py, homeZ: pz,
+        lift: 0.35 + height * 0.22,
+        spreadX: (px >= 0 ? 1 : -1) * (0.35 + distX * 0.22),
+        spreadZ: (pz >= 0 ? 1 : -1) * (0.35 + distZ * 0.22)
+      };
+      this.spinners.push(spinner);
+      if (gearKind === 'horizontal') this.horizontalGears.push(spinner);
+      else if (gearKind === 'vertical') this.verticalGears.push(spinner);
+      this.stack.push(content);
+      this.current = content;
+    }
+
+    popSpin() {
+      if (this.stack.length <= 1) return;
+      this.stack.pop();
+      this.current = this.stack[this.stack.length - 1];
+    }
+
+    _lineGeo(a, b) {
+      const g = new THREE.BufferGeometry();
+      g.setFromPoints([a, b]);
+      return g;
+    }
+
+    seg(a, b, opacity) {
+      let op = opacity == null ? 1 : opacity;
+      const isAccent = this.lineColor !== PALETTE.ink;
+      if (isAccent) op = Math.min(op, 0.48);
+      const mat = new THREE.LineBasicMaterial({
+        color: this.lineColor,
+        transparent: op < 1,
+        opacity: op
+      });
+      this.current.add(new THREE.Line(this._lineGeo(a, b), mat));
+    }
+
+    spoly(pts, close, opacity) {
+      const n = pts.length;
+      for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        if (!close && i === n - 1) break;
+        this.seg(pts[i], pts[j], opacity);
+      }
+    }
+
+    disk(cx, cy, cz, r, plane, n) {
+      this.spoly(cpts(cx, cy, cz, r, plane, n), true);
+    }
+
+    box(x, y, z, bw, bh, bd) {
+      const c = [
+        v3(x, y, z), v3(x + bw, y, z), v3(x + bw, y, z + bd), v3(x, y, z + bd),
+        v3(x, y + bh, z), v3(x + bw, y + bh, z), v3(x + bw, y + bh, z + bd), v3(x, y + bh, z + bd)
+      ];
+      const solid = [[0,1],[0,3],[0,4],[1,5],[3,7],[4,5],[4,7],[5,6],[6,7]];
+      const hidden = [[1,2],[2,3],[2,6]];
+      for (const [a, b] of solid) this.seg(c[a], c[b]);
+      for (const [a, b] of hidden) this.seg(c[a], c[b], 0.45);
+    }
+
+    cyl(cx, cy, cz, r, h, n, ribs) {
+      const bot = cpts(cx, cy, cz, r, 'xz', n);
+      const top = cpts(cx, cy + h, cz, r, 'xz', n);
+      let li = 0, ri = 0;
+      for (let i = 1; i < n; i++) {
+        if (bot[i].x < bot[li].x) li = i;
+        if (bot[i].x > bot[ri].x) ri = i;
+      }
+      this.spoly(bot, true);
+      this.spoly(top, true);
+      this.seg(bot[li], top[li]);
+      this.seg(bot[ri], top[ri]);
+      if (ribs) {
+        const step = Math.max(1, Math.floor(n / ribs));
+        for (let i = 0; i < n; i += step) this.seg(bot[i], top[i], 0.35);
+      }
+    }
+
+    cylX(cx, cy, cz, r, length, n) {
+      const lpts = [], rpts = [];
+      for (let i = 0; i < n; i++) {
+        const a = TAU * i / n;
+        lpts.push(v3(cx - length / 2, cy + r * Math.sin(a), cz + r * Math.cos(a)));
+        rpts.push(v3(cx + length / 2, cy + r * Math.sin(a), cz + r * Math.cos(a)));
+      }
+      let ti = 0, bi = 0;
+      for (let i = 1; i < n; i++) {
+        if (lpts[i].y < lpts[ti].y) ti = i;
+        if (lpts[i].y > lpts[bi].y) bi = i;
+      }
+      this.spoly(lpts, true);
+      this.spoly(rpts, true);
+      this.seg(lpts[ti], rpts[ti]);
+      this.seg(lpts[bi], rpts[bi]);
+    }
+
+    cylZ(cx, cy, cz, r, length, n) {
+      const lpts = [], rpts = [];
+      for (let i = 0; i < n; i++) {
+        const a = TAU * i / n;
+        lpts.push(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz - length / 2));
+        rpts.push(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz + length / 2));
+      }
+      let ti = 0, bi = 0;
+      for (let i = 1; i < n; i++) {
+        if (lpts[i].y < lpts[ti].y) ti = i;
+        if (lpts[i].y > lpts[bi].y) bi = i;
+      }
+      this.spoly(lpts, true);
+      this.spoly(rpts, true);
+      this.seg(lpts[ti], rpts[ti]);
+      this.seg(lpts[bi], rpts[bi]);
+    }
+
+    ringXZ(cx, cy, cz, rOut, rIn, h, n) {
+      for (const yy of [cy, cy + h]) {
+        this.spoly(cpts(cx, yy, cz, rOut, 'xz', n), true);
+        this.spoly(cpts(cx, yy, cz, rIn, 'xz', n), true, 0.65);
+      }
+      const botO = cpts(cx, cy, cz, rOut, 'xz', n);
+      const topO = cpts(cx, cy + h, cz, rOut, 'xz', n);
+      let li = 0, ri = 0;
+      for (let i = 1; i < n; i++) {
+        if (botO[i].x < botO[li].x) li = i;
+        if (botO[i].x > botO[ri].x) ri = i;
+      }
+      this.seg(botO[li], topO[li]);
+      this.seg(botO[ri], topO[ri]);
+      const botI = cpts(cx, cy, cz, rIn, 'xz', n);
+      const topI = cpts(cx, cy + h, cz, rIn, 'xz', n);
+      this.seg(botI[li], topI[li], 0.65);
+      this.seg(botI[ri], topI[ri], 0.65);
+    }
+
+    gearRingXZ(cx, cy, cz, r, teeth, th) {
+      this.ringXZ(cx, cy, cz, r, r * 0.82, th, 64);
+      const thR = r * 0.078;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.4) / teeth;
+        const a2 = TAU * (i + 0.4) / teeth;
+        const tp = (a, rr, yy) => v3(cx + rr * Math.cos(a), yy, cz + rr * Math.sin(a));
+        this.spoly([tp(a1, r, cy + th), tp(a2, r, cy + th), tp(a2, r + thR, cy + th), tp(a1, r + thR, cy + th)], true, 0.75);
+        this.seg(tp(a1, r + thR, cy), tp(a1, r + thR, cy + th), 0.55);
+      }
+    }
+
+    gearRingXY(cx, cy, cz, r, teeth, th) {
+      const n = 64;
+      const ptsF = cpts(cx, cy, cz, r, 'xy', n);
+      const ptsB = cpts(cx, cy, cz + th, r, 'xy', n);
+      this.spoly(ptsF, true);
+      this.spoly(ptsB, true, 0.55);
+      this.spoly(cpts(cx, cy, cz, r * 0.82, 'xy', n), true, 0.52);
+      this.spoly(cpts(cx, cy, cz + th, r * 0.82, 'xy', n), true, 0.38);
+      const pick = (fn, ax) => {
+        let idx = 0;
+        for (let i = 1; i < n; i++) if (fn(ax(ptsF[i]), ax(ptsF[idx]))) idx = i;
+        return idx;
+      };
+      for (const [fn, ax] of [[Math.min, p => p.y], [Math.max, p => p.y], [Math.min, p => p.x], [Math.max, p => p.x]]) {
+        const idx = pick(fn, ax);
+        this.seg(ptsF[idx], ptsB[idx], 0.78);
+      }
+      const thR = r * 0.078;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.4) / teeth;
+        const a2 = TAU * (i + 0.4) / teeth;
+        const tp = (a, rr, dz) => v3(cx + rr * Math.cos(a), cy + rr * Math.sin(a), cz + dz);
+        this.spoly([tp(a1, r, 0), tp(a2, r, 0), tp(a2, r + thR, 0), tp(a1, r + thR, 0)], true, 0.55);
+        this.seg(tp(a1, r + thR, 0), tp(a1, r + thR, th), 0.32);
+      }
+    }
+
+    gearRingYZ(cx, cy, cz, r, teeth, th) {
+      const n = 72;
+      const yz = (dx, rr) => {
+        const out = [];
+        for (let i = 0; i < n; i++) {
+          const a = TAU * i / n;
+          out.push(v3(cx + dx, cy + rr * Math.sin(a), cz + rr * Math.cos(a)));
+        }
+        return out;
+      };
+      const ptsF = yz(0, r);
+      const ptsB = yz(th, r);
+      this.spoly(ptsF, true);
+      this.spoly(ptsB, true, 0.55);
+      this.spoly(yz(0, r * 0.82), true, 0.52);
+      this.spoly(yz(th, r * 0.82), true, 0.38);
+      const pick = (fn, ax) => {
+        let idx = 0;
+        for (let i = 1; i < n; i++) if (fn(ax(ptsF[i]), ax(ptsF[idx]))) idx = i;
+        return idx;
+      };
+      for (const [fn, ax] of [[Math.min, p => p.y], [Math.max, p => p.y], [Math.min, p => p.x], [Math.max, p => p.x]]) {
+        const idx = pick(fn, ax);
+        this.seg(ptsF[idx], ptsB[idx], 0.78);
+      }
+      const thR = r * 0.078;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.4) / teeth;
+        const a2 = TAU * (i + 0.4) / teeth;
+        const tp = (a, rr, dx) => v3(cx + dx, cy + rr * Math.sin(a), cz + rr * Math.cos(a));
+        this.spoly([tp(a1, r, 0), tp(a2, r, 0), tp(a2, r + thR, 0), tp(a1, r + thR, 0)], true, 0.55);
+        this.seg(tp(a1, r + thR, 0), tp(a1, r + thR, th), 0.32);
+      }
+    }
+
+    gearXZ(cx, cy, cz, r, teeth, th) {
+      const thR = r * 0.12;
+      for (let i = 0; i < teeth; i++) {
+        const a1 = TAU * (i - 0.38) / teeth;
+        const a2 = TAU * (i + 0.38) / teeth;
+        const tp = (a, rr, yy) => v3(cx + rr * Math.cos(a), yy, cz + rr * Math.sin(a));
+        this.spoly([tp(a1, r, cy + th), tp(a2, r, cy + th), tp(a2, r + thR, cy + th), tp(a1, r + thR, cy + th)], true, 0.75);
+        this.seg(tp(a1, r + thR, cy), tp(a1, r + thR, cy + th), 0.5);
+      }
+      this.disk(cx, cy, cz, r, 'xz', 48);
+      this.disk(cx, cy + th, cz, r * 0.88, 'xz', 48);
+      this.disk(cx, cy + th, cz, r * 0.18, 'xz', 48);
+    }
+
+    spokes(cx, cy, cz, r, n, plane) {
+      for (let i = 0; i < n; i++) {
+        const a = Math.PI * i / n;
+        if (plane === 'xz') {
+          this.seg(v3(cx + r * Math.cos(a), cy, cz + r * Math.sin(a)),
+                  v3(cx - r * Math.cos(a), cy, cz - r * Math.sin(a)), 0.4);
+        } else if (plane === 'yz') {
+          this.seg(v3(cx, cy + r * Math.sin(a), cz + r * Math.cos(a)),
+                  v3(cx, cy - r * Math.sin(a), cz - r * Math.cos(a)), 0.4);
+        } else {
+          this.seg(v3(cx + r * Math.cos(a), cy + r * Math.sin(a), cz),
+                  v3(cx - r * Math.cos(a), cy - r * Math.sin(a), cz), 0.4);
+        }
+      }
+    }
+
+    pipe(a, b) {
+      this.seg(a, b);
+    }
+
+    dispose() {
+      this.staticRoot.traverse((child) => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) child.material.dispose();
+      });
+      this.root.remove(this.staticRoot);
+      this.spinners.length = 0;
+      this.horizontalGears.length = 0;
+      this.verticalGears.length = 0;
+    }
+  }
+
+  function spinDur(rng, lo, hi) {
+    return rng.uniform(lo, hi);
+  }
+
+  function addFillGears(w, rng, profile, gearKind, count) {
+    const yTop = profile.outerY[1] + 1.8;
+    for (let i = 0; i < count; i++) {
+      const y = rng.uniform(profile.outerY[0], yTop);
+      const ox = rng.uniform(-1.0, 1.0);
+      const oz = rng.uniform(-1.0, 1.0);
+      const r = rng.uniform(0.18, 0.95);
+      const teeth = rng.randint(6, 28);
+      const th = rng.uniform(0.05, 0.2);
+      if (gearKind === 'horizontal') {
+        w.pushSpin(ox, y, oz, 'y', spinDur(rng, 5, 14), rng.chance(0.5), 'horizontal');
+        w.gearRingXZ(0, 0, 0, r, teeth, th);
+        w.popSpin();
+      } else {
+        const plane = rng.choice(['xy', 'yz']);
+        const axis = plane === 'xy' ? 'z' : 'x';
+        w.pushSpin(ox, y, oz, axis, spinDur(rng, 5, 14), rng.chance(0.5), 'vertical');
+        if (plane === 'xy') w.gearRingXY(0, 0, 0, r, teeth, th);
+        else w.gearRingYZ(0, 0, 0, r, teeth, th);
+        w.popSpin();
+      }
+    }
+  }
+
+  function trimGearList(w, list, maxCount) {
+    while (list.length > maxCount) {
+      const s = list.pop();
+      const si = w.spinners.indexOf(s);
+      if (si >= 0) w.spinners.splice(si, 1);
+      if (s.pivot.parent) s.pivot.parent.remove(s.pivot);
+    }
+  }
+
+  function iterationSeed(n) {
+    if (n <= 0) return INITIAL_SEED;
+    let s = (INITIAL_SEED + Math.imul(n, 0x9e3779b9)) >>> 0;
+    s = Math.imul(s ^ (s >>> 16), 0x85ebca6b) >>> 0;
+    s = Math.imul(s ^ (s >>> 13), 0xc2b2ae35) >>> 0;
+    return (s ^ (s >>> 16)) >>> 0;
+  }
+
+  function machineProfile(seed) {
+    const r = makeRng(seed ^ 0xa3b19535);
+    const density = r.random();
+    const height = r.random();
+    const spread = r.random();
+    const vert = r.random();
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const ri = (lo, hi, t) => Math.max(lo, Math.round(lerp(lo, hi, t)));
+    return {
+      nLayers: [ri(2, 4, density), ri(5, 8, density)],
+      baseW: [lerp(4.8, 6.2, spread), lerp(6.5, 8.4, spread)],
+      baseD: [lerp(3.0, 4.2, spread), lerp(4.5, 6.0, spread)],
+      outerR: [lerp(1.6, 2.4, 1 - density), lerp(2.6, 3.8, density)],
+      outerY: [lerp(1.0, 1.6, height), lerp(1.8, 3.4, height)],
+      nRings: [ri(4, 7, 1 - density), ri(10, 20, density)],
+      nBoxes: [ri(5, 10, 1 - density), ri(14, 26, density)],
+      nTowers: [ri(6, 11, 1 - density), ri(14, 24, density)],
+      towerH: [lerp(1.6, 2.4, 1 - height), lerp(3.2, 5.8, height)],
+      nDiscs: [ri(5, 10, 1 - density), ri(12, 24, density)],
+      nFace: [ri(4, 8, 1 - vert), ri(10, 20, vert)],
+      nPipes: [ri(8, 14, 1 - density), ri(16, 30, density)],
+      nCylBig: [ri(4, 7, 1 - density), ri(8, 14, density)],
+      nCylMid: [ri(2, 5, 1 - density), ri(6, 12, density)],
+      nCylX: [ri(2, 5, 1 - density), ri(6, 11, density)],
+      nCylZ: [ri(1, 3, 1 - density), ri(4, 8, density)],
+      nSmallBoxes: [ri(8, 16, 1 - density), ri(20, 34, density)],
+      vertPlaneBias: Math.round(lerp(2, 6, vert))
+    };
+  }
+
+  function drawMachine(w, rng, profile) {
+    let baseTop = 0;
+    const nLayers = rng.randint(profile.nLayers[0], profile.nLayers[1]);
+    const baseW = rng.uniform(profile.baseW[0], profile.baseW[1]);
+    const baseD = rng.uniform(profile.baseD[0], profile.baseD[1]);
+    w.pushTarget(w.baseRoot);
+    for (let i = 0; i < nLayers; i++) {
+      const shrink = i * rng.uniform(0.12, 0.22);
+      let yOff = 0;
+      for (let j = 0; j < i; j++) yOff += rng.uniform(0.12, 0.26);
+      w.box(-baseW / 2 + shrink, yOff, -baseD / 2 + shrink,
+            baseW - shrink * 2, rng.uniform(0.12, 0.26), baseD - shrink * 2);
+    }
+    w.popTarget();
+    for (let i = 0; i < nLayers; i++) baseTop += rng.uniform(0.12, 0.26);
+
+    w.pushTarget(w.machineRoot);
+
+    const outerR = rng.uniform(profile.outerR[0], profile.outerR[1]);
+    const outerTeeth = rng.randint(36, 60);
+    const outerTh = rng.uniform(0.18, 0.32);
+    const outerY = rng.uniform(profile.outerY[0], profile.outerY[1]);
+    const outerOx = rng.uniform(-0.5, 0.5);
+    const outerOz = rng.uniform(-0.5, 0.5);
+
+    w.pushSpin(outerOx, outerY, outerOz, 'y', spinDur(rng, 18, 26), rng.chance(0.5), 'horizontal');
+    w.setColor(PALETTE.lightBlue);
+    w.gearRingXZ(0, 0, 0, outerR, outerTeeth, outerTh);
+    w.spokes(0, outerTh / 2, 0, outerR * 0.88, rng.randint(5, 10), 'xz');
+    w.resetColor();
+    w.popSpin();
+
+    const nRings = rng.randint(profile.nRings[0], profile.nRings[1]);
+    for (let i = 0; i < nRings; i++) {
+      const r = rng.uniform(0.4, outerR - 0.3);
+      const teeth = rng.randint(8, 44);
+      const y = rng.uniform(baseTop, outerY + 1.5);
+      const th = rng.uniform(0.08, 0.24);
+      const ox = rng.uniform(-0.6, 0.6);
+      const oz = rng.uniform(-0.6, 0.6);
+      const planeChoices = ['xz', 'xz'];
+      for (let k = 0; k < profile.vertPlaneBias; k++) planeChoices.push('xy', 'yz');
+      const plane = rng.choice(planeChoices);
+      const axis = plane === 'xz' ? 'y' : plane === 'xy' ? 'z' : 'x';
+      const gearKind = plane === 'xz' ? 'horizontal' : 'vertical';
+      w.pushSpin(ox, y, oz, axis, spinDur(rng, 8, 18), rng.chance(0.5), gearKind);
+      if (i % 5 === 0) w.setColor(PALETTE.maroon);
+      if (plane === 'xz') w.gearRingXZ(0, 0, 0, r, teeth, th);
+      else if (plane === 'xy') w.gearRingXY(0, 0, 0, r, teeth, th);
+      else w.gearRingYZ(0, 0, 0, r, teeth, th);
+      w.resetColor();
+      w.popSpin();
+    }
+
+    const nBoxes = rng.randint(profile.nBoxes[0], profile.nBoxes[1]);
+    for (let i = 0; i < nBoxes; i++) {
+      w.box(rng.uniform(-2.8, 1.5), rng.uniform(baseTop, 3.0), rng.uniform(-1.5, 1.5),
+            rng.uniform(0.4, 2.5), rng.uniform(0.3, 2.0), rng.uniform(0.3, 2.0));
+    }
+
+    const nTowers = rng.randint(profile.nTowers[0], profile.nTowers[1]);
+    const towers = [];
+    for (let i = 0; i < nTowers; i++) {
+      towers.push([rng.uniform(-2.4, 2.2), baseTop, rng.uniform(-1.2, 1.2)]);
+    }
+    for (let ti = 0; ti < towers.length; ti++) {
+      const [tx, ty, tz] = towers[ti];
+      const th = rng.uniform(profile.towerH[0], profile.towerH[1]);
+      w.pushTarget(w.towerPosts);
+      w.setColor(PALETTE.navy);
+      w.cyl(tx, ty, tz, 0.1, th, 48, 0);
+      w.resetColor();
+      w.popTarget();
+      const nG = rng.randint(2, 6);
+      for (let j = 0; j < nG; j++) {
+        const gy = ty + th * (j + 1) / (nG + 1) + rng.uniform(-0.12, 0.12);
+        const gr = rng.uniform(0.28, 1.3);
+        const gt = rng.randint(6, 24);
+        const gth = rng.uniform(0.07, 0.22);
+        w.pushSpin(tx, gy, tz, 'y', spinDur(rng, 5, 11), rng.chance(0.5), 'horizontal');
+        if (ti === 0 && j === 0) w.setColor(PALETTE.gold);
+        w.gearXZ(0, 0, 0, gr, gt, gth);
+        w.resetColor();
+        w.popSpin();
+      }
+    }
+
+    const discStep = rng.uniform(0.16, 0.28);
+    const discShrink = rng.uniform(0.12, 0.22);
+    const nDiscs = rng.randint(profile.nDiscs[0], profile.nDiscs[1]);
+    for (let i = 0; i < nDiscs; i++) {
+      const yy = baseTop + i * discStep;
+      const r = outerR * 0.92 - i * discShrink;
+      if (r > 0.15) {
+        const dx = rng.uniform(-0.3, 0.3);
+        const dz = rng.uniform(-0.3, 0.3);
+        w.pushSpin(dx, yy, dz, 'y', spinDur(rng, 10, 20), rng.chance(0.5), null, w.horizontalDiscs);
+        w.disk(0, 0, 0, r, 'xz', 48);
+        w.popSpin();
+      }
+    }
+
+    const cylConfigs = [];
+    for (let i = 0; i < rng.randint(profile.nCylBig[0], profile.nCylBig[1]); i++) {
+      cylConfigs.push([rng.uniform(0.1, 2.8), rng.uniform(0.3, 4.2), rng.randint(2, 14)]);
+    }
+    cylConfigs.sort((a, b) => b[0] - a[0]);
+    for (let ci = 0; ci < cylConfigs.length; ci++) {
+      const [r, h, ribs] = cylConfigs[ci];
+      if (ci === 0) w.setColor(PALETTE.skyBlue);
+      w.cyl(rng.uniform(-0.4, 0.4), baseTop, rng.uniform(-0.4, 0.4), r, h, 48, ribs);
+      w.resetColor();
+    }
+    for (let i = 0; i < rng.randint(profile.nCylMid[0], profile.nCylMid[1]); i++) {
+      w.cyl(rng.uniform(-2.2, 2.2), baseTop, rng.uniform(-1.5, 1.5),
+            rng.uniform(0.3, 1.0), rng.uniform(0.8, 2.8), 48, rng.randint(2, 6));
+    }
+    for (let i = 0; i < rng.randint(profile.nCylX[0], profile.nCylX[1]); i++) {
+      w.cylX(rng.uniform(-0.5, 0.5), rng.uniform(baseTop + 0.3, 3.5), rng.uniform(-0.8, 0.8),
+             rng.uniform(0.18, 0.5), rng.uniform(2.5, 5.5), 32);
+    }
+    for (let i = 0; i < rng.randint(profile.nCylZ[0], profile.nCylZ[1]); i++) {
+      w.cylZ(rng.uniform(-0.5, 0.5), rng.uniform(baseTop + 0.3, 3.5), rng.uniform(-0.4, 0.4),
+             rng.uniform(0.2, 0.45), rng.uniform(2.5, 4.5), 32);
+    }
+
+    const nFace = rng.randint(profile.nFace[0], profile.nFace[1]);
+    for (let i = 0; i < nFace; i++) {
+      const plane = rng.choice(['yz', 'yz', 'xy', 'xy', 'yz']);
+      const cx = plane === 'yz' ? rng.choice([-2.2, -2.2, 2.2]) : rng.uniform(-1.5, 1.5);
+      const cy = rng.uniform(baseTop + 0.2, 3.0);
+      const cz = plane === 'yz' ? rng.uniform(-1.2, 1.2) : rng.choice([-1.2, -1.2, 1.2]);
+      const r = rng.uniform(0.3, 1.05);
+      const axis = plane === 'xy' ? 'z' : 'x';
+      w.pushSpin(cx, cy, cz, axis, spinDur(rng, 6, 12), rng.chance(0.5), null, w.verticalFace);
+      w.disk(0, 0, 0, r, plane, 48);
+      w.disk(0, 0, 0, r * 0.55, plane, 48);
+      w.spokes(0, 0, 0, r * 0.48, rng.randint(4, 8), plane);
+      w.popSpin();
+    }
+
+    const nPipes = rng.randint(profile.nPipes[0], profile.nPipes[1]);
+    const anchors = [];
+    for (let i = 0; i < nPipes * 2; i++) {
+      anchors.push(v3(rng.uniform(-2.5, 2.5), rng.uniform(baseTop + 0.5, 4.0), rng.uniform(-1.5, 1.5)));
+    }
+    for (let i = 0; i < nPipes; i++) w.pipe(anchors[i * 2], anchors[i * 2 + 1]);
+
+    for (let i = 0; i < rng.randint(profile.nSmallBoxes[0], profile.nSmallBoxes[1]); i++) {
+      w.box(rng.uniform(-2.6, 2.6), rng.uniform(baseTop, 3.8), rng.uniform(-1.6, 1.6),
+            rng.uniform(0.12, 0.6), rng.uniform(0.08, 0.42), rng.uniform(0.12, 0.48));
+    }
+
+    addFillGears(w, rng, profile, 'horizontal',
+      Math.max(0, MIN_HORIZONTAL_GEARS - w.horizontalGears.length));
+    addFillGears(w, rng, profile, 'vertical',
+      Math.max(0, MIN_VERTICAL_GEARS - w.verticalGears.length));
+    trimGearList(w, w.horizontalGears, DEFAULT_HORIZONTAL_GEAR_COUNT);
+
+    w.popTarget();
+  }
+
+  const GRAVITY_SMEAR_SHADER = {
+    uniforms: {
+      tDiffuse: { value: null },
+      pullX: { value: 0.0 },
+      pullY: { value: 0.0 },
+      pullZ: { value: 0.0 }
+    },
+    vertexShader: [
+      'varying vec2 vUv;',
+      'void main() {',
+      '  vUv = uv;',
+      '  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'precision highp float;',
+      'uniform sampler2D tDiffuse;',
+      'uniform float pullX;',
+      'uniform float pullY;',
+      'uniform float pullZ;',
+      'varying vec2 vUv;',
+      'float ink(vec3 c) { return 1.0 - dot(c, vec3(0.299, 0.587, 0.114)); }',
+      'void main() {',
+      '  vec4 outCol = texture2D(tDiffuse, vUv);',
+      '  float best = ink(outCol.rgb);',
+      '  for (int i = 1; i < 56; i++) {',
+      '    float fi = float(i);',
+      '    if (pullY > 0.0) {',
+      '      vec2 srcY = vUv - vec2(0.0, fi * pullY);',
+      '      if (srcY.y >= 0.0) {',
+      '        vec4 s = texture2D(tDiffuse, srcY);',
+      '        float w = ink(s.rgb);',
+      '        if (w > best) { outCol = s; best = w; }',
+      '      }',
+      '    }',
+      '    if (pullX > 0.0) {',
+      '      vec2 srcX = vUv - vec2(fi * pullX, 0.0);',
+      '      if (srcX.x >= 0.0 && srcX.x <= 1.0) {',
+      '        vec4 s = texture2D(tDiffuse, srcX);',
+      '        float w = ink(s.rgb);',
+      '        if (w > best) { outCol = s; best = w; }',
+      '      }',
+      '    }',
+      '    if (pullZ > 0.0) {',
+      '      vec2 srcZ = vUv - vec2(fi * pullZ * 0.62, fi * pullZ * 0.38);',
+      '      if (srcZ.x >= 0.0 && srcZ.y >= 0.0) {',
+      '        vec4 s = texture2D(tDiffuse, srcZ);',
+      '        float w = ink(s.rgb);',
+      '        if (w > best) { outCol = s; best = w; }',
+      '      }',
+      '    }',
+      '  }',
+      '  gl_FragColor = outCol;',
+      '}'
+    ].join('\n')
+  };
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setClearColor(0xffffff, 1);
+  document.body.insertBefore(renderer.domElement, document.body.firstChild);
+
+  const scene = new THREE.Scene();
+  const initSize = displaySize();
+  const camera = new THREE.PerspectiveCamera(38, initSize.w / initSize.h, 0.05, 200);
+  camera.position.set(5.8, 4.2, 6.4);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 2.05, 0);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.minDistance = 3;
+  controls.maxDistance = 22;
+
+  const machineStretch = new THREE.Group();
+  scene.add(machineStretch);
+
+  const hudSeed = document.getElementById('hud-seed');
+  const lifebar = document.getElementById('lifebar');
+  const hintEl = document.getElementById('hint');
+
+  const renderTarget = new THREE.WebGLRenderTarget(1, 1, {
+    minFilter: THREE.LinearFilter,
+    magFilter: THREE.LinearFilter,
+    depthBuffer: true
+  });
+
+  const postScene = new THREE.Scene();
+  const postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const postMaterial = new THREE.ShaderMaterial({
+    uniforms: THREE.UniformsUtils.clone(GRAVITY_SMEAR_SHADER.uniforms),
+    vertexShader: GRAVITY_SMEAR_SHADER.vertexShader,
+    fragmentShader: GRAVITY_SMEAR_SHADER.fragmentShader
+  });
+  postScene.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), postMaterial));
+
+  const slSpeed = document.getElementById('sl-speed');
+  const slHorizontal = document.getElementById('sl-horizontal');
+  const slVertical = document.getElementById('sl-vertical');
+  const slHCount = document.getElementById('sl-h-count');
+  const slVCount = document.getElementById('sl-v-count');
+  const valSpeed = document.getElementById('val-speed');
+  const valHorizontal = document.getElementById('val-horizontal');
+  const valVertical = document.getElementById('val-vertical');
+  const valHCount = document.getElementById('val-h-count');
+  const valVCount = document.getElementById('val-v-count');
+
+  let builder;
+  let iteration = 0;
+  let cycleStart = 0;
+  let pausedCycleTime = 0;
+  let gravityWasActive = true;
+  let recordSimSec = null;
+  let lifeStart = 0;
+  let lastFrameT = 0;
+  let liveLoop = true;
+  let simPaused = true;
+  let recordMediaRecorder = null;
+  const clock = new THREE.Clock();
+  const gravityAxis = { x: true, y: true, z: true };
+  let speedMult = 1;
+
+  function simElapsed() {
+    return recordSimSec != null ? recordSimSec : clock.elapsedTime;
+  }
+
+  const btnGravityX = document.getElementById('btn-gravity-x');
+  const btnGravityY = document.getElementById('btn-gravity-y');
+  const btnGravityZ = document.getElementById('btn-gravity-z');
+  const btnRecord = document.getElementById('btn-record');
+  const controlsEl = document.querySelector('.controls');
+
+  function syncRecordUi(on) {
+    if (btnRecord) btnRecord.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+
+  function enterPositioningMode(extra) {
+    simPaused = true;
+    clock.oldTime = performance.now();
+    updateSeedHud(extra || 'orbit · R record when ready');
+  }
+
+  function restartAtBeginning(t) {
+    lifeStart = t;
+    pausedCycleTime = 0;
+    gravityWasActive = true;
+    if (lifebar) lifebar.style.width = '0%';
+    startIteration(iteration, recordSimSec != null ? 0 : undefined);
+    updateSeedHud();
+  }
+
+  function startIteration(n, cycleAtSim) {
+    if (builder) builder.dispose();
+    const seed = iterationSeed(n);
+    builder = new WireBuilder(machineStretch);
+    drawMachine(builder, makeRng(seed), machineProfile(seed));
+    builder.baseRoot.position.set(0, 0, 0);
+    builder.machineRoot.position.set(0, 0, 0);
+    machineStretch.scale.set(1, 1, 1);
+    machineStretch.position.set(0, 0, 0);
+    cycleStart = cycleAtSim != null ? cycleAtSim : simElapsed();
+    pausedCycleTime = 0;
+    updateSeedHud();
+    refreshGearSliders();
+  }
+
+  function seriesTitle() {
+    const seed = iterationSeed(iteration);
+    const base = `Surrender Machines · seed ${seed} · gravity · August-30-2026`;
+    return FORMAT ? `${base} · ${FORMAT} ${CANVAS_W}×${CANVAS_H}` : base;
+  }
+
+  function updateSeedHud(extra) {
+    const label = seriesTitle();
+    if (hudSeed) hudSeed.textContent = extra ? `${label} · ${extra}` : label;
+    document.title = `Surrender Machines — seed ${iterationSeed(iteration)} · gravity · August-30-2026`;
+  }
+
+  function layoutRenderer() {
+    const d = displaySize();
+    const pr = FORMAT ? 1 : Math.min(window.devicePixelRatio, 2);
+    renderer.setPixelRatio(pr);
+    renderer.setSize(d.w, d.h, !FORMAT);
+    camera.aspect = d.w / d.h;
+    camera.updateProjectionMatrix();
+    renderTarget.setSize(d.w * pr, d.h * pr);
+  }
+
+  function refreshGearSliders() {
+    slHCount.max = String(builder.horizontalGears.length);
+    slHCount.value = String(DEFAULT_HORIZONTAL_GEAR_COUNT);
+    slVCount.max = String(builder.verticalGears.length);
+    slVCount.value = String(DEFAULT_VERTICAL_GEAR_COUNT);
+    syncControls();
+  }
+
+  function updateLife(t) {
+    if (!lifeStart) lifeStart = t;
+    if (!lifebar) return;
+    const pct = Math.min(100, ((t - lifeStart) / LIFESPAN_MS) * 100);
+    lifebar.style.width = `${pct.toFixed(2)}%`;
+  }
+
+  function syncGearCounts() {
+    const hCount = Number(slHCount.value);
+    const vCount = Number(slVCount.value);
+    const showMachine = hCount > 0 || vCount > 0;
+    valHCount.textContent = String(hCount);
+    valVCount.textContent = String(vCount);
+    builder.machineRoot.visible = showMachine;
+    builder.towerPosts.visible = hCount > 0;
+    builder.horizontalDiscs.visible = hCount > 0;
+    builder.verticalFace.visible = vCount > 0;
+    builder.horizontalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < hCount; });
+    builder.verticalGears.forEach((s, i) => { s.pivot.visible = showMachine && i < vCount; });
+  }
+
+  function syncControls() {
+    speedMult = Number(slSpeed.value) / 100;
+    valSpeed.textContent = speedMult.toFixed(1) + '×';
+    const hScale = Number(slHorizontal.value) / 100;
+    const vScale = Number(slVertical.value) / 100;
+    valHorizontal.textContent = hScale.toFixed(2) + '×';
+    valVertical.textContent = vScale.toFixed(2) + '×';
+    for (const s of builder.spinners) {
+      if (!s.content || !s.gearKind) continue;
+      const sc = s.gearKind === 'horizontal' ? hScale : vScale;
+      s.content.scale.set(sc, sc, sc);
+    }
+    syncGearCounts();
+  }
+
+  for (const el of [slSpeed, slHorizontal, slVertical, slHCount, slVCount]) {
+    el.addEventListener('input', syncControls);
+  }
+
+  function anyGravityOn() {
+    return gravityAxis.x || gravityAxis.y || gravityAxis.z;
+  }
+
+  function syncGravityPause() {
+    const on = anyGravityOn();
+    const now = simElapsed();
+    if (on && !gravityWasActive) {
+      cycleStart = now - pausedCycleTime;
+    } else if (!on && gravityWasActive) {
+      pausedCycleTime = now - cycleStart;
+    }
+    gravityWasActive = on;
+  }
+
+  function gravityBtn(axis) {
+    return axis === 'x' ? btnGravityX : axis === 'y' ? btnGravityY : btnGravityZ;
+  }
+
+  function setGravityAxis(axis, on) {
+    gravityAxis[axis] = !!on;
+    gravityBtn(axis).setAttribute('aria-pressed', gravityAxis[axis] ? 'true' : 'false');
+    syncGravityPause();
+  }
+
+  function toggleGravityAxis(axis) {
+    setGravityAxis(axis, !gravityAxis[axis]);
+  }
+
+  function applyRemoteState(s) {
+    if (!s || !builder) return;
+    if (s.speed != null) slSpeed.value = s.speed;
+    if (s.horizontal != null) slHorizontal.value = s.horizontal;
+    if (s.vertical != null) slVertical.value = s.vertical;
+    if (s.hCount != null) {
+      slHCount.value = Math.min(s.hCount, DEFAULT_HORIZONTAL_GEAR_COUNT, builder.horizontalGears.length);
+    }
+    if (s.vCount != null) slVCount.value = Math.min(s.vCount, builder.verticalGears.length);
+    syncControls();
+    if (s.gravityX != null) setGravityAxis('x', s.gravityX);
+    if (s.gravityY != null) setGravityAxis('y', s.gravityY);
+    if (s.gravityZ != null) setGravityAxis('z', s.gravityZ);
+  }
+
+  function readLocalState() {
+    return {
+      speed: Number(slSpeed.value),
+      horizontal: Number(slHorizontal.value),
+      vertical: Number(slVertical.value),
+      hCount: Number(slHCount.value),
+      vCount: Number(slVCount.value),
+      gravityX: gravityAxis.x,
+      gravityY: gravityAxis.y,
+      gravityZ: gravityAxis.z,
+      ts: Date.now()
+    };
+  }
+
+  btnGravityX.addEventListener('click', () => toggleGravityAxis('x'));
+  btnGravityY.addEventListener('click', () => toggleGravityAxis('y'));
+  btnGravityZ.addEventListener('click', () => toggleGravityAxis('z'));
+
+  lifeStart = performance.now();
+  layoutRenderer();
+  startIteration(0);
+  enterPositioningMode();
+
+  function gravityStrength() {
+    if (!anyGravityOn()) return 0;
+    const cycleTime = simElapsed() - cycleStart;
+    if (cycleTime >= GRAVITY_CYCLE) {
+      iteration++;
+      startIteration(iteration);
+      return 0;
+    }
+    const t = cycleTime * GRAVITY_RAMP;
+    const wave = 0.5 - 0.5 * Math.cos(t);
+    return wave * GRAVITY_MAX;
+  }
+
+  const getAudioStream = async () => new MediaStream();
+
+  const CanvasRecorder = (getCanvas, getAudioStreamFn) => {
+    let active = false;
+    let abort = false;
+    let frameIndex = 0;
+    let totalFrames = 0;
+    let compositeCanvas = null;
+    let compositeCtx = null;
+    let videoTrack = null;
+    let mediaStream = null;
+    let recW = 0;
+    let recH = 0;
+
+    const pickMime = () => {
+      const types = [
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm',
+        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+        'video/mp4;codecs=avc1,mp4a.40.2',
+        'video/mp4',
+      ];
+      return types.find((t) =>
+        typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
+      ) || '';
+    };
+
+    const recExt = (mt) => (mt.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+    const setRecHint = (on, sticky) => {
+      if (hintEl) hintEl.dataset.rec = on ? '1' : '';
+      if (sticky != null) updateSeedHud(sticky);
+    };
+
+    const ensureComposite = () => {
+      const src = getCanvas();
+      const d = displaySize();
+      const w = FORMAT ? CANVAS_W : (src?.width || d.w);
+      const h = FORMAT ? CANVAS_H : (src?.height || d.h);
+      if (!compositeCanvas) {
+        compositeCanvas = document.createElement('canvas');
+        compositeCanvas.setAttribute('aria-hidden', 'true');
+        compositeCanvas.style.cssText =
+          'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+        document.body.appendChild(compositeCanvas);
+      }
+      if (compositeCanvas.width !== w || compositeCanvas.height !== h) {
+        compositeCanvas.width = w;
+        compositeCanvas.height = h;
+        compositeCtx = compositeCanvas.getContext('2d');
+      } else if (!compositeCtx) {
+        compositeCtx = compositeCanvas.getContext('2d');
+      }
+      recW = w;
+      recH = h;
+    };
+
+    const notifyFrame = () => {
+      if (!active || !compositeCtx || !compositeCanvas) return;
+      const src = getCanvas();
+      if (!src) return;
+      compositeCtx.fillStyle = '#ffffff';
+      compositeCtx.fillRect(0, 0, recW, recH);
+      compositeCtx.drawImage(src, 0, 0, recW, recH);
+      if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+    };
+
+    const start = async () => {
+      if (active) return false;
+      const canvas = getCanvas();
+      if (!canvas) return false;
+
+      const mimeType = pickMime();
+      if (!mimeType) {
+        setRecHint(false, 'MediaRecorder not supported — use Chrome');
+        return false;
+      }
+
+      const ext = recExt(mimeType);
+      const fmt = FORMAT || 'viewport';
+      const seed = iterationSeed(iteration);
+      let filename =
+        `surrender-machine-seed-77823-gravity-august-30-2026-${fmt}-seed${seed}-60fps-${RECORD_SECONDS}s.${ext}`;
+
+      let saveHandle = null;
+      if (typeof window.showSaveFilePicker === 'function') {
+        try {
+          saveHandle = await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [{
+              description: ext === 'mp4' ? 'MP4 video' : 'WebM video',
+              accept: ext === 'mp4'
+                ? { 'video/mp4': ['.mp4'] }
+                : { 'video/webm': ['.webm'] },
+            }],
+          });
+        } catch (e) {
+          if (e && e.name === 'AbortError') {
+            setRecHint(false, 'Save dialog cancelled — no file');
+            return false;
+          }
+          throw e;
+        }
+      }
+      if (!saveHandle) {
+        setRecHint(false, 'Chrome Save dialog required — use Chrome');
+        return false;
+      }
+      filename = saveHandle.name || filename;
+
+      abort = false;
+      active = true;
+      liveLoop = false;
+      simPaused = false;
+      syncRecordUi(true);
+      totalFrames = RECORD_SECONDS * RECORD_FPS;
+      frameIndex = 0;
+      setRecHint(true, `recording 0/${totalFrames} → ${filename}`);
+
+      const t0 = performance.now();
+      recordSimSec = 0;
+      restartAtBeginning(t0);
+      lastFrameT = 0;
+      clock.oldTime = t0;
+      ensureComposite();
+
+      let writable = null;
+      let recorder = null;
+      let writeChain = Promise.resolve();
+      let payloadBytes = 0;
+      let recErr = null;
+
+      try {
+        writable = await saveHandle.createWritable({ keepExistingData: false });
+        const videoOnly = compositeCanvas.captureStream(0);
+        const audioStream = await getAudioStreamFn();
+        mediaStream = new MediaStream([
+          ...videoOnly.getVideoTracks(),
+          ...audioStream.getAudioTracks(),
+        ]);
+        videoTrack = mediaStream.getVideoTracks()[0] || null;
+        recorder = new MediaRecorder(mediaStream, {
+          mimeType,
+          videoBitsPerSecond: 40_000_000,
+        });
+        recorder.ondataavailable = (e) => {
+          if (!e.data || !e.data.size) return;
+          payloadBytes += e.data.size;
+          const blob = e.data;
+          writeChain = writeChain.then(() => writable.write({ type: 'write', data: blob }));
+        };
+        recorder.onerror = (e) => {
+          recErr = e.error || new Error('MediaRecorder error');
+        };
+
+        recorder.start(500);
+        recordMediaRecorder = recorder;
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+        const dtMs = 1000 / RECORD_FPS;
+        for (let i = 0; i < totalFrames; i++) {
+          if (abort) break;
+          if (recErr) throw recErr;
+          frameIndex = i;
+          recordSimSec = i / RECORD_FPS;
+          const t = t0 + i * dtMs;
+          renderOneFrame(t, 1 / RECORD_FPS);
+          notifyFrame();
+          if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+          setRecHint(
+            true,
+            `recording ${i + 1}/${totalFrames}  ${(payloadBytes / 1e6).toFixed(1)} MB → ${filename}`
+          );
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+
+        await new Promise((resolve, reject) => {
+          recorder.onstop = resolve;
+          recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+          try { if (recorder.state === 'recording') recorder.requestData(); } catch (_) {}
+          recorder.stop();
+        });
+        await writeChain;
+        await writable.close();
+        writable = null;
+        setRecHint(
+          false,
+          abort
+            ? `stopped — file may be incomplete · ${filename}`
+            : `saved ${filename}  ${(payloadBytes / 1e6).toFixed(1)} MB · ${totalFrames}f`
+        );
+      } catch (err) {
+        console.error(err);
+        setRecHint(false, String(err && err.message ? err.message : err));
+        if (writable) { try { await writable.close(); } catch (_) {} }
+      } finally {
+        try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch (_) {}
+        try { mediaStream && mediaStream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+        videoTrack = null;
+        mediaStream = null;
+        active = false;
+        frameIndex = 0;
+        totalFrames = 0;
+        simPaused = true;
+        syncRecordUi(false);
+        recordMediaRecorder = null;
+        liveLoop = true;
+        lastFrameT = 0;
+        recordSimSec = null;
+        clock.oldTime = performance.now();
+        enterPositioningMode();
+        requestAnimationFrame(frame);
+      }
+      return true;
+    };
+
+    const stop = () => {
+      if (active) abort = true;
+    };
+
+    const toggle = async () => {
+      if (active) {
+        stop();
+        return false;
+      }
+      return start();
+    };
+
+    return {
+      toggle,
+      isActive: () => active,
+      notifyFrame,
+      frameIndex: () => frameIndex,
+      totalFrames: () => totalFrames,
+    };
+  };
+
+  const rec = CanvasRecorder(
+    () => renderer.domElement,
+    getAudioStream
+  );
+
+  function newIteration() {
+    const t = performance.now();
+    iteration++;
+    lifeStart = t;
+    if (lifebar) lifebar.style.width = '0%';
+    startIteration(iteration);
+    enterPositioningMode();
+  }
+
+  async function toggleRecord() {
+    if (rec.isActive()) {
+      await rec.toggle();
+      syncRecordUi(false);
+      return;
+    }
+    if (simPaused) {
+      simPaused = false;
+      clock.oldTime = performance.now();
+    }
+    await rec.toggle();
+    syncRecordUi(rec.isActive());
+  }
+
+  document.addEventListener('keydown', async (e) => {
+    const k = e.key.toLowerCase();
+    if (k === 'r') {
+      e.preventDefault();
+      await toggleRecord();
+      return;
+    }
+    if (rec.isActive()) return;
+    if (k === 'n') {
+      e.preventDefault();
+      newIteration();
+      return;
+    }
+    if (k === 'h') {
+      if (VIEW === 'display' || !controlsEl) return;
+      document.body.classList.toggle('controls-hidden');
+    }
+  });
+
+  if (btnRecord) btnRecord.addEventListener('click', () => { toggleRecord(); });
+
+  function renderPreviewFrame(t) {
+    controls.update();
+    renderOneFrame(t != null ? t : performance.now(), 0);
+  }
+
+  function renderOneFrame(t, dtFixed) {
+    const dt = dtFixed != null ? dtFixed : clock.getDelta();
+    lastFrameT = t != null ? t : performance.now();
+    updateLife(lastFrameT);
+
+    const g = gravityStrength();
+    const gX = gravityAxis.x ? g : 0;
+    const gY = gravityAxis.y ? g : 0;
+    const gZ = gravityAxis.z ? g : 0;
+    const pullX = gX * gX;
+    const pullY = gY * gY;
+    const pullZ = gZ * gZ;
+    const stretchX = gX * (STRETCH_MAX - 1);
+    const stretchY = gY * (STRETCH_MAX - 1);
+    const stretchZ = gZ * (STRETCH_MAX - 1);
+    const tear = GRAVITY_PULL * TEAR_PULL;
+
+    machineStretch.scale.set(1 + stretchX, 1 + stretchY, 1 + stretchZ);
+    machineStretch.position.set(stretchX * PIVOT_X, stretchY * PIVOT_Y, stretchZ * PIVOT_Z);
+
+    builder.baseRoot.position.set(
+      gravityAxis.x ? -pullX * tear : 0,
+      0,
+      gravityAxis.z ? -pullZ * tear : 0
+    );
+    builder.machineRoot.position.set(
+      gravityAxis.x ? pullX * tear : 0,
+      0,
+      gravityAxis.z ? pullZ * tear : 0
+    );
+
+    for (const s of builder.spinners) {
+      const d = s.speed * speedMult * dt;
+      if (s.axis === 'x') s.pivot.rotation.x += d;
+      else if (s.axis === 'y') s.pivot.rotation.y += d;
+      else s.pivot.rotation.z += d;
+
+      const lift = pullY * s.lift * GRAVITY_PULL;
+      const spreadX = pullX * s.spreadX * GRAVITY_PULL;
+      const spreadZ = pullZ * s.spreadZ * GRAVITY_PULL;
+      s.pivot.position.y = s.homeY + lift;
+      s.pivot.position.x = s.homeX + spreadX;
+      s.pivot.position.z = s.homeZ + spreadZ;
+    }
+
+    controls.update();
+
+    postMaterial.uniforms.pullX.value = gX * SMEAR_MAX;
+    postMaterial.uniforms.pullY.value = gY * SMEAR_MAX;
+    postMaterial.uniforms.pullZ.value = gZ * SMEAR_MAX * 0.92;
+
+    renderer.setRenderTarget(renderTarget);
+    renderer.clear();
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+
+    postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
+    renderer.render(postScene, postCamera);
+  }
+
+  function frame(t) {
+    if (!liveLoop) return;
+    if (simPaused) {
+      renderPreviewFrame(t);
+      requestAnimationFrame(frame);
+      return;
+    }
+    renderOneFrame(t);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  window.addEventListener('resize', layoutRenderer);
+
+  window.__gravityBridge = {
+    _lastRemoteTs: 0,
+    applyRemoteState,
+    readLocalState,
+    VENUE,
+    VIEW
+  };
+
+  if (VIEW === 'display') {
+    import('./gravity-remote.mjs').then((m) => m.attachDisplay({
+      venue: VENUE,
+      onStatus: (t) => {
+        const el = document.getElementById('remote-status');
+        if (el) el.textContent = t;
+      }
+    })).catch(() => {
+      const el = document.getElementById('remote-status');
+      if (el) el.textContent = 'remote unavailable';
+    });
+  }
+})();
+  </script>
+</body>
+</html>

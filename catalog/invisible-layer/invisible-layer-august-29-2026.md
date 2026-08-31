@@ -11,7 +11,7 @@
 | Mode | **Live / surrender / rebirth** |
 | Bodies | browser · vol3d |
 | Sound | Yes (MotionSoundscape) |
-| Record | Frame-step **60fps** · save-first · WebM → ffmpeg H.265 |
+| Record | Frame-step **60fps** · save-first WebM → **ffmpeg `setpts=N/(60*TB)`** → H.265 MP4 (deliverable) |
 
 ## Description
 
@@ -19,7 +19,7 @@ June-7 Vol3D walkthrough lineage with **BASE_PAL baked from seed 77823** — cya
 
 Invisible RGB motion map drives Three.js volume feedback. Seed identity · sonification · Machine DNA lifeline · surrender / rebirth.
 
-URL formats: `?format=square|portrait|landscape`. Record (**R**) uses frame-step 60fps, save-first picker, WebM download then ffmpeg H.265 encode offline. `?seconds=60` (5–120).
+URL formats: `?format=square|portrait|landscape`. Record (**R**): save-first WebM (`?seconds=60` → 3600 frames). **Deliverable:** offline ffmpeg with frame-index timing — `setpts=N/(60*TB) -r 60` → HEVC MP4 (see `.cursor/MACHINE_DNA_CANON.md`).
 
 auto travel · T toggle · colors + code forward · ↑↓ forward/back · ←→ strafe · drag look · scroll zoom · M mute · R record · N rebirth · L LED
 

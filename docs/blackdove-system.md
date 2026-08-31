@@ -155,17 +155,32 @@ This does not conflict with SPEC-LOCK: that document sets `LIFESPAN_MS = 480000`
 
 ### Transcode
 
-MediaRecorder may hand back WebM. Convert once — this is an export step and touches no artwork:
+MediaRecorder hands back WebM with **frame count** correct (`seconds × 60`) but often **wrong PTS** (wall-clock during encode). **Always retime on transcode** for save-first frame-step captures:
 
 ```bash
-# H.265 (preferred)
-ffmpeg -i in.webm -c:v libx265 -crf 18 -tag:v hvc1 -pix_fmt yuv420p -an \
+# H.265 (preferred) — frame-step WebM → true 60 fps MP4
+ffmpeg -y -i in.webm \
+  -vf "setpts=N/(60*TB)" -r 60 \
+  -c:v libx265 -crf 18 -tag:v hvc1 -pix_fmt yuv420p \
   -movflags +faststart out.mp4
 
-# H.264 (fallback)
-ffmpeg -i in.webm -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -an \
+# With audio (when WebM has opus)
+ffmpeg -y -i in.webm \
+  -vf "setpts=N/(60*TB)" -r 60 \
+  -c:v libx265 -crf 18 -tag:v hvc1 -pix_fmt yuv420p \
+  -c:a aac -b:a 192k \
+  -movflags +faststart out.mp4
+
+# H.264 (fallback) — same setpts filter
+ffmpeg -y -i in.webm \
+  -vf "setpts=N/(60*TB)" -r 60 \
+  -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -an \
   -movflags +faststart out.mp4
 ```
+
+**Do not** skip `setpts=N/(60*TB)` for frame-step WebM — plain `-c:v libx265` preserves broken duration.
+
+See `.cursor/MACHINE_DNA_CANON.md` § Step 2.
 
 ### Verify (every file, before it goes in the folder)
 

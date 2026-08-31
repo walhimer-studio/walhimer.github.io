@@ -15,6 +15,7 @@ This file mirrors that contract for agents working in **walhimer.github.io** and
 | Doc | Job |
 |-----|-----|
 | **[Machine-DNA CHRONICLE](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md)** | **Canonical meaning** |
+| **[Machine-DNA RECORDING](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/RECORDING.md)** | **Solidification recording** — two-step deliverable · formats · copy august-29 |
 | [Machine-DNA SPEC](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/SPEC.md) | Type 1/2/3 + canonical `Rand` |
 | [`practice/machine-dna.html`](../practice/machine-dna.html) | Public essay |
 | [`machine-aesthetic/emergent-dna/README.md`](../machine-aesthetic/emergent-dna/README.md) | Site organism / `express()` host experiment — must not redefine DNA |
@@ -23,7 +24,7 @@ This file mirrors that contract for agents working in **walhimer.github.io** and
 | [`.cursor/MACHINE_DNA_CANON.md`](../.cursor/MACHINE_DNA_CANON.md) | Commit-enforced copy-paste blocks |
 | [`docs/blackdove-system.md`](./blackdove-system.md) | Black Dove **body** delivery |
 
-**Agents:** Meaning → Machine-DNA chronicle. Locked code → SPEC-LOCK + MACHINE_DNA_CANON.
+**Agents:** Meaning → Machine-DNA chronicle. **Recording / solidification deliverable** → [Machine-DNA `docs/RECORDING.md`](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/RECORDING.md). Locked sketch copy-paste → SPEC-LOCK + `.cursor/MACHINE_DNA_CANON.md`.
 
 ---
 

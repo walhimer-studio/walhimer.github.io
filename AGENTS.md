@@ -4,7 +4,7 @@
 
 1. **Machine DNA meaning:** [walhimer-studio/Machine-DNA `docs/CHRONICLE.md`](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md) (site mirror + examples: `docs/machine-dna-chronicle.md`).
 2. **`docs/SPEC-LOCK.md`** — user non-negotiables (canvas, lifeline, record). If code ≠ SPEC-LOCK, code is wrong.
-3. **`.cursor/MACHINE_DNA_CANON.md`** — copy-paste sources for lifeline + CanvasRecorder.
+3. **`.cursor/MACHINE_DNA_CANON.md`** — **COPY not invent:** transplant recorder from `invisible-layer-august-29-2026.html` (never grep-and-merge a new system). Then **step 2** ffmpeg `setpts=N/(60*TB)` → HEVC MP4. WebM alone is not done.
 
 ## Before editing sketches / installations / artwork
 
