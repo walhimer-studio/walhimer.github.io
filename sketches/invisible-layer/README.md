@@ -41,7 +41,6 @@ Path: `sketches/invisible-layer/`
 | `invisible-layer-august-29-2026.html` | **August-29-2026** Vol3D · format URL · seed · sound · lifeline · frame-step 60fps record |
 | `pixel-recipes/` | Recipe spec · channel JSON · chunk-grid study |
 | `index.html` | Series hub — catalog visitors |
-| `invisible-layer-july-14-2026.html` | **July-14-2026** Vol3D · baked 77823 palette · seed · sound · lifeline |
 | `invisible-layer-july-8-2026.html` | **July-8-2026** Vol3D · seed · sound · lifeline · **R** record |
 | `invisible-layer-july-8-2026-piano-exp.html` | **July-8-2026** sound exp · invisible layer · Salamander pentatonic |
 | `samples/salamander-pentatonic/` | Local Salamander mp3 roots for piano exp (CC BY 3.0) |

@@ -29,6 +29,4 @@ auto travel · T toggle · colors + code forward · ↑↓ forward/back · ←�
 
 ## Related
 
-[Invisible Layer July-14-2026](./invisible-layer-july-14-2026.md) — baked 77823 palette Vol3D.
-
 [Invisible Layer June-7-2026 · Vol3D](./invisible-layer-june-7-2026-vol3d.md) — source Vol3D · original fluoro anchors.

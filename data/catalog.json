@@ -57,7 +57,6 @@
             "sketches/invisible-layer/index.html",
             "sketches/invisible-layer/invisible-layer-august-29-2026.html",
             "sketches/invisible-layer/invisible-layer-july-12-2026.html",
-            "sketches/invisible-layer/invisible-layer-july-14-2026.html",
             "sketches/invisible-layer/invisible-layer-july-16-2026-follow.html",
             "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
             "sketches/invisible-layer/invisible-layer-july-8-2026.html",
@@ -707,49 +706,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-august-29-2026",
-      "dublin_core": {
-        "title": "../catalog/invisible-layer/invisible-layer-august-29-2026.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-august-29-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000361"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-invisible-layer-august-29-2026",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/invisible-layer/invisible-layer-august-29-2026.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "../catalog/invisible-layer/invisible-layer-august-29-2026.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/invisible-layer/invisible-layer-august-29-2026.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
       "dublin_core": {
         "title": "../catalog/invisible-layer/README.md",
@@ -788,6 +744,49 @@
       "artifacts": {
         "repo_paths": [
           "catalog/invisible-layer/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-august-29-2026",
+      "dublin_core": {
+        "title": "../catalog/invisible-layer/invisible-layer-august-29-2026.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-august-29-2026",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000361"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-invisible-layer-august-29-2026",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/invisible-layer/invisible-layer-august-29-2026.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "../catalog/invisible-layer/invisible-layer-august-29-2026.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/invisible-layer/invisible-layer-august-29-2026.md"
         ],
         "external_urls": []
       }
@@ -880,50 +879,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-july-14-2026",
-      "dublin_core": {
-        "title": "invisible-layer/invisible-layer-july-14-2026",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-july-14-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000304"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-july-14-2026",
-        "type": "HumanMadeObject",
-        "_label": "invisible-layer/invisible-layer-july-14-2026",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "invisible-layer/invisible-layer-july-14-2026.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/invisible-layer/invisible-layer-july-14-2026.html",
-          "sketches/loop-snippets/js/three.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-study-webgl",
       "dublin_core": {
         "title": "invisible-layer/invisible-layer-study-webgl",
@@ -963,49 +918,6 @@
         "repo_paths": [
           "sketches/invisible-layer/invisible-layer-study-webgl.html",
           "sketches/loop-snippets/centered-924-data.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-14-2026",
-      "dublin_core": {
-        "title": "../catalog/invisible-layer/invisible-layer-july-14-2026.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-july-14-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000305"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-invisible-layer-july-14-2026",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/invisible-layer/invisible-layer-july-14-2026.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "../catalog/invisible-layer/invisible-layer-july-14-2026.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/invisible-layer/invisible-layer-july-14-2026.md"
         ],
         "external_urls": []
       }
@@ -9495,50 +9407,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
-      "dublin_core": {
-        "title": "loop-snippets/surrender-machines-record",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-record",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000307"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-surrender-machines-record",
-        "type": "HumanMadeObject",
-        "_label": "loop-snippets/surrender-machines-record",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/surrender-machines-record.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/js/p5-1.11.2.min.js",
-          "sketches/loop-snippets/surrender-machines-record.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-raster-spektrum-study-combined-vol3d-living-copy-code",
       "dublin_core": {
         "title": "Surrender Machine 77823",
@@ -13961,6 +13829,50 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape",
+      "dublin_core": {
+        "title": "blackdove/centered/one-row-v2-record-60-with-soundscape",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000353"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60-with-soundscape",
+        "type": "HumanMadeObject",
+        "_label": "blackdove/centered/one-row-v2-record-60-with-soundscape",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "blackdove/centered/one-row-v2-record-60-with-soundscape.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove/centered/one-row-v2-record-60-with-soundscape.html",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Centered:catalog-centered-one-column-937305406",
       "dublin_core": {
         "title": "../catalog/centered/one-column-937305406.md",
@@ -14004,93 +13916,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Centered:catalog-centered-centered-august-27-2026",
-      "dublin_core": {
-        "title": "../catalog/centered/centered-august-27-2026.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Centered:catalog-centered-centered-august-27-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000356"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Centered-catalog-centered-centered-august-27-2026",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/centered/centered-august-27-2026.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Centered",
-          "file": "../catalog/centered/centered-august-27-2026.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/centered/centered-august-27-2026.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Centered:centered-august-27-2026",
-      "dublin_core": {
-        "title": "centered-august-27-2026",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Centered:centered-august-27-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000357"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Centered-centered-august-27-2026",
-        "type": "HumanMadeObject",
-        "_label": "centered-august-27-2026",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Centered",
-          "file": "centered-august-27-2026.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/centered-august-27-2026.html",
-          "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Centered:catalog-centered-one-column-815802903",
       "dublin_core": {
         "title": "../catalog/centered/one-column-815802903.md",
@@ -14129,50 +13954,6 @@
       "artifacts": {
         "repo_paths": [
           "catalog/centered/one-column-815802903.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape",
-      "dublin_core": {
-        "title": "blackdove/centered/one-row-v2-record-60-with-soundscape",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000353"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60-with-soundscape",
-        "type": "HumanMadeObject",
-        "_label": "blackdove/centered/one-row-v2-record-60-with-soundscape",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Centered",
-          "file": "blackdove/centered/one-row-v2-record-60-with-soundscape.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/blackdove/centered/one-row-v2-record-60-with-soundscape.html",
-          "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
       }
