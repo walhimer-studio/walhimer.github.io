@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-08-31",
+  "updated": "2026-09-01",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -9046,96 +9046,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machine-seed-77823-gravity-august-30-2026",
-      "dublin_core": {
-        "title": "loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machine-seed-77823-gravity-august-30-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000363"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-surrender-machine-seed-77823-gravity-august-30-2026",
-        "type": "HumanMadeObject",
-        "_label": "loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/js/OrbitControls.js",
-          "sketches/loop-snippets/js/three.min.js",
-          "sketches/loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders",
-      "dublin_core": {
-        "title": "loop-snippets/ghost dense 77823 gravity sliders",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Snippets:ghost_dense_77823_gravity_sliders",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000223"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Snippets-ghost_dense_77823_gravity_sliders",
-        "type": "HumanMadeObject",
-        "_label": "loop-snippets/ghost dense 77823 gravity sliders",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Loop Snippets",
-          "file": "loop-snippets/ghost_dense_77823_gravity_sliders.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders.html",
-          "sketches/loop-snippets/js/OrbitControls.js",
-          "sketches/loop-snippets/js/three.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-three",
       "dublin_core": {
         "title": "loop-snippets/surrender-machines-three",
@@ -9228,6 +9138,96 @@
         "repo_paths": [
           "sketches/js/p5-1.11.2.min.js",
           "sketches/loop-snippets/surrender-machines.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machine-seed-77823-gravity-august-30-2026",
+      "dublin_core": {
+        "title": "loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machine-seed-77823-gravity-august-30-2026",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000363"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-surrender-machine-seed-77823-gravity-august-30-2026",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js",
+          "sketches/loop-snippets/surrender-machine-seed-77823-gravity-august-30-2026.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-ghost_dense_77823_gravity_sliders",
+      "dublin_core": {
+        "title": "loop-snippets/ghost dense 77823 gravity sliders",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:ghost_dense_77823_gravity_sliders",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000223"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-ghost_dense_77823_gravity_sliders",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/ghost dense 77823 gravity sliders",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/ghost_dense_77823_gravity_sliders.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/ghost_dense_77823_gravity_sliders.html",
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js"
         ],
         "external_urls": []
       }
@@ -13823,6 +13823,50 @@
       "artifacts": {
         "repo_paths": [
           "sketches/audioscape001.html",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape-three-js",
+      "dublin_core": {
+        "title": "blackdove/centered/one-row-v2-record-60-with-soundscape-three-js",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape-three-js",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000365"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60-with-soundscape-three-js",
+        "type": "HumanMadeObject",
+        "_label": "blackdove/centered/one-row-v2-record-60-with-soundscape-three-js",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Centered",
+          "file": "blackdove/centered/one-row-v2-record-60-with-soundscape-three-js.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove/centered/one-row-v2-record-60-with-soundscape-three-js.html",
           "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
