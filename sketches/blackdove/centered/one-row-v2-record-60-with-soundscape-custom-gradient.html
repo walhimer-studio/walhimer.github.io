@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>One Row V2 soundscape three-js — Machine DNA · august-29 frame-step</title>
+  <title>One Column custom gradient soundscape — Machine DNA · august-29 frame-step</title>
   <style>
     html, body { margin: 0; background: #0a0a0a; }
     canvas {
@@ -63,19 +63,62 @@
 <body>
   <div class="hud">
     <div id="hud-seed">seed —</div>
-    <div id="hud-rec">R · Machine DNA frame-step · seconds×60 frames · soundscape</div>
+    <div id="hud-rec">R · custom gradient shader · frame-step 60 fps · soundscape</div>
     <div class="lifeline"><div id="lifeline-fill"></div></div>
     <button id="sound-btn" type="button">Sound</button>
     <button id="record-btn" type="button">Record</button>
     <a id="save-link" hidden>Save</a>
   </div>
 <script>
-/** One Row V2 + soundscape three-js — Machine DNA record (august-29 frame-step).
- *  Copy of one-row-v2-record-60-with-soundscape.html
+/** One Column + soundscape custom gradient — Machine DNA record (august-29 frame-step).
+ *  Fork of one-row-v2-record-60-with-soundscape.html
+ *  Box faces: procedural HSB vertical gradient (shader, per-pixel — no stretched bitmaps).
  *  Recorder transplanted from invisible-layer-august-29-2026.html.
- *  Adapt only: getCanvas, soundscape getAudioStream, filename, rebirth(artSeed).
  *  ?seed=N&format=portrait|landscape|square&seconds=60 (default 60; max 120)
  */
+const GRAD_BOX_VERT = `
+precision highp float;
+attribute vec3 aPosition;
+attribute vec3 aNormal;
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+uniform mat3 uNormalMatrix;
+varying vec3 vNormal;
+varying float vLocalY;
+void main() {
+  vNormal = normalize(uNormalMatrix * aNormal);
+  vLocalY = aPosition.y;
+  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);
+}
+`;
+
+const GRAD_BOX_FRAG = `
+precision highp float;
+varying vec3 vNormal;
+varying float vLocalY;
+uniform float uHue1;
+uniform float uHue2;
+uniform float uHalfH;
+uniform vec3 uLightDir;
+
+vec3 hsb2rgb(vec3 c) {
+  vec3 rgb = clamp(abs(mod(c.x * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+  rgb = rgb * rgb * (3.0 - 2.0 * rgb);
+  return c.z * mix(vec3(1.0), rgb, c.y);
+}
+
+void main() {
+  float t = clamp((vLocalY / uHalfH + 1.0) * 0.5, 0.0, 1.0);
+  float h = mix(uHue1, uHue2, t) / 360.0;
+  vec3 col = hsb2rgb(vec3(h, 1.0, 1.0));
+  vec3 n = normalize(vNormal);
+  vec3 l = normalize(uLightDir);
+  float diff = max(dot(n, l), 0.0);
+  col *= 0.55 + 0.45 * diff;
+  gl_FragColor = vec4(col, 0.392);
+}
+`;
+
 const LIFESPAN_MS = 480000; // Centered catalog timer for HUD only — life ≠ this number
 const RECORD_FPS = 60;
 const FORMAT_SIZES = {
@@ -117,7 +160,7 @@ let targetCamZ = 2000;
 let camSpeed = 0.5;
 let soundCamNudge = 0;
 
-let gradientTextures = [];
+let boxGradShader = null;
 let artMidY = 0;
 let artSeed;
 let lifeStart;
@@ -399,7 +442,7 @@ const CanvasRecorder = (getCanvas, getAudioStream) => {
 
     const ext = recExt(mimeType);
     let filename =
-      `one-row-v2-soundscape-three-js-${FORMAT}-seed${artSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
+      `one-row-v2-soundscape-custom-gradient-${FORMAT}-seed${artSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
 
     let saveHandle = null;
     if (typeof window.showSaveFilePicker === 'function') {
@@ -598,7 +641,7 @@ function updateHud() {
     hudRec.textContent =
       FORMAT + ' ' + CANVAS_W + '×' + CANVAS_H +
       ' · ' + RECORD_SECONDS + 's · exactly ' + (RECORD_SECONDS * RECORD_FPS) +
-      ' frames · Machine DNA · R record · G next · N new';
+      ' frames · custom gradient · R record · G next · N new';
   }
 }
 
@@ -614,23 +657,6 @@ function updateLifeline() {
   if (!rec.isActive() && millis() - lifeStart >= LIFESPAN_MS) rebirth(artSeed + 1);
 }
 
-function buildGradientTextures() {
-  gradientTextures = [];
-  for (let i = 0; i < 10; i++) {
-    let hue1 = random(palette);
-    let hue2 = random(palette);
-    let tex = createGraphics(64, 256);
-    tex.colorMode(HSB, 360, 100, 100, 255);
-    for (let y = 0; y < tex.height; y++) {
-      let inter = map(y, 0, tex.height, 0, 1);
-      let hBlend = lerp(hue1, hue2, inter);
-      tex.stroke(hBlend, 100, 100, 100);
-      tex.line(0, y, tex.width, y);
-    }
-    gradientTextures.push(tex);
-  }
-}
-
 function buildCity() {
   city = [];
   for (let z = -rows / 2; z < rows / 2; z++) {
@@ -638,8 +664,9 @@ function buildCity() {
       let w = random(1000, 2500);
       let d = random(1000, 2000);
       let h = random(1500, 4000);
-      let tex = random(gradientTextures);
-      city.push({ x: 0, z: z * spacing, w, h, d, tex });
+      let hue1 = random(palette);
+      let hue2 = random(palette);
+      city.push({ x: 0, z: z * spacing, w, h, d, hue1, hue2 });
     }
   }
 
@@ -657,7 +684,6 @@ function rebirth(seed) {
   camZ = 2000;
   targetCamZ = 2000;
   soundCamNudge = 0;
-  buildGradientTextures();
   buildCity();
   updateHud();
   if (lifelineFill) lifelineFill.style.width = '0%';
@@ -686,8 +712,10 @@ function setup() {
   colorMode(HSB, 360, 100, 100, 255);
   noStroke();
 
+  boxGradShader = createShader(GRAD_BOX_VERT, GRAD_BOX_FRAG);
+
   rebirth(parseSeedFromUrl());
-  document.title = 'One Row V2 soundscape three-js — ' + FORMAT;
+  document.title = 'One Column custom gradient soundscape — ' + FORMAT;
 }
 
 function draw() {
@@ -708,6 +736,7 @@ function draw() {
   ambientLight(255);
   directionalLight(255, 255, 255, 0.3, -1, -0.5);
 
+  const lightDir = [0.3, -1, -0.5];
   const goneDist = speed * 60 * 0.2;
   const shrinkStartDist = speed * 60 * 0.5;
 
@@ -732,9 +761,14 @@ function draw() {
     }
 
     push();
-    texture(b.tex);
+    shader(boxGradShader);
+    boxGradShader.setUniform('uHue1', b.hue1);
+    boxGradShader.setUniform('uHue2', b.hue2);
+    boxGradShader.setUniform('uHalfH', b.h / 2);
+    boxGradShader.setUniform('uLightDir', lightDir);
     translate(b.x, y, b.z);
     box(b.w, b.h, b.d);
+    resetShader();
     pop();
   }
 }

@@ -13829,13 +13829,13 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape-three-js",
+      "id": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape-custom-gradient",
       "dublin_core": {
-        "title": "blackdove/centered/one-row-v2-record-60-with-soundscape-three-js",
+        "title": "blackdove/centered/one-row-v2-record-60-with-soundscape-custom-gradient",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape-three-js",
+        "identifier": "urn:walhimer:sketch:Centered:blackdove-centered-one-row-v2-record-60-with-soundscape-custom-gradient",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
@@ -13844,9 +13844,9 @@
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60-with-soundscape-three-js",
+        "id": "https://mark-walhimer.com/#work/Centered-blackdove-centered-one-row-v2-record-60-with-soundscape-custom-gradient",
         "type": "HumanMadeObject",
-        "_label": "blackdove/centered/one-row-v2-record-60-with-soundscape-three-js",
+        "_label": "blackdove/centered/one-row-v2-record-60-with-soundscape-custom-gradient",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -13861,12 +13861,12 @@
         ],
         "sketch": {
           "series": "Centered",
-          "file": "blackdove/centered/one-row-v2-record-60-with-soundscape-three-js.html"
+          "file": "blackdove/centered/one-row-v2-record-60-with-soundscape-custom-gradient.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/blackdove/centered/one-row-v2-record-60-with-soundscape-three-js.html",
+          "sketches/blackdove/centered/one-row-v2-record-60-with-soundscape-custom-gradient.html",
           "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
