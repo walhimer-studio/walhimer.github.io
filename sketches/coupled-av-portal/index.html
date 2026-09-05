@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coupled AV Portal — POC</title>
+  <style>
+    :root {
+      --ink: #e8f0ff;
+      --muted: rgba(232, 240, 255, 0.55);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #02040a; }
+    body {
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+    }
+    #canvas { display: block; width: 100%; height: 100%; }
+    #overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(20, 60, 90, 0.45), transparent 55%),
+        rgba(2, 4, 10, 0.72);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .panel {
+      text-align: center;
+      max-width: 28rem;
+      padding: 1.5rem;
+    }
+    .nav {
+      margin-bottom: 1.25rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+    }
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(232, 240, 255, 0.25);
+    }
+    .nav a:hover { color: var(--ink); }
+    .panel h1 {
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      color: var(--muted);
+    }
+    .panel p {
+      font-size: 1.05rem;
+      line-height: 1.45;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      appearance: none;
+      border: 1px solid rgba(232, 240, 255, 0.35);
+      background: rgba(232, 240, 255, 0.06);
+      color: var(--ink);
+      padding: 0.85rem 1.6rem;
+      font: inherit;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    button:hover {
+      background: rgba(232, 240, 255, 0.14);
+      border-color: rgba(232, 240, 255, 0.7);
+    }
+    #hud {
+      position: fixed;
+      left: 1rem;
+      bottom: 1rem;
+      z-index: 5;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    #hud.visible { opacity: 1; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../js/three-0.170.0.module.js",
+      "three/addons/": "../js/three-0.170.0-jsm/",
+      "tone": "../js/tone-14.8.49.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="overlay">
+    <div class="panel">
+      <p class="nav"><a href="./prismatic-fluid.html">Prismatic Fluid →</a></p>
+      <h1>Coupled AV Portal</h1>
+      <p>One generative state drives the portal image and the sound at the same time — not audio-reactive visuals.</p>
+      <button id="start" type="button">Start experience</button>
+    </div>
+  </div>
+  <div id="hud">energy —</div>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+    import * as Tone from "tone";
+
+    // Shared generative world — single source of truth for sight + sound
+    const world = {
+      time: 0,
+      energy: 0.35,
+      hue: 0.55,         // 0–1, cool cyan → warm magenta/red
+      turbulence: 0.25,
+      portalDepth: 0.4,
+      pulse: 0,
+      pulseGate: 0,
+    };
+
+    const canvas = document.getElementById("canvas");
+    const overlay = document.getElementById("overlay");
+    const startBtn = document.getElementById("start");
+    const hud = document.getElementById("hud");
+
+    // --- Visuals ---
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+    const uniforms = {
+      uTime: { value: 0 },
+      uEnergy: { value: world.energy },
+      uHue: { value: world.hue },
+      uTurbulence: { value: world.turbulence },
+      uPortalDepth: { value: world.portalDepth },
+      uPulse: { value: 0 },
+      uResolution: {
+        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      },
+    };
+
+    const portalMaterial = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position.xy, 0.0, 1.0);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        precision highp float;
+        varying vec2 vUv;
+        uniform float uTime;
+        uniform float uEnergy;
+        uniform float uHue;
+        uniform float uTurbulence;
+        uniform float uPortalDepth;
+        uniform float uPulse;
+        uniform vec2 uResolution;
+
+        vec3 hsv2rgb(vec3 c) {
+          vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+          vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+          return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+        }
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          float a = hash(i);
+          float b = hash(i + vec2(1.0, 0.0));
+          float c = hash(i + vec2(0.0, 1.0));
+          float d = hash(i + vec2(1.0, 1.0));
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+        }
+
+        float fbm(vec2 p) {
+          float v = 0.0;
+          float a = 0.5;
+          for (int i = 0; i < 5; i++) {
+            v += a * noise(p);
+            p *= 2.05;
+            a *= 0.5;
+          }
+          return v;
+        }
+
+        void main() {
+          vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
+          float t = uTime;
+
+          // Portal warp
+          float r = length(uv);
+          float ang = atan(uv.y, uv.x);
+          float depth = uPortalDepth * 2.2 + 0.35;
+          float tunnel = 1.0 / (r * depth + 0.12);
+          vec2 warped = vec2(
+            ang / 6.2831853,
+            tunnel + t * (0.12 + uEnergy * 0.25)
+          );
+
+          float n = fbm(warped * (3.0 + uTurbulence * 4.0) + vec2(0.0, t * 0.15));
+          float n2 = fbm(warped * 6.0 - t * 0.08);
+
+          float rings = sin(tunnel * 8.0 - t * (1.2 + uEnergy) + n * 4.0);
+          rings = smoothstep(0.2, 0.95, rings);
+
+          float veil = smoothstep(1.35, 0.05, r);
+          float core = exp(-r * (3.2 - uEnergy * 1.4)) * (0.55 + uPulse * 0.55);
+
+          float hue = fract(uHue + n * 0.08 + uPulse * 0.03);
+          vec3 cool = hsv2rgb(vec3(hue, 0.55 + uEnergy * 0.25, 0.55 + n * 0.35));
+          vec3 warm = hsv2rgb(vec3(fract(hue + 0.12), 0.7, 0.75 + uPulse * 0.2));
+          vec3 col = mix(cool, warm, rings * 0.65 + n2 * 0.2);
+
+          col *= veil;
+          col += core * hsv2rgb(vec3(fract(hue + 0.05), 0.35, 1.0));
+          col += pow(n2, 3.0) * uTurbulence * 0.45 * warm;
+
+          // Soft vignette / stage frame
+          float frame = smoothstep(0.95, 0.35, r);
+          col *= 0.15 + frame * 0.85;
+
+          // Stars / sparkle
+          float spark = step(0.992, hash(floor(uv * 90.0) + floor(t * 2.0)));
+          col += spark * (0.2 + uEnergy * 0.5) * veil;
+
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `,
+    });
+
+    const portal = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), portalMaterial);
+    scene.add(portal);
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.85,
+      0.6,
+      0.2
+    );
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    // --- Audio (driven by the same world state) ---
+    let audioReady = false;
+    let drone, pulseSynth, noisePad, filter, reverb;
+
+    async function initAudio() {
+      await Tone.start();
+
+      reverb = new Tone.Reverb({ decay: 6.5, wet: 0.45 }).toDestination();
+      filter = new Tone.Filter({
+        frequency: 600,
+        type: "lowpass",
+        rolloff: -24,
+      }).connect(reverb);
+
+      drone = new Tone.PolySynth(Tone.Synth, {
+        maxPolyphony: 4,
+        oscillator: { type: "sine" },
+        envelope: { attack: 2.5, decay: 1, sustain: 0.85, release: 3 },
+        volume: -18,
+      }).connect(filter);
+
+      pulseSynth = new Tone.MembraneSynth({
+        pitchDecay: 0.04,
+        octaves: 2.5,
+        oscillator: { type: "sine" },
+        envelope: { attack: 0.001, decay: 0.35, sustain: 0.01, release: 0.6 },
+        volume: -14,
+      }).connect(reverb);
+
+      noisePad = new Tone.NoiseSynth({
+        noise: { type: "pink" },
+        envelope: { attack: 1.5, decay: 0.2, sustain: 0.4, release: 2 },
+        volume: -28,
+      }).connect(filter);
+
+      // Static harmonic bed — pitch/filter/volume will move with world
+      drone.triggerAttack(["C2", "G2", "D3", "A3"]);
+      noisePad.triggerAttack();
+
+      audioReady = true;
+    }
+
+    // Musical mapping helpers
+    const noteChoices = ["C3", "D3", "Eb3", "G3", "Bb3", "C4", "D4", "F4"];
+    let lastPulseBeat = -1;
+
+    function updateAudioFromWorld() {
+      if (!audioReady) return;
+
+      // energy → filter openness + drone level
+      const cutoff = 280 + world.energy * 2800 + world.pulse * 900;
+      filter.frequency.rampTo(cutoff, 0.08);
+      drone.volume.rampTo(-22 + world.energy * 10, 0.1);
+      noisePad.volume.rampTo(-34 + world.turbulence * 14, 0.15);
+      reverb.wet.rampTo(0.3 + world.portalDepth * 0.4, 0.2);
+
+      // Detune drone slightly with hue (color ↔ pitch color)
+      drone.set({ detune: (world.hue - 0.5) * 40 });
+
+      // Sparse pulses from the same pulseGate that brightens the portal core
+      const beat = Math.floor(world.time * (0.7 + world.energy * 1.1));
+      if (beat !== lastPulseBeat && world.pulseGate > 0.72) {
+        lastPulseBeat = beat;
+        const idx = Math.floor(world.hue * noteChoices.length) % noteChoices.length;
+        const note = noteChoices[idx];
+        pulseSynth.triggerAttackRelease(note, "16n", undefined, 0.35 + world.energy * 0.5);
+      }
+    }
+
+    // --- Shared state evolution ---
+    function evolveWorld(dt, t) {
+      world.time = t;
+
+      // Slow autonomous motion — not listening to the mic or transport alone
+      const e =
+        0.35 +
+        0.25 * Math.sin(t * 0.11) +
+        0.18 * Math.sin(t * 0.037 + 1.7) +
+        0.12 * Math.sin(t * 0.29);
+      world.energy = THREE.MathUtils.clamp(e, 0.08, 0.98);
+
+      world.hue = (0.48 + 0.18 * Math.sin(t * 0.045) + 0.08 * Math.sin(t * 0.13)) % 1;
+
+      world.turbulence = THREE.MathUtils.clamp(
+        0.2 + 0.35 * (0.5 + 0.5 * Math.sin(t * 0.07 + 2.1)) + world.energy * 0.25,
+        0.05,
+        1
+      );
+
+      world.portalDepth = THREE.MathUtils.clamp(
+        0.35 + 0.3 * Math.sin(t * 0.05) + world.energy * 0.2,
+        0.15,
+        1
+      );
+
+      // Shared pulse envelope (visual core + audio hits)
+      const pulsePhase = t * (0.7 + world.energy * 1.1);
+      world.pulseGate = 0.5 + 0.5 * Math.sin(pulsePhase * Math.PI * 2);
+      world.pulse = Math.pow(Math.max(0, world.pulseGate), 8);
+    }
+
+    function applyWorldToVisuals() {
+      uniforms.uTime.value = world.time;
+      uniforms.uEnergy.value = world.energy;
+      uniforms.uHue.value = world.hue;
+      uniforms.uTurbulence.value = world.turbulence;
+      uniforms.uPortalDepth.value = world.portalDepth;
+      uniforms.uPulse.value = world.pulse;
+
+      bloom.strength = 0.55 + world.energy * 0.9 + world.pulse * 0.45;
+      bloom.radius = 0.45 + world.portalDepth * 0.35;
+      renderer.toneMappingExposure = 0.9 + world.energy * 0.35;
+    }
+
+    let running = false;
+    let last = 0;
+
+    function frame(now) {
+      requestAnimationFrame(frame);
+      if (!running) {
+        composer.render();
+        return;
+      }
+
+      const t = now * 0.001;
+      const dt = Math.min(0.05, (now - last) * 0.001 || 0.016);
+      last = now;
+
+      evolveWorld(dt, t);
+      applyWorldToVisuals();
+      updateAudioFromWorld();
+
+      hud.textContent =
+        `energy ${world.energy.toFixed(2)}  ·  hue ${world.hue.toFixed(2)}  ·  ` +
+        `turb ${world.turbulence.toFixed(2)}  ·  depth ${world.portalDepth.toFixed(2)}`;
+
+      composer.render();
+    }
+
+    requestAnimationFrame(frame);
+
+    startBtn.addEventListener("click", async () => {
+      startBtn.disabled = true;
+      startBtn.textContent = "Starting…";
+      try {
+        await initAudio();
+        running = true;
+        overlay.classList.add("hidden");
+        hud.classList.add("visible");
+      } catch (err) {
+        console.error(err);
+        startBtn.disabled = false;
+        startBtn.textContent = "Start experience";
+        alert("Could not start audio. Check browser permissions and try again.");
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
+      bloom.setSize(w, h);
+      uniforms.uResolution.value.set(w, h);
+    });
+  </script>
+</body>
+</html>

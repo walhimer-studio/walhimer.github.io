@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coupled AV — Sampled Arc</title>
+  <style>
+    :root {
+      --ink: #eef2f7;
+      --muted: rgba(238, 242, 247, 0.55);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #010308; }
+    body {
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+    }
+    #canvas { display: block; width: 100%; height: 100%; }
+    #overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 50% 45%, rgba(30, 50, 80, 0.4), transparent 55%),
+        rgba(1, 3, 8, 0.82);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .panel {
+      text-align: center;
+      max-width: 30rem;
+      padding: 1.5rem;
+    }
+    .panel h1 {
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+      color: var(--muted);
+    }
+    .panel p {
+      font-size: 1.02rem;
+      line-height: 1.45;
+      margin-bottom: 1rem;
+    }
+    .meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1.4rem;
+      line-height: 1.4;
+    }
+    .nav {
+      margin-bottom: 1.25rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(238, 242, 247, 0.25);
+    }
+    .nav a:hover { color: var(--ink); }
+    button {
+      appearance: none;
+      border: 1px solid rgba(238, 242, 247, 0.35);
+      background: rgba(238, 242, 247, 0.06);
+      color: var(--ink);
+      padding: 0.85rem 1.6rem;
+      font: inherit;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      margin: 0.25rem;
+    }
+    button:hover:not(:disabled) {
+      background: rgba(238, 242, 247, 0.14);
+      border-color: rgba(238, 242, 247, 0.7);
+    }
+    button:disabled {
+      opacity: 0.45;
+      cursor: wait;
+    }
+    #hud {
+      position: fixed;
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 5;
+      font-size: 0.7rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-width: 36rem;
+    }
+    #hud.visible { opacity: 1; }
+    #lifeTrack {
+      height: 2px;
+      background: rgba(238, 242, 247, 0.12);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    #lifeFill {
+      height: 100%;
+      width: 0%;
+      background: rgba(238, 242, 247, 0.7);
+      transition: width 0.1s linear;
+    }
+    #endCard {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(1, 3, 8, 0.75);
+      z-index: 12;
+      backdrop-filter: blur(6px);
+    }
+    #endCard.visible { display: grid; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "../js/three-0.170.0.module.js",
+      "three/addons/": "../js/three-0.170.0-jsm/",
+      "tone": "../js/tone-14.8.49.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="overlay">
+    <div class="panel">
+      <p class="nav">
+        <a href="./index.html">Portal</a>
+        <a href="./prismatic-fluid.html">Prismatic</a>
+      </p>
+      <h1>Sampled Arc</h1>
+      <p>
+        Simple caustics + sampled piano, violin, and mallets on a life arc:
+        seed → bloom → climax → fade → silence.
+      </p>
+      <p class="meta">
+        Mallets use xylophone samples (closest free mallet set). First load may take a few seconds.
+      </p>
+      <button id="start" type="button">Load samples &amp; begin life</button>
+    </div>
+  </div>
+  <div id="hud">
+    <div id="lifeTrack"><div id="lifeFill"></div></div>
+    <div id="hudText">—</div>
+  </div>
+  <div id="endCard">
+    <div class="panel">
+      <h1>Organism ended</h1>
+      <p>This life completed its arc. Regenerate grows a new DNA seed (new length, color, motif).</p>
+      <button id="regen" type="button">Regenerate</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+    import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+    import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+    import * as Tone from "tone";
+
+    const SAMPLE_BASE = "./samples/";
+
+    // Lifespan phases — proportions of one organism life (not a fixed clock in isolation)
+    const PHASES = [
+      { id: "seed", label: "Seed", from: 0, to: 0.12 },
+      { id: "germinate", label: "Germinate", from: 0.12, to: 0.28 },
+      { id: "bloom", label: "Bloom", from: 0.28, to: 0.52 },
+      { id: "climax", label: "Climax", from: 0.52, to: 0.72 },
+      { id: "fade", label: "Fade", from: 0.72, to: 0.9 },
+      { id: "silence", label: "Silence", from: 0.9, to: 1 },
+    ];
+
+    const SCALES = {
+      fMinor: ["F", "G", "Ab", "Bb", "C", "Db", "Eb"],
+      dDorian: ["D", "E", "F", "G", "A", "B", "C"],
+      aAeolian: ["A", "B", "C", "D", "E", "F", "G"],
+    };
+
+    function mulberry32(a) {
+      return function () {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function pick(rng, arr) {
+      return arr[Math.floor(rng() * arr.length)];
+    }
+
+    function createDNA(seed = (Math.random() * 1e9) | 0) {
+      const rng = mulberry32(seed);
+      const scaleKeys = Object.keys(SCALES);
+      const scaleKey = pick(rng, scaleKeys);
+      return {
+        seed,
+        // Variable lifespan: ~50–95s — arc shape fixed, duration is genetic
+        lifespan: 50 + rng() * 45,
+        scaleKey,
+        scale: SCALES[scaleKey],
+        rootOctave: 2 + Math.floor(rng() * 2),
+        motif: [0, 2, 4, 2, 5, 4, 0, 3].map((d) => (d + Math.floor(rng() * 2)) % 7),
+        hueBias: rng(),
+        energyBias: 0.25 + rng() * 0.45,
+        tempo: 52 + rng() * 28,
+      };
+    }
+
+    let dna = createDNA();
+    let rng = mulberry32(dna.seed);
+
+    const world = {
+      life: 0,
+      phase: "seed",
+      phaseT: 0,
+      energy: 0.2,
+      hue: 0.55,
+      turbulence: 0.2,
+      pulse: 0,
+      alive: false,
+      ended: false,
+    };
+
+    const canvas = document.getElementById("canvas");
+    const overlay = document.getElementById("overlay");
+    const startBtn = document.getElementById("start");
+    const hud = document.getElementById("hud");
+    const hudText = document.getElementById("hudText");
+    const lifeFill = document.getElementById("lifeFill");
+    const endCard = document.getElementById("endCard");
+    const regenBtn = document.getElementById("regen");
+
+    // --- Visuals (organism glow coupled to life phase) ---
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+    const uniforms = {
+      uTime: { value: 0 },
+      uLife: { value: 0 },
+      uEnergy: { value: 0.2 },
+      uHue: { value: 0.55 },
+      uTurbulence: { value: 0.2 },
+      uPulse: { value: 0 },
+      uPhase: { value: 0 },
+      uResolution: {
+        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      },
+    };
+
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: /* glsl */ `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position.xy, 0.0, 1.0);
+        }
+      `,
+      fragmentShader: /* glsl */ `
+        precision highp float;
+        varying vec2 vUv;
+        uniform float uTime;
+        uniform float uLife;
+        uniform float uEnergy;
+        uniform float uHue;
+        uniform float uTurbulence;
+        uniform float uPulse;
+        uniform float uPhase;
+        uniform vec2 uResolution;
+
+        // Simple pool-floor caustics — no stars, no portals
+        float caustic(vec2 uv, float t) {
+          vec2 p = uv;
+          float c = 0.0;
+          for (int i = 0; i < 3; i++) {
+            float fi = float(i);
+            p = uv + vec2(
+              sin(p.y * (3.0 + fi) + t * (0.7 + fi * 0.15)),
+              cos(p.x * (3.2 + fi * 0.4) - t * (0.55 + fi * 0.12))
+            ) * (0.18 + uTurbulence * 0.12);
+            c += sin(p.x * (8.0 + fi * 2.0) + p.y * (6.0 - fi) + t);
+          }
+          c = c / 3.0;
+          return pow(0.5 + 0.5 * c, 3.0 - uEnergy);
+        }
+
+        void main() {
+          vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / min(uResolution.x, uResolution.y);
+          float t = uTime * (0.35 + uEnergy * 0.45);
+          float life = uLife;
+
+          // Intensity follows life arc (quiet → active → fade)
+          float vitality = smoothstep(0.0, 0.12, life) * (1.0 - smoothstep(0.78, 1.0, life));
+          vitality = max(vitality, 0.04);
+
+          float c1 = caustic(uv * (1.6 + uPhase * 0.4), t);
+          float c2 = caustic(uv * (2.4 + uTurbulence) + 3.1, t * 1.15 + 1.7);
+          float light = mix(c1, c2, 0.45);
+          light = pow(light, 1.15 - uEnergy * 0.25);
+          light += uPulse * 0.12 * light;
+
+          // Warm cream caustic on deep dark floor (install look)
+          vec3 floorCol = vec3(0.02, 0.025, 0.035);
+          vec3 causticCol = mix(
+            vec3(0.75, 0.82, 0.88),
+            vec3(0.95, 0.88, 0.72),
+            fract(uHue + light * 0.15)
+          );
+
+          vec3 col = floorCol + causticCol * light * (0.55 + uEnergy * 0.65) * vitality;
+
+          // Soft edge falloff only — no sparkle layer
+          float vig = smoothstep(1.35, 0.25, length(uv * vec2(0.85, 1.0)));
+          col *= 0.55 + 0.45 * vig;
+
+          gl_FragColor = vec4(col, 1.0);
+        }
+      `,
+    });
+
+    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    const bloom = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      0.45,
+      0.7,
+      0.35
+    );
+    composer.addPass(bloom);
+    composer.addPass(new OutputPass());
+
+    // --- Audio: sampled instruments + tech processing ---
+    let piano, violin, mallets;
+    let filter, delay, reverb;
+    let instrumentsReady = false;
+    let schedulers = [];
+    let lifeStart = 0;
+
+    function phaseIndex(life) {
+      for (let i = 0; i < PHASES.length; i++) {
+        if (life >= PHASES[i].from && life < PHASES[i].to) return i;
+      }
+      return PHASES.length - 1;
+    }
+
+    function noteName(degree, octaveOffset = 0) {
+      const deg = ((degree % 7) + 7) % 7;
+      // Prefer sharps — more reliable with Tone.Sampler pitch mapping
+      const raw = dna.scale[deg];
+      const sharp = raw
+        .replace("Ab", "G#")
+        .replace("Bb", "A#")
+        .replace("Db", "C#")
+        .replace("Eb", "D#");
+      const oct = dna.rootOctave + octaveOffset;
+      return `${sharp}${oct}`;
+    }
+
+    function loadSampler(folder, urls) {
+      return new Promise((resolve, reject) => {
+        let settled = false;
+        const timer = setTimeout(() => {
+          if (!settled) reject(new Error(`Timeout loading ${folder} samples`));
+        }, 45000);
+        const finish = (fn, value) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          fn(value);
+        };
+        const sampler = new Tone.Sampler({
+          urls,
+          baseUrl: `${SAMPLE_BASE}${folder}/`,
+          onload: () => finish(resolve, sampler),
+          onerror: (e) =>
+            finish(reject, e || new Error(`Failed loading ${folder}`)),
+        });
+      });
+    }
+
+    async function initInstruments() {
+      await Tone.start();
+      await Tone.getContext().resume();
+
+      // Build FX only after generate() — ungated Reverb outputs silence
+      reverb = new Tone.Reverb({ decay: 4.5, wet: 0.3 });
+      await reverb.generate();
+      reverb.toDestination();
+
+      delay = new Tone.FeedbackDelay({
+        delayTime: 0.28,
+        feedback: 0.22,
+        wet: 0.15,
+      }).connect(reverb);
+
+      filter = new Tone.Filter({
+        frequency: 2400,
+        type: "lowpass",
+        rolloff: -12,
+      }).connect(delay);
+
+      const [p, v, m] = await Promise.all([
+        loadSampler("piano", {
+          C2: "C2.mp3",
+          E2: "E2.mp3",
+          A2: "A2.mp3",
+          C3: "C3.mp3",
+          E3: "E3.mp3",
+          A3: "A3.mp3",
+          C4: "C4.mp3",
+          E4: "E4.mp3",
+          A4: "A4.mp3",
+          C5: "C5.mp3",
+          E5: "E5.mp3",
+          A5: "A5.mp3",
+          C6: "C6.mp3",
+        }),
+        loadSampler("violin", {
+          G3: "G3.mp3",
+          A3: "A3.mp3",
+          C4: "C4.mp3",
+          E4: "E4.mp3",
+          G4: "G4.mp3",
+          A4: "A4.mp3",
+          C5: "C5.mp3",
+          E5: "E5.mp3",
+          G5: "G5.mp3",
+          A5: "A5.mp3",
+          C6: "C6.mp3",
+        }),
+        loadSampler("xylophone", {
+          G4: "G4.mp3",
+          C5: "C5.mp3",
+          G5: "G5.mp3",
+          C6: "C6.mp3",
+          G6: "G6.mp3",
+          C7: "C7.mp3",
+        }),
+      ]);
+
+      piano = p;
+      violin = v;
+      mallets = m;
+
+      piano.disconnect();
+      violin.disconnect();
+      mallets.disconnect();
+
+      // Dry path + wet FX so audio is never trapped behind a silent effect
+      const master = new Tone.Gain(0.9).toDestination();
+      piano.connect(master);
+      piano.connect(filter);
+      violin.connect(master);
+      violin.connect(reverb);
+      mallets.connect(master);
+      mallets.connect(delay);
+
+      piano.volume.value = -4;
+      violin.volume.value = -8;
+      mallets.volume.value = -6;
+
+      instrumentsReady = true;
+    }
+
+    function clearSchedulers() {
+      schedulers.forEach((id) => Tone.Transport.clear(id));
+      schedulers = [];
+    }
+
+    function scheduleLife() {
+      clearSchedulers();
+      Tone.Transport.cancel(0);
+      Tone.Transport.bpm.value = dna.tempo;
+      Tone.Transport.seconds = 0;
+
+      let stepCounter = 0;
+
+      const id = Tone.Transport.scheduleRepeat((time) => {
+        if (!world.alive || world.ended) return;
+
+        const phase = world.phase;
+        const motif = dna.motif;
+        const step = stepCounter % motif.length;
+        stepCounter += 1;
+        const degree = motif[step];
+        const harmony = motif[(step + 2) % motif.length];
+
+        try {
+          if (phase === "seed") {
+            // Audible from the first moments — not near-silent
+            if (step % 2 === 0) {
+              piano.triggerAttackRelease(noteName(degree, 1), "2n", time, 0.55);
+            }
+            if (step % 4 === 0) {
+              mallets.triggerAttackRelease(noteName(harmony, 3), "8n", time, 0.4);
+            }
+          } else if (phase === "germinate") {
+            piano.triggerAttackRelease(noteName(degree, 1), "4n", time, 0.55);
+            if (step % 2 === 1) {
+              mallets.triggerAttackRelease(noteName(degree, 3), "8n", time, 0.5);
+            }
+          } else if (phase === "bloom") {
+            piano.triggerAttackRelease(noteName(degree, 1), "4n", time, 0.6);
+            if (step % 2 === 0) {
+              mallets.triggerAttackRelease(noteName(harmony, 3), "16n", time, 0.55);
+            }
+            if (step % 4 === 0) {
+              violin.triggerAttackRelease(noteName(degree, 2), "2n", time, 0.4);
+            }
+          } else if (phase === "climax") {
+            piano.triggerAttackRelease(noteName(degree, 1), "8n", time, 0.7);
+            piano.triggerAttackRelease(noteName(harmony, 2), "8n", time + 0.02, 0.4);
+            mallets.triggerAttackRelease(noteName(degree, 3), "16n", time, 0.65);
+            if (step % 2 === 0) {
+              violin.triggerAttackRelease(noteName(harmony, 2), "2n", time, 0.5);
+            }
+            world.pulse = 1;
+          } else if (phase === "fade") {
+            if (step % 2 === 0) {
+              piano.triggerAttackRelease(
+                noteName(degree, 1),
+                "2n",
+                time,
+                Math.max(0.12, 0.45 * (1 - world.life))
+              );
+            }
+            if (step % 4 === 0) {
+              violin.triggerAttackRelease(
+                noteName(degree, 2),
+                "2n",
+                time,
+                Math.max(0.08, 0.3 * (1 - world.life))
+              );
+            }
+          }
+        } catch (err) {
+          console.warn("note trigger failed", err);
+        }
+      }, "8n");
+
+      schedulers.push(id);
+
+      // Immediate confirmation chord so you hear something right away
+      const t0 = Tone.now() + 0.05;
+      try {
+        piano.triggerAttackRelease(noteName(dna.motif[0], 1), "2n", t0, 0.7);
+        mallets.triggerAttackRelease(noteName(dna.motif[2], 3), "8n", t0 + 0.08, 0.55);
+        violin.triggerAttackRelease(noteName(dna.motif[0], 2), "2n", t0 + 0.15, 0.35);
+      } catch (err) {
+        console.warn("start chord failed", err);
+      }
+
+      Tone.Transport.start();
+    }
+
+    function updateWorldFromLife(nowSec) {
+      const elapsed = Math.max(0, nowSec - lifeStart);
+      const life = Math.min(1, elapsed / dna.lifespan);
+      world.life = life;
+
+      const idx = phaseIndex(life);
+      const ph = PHASES[idx];
+      world.phase = ph.id;
+      world.phaseT = (life - ph.from) / Math.max(1e-6, ph.to - ph.from);
+
+      // Visual/audio energy follows arc, shaped by DNA bias
+      const arc =
+        life < 0.55
+          ? THREE.MathUtils.smoothstep(life, 0, 0.55)
+          : 1 - THREE.MathUtils.smoothstep(life, 0.55, 1);
+      world.energy = THREE.MathUtils.clamp(dna.energyBias * 0.5 + arc * 0.7, 0.05, 1);
+      world.hue = (dna.hueBias + life * 0.12 + world.phaseT * 0.03) % 1;
+      world.turbulence = world.energy * (0.35 + (idx / PHASES.length) * 0.5);
+      world.pulse *= 0.85;
+
+      // Tech processing opens through bloom/climax, closes in fade
+      if (instrumentsReady) {
+        const open =
+          world.phase === "climax" ? 1 :
+          world.phase === "bloom" ? 0.7 :
+          world.phase === "fade" ? 0.4 : 0.35;
+        filter.frequency.rampTo(1200 + world.energy * 3600 * open, 0.15);
+        delay.wet.rampTo(0.1 + open * 0.22, 0.2);
+        delay.feedback.rampTo(0.12 + open * 0.2, 0.2);
+        reverb.wet.rampTo(0.22 + open * 0.28 + (world.phase === "fade" ? 0.2 : 0), 0.25);
+        piano.volume.rampTo(-6 + world.energy * 4, 0.2);
+        violin.volume.rampTo(-10 + world.energy * 5, 0.2);
+        mallets.volume.rampTo(-8 + world.energy * 4, 0.2);
+      }
+
+      if (life >= 1 && !world.ended) {
+        endLife();
+      }
+    }
+
+    function endLife() {
+      world.ended = true;
+      world.alive = false;
+      clearSchedulers();
+      Tone.Transport.stop();
+      endCard.classList.add("visible");
+      hudText.textContent = `ended · DNA ${dna.seed} · ${dna.scaleKey} · ${dna.lifespan.toFixed(0)}s life`;
+    }
+
+    function beginLife() {
+      endCard.classList.remove("visible");
+      world.ended = false;
+      world.alive = true;
+      world.pulse = 0;
+      lifeStart = Tone.now();
+      scheduleLife();
+    }
+
+    function applyVisuals(t) {
+      uniforms.uTime.value = t;
+      uniforms.uLife.value = world.life;
+      uniforms.uEnergy.value = world.energy;
+      uniforms.uHue.value = world.hue;
+      uniforms.uTurbulence.value = world.turbulence;
+      uniforms.uPulse.value = world.pulse;
+      uniforms.uPhase.value = phaseIndex(world.life) / (PHASES.length - 1);
+
+      bloom.strength = 0.3 + world.energy * 0.45 + world.pulse * 0.15;
+      bloom.radius = 0.65;
+      renderer.toneMappingExposure = 0.95 + world.energy * 0.2;
+
+      const ph = PHASES[phaseIndex(world.life)];
+      lifeFill.style.width = `${(world.life * 100).toFixed(1)}%`;
+      if (world.alive || world.ended) {
+        hudText.textContent =
+          `${ph.label}  ·  life ${(world.life * 100).toFixed(0)}%  ·  ` +
+          `DNA ${dna.seed}  ·  ${dna.scaleKey}  ·  ${dna.lifespan.toFixed(0)}s  ·  ` +
+          `${dna.tempo.toFixed(0)} bpm`;
+      }
+    }
+
+    let last = 0;
+    function frame(now) {
+      requestAnimationFrame(frame);
+      const t = now * 0.001;
+      const dt = Math.min(0.05, (now - last) * 0.001 || 0.016);
+      last = now;
+
+      if (world.alive && !world.ended) {
+        updateWorldFromLife(Tone.now());
+      } else if (!instrumentsReady) {
+        // Idle pre-start shimmer
+        world.life = 0.08 + 0.04 * Math.sin(t * 0.4);
+        world.energy = 0.2 + 0.05 * Math.sin(t * 0.5);
+        world.hue = (0.55 + t * 0.01) % 1;
+      }
+
+      applyVisuals(t);
+      composer.render();
+    }
+    requestAnimationFrame(frame);
+
+    startBtn.addEventListener("click", async () => {
+      startBtn.disabled = true;
+      startBtn.textContent = "Loading samples…";
+      try {
+        await initInstruments();
+        overlay.classList.add("hidden");
+        hud.classList.add("visible");
+        beginLife();
+      } catch (err) {
+        console.error(err);
+        startBtn.disabled = false;
+        startBtn.textContent = "Load samples & begin life";
+        alert("Could not load samples or start audio. Check network / permissions.");
+      }
+    });
+
+    regenBtn.addEventListener("click", () => {
+      dna = createDNA();
+      rng = mulberry32(dna.seed);
+      beginLife();
+    });
+
+    window.addEventListener("resize", () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      renderer.setSize(w, h);
+      composer.setSize(w, h);
+      bloom.setSize(w, h);
+      uniforms.uResolution.value.set(w, h);
+    });
+  </script>
+</body>
+</html>

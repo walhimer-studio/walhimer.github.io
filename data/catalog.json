@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-09-01",
+  "updated": "2026-09-04",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Invisible Layer",
-          "file": "invisible-layer/index.html"
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,40 +53,41 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/invisible-layer/README.md",
-            "sketches/invisible-layer/index.html",
-            "sketches/invisible-layer/invisible-layer-august-29-2026.html",
-            "sketches/invisible-layer/invisible-layer-july-12-2026.html",
-            "sketches/invisible-layer/invisible-layer-july-16-2026-follow.html",
-            "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
-            "sketches/invisible-layer/invisible-layer-july-8-2026.html",
-            "sketches/invisible-layer/invisible-layer-june-7-2026-2.html",
-            "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html",
-            "sketches/invisible-layer/invisible-layer-study-bloom-piano.html",
-            "sketches/invisible-layer/invisible-layer-study-webgl.html",
-            "sketches/invisible-layer/invisible-layer-vol3d.html",
-            "sketches/invisible-layer/js/forward-slice-export.mjs",
-            "sketches/invisible-layer/js/three.min.js",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/A5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/C6.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Ds6.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs2.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs3.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs4.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs5.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/Fs6.mp3",
-            "sketches/invisible-layer/samples/salamander-pentatonic/README.md"
+            "sketches/coupled-av-portal/README.md",
+            "sketches/coupled-av-portal/index.html",
+            "sketches/coupled-av-portal/prismatic-fluid.html",
+            "sketches/coupled-av-portal/sampled-arc.html",
+            "sketches/coupled-av-portal/samples/ATTRIBUTION.md",
+            "sketches/coupled-av-portal/samples/piano/A2.mp3",
+            "sketches/coupled-av-portal/samples/piano/A3.mp3",
+            "sketches/coupled-av-portal/samples/piano/A4.mp3",
+            "sketches/coupled-av-portal/samples/piano/A5.mp3",
+            "sketches/coupled-av-portal/samples/piano/C2.mp3",
+            "sketches/coupled-av-portal/samples/piano/C3.mp3",
+            "sketches/coupled-av-portal/samples/piano/C4.mp3",
+            "sketches/coupled-av-portal/samples/piano/C5.mp3",
+            "sketches/coupled-av-portal/samples/piano/C6.mp3",
+            "sketches/coupled-av-portal/samples/piano/E2.mp3",
+            "sketches/coupled-av-portal/samples/piano/E3.mp3",
+            "sketches/coupled-av-portal/samples/piano/E4.mp3",
+            "sketches/coupled-av-portal/samples/piano/E5.mp3",
+            "sketches/coupled-av-portal/samples/violin/A3.mp3",
+            "sketches/coupled-av-portal/samples/violin/A4.mp3",
+            "sketches/coupled-av-portal/samples/violin/A5.mp3",
+            "sketches/coupled-av-portal/samples/violin/C4.mp3",
+            "sketches/coupled-av-portal/samples/violin/C5.mp3",
+            "sketches/coupled-av-portal/samples/violin/C6.mp3",
+            "sketches/coupled-av-portal/samples/violin/E4.mp3",
+            "sketches/coupled-av-portal/samples/violin/E5.mp3",
+            "sketches/coupled-av-portal/samples/violin/G3.mp3",
+            "sketches/coupled-av-portal/samples/violin/G4.mp3",
+            "sketches/coupled-av-portal/samples/violin/G5.mp3",
+            "sketches/coupled-av-portal/samples/xylophone/C5.mp3",
+            "sketches/coupled-av-portal/samples/xylophone/C6.mp3",
+            "sketches/coupled-av-portal/samples/xylophone/C7.mp3",
+            "sketches/coupled-av-portal/samples/xylophone/G4.mp3",
+            "sketches/coupled-av-portal/samples/xylophone/G5.mp3",
+            "sketches/coupled-av-portal/samples/xylophone/G6.mp3"
           ],
           "external_urls": []
         },
@@ -706,6 +707,138 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+      "dublin_core": {
+        "title": "coupled-av-portal/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000366"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-readme",
+        "type": "HumanMadeObject",
+        "_label": "coupled-av-portal/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-sampled-arc",
+      "dublin_core": {
+        "title": "coupled-av-portal/sampled-arc",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-sampled-arc",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000367"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-sampled-arc",
+        "type": "HumanMadeObject",
+        "_label": "coupled-av-portal/sampled-arc",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/sampled-arc.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/index.html",
+          "sketches/coupled-av-portal/prismatic-fluid.html",
+          "sketches/coupled-av-portal/sampled-arc.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-prismatic-fluid",
+      "dublin_core": {
+        "title": "coupled-av-portal/prismatic-fluid",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-prismatic-fluid",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000368"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-prismatic-fluid",
+        "type": "HumanMadeObject",
+        "_label": "coupled-av-portal/prismatic-fluid",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/prismatic-fluid.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/index.html",
+          "sketches/coupled-av-portal/prismatic-fluid.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
       "dublin_core": {
         "title": "../catalog/invisible-layer/README.md",
@@ -787,6 +920,90 @@
       "artifacts": {
         "repo_paths": [
           "catalog/invisible-layer/invisible-layer-august-29-2026.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "invisible-layer/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/invisible-layer/README.md",
+          "sketches/invisible-layer/index.html",
+          "sketches/invisible-layer/invisible-layer-august-29-2026.html",
+          "sketches/invisible-layer/invisible-layer-july-12-2026.html",
+          "sketches/invisible-layer/invisible-layer-july-16-2026-follow.html",
+          "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
+          "sketches/invisible-layer/invisible-layer-july-8-2026.html",
+          "sketches/invisible-layer/invisible-layer-june-7-2026-2.html",
+          "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html",
+          "sketches/invisible-layer/invisible-layer-study-bloom-piano.html",
+          "sketches/invisible-layer/invisible-layer-study-webgl.html",
+          "sketches/invisible-layer/invisible-layer-vol3d.html",
+          "sketches/invisible-layer/js/forward-slice-export.mjs",
+          "sketches/invisible-layer/js/three.min.js",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/A5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/C6.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Ds6.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs2.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs3.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs4.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs5.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/Fs6.mp3",
+          "sketches/invisible-layer/samples/salamander-pentatonic/README.md"
         ],
         "external_urls": []
       }
