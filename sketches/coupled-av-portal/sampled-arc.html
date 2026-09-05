@@ -15,7 +15,24 @@
       font-family: "Avenir Next", "Segoe UI", sans-serif;
       color: var(--ink);
     }
-    #canvas { display: block; width: 100%; height: 100%; }
+    #canvas {
+      display: block;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+    body.format-fixed #canvas {
+      position: static;
+      inset: auto;
+      margin: 0 auto;
+      max-width: 100vw;
+      max-height: 100vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
     #overlay {
       position: fixed;
       inset: 0;
@@ -94,6 +111,17 @@
       opacity: 0.45;
       cursor: wait;
     }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 6;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(180, 200, 220, 0.45);
+      pointer-events: none;
+      max-width: 420px;
+    }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
     #hud {
       position: fixed;
       left: 1rem;
@@ -148,6 +176,10 @@
 </head>
 <body>
   <canvas id="canvas"></canvas>
+  <div id="hint">
+    Load → Chrome save dialog → frame-step 60fps WebM (august-29) · R aborts · N rebirth<br>
+    <code>?seed=N</code> · <code>?format=square|portrait|landscape</code> · <code>?seconds=60</code> (5–120)
+  </div>
   <div id="overlay">
     <div class="panel">
       <p class="nav">
@@ -160,9 +192,10 @@
         seed → bloom → climax → fade → silence.
       </p>
       <p class="meta">
-        Mallets use xylophone samples (closest free mallet set). First load may take a few seconds.
+        Chrome only. Load opens the save dialog, then records frame-step (not wall-clock) to WebM.
+        Upload that WebM for step-2 HEVC. Mallets = xylophone samples.
       </p>
-      <button id="start" type="button">Load samples &amp; begin life</button>
+      <button id="start" type="button">Load &amp; record</button>
     </div>
   </div>
   <div id="hud">
@@ -191,6 +224,56 @@
     }
 
     const SAMPLE_BASE = "./samples/";
+
+    /**
+     * Format + record contract — copy from invisible-layer-august-29-2026.html
+     * Record: One Row V2 path — save-first · frame-step 60 fps · ?seconds=60 · R starts · R aborts
+     */
+    const RECORD_FPS = 60;
+
+    const parseSecondsFromUrl = () => {
+      try {
+        const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
+        if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+      } catch (_) {}
+      return 60;
+    };
+    const RECORD_SECONDS = parseSecondsFromUrl();
+
+    const FORMAT_SIZES = {
+      portrait: [2160, 3840],
+      landscape: [3840, 2160],
+      square: [2160, 2160],
+    };
+
+    const parseFormatFromUrl = () => {
+      try {
+        const raw = (new URLSearchParams(location.search).get('format') || '').toLowerCase();
+        if (raw && raw in FORMAT_SIZES) return raw;
+      } catch (_) {}
+      return null;
+    };
+
+    const FORMAT = parseFormatFromUrl();
+    const CANVAS_W = FORMAT ? FORMAT_SIZES[FORMAT][0] : null;
+    const CANVAS_H = FORMAT ? FORMAT_SIZES[FORMAT][1] : null;
+    if (FORMAT) document.body.classList.add('format-fixed');
+
+    const displaySize = () => {
+      if (FORMAT) return { w: CANVAS_W, h: CANVAS_H };
+      return { w: Math.floor(window.innerWidth), h: Math.floor(window.innerHeight) };
+    };
+
+    const parseInitialSeed = () => {
+      try {
+        const q = new URLSearchParams(location.search).get('seed');
+        if (q != null && q !== '') {
+          const n = Number(q) >>> 0;
+          if (Number.isFinite(n)) return n;
+        }
+      } catch (_) {}
+      return null;
+    };
 
     // Lifespan phases — proportions of one organism life (not a fixed clock in isolation)
     const PHASES = [
@@ -239,7 +322,9 @@
       };
     }
 
-    let dna = createDNA();
+    let activeSeed = parseInitialSeed();
+    let dna = createDNA(activeSeed != null ? activeSeed : ((Math.random() * 1e9) | 0));
+    activeSeed = dna.seed >>> 0;
     let rng = mulberry32(dna.seed);
 
     const world = {
@@ -268,9 +353,8 @@
       canvas,
       antialias: true,
       powerPreference: "high-performance",
+      preserveDrawingBuffer: true,
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
     const scene = new THREE.Scene();
@@ -285,7 +369,7 @@
       uPulse: { value: 0 },
       uPhase: { value: 0 },
       uResolution: {
-        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        value: new THREE.Vector2(1, 1),
       },
     };
 
@@ -364,14 +448,19 @@
 
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      0.45,
-      0.7,
-      0.35
-    );
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.45, 0.7, 0.35);
     composer.addPass(bloom);
     composer.addPass(new OutputPass());
+
+    const setupSize = () => {
+      const { w, h } = displaySize();
+      renderer.setPixelRatio(FORMAT ? 1 : Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(w, h, !FORMAT);
+      composer.setSize(w, h);
+      bloom.setSize(w, h);
+      uniforms.uResolution.value.set(w, h);
+    };
+    setupSize();
 
     // --- Audio: sampled instruments + tech processing ---
     let piano, violin, mallets;
@@ -379,6 +468,8 @@
     let instrumentsReady = false;
     let schedulers = [];
     let lifeStart = 0;
+    let recT0 = 0;
+    let toneRecDest = null;
 
     function phaseIndex(life) {
       for (let i = 0; i < PHASES.length; i++) {
@@ -597,8 +688,7 @@
       Tone.Transport.start();
     }
 
-    function updateWorldFromLife(nowSec) {
-      const elapsed = Math.max(0, nowSec - lifeStart);
+    function updateWorldFromElapsed(elapsed) {
       const life = Math.min(1, elapsed / dna.lifespan);
       world.life = life;
 
@@ -642,7 +732,7 @@
       world.alive = false;
       clearSchedulers();
       Tone.Transport.stop();
-      endCard.classList.add("visible");
+      if (liveLoop) endCard.classList.add("visible");
       hudText.textContent = `ended · DNA ${dna.seed} · ${dna.scaleKey} · ${dna.lifespan.toFixed(0)}s life`;
     }
 
@@ -652,11 +742,45 @@
       world.alive = true;
       world.pulse = 0;
       lifeStart = Tone.now();
+      recT0 = performance.now();
       scheduleLife();
+      updateSeedHud();
     }
 
-    function applyVisuals(t) {
-      uniforms.uTime.value = t;
+    const seriesTitle = (seed) => {
+      const base = `Sampled Arc · ${seed >>> 0}`;
+      return FORMAT ? `${base} · ${FORMAT} ${CANVAS_W}×${CANVAS_H}` : base;
+    };
+
+    const updateSeedHud = (extra) => {
+      const label = seriesTitle(activeSeed);
+      const line = extra ? `${label} · ${extra}` : label;
+      if (hudText) hudText.textContent = line;
+      document.title = label;
+    };
+
+    /** Species restart — same seed when recorder passes activeSeed */
+    const rebirth = (t, nextSeed) => {
+      const seed = nextSeed != null ? (nextSeed >>> 0) : ((Math.random() * 1e9) | 0);
+      activeSeed = seed;
+      dna = createDNA(seed);
+      rng = mulberry32(dna.seed);
+      endCard.classList.remove("visible");
+      world.ended = false;
+      world.pulse = 0;
+      recT0 = t ?? performance.now();
+      if (instrumentsReady) {
+        world.alive = true;
+        lifeStart = Tone.now();
+        scheduleLife();
+      } else {
+        world.alive = false;
+      }
+      updateSeedHud();
+    };
+
+    function applyVisuals(tSec) {
+      uniforms.uTime.value = tSec;
       uniforms.uLife.value = world.life;
       uniforms.uEnergy.value = world.energy;
       uniforms.uHue.value = world.hue;
@@ -668,36 +792,289 @@
       bloom.radius = 0.65;
       renderer.toneMappingExposure = 0.95 + world.energy * 0.2;
 
-      const ph = PHASES[phaseIndex(world.life)];
-      lifeFill.style.width = `${(world.life * 100).toFixed(1)}%`;
-      if (world.alive || world.ended) {
+      if (liveLoop && (world.alive || world.ended)) {
+        const ph = PHASES[phaseIndex(world.life)];
+        lifeFill.style.width = `${(world.life * 100).toFixed(1)}%`;
         hudText.textContent =
           `${ph.label}  ·  life ${(world.life * 100).toFixed(0)}%  ·  ` +
           `DNA ${dna.seed}  ·  ${dna.scaleKey}  ·  ${dna.lifespan.toFixed(0)}s  ·  ` +
           `${dna.tempo.toFixed(0)} bpm`;
+      } else if (!liveLoop) {
+        lifeFill.style.width = `${(world.life * 100).toFixed(1)}%`;
       }
     }
 
-    let last = 0;
-    function frame(now) {
-      requestAnimationFrame(frame);
-      const t = now * 0.001;
-      const dt = Math.min(0.05, (now - last) * 0.001 || 0.016);
-      last = now;
+    let liveLoop = true;
 
+    function renderOneFrame(t) {
       if (world.alive && !world.ended) {
-        updateWorldFromLife(Tone.now());
+        if (!liveLoop) {
+          // Frame-step record: synthetic life clock (august-29 contract)
+          updateWorldFromElapsed(Math.max(0, (t - recT0) / 1000));
+        } else {
+          updateWorldFromElapsed(Math.max(0, Tone.now() - lifeStart));
+        }
       } else if (!instrumentsReady) {
-        // Idle pre-start shimmer
-        world.life = 0.08 + 0.04 * Math.sin(t * 0.4);
-        world.energy = 0.2 + 0.05 * Math.sin(t * 0.5);
-        world.hue = (0.55 + t * 0.01) % 1;
+        const tSec = t * 0.001;
+        world.life = 0.08 + 0.04 * Math.sin(tSec * 0.4);
+        world.energy = 0.2 + 0.05 * Math.sin(tSec * 0.5);
+        world.hue = (0.55 + tSec * 0.01) % 1;
       }
 
-      applyVisuals(t);
+      applyVisuals(t * 0.001);
       composer.render();
     }
-    requestAnimationFrame(frame);
+
+    function frame(t) {
+      if (!liveLoop) return;
+      renderOneFrame(t);
+      requestAnimationFrame(frame);
+    }
+
+    /** Tone → MediaStream for CanvasRecorder mux (august-29 getAudioStream shape) */
+    const getAudioStream = async () => {
+      try {
+        await Tone.start();
+        if (Tone.context?.state !== "running") await Tone.context.resume();
+        if (!toneRecDest) {
+          toneRecDest = Tone.context.createMediaStreamDestination();
+          Tone.getDestination().connect(toneRecDest);
+        }
+        return toneRecDest.stream;
+      } catch (_) {
+        return new MediaStream();
+      }
+    };
+
+    // --- CanvasRecorder verbatim from invisible-layer-august-29-2026.html
+    //     (filename prefix only: sampled-arc-)
+    const CanvasRecorder = (getCanvas, getAudioStream) => {
+      let active = false;
+      let abort = false;
+      let frameIndex = 0;
+      let totalFrames = 0;
+      let compositeCanvas = null;
+      let compositeCtx = null;
+      let videoTrack = null;
+      let mediaStream = null;
+      let recW = 0;
+      let recH = 0;
+
+      const pickMime = () => {
+        const types = [
+          'video/webm;codecs=vp9,opus',
+          'video/webm;codecs=vp8,opus',
+          'video/webm;codecs=vp9',
+          'video/webm;codecs=vp8',
+          'video/webm',
+          'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+          'video/mp4;codecs=avc1,mp4a.40.2',
+          'video/mp4',
+        ];
+        return types.find((t) =>
+          typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
+        ) || '';
+      };
+
+      const recExt = (mt) => (mt.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+      const setRecHint = (on, sticky) => {
+        const hint = document.getElementById('hint');
+        if (hint) hint.dataset.rec = on ? '1' : '';
+        if (sticky != null) updateSeedHud(sticky);
+      };
+
+      const ensureComposite = () => {
+        const src = getCanvas();
+        const d = displaySize();
+        const w = FORMAT ? CANVAS_W : (src?.width || d.w);
+        const h = FORMAT ? CANVAS_H : (src?.height || d.h);
+        if (!compositeCanvas) {
+          compositeCanvas = document.createElement('canvas');
+          compositeCanvas.setAttribute('aria-hidden', 'true');
+          compositeCanvas.style.cssText =
+            'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+          document.body.appendChild(compositeCanvas);
+        }
+        if (compositeCanvas.width !== w || compositeCanvas.height !== h) {
+          compositeCanvas.width = w;
+          compositeCanvas.height = h;
+          compositeCtx = compositeCanvas.getContext('2d');
+        } else if (!compositeCtx) {
+          compositeCtx = compositeCanvas.getContext('2d');
+        }
+        recW = w;
+        recH = h;
+      };
+
+      const notifyFrame = () => {
+        if (!active || !compositeCtx || !compositeCanvas) return;
+        const src = getCanvas();
+        if (!src) return;
+        compositeCtx.fillStyle = '#ffffff';
+        compositeCtx.fillRect(0, 0, recW, recH);
+        compositeCtx.drawImage(src, 0, 0, recW, recH);
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+      };
+
+      const start = async () => {
+        if (active) return false;
+        const canvas = getCanvas();
+        if (!canvas) return false;
+
+        const mimeType = pickMime();
+        if (!mimeType) {
+          setRecHint(false, 'MediaRecorder not supported — use Chrome');
+          return false;
+        }
+
+        const ext = recExt(mimeType);
+        const fmt = FORMAT || 'viewport';
+        let filename = `sampled-arc-${fmt}-seed${activeSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
+
+        let saveHandle = null;
+        if (typeof window.showSaveFilePicker === 'function') {
+          try {
+            saveHandle = await window.showSaveFilePicker({
+              suggestedName: filename,
+              types: [{
+                description: ext === 'mp4' ? 'MP4 video' : 'WebM video',
+                accept: ext === 'mp4'
+                  ? { 'video/mp4': ['.mp4'] }
+                  : { 'video/webm': ['.webm'] },
+              }],
+            });
+          } catch (e) {
+            if (e && e.name === 'AbortError') {
+              setRecHint(false, 'Save dialog cancelled — no file');
+              return false;
+            }
+            throw e;
+          }
+        }
+        if (!saveHandle) {
+          setRecHint(false, 'Chrome Save dialog required — use Chrome');
+          return false;
+        }
+        filename = saveHandle.name || filename;
+
+        abort = false;
+        active = true;
+        liveLoop = false;
+        totalFrames = RECORD_SECONDS * RECORD_FPS;
+        frameIndex = 0;
+        setRecHint(true, `recording 0/${totalFrames} → ${filename}`);
+
+        // same as smoke-wisps reset(false): back to start, keep the seed you agreed on
+        const t0 = performance.now();
+        rebirth(t0, activeSeed);
+        ensureComposite();
+        renderOneFrame(t0);
+        notifyFrame();
+
+        let writable = null;
+        let recorder = null;
+        let writeChain = Promise.resolve();
+        let payloadBytes = 0;
+        let recErr = null;
+
+        try {
+          writable = await saveHandle.createWritable({ keepExistingData: false });
+          const videoOnly = compositeCanvas.captureStream(0);
+          const audioStream = await getAudioStream();
+          mediaStream = new MediaStream([
+            ...videoOnly.getVideoTracks(),
+            ...audioStream.getAudioTracks(),
+          ]);
+          videoTrack = mediaStream.getVideoTracks()[0] || null;
+          recorder = new MediaRecorder(mediaStream, {
+            mimeType,
+            videoBitsPerSecond: 40_000_000,
+          });
+          recorder.ondataavailable = (e) => {
+            if (!e.data || !e.data.size) return;
+            payloadBytes += e.data.size;
+            const blob = e.data;
+            writeChain = writeChain.then(() => writable.write({ type: 'write', data: blob }));
+          };
+          recorder.onerror = (e) => {
+            recErr = e.error || new Error('MediaRecorder error');
+          };
+
+          recorder.start(500);
+          if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+          const dtMs = 1000 / RECORD_FPS;
+          for (let i = 0; i < totalFrames; i++) {
+            if (abort) break;
+            if (recErr) throw recErr;
+            frameIndex = i;
+            const t = t0 + i * dtMs;
+            renderOneFrame(t);
+            notifyFrame();
+            if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+            setRecHint(
+              true,
+              `recording ${i + 1}/${totalFrames}  ${(payloadBytes / 1e6).toFixed(1)} MB → ${filename}`
+            );
+            await new Promise((r) => requestAnimationFrame(r));
+          }
+
+          await new Promise((resolve, reject) => {
+            recorder.onstop = resolve;
+            recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+            try { if (recorder.state === 'recording') recorder.requestData(); } catch (_) {}
+            recorder.stop();
+          });
+          await writeChain;
+          await writable.close();
+          writable = null;
+          setRecHint(
+            false,
+            abort
+              ? `stopped — file may be incomplete · ${filename}`
+              : `saved ${filename}  ${(payloadBytes / 1e6).toFixed(1)} MB · ${totalFrames}f`
+          );
+        } catch (err) {
+          console.error(err);
+          setRecHint(false, String(err && err.message ? err.message : err));
+          if (writable) { try { await writable.close(); } catch (_) {} }
+        } finally {
+          try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch (_) {}
+          try { mediaStream && mediaStream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+          videoTrack = null;
+          mediaStream = null;
+          active = false;
+          frameIndex = 0;
+          totalFrames = 0;
+          liveLoop = true;
+          requestAnimationFrame(frame);
+        }
+        return true;
+      };
+
+      const stop = () => {
+        if (active) abort = true;
+      };
+
+      const toggle = async () => {
+        if (active) {
+          stop();
+          return false;
+        }
+        return start();
+      };
+
+      return {
+        toggle,
+        isActive: () => active,
+        notifyFrame,
+        frameIndex: () => frameIndex,
+        totalFrames: () => totalFrames,
+      };
+    };
+
+    const rec = CanvasRecorder(() => renderer?.domElement ?? null, getAudioStream);
 
     startBtn.addEventListener("click", async () => {
       startBtn.disabled = true;
@@ -706,29 +1083,48 @@
         await initInstruments();
         overlay.classList.add("hidden");
         hud.classList.add("visible");
-        beginLife();
+        // August-29 path: save-first, then frame-step (not wall-clock) → WebM
+        await rec.toggle();
+        if (!rec.isActive()) {
+          // Save cancelled — still allow live + R to record again
+          beginLife();
+          startBtn.disabled = false;
+          startBtn.textContent = "Load & record";
+        }
       } catch (err) {
         console.error(err);
         startBtn.disabled = false;
-        startBtn.textContent = "Load samples & begin life";
-        alert("Could not load samples or start audio. Check network / permissions.");
+        startBtn.textContent = "Load & record";
+        alert("Could not load samples or start record. Use Chrome.");
       }
     });
 
     regenBtn.addEventListener("click", () => {
-      dna = createDNA();
-      rng = mulberry32(dna.seed);
-      beginLife();
+      rebirth(performance.now());
+    });
+
+    document.addEventListener("keydown", async (e) => {
+      const k = e.key.toLowerCase();
+      if (k === "r") {
+        // Same as august-29: R starts/aborts record
+        if (!instrumentsReady) {
+          updateSeedHud("press Load & record first");
+          return;
+        }
+        await rec.toggle();
+      }
+      if (k === "n" && instrumentsReady) {
+        rebirth(performance.now());
+      }
     });
 
     window.addEventListener("resize", () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      renderer.setSize(w, h);
-      composer.setSize(w, h);
-      bloom.setSize(w, h);
-      uniforms.uResolution.value.set(w, h);
+      if (FORMAT) return;
+      setupSize();
     });
+
+    updateSeedHud();
+    requestAnimationFrame(frame);
   </script>
 </body>
 </html>
