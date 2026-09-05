@@ -122,8 +122,12 @@
     import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
     import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
     import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-    import ToneModule from "tone";
-    const Tone = ToneModule?.default ?? ToneModule;
+    // Vendored tone-*.module.js is a UMD build: it sets globalThis.Tone, not ESM exports.
+    import "tone";
+    const Tone = globalThis.Tone;
+    if (!Tone?.start) {
+      throw new Error("Tone.js failed to load (expected globalThis.Tone)");
+    }
 
     // Shared generative world — sight and sound are siblings
     const world = {
@@ -330,9 +334,7 @@
         await Tone.context.resume();
       }
 
-      reverb = new Tone.Reverb({ decay: 7.5, wet: 0.5 });
-      await reverb.generate();
-      reverb.toDestination();
+      reverb = new Tone.Reverb({ decay: 7.5, wet: 0.5 }).toDestination();
       chorus = new Tone.Chorus({ frequency: 0.4, delayTime: 3.5, depth: 0.55, wet: 0.35 })
         .connect(reverb)
         .start();

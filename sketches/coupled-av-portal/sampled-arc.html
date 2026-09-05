@@ -183,8 +183,12 @@
     import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
     import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
     import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-    import ToneModule from "tone";
-    const Tone = ToneModule?.default ?? ToneModule;
+    // Vendored tone-*.module.js is a UMD build: it sets globalThis.Tone, not ESM exports.
+    import "tone";
+    const Tone = globalThis.Tone;
+    if (!Tone?.start) {
+      throw new Error("Tone.js failed to load (expected globalThis.Tone)");
+    }
 
     const SAMPLE_BASE = "./samples/";
 
@@ -424,10 +428,8 @@
         await Tone.context.resume();
       }
 
-      // Build FX only after generate() — ungated Reverb outputs silence
-      reverb = new Tone.Reverb({ decay: 4.5, wet: 0.3 });
-      await reverb.generate();
-      reverb.toDestination();
+      // Don't block on reverb.generate() — can hang; dry path still audible
+      reverb = new Tone.Reverb({ decay: 4.5, wet: 0.3 }).toDestination();
 
       delay = new Tone.FeedbackDelay({
         delayTime: 0.28,
