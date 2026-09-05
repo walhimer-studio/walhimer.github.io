@@ -122,7 +122,8 @@
     import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
     import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
     import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-    import * as Tone from "tone";
+    import ToneModule from "tone";
+    const Tone = ToneModule?.default ?? ToneModule;
 
     // Shared generative world — single source of truth for sight + sound
     const world = {
@@ -283,8 +284,13 @@
 
     async function initAudio() {
       await Tone.start();
+      if (Tone.context?.state !== "running") {
+        await Tone.context.resume();
+      }
 
-      reverb = new Tone.Reverb({ decay: 6.5, wet: 0.45 }).toDestination();
+      reverb = new Tone.Reverb({ decay: 6.5, wet: 0.45 });
+      await reverb.generate();
+      reverb.toDestination();
       filter = new Tone.Filter({
         frequency: 600,
         type: "lowpass",

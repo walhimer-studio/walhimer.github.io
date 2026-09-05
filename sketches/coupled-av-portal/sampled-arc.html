@@ -183,7 +183,8 @@
     import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
     import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
     import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-    import * as Tone from "tone";
+    import ToneModule from "tone";
+    const Tone = ToneModule?.default ?? ToneModule;
 
     const SAMPLE_BASE = "./samples/";
 
@@ -419,7 +420,9 @@
 
     async function initInstruments() {
       await Tone.start();
-      await Tone.getContext().resume();
+      if (Tone.context?.state !== "running") {
+        await Tone.context.resume();
+      }
 
       // Build FX only after generate() — ungated Reverb outputs silence
       reverb = new Tone.Reverb({ decay: 4.5, wet: 0.3 });
