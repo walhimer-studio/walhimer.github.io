@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TVXX0YPGCN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TVXX0YPGCN');
+</script>
+<title>Mark Walhimer — The Corner as a Window · Blackdove Call for Works 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0d0c;
+  --ink:#ece6d8;
+  --muted:#8a8175;
+  --dim:#5b544b;
+  --accent:#c0432a;      /* oxblood-vermilion, legible on black */
+  --accent-deep:#8b2020; /* his document oxblood */
+  --rule:rgba(236,230,216,0.14);
+  --mono:'DM Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  --sans:'DM Sans',system-ui,-apple-system,Segoe UI,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--sans);
+  overflow:hidden;
+}
+#deck{position:fixed;inset:0}
+
+/* ── SLIDES ── */
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;
+  transition:opacity .5s ease;
+  padding:0;
+}
+.slide.active{opacity:1;visibility:visible;z-index:2}
+.slide.bare .topbar,.slide.bare .cap{display:none}
+.slide.bare .fallback{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.slide{transition:none}}
+
+/* chrome: top label + counter */
+.topbar{
+  position:absolute;top:0;left:0;right:0;z-index:20;
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:22px 30px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);
+  pointer-events:none;
+}
+.topbar .run{color:var(--dim)}
+.topbar .count{color:var(--muted)}
+.topbar .count b{color:var(--accent);font-weight:500}
+
+/* progress meter (his slider language) */
+#meter{
+  position:fixed;left:0;bottom:0;height:3px;width:0%;
+  background:var(--accent);z-index:40;transition:width .5s ease;
+}
+.nav{position:fixed;top:50%;transform:translateY(-50%);z-index:100;
+  width:46px;height:64px;display:flex;align-items:center;justify-content:center;
+  background:rgba(14,13,12,.5);border:1px solid var(--rule);color:var(--ink);
+  font-family:var(--sans);font-size:30px;font-weight:200;line-height:1;cursor:pointer;
+  opacity:1;transition:border-color .2s,background .2s;border-radius:2px;pointer-events:auto;-webkit-user-select:none;user-select:none}
+.nav:hover{border-color:var(--accent);background:rgba(14,13,12,.72)}
+.nav.prev{left:14px}
+.nav.next{right:14px}
+
+/* ── TEXT SLIDES ── */
+.center{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8vh 8vw;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.32em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:28px;
+}
+.key{
+  font-family:var(--sans);font-weight:200;
+  font-size:clamp(34px,7vw,86px);line-height:1.04;letter-spacing:-.01em;
+}
+.key .arrow{color:var(--accent);font-weight:300;padding:0 .18em}
+.subtle{
+  margin-top:34px;font-size:clamp(15px,1.7vw,20px);
+  color:var(--muted);font-weight:300;max-width:44ch;line-height:1.6;
+}
+.quote{
+  font-weight:200;font-size:clamp(30px,5.2vw,62px);
+  line-height:1.16;letter-spacing:-.01em;max-width:20ch;
+}
+.quote .accent{color:var(--accent)}
+.footline{
+  margin-top:40px;font-family:var(--mono);font-size:13px;
+  letter-spacing:.04em;color:var(--muted);max-width:52ch;line-height:1.7;
+}
+
+/* ── WORK (LIVE) SLIDES ── */
+.stage{position:absolute;inset:0;background:#000;z-index:1}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;pointer-events:none}
+.slide.interact .stage iframe{pointer-events:auto}
+.fallback{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:22px;text-align:center;
+  padding:8vw;background:radial-gradient(ellipse at center,#181512,#0b0a09);
+  z-index:2;
+}
+.fallback.hidden{display:none}
+.fallback .fb-label{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent)}
+.fallback .fb-title{font-weight:200;font-size:clamp(26px,4vw,48px);line-height:1.1}
+.fallback .fb-hint{
+  font-family:var(--mono);font-size:clamp(11px,1.15vw,13px);letter-spacing:.05em;
+  color:var(--muted);max-width:56ch;line-height:1.75;margin-top:20px;
+}
+.fallback .fb-url{font-family:var(--mono);font-size:13px;color:var(--muted);word-break:break-all;max-width:70ch}
+.fallback .fb-load{
+  pointer-events:auto;cursor:pointer;font-family:var(--mono);font-size:12px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink);
+  border:1px solid var(--rule);background:rgba(192,67,42,.10);
+  padding:14px 22px;border-radius:2px;transition:.2s;
+}
+.fallback .fb-load:hover{border-color:var(--accent);background:rgba(192,67,42,.22)}
+.fallback a{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.1em;border-bottom:1px solid var(--rule);text-decoration:none}
+.fb-url a{color:inherit;font-family:inherit;font-size:inherit;letter-spacing:inherit;text-decoration:none;border-bottom:1px solid var(--rule)}
+.fb-url a:hover{border-color:var(--accent);color:var(--ink)}
+.cap-url a{color:var(--muted);font-family:inherit;font-size:inherit;letter-spacing:inherit;text-decoration:none;border-bottom:1px solid var(--rule)}
+.cap-url a:hover{border-color:var(--accent);color:var(--ink)}
+
+/* still image slide */
+.still{position:absolute;inset:0;background:#000;z-index:1;overflow:hidden}
+.still img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.92}
+.still .scrim{position:absolute;inset:0;background:linear-gradient(0deg,rgba(8,7,6,.82) 0%,rgba(8,7,6,.15) 45%,rgba(8,7,6,.35) 100%);z-index:2}
+
+/* caption card on work slides */
+.cap{
+  position:absolute;left:30px;bottom:30px;z-index:15;
+  max-width:min(78vw,560px);
+  border-left:2px solid var(--accent);padding:6px 0 6px 18px;
+  transition:opacity .3s;
+}
+.cap.hidden{opacity:0}
+.cap .cap-title{font-weight:300;font-size:clamp(20px,2.6vw,30px);line-height:1.15}
+.cap .cap-meta{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);margin-top:8px;text-transform:uppercase}
+.cap .cap-url{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--dim);margin-top:6px;word-break:break-all}
+
+/* ── CONVERGENCE (two diagrams) ── */
+.conv{flex:1;display:flex;flex-direction:column;justify-content:center;padding:9vh 6vw 12vh}
+.conv .eyebrow{text-align:center;margin-bottom:10px}
+.conv .conv-line{text-align:center;font-weight:200;font-size:clamp(22px,3.4vw,40px);margin-bottom:5vh;letter-spacing:-.01em}
+.conv .conv-line .accent{color:var(--accent)}
+.diagrams{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--rule);border:1px solid var(--rule);max-width:1100px;margin:0 auto;width:100%}
+.diagram{background:#0b0a09;padding:30px 26px 22px}
+.diagram .d-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:14px;text-align:center}
+.diagram svg{width:100%;height:auto;display:block}
+@media (max-width:720px){.diagrams{grid-template-columns:1fr}}
+
+/* lineage */
+.lin{flex:1;display:flex;flex-direction:column;justify-content:center;padding:9vh 8vw}
+.lin-row{display:grid;grid-template-columns:200px 1fr;gap:26px;padding:22px 0;border-bottom:1px solid var(--rule)}
+.lin-row:last-child{border-bottom:none}
+.lin-name{font-family:var(--mono);font-size:15px;letter-spacing:.04em;color:var(--ink)}
+.lin-name a{display:block;color:var(--dim);font-size:11px;text-decoration:none;margin-top:5px;letter-spacing:.08em;border-bottom:1px dotted var(--rule);width:fit-content}
+.lin-desc{font-weight:300;font-size:clamp(15px,1.7vw,19px);line-height:1.55;color:#ccc5b8}
+.lin-desc b{color:var(--ink);font-weight:500}
+@media (max-width:720px){.lin-row{grid-template-columns:1fr;gap:6px}}
+
+/* ── HINT + NOTES ── */
+#hint{
+  position:fixed;left:50%;bottom:20px;transform:translateX(-50%);
+  z-index:60;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  color:var(--muted);background:rgba(14,13,12,.85);
+  border:1px solid var(--rule);border-radius:3px;padding:9px 15px;
+  transition:opacity .6s;
+}
+#hint.gone{opacity:0;pointer-events:none}
+#hint b{color:var(--ink);font-weight:500}
+
+#siteLink{
+  position:fixed;right:30px;bottom:30px;z-index:60;
+  font-family:var(--sans);font-weight:300;font-size:clamp(20px,2.6vw,30px);
+  color:var(--muted);text-decoration:none;
+  border-bottom:1px solid rgba(238,242,247,0.2);
+}
+#siteLink:hover{color:var(--ink);border-color:var(--accent)}
+
+#notes{
+  position:fixed;left:0;right:0;bottom:0;z-index:55;
+  background:rgba(10,9,8,.94);border-top:1px solid var(--rule);
+  padding:16px 30px 18px;transform:translateY(105%);transition:transform .3s ease;
+  max-height:42vh;overflow:auto;
+}
+#notes.show{transform:translateY(0)}
+#notes .n-head{display:flex;gap:16px;align-items:baseline;margin-bottom:8px}
+#notes .n-num{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase}
+#notes .n-time{font-family:var(--mono);font-size:12px;color:var(--muted)}
+#notes .n-opt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#0e0d0c;background:var(--accent);padding:2px 8px;border-radius:2px;text-transform:uppercase}
+#notes .n-body{font-size:15px;line-height:1.55;color:#d8d2c6;max-width:90ch;font-weight:300}
+</style>
+</head>
+<body>
+<div id="deck" tabindex="-1">
+
+<section class="slide" data-run="cold open" data-src="https://mark-walhimer.com/installations/surrender-machines.html"
+    data-note="Open cold. Thesis line: code and real-time systems as a lens for acceptance, control, and agency. Do not over-explain — the Sunday ask is how THEY feel, not how you feel."
+    data-time="~3 min">
+    <div class="topbar"><span class="run"></span><span class="count"></span></div>
+    <div class="stage">
+      <div class="fallback">
+        <div class="fb-title">Mark Walhimer<br>Blackdove<br>The Corner As A Window<br>September 15, 2026</div>
+      </div>
+    </div>
+    <div class="cap">
+      <div class="cap-title">I use code and real-time systems as a lens for acceptance, control, and agency.</div>
+    </div>
+  </section>
+
+<section class="slide" data-run="artist"
+    data-note="Artist bio / statement."
+    data-time="~20 sec">
+    <div class="topbar"><span class="run">Artist</span><span class="count"></span></div>
+    <div class="center">
+      <div class="eyebrow">Artist</div>
+      <div class="subtle">Mark Walhimer (1964) uses code and real-time systems as a lens for acceptance, control, and agency. Through projects like Corner as Window, he creates three.js WebGL systems that bridge digital and physical spaces. By projecting geometric forms into specific architectural environments, Walhimer transforms spatial boundaries to explore themes of contemplation, emotional depth, and wellness.</div>
+    </div>
+  </section>
+
+<section class="slide" data-run="new slide"
+    data-note=""
+    data-time="">
+    <div class="topbar"><span class="run"></span><span class="count"></span></div>
+    <div class="center">
+    </div>
+  </section>
+
+<section class="slide bare" data-run="one row" data-src="https://mark-walhimer.com/sketches/blackdove/centered/one-row-v2-record-60.html?format=landscape" data-autorun="1"
+    data-note="Auto-loads on entry — full-screen One Row V2 landscape, no overlay text."
+    data-time="~2 min">
+    <div class="topbar"><span class="run"></span><span class="count"></span></div>
+    <div class="stage">
+      <div class="fallback"></div>
+    </div>
+  </section>
+
+<section class="slide bare" data-run="corner as a window" data-src="https://mark-walhimer.com/sketches/blackdove-catalog/cube-on-floor-v9.html" data-autorun="1"
+    data-note="Auto-loads on entry — full-screen The Corner as a Window (box embedded in wall, real One Column content), no overlay text."
+    data-time="~2 min">
+    <div class="topbar"><span class="run"></span><span class="count"></span></div>
+    <div class="stage">
+      <div class="fallback"></div>
+    </div>
+  </section>
+
+<div id="meter"></div>
+<button class="nav prev" aria-label="Previous slide">&#8249;</button>
+<button class="nav next" aria-label="Next slide">&#8250;</button>
+
+<div id="hint">
+  <b>&larr; &rarr;</b> move &nbsp;·&nbsp; <b>L</b> load live &nbsp;·&nbsp; <b>I</b> interact &nbsp;·&nbsp; <b>C</b> caption &nbsp;·&nbsp; <b>N</b> notes &nbsp;·&nbsp; <b>F</b> fullscreen
+</div>
+<a id="siteLink" href="https://mark-walhimer.com" target="_blank" rel="noopener">mark-walhimer.com</a>
+
+<div id="notes">
+  <div class="n-head">
+    <span class="n-num" id="n-num">01</span>
+    <span class="n-time" id="n-time"></span>
+    <span class="n-opt" id="n-opt" style="display:none">optional</span>
+  </div>
+  <div class="n-body" id="n-body"></div>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const meter=document.getElementById('meter');
+const hint=document.getElementById('hint');
+const notes=document.getElementById('notes');
+let i=0, capsOn=true, notesOn=false, interactOn=false;
+const deck=document.getElementById('deck');
+const N=slides.length;
+slides.forEach((s,k)=>{const c=s.querySelector(".count"); if(c) c.innerHTML="<b>"+String(k+1).padStart(2,"0")+"</b> / "+String(N).padStart(2,"0");});
+
+function setNote(s){
+  document.getElementById('n-num').textContent=String(i+1).padStart(2,'0');
+  document.getElementById('n-time').textContent=s.dataset.time||'';
+  document.getElementById('n-body').textContent=s.dataset.note||'';
+  const opt=(s.dataset.time||'').includes('OPTIONAL');
+  document.getElementById('n-opt').style.display=opt?'inline-block':'none';
+}
+
+function loadLive(s){
+  const stage=s.querySelector('.stage');
+  if(!stage) return;
+  if(stage.querySelector('iframe')) return;
+  const fb=stage.querySelector('.fallback');
+  const f=document.createElement('iframe');
+  f.setAttribute('allow','autoplay; camera; microphone; fullscreen; xr-spatial-tracking');
+  f.src=s.dataset.src;
+  stage.appendChild(f);
+  if(fb) fb.classList.add('hidden');
+}
+
+function unload(s){
+  const stage=s.querySelector('.stage');
+  if(!stage) return;
+  const f=stage.querySelector('iframe');
+  if(f){f.remove(); const fb=stage.querySelector('.fallback'); if(fb) fb.classList.remove('hidden');}
+}
+
+function setInteract(on){
+  interactOn=!!on;
+  slides.forEach(s=>s.classList.toggle('interact',interactOn && s.classList.contains('active') && !!s.dataset.src));
+}
+
+function liveInteractActive(){
+  return interactOn && !!slides[i].dataset.src;
+}
+
+function focusLiveFrame(s){
+  const f=s.querySelector('.stage iframe');
+  if(f) f.focus();
+}
+
+function show(n){
+  const prev=slides[i];
+  const prevIdx=i;
+  let nextIdx=n;
+  if(n<0) nextIdx=slides.length-1;
+  else if(n>=slides.length) nextIdx=0;
+  if(prev && prev.dataset.src) unload(prev);
+  if(prev && prev.dataset.preloadNext==='1'){
+    const warmed=slides[prevIdx+1];
+    if(warmed && warmed!==slides[nextIdx] && warmed.dataset.src) unload(warmed);
+  }
+  setInteract(false);
+  i=nextIdx;
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  const s=slides[i];
+  meter.style.width=((i+1)/slides.length*100)+'%';
+  setNote(s);
+  // apply caption visibility
+  const cap=s.querySelector('.cap'); if(cap) cap.classList.toggle('hidden',!capsOn);
+  if(s.dataset.autorun){
+    loadLive(s);
+    setInteract(true);
+    requestAnimationFrame(()=>focusLiveFrame(s));
+  } else {
+    deck.focus({preventScroll:true});
+  }
+  if(s.dataset.preloadNext==='1'){
+    const nxt=slides[i+1];
+    if(nxt && nxt.dataset.src) loadLive(nxt);
+  }
+}
+
+function next(){show((i+1)%slides.length)}
+function prev(){show((i-1+slides.length)%slides.length)}
+function toggleInteract(){
+  if(!slides[i].dataset.src) return;
+  setInteract(!interactOn);
+  if(interactOn){
+    loadLive(slides[i]);
+    focusLiveFrame(slides[i]);
+  } else deck.focus({preventScroll:true});
+}
+
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(liveInteractActive()){
+    const artKeys=['arrowright','arrowleft','arrowup','arrowdown',' ','pageup','pagedown','n','r','m','t','l'];
+    if(artKeys.includes(k)) return;
+  }
+  if(['arrowright',' ','pagedown','arrowdown'].includes(k)){e.preventDefault();next();hideHint();}
+  else if(['arrowleft','pageup','arrowup'].includes(k)){e.preventDefault();prev();hideHint();}
+  else if(k==='home'){show(0)}
+  else if(k==='end'){show(slides.length-1)}
+  else if(k==='l'){loadLive(slides[i])}
+  else if(k==='i'){toggleInteract();}
+  else if(k==='c'){capsOn=!capsOn; const cap=slides[i].querySelector('.cap'); if(cap) cap.classList.toggle('hidden',!capsOn);}
+  else if(k==='n'||k==='s'){notesOn=!notesOn; notes.classList.toggle('show',notesOn);}
+  else if(k==='f'){toggleFS();}
+});
+
+// click a fallback to load; click empty area advances
+document.querySelectorAll('.fb-load').forEach(b=>{
+  b.addEventListener('click',e=>{e.stopPropagation(); loadLive(b.closest('.slide'));});
+});
+document.getElementById('deck').addEventListener('click',e=>{
+  if(e.target.closest('.fb-load')||e.target.closest('a')||e.target.closest('.nav')) return;
+  const s=slides[i];
+  if(s.classList.contains('bare')||liveInteractActive()) return;
+  if(s.dataset.src && e.target.closest('.stage')) return;
+  next(); hideHint();
+});
+document.querySelector('.nav.prev').addEventListener('click',e=>{e.stopPropagation();prev();hideHint();});
+document.querySelector('.nav.next').addEventListener('click',e=>{e.stopPropagation();next();hideHint();});
+
+function toggleFS(){
+  if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
+  else{document.exitFullscreen&&document.exitFullscreen();}
+}
+
+let hintTimer=setTimeout(hideHint,6000);
+function hideHint(){hint.classList.add('gone'); clearTimeout(hintTimer);}
+
+show(0);
+</script>
+</body>
+</html>

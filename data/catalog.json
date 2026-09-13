@@ -752,6 +752,55 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Blackdove:blackdove-catalog-walhimer-forced-perspective",
+      "dublin_core": {
+        "title": "blackdove-catalog/walhimer-forced-perspective",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Blackdove:blackdove-catalog-walhimer-forced-perspective",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000370"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Blackdove-blackdove-catalog-walhimer-forced-perspective",
+        "type": "HumanMadeObject",
+        "_label": "blackdove-catalog/walhimer-forced-perspective",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Blackdove",
+          "file": "blackdove-catalog/walhimer-forced-perspective.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove-catalog/walhimer-forced-perspective.html"
+        ],
+        "external_urls": [
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com",
+          "https://mark-walhimer.com",
+          "https://mark-walhimer.com/installations/surrender-machines.html",
+          "https://mark-walhimer.com/sketches/blackdove-catalog/cube-on-floor-v9.html"
+        ]
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
       "dublin_core": {
         "title": "coupled-av-portal/README.md",
