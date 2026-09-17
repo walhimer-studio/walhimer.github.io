@@ -1,0 +1,1109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Study for the Muses — after Brice Marden</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+    /* August-29 format-fixed: buffer is exact size; CSS contains in viewport */
+    body.format-fixed {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    body.format-fixed canvas {
+      width: auto !important;
+      height: auto !important;
+      max-width: 100vw;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+    #hint {
+      position: fixed;
+      left: 12px;
+      top: 12px;
+      z-index: 10;
+      margin: 0;
+      font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: rgba(40, 36, 32, 0.55);
+      letter-spacing: 0.04em;
+      pointer-events: none;
+      max-width: 420px;
+      text-shadow: 0 0 8px rgba(232, 224, 208, 0.9);
+    }
+    #hint[data-rec="1"] {
+      color: rgba(180, 40, 40, 0.85);
+    }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+    }
+    #seed-hud {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      z-index: 10;
+      margin: 0;
+      font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: rgba(40, 36, 32, 0.5);
+      pointer-events: none;
+      text-shadow: 0 0 8px rgba(232, 224, 208, 0.9);
+    }
+  </style>
+  <script src="../js/Tone-14.8.49.js"></script>
+  <script src="../js/p5-1.11.2.min.js"></script>
+</head>
+<body>
+  <p id="hint">click to load sound · N rebirth · M mute · R record · ?seed= · ?format= · ?seconds=</p>
+  <p id="seed-hud">Study for the Muses</p>
+<script>
+/**
+ * Study for the Muses — after Brice Marden
+ * Same machine as Attendant No. 2; palette + line character matched to the painting.
+ * Seed (August-29): ?seed=N · N / space rebirth
+ * Format (August-29): ?format=square|portrait|landscape
+ * Record (August-29 CanvasRecorder): R · save-first · frame-step 60fps · ?seconds=60
+ * Sonification (Sampled Arc): Tone piano / violin / mallets on life arc · M mute
+ * Samples: ../coupled-av-portal/samples/
+ */
+const DEFAULT_SEED = 1;
+const RECORD_FPS = 60;
+
+const parseSecondsFromUrl = () => {
+  try {
+    const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
+    if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+  } catch (_) {}
+  return 60;
+};
+const RECORD_SECONDS = parseSecondsFromUrl();
+
+const FORMAT_SIZES = {
+  portrait: [2160, 3840],
+  landscape: [3840, 2160],
+  square: [2160, 2160],
+};
+
+const parseFormatFromUrl = () => {
+  try {
+    const raw = (new URLSearchParams(location.search).get('format') || '').toLowerCase();
+    if (raw && raw in FORMAT_SIZES) return raw;
+  } catch (_) {}
+  return null;
+};
+
+const FORMAT = parseFormatFromUrl();
+const CANVAS_W = FORMAT ? FORMAT_SIZES[FORMAT][0] : null;
+const CANVAS_H = FORMAT ? FORMAT_SIZES[FORMAT][1] : null;
+if (FORMAT) document.body.classList.add('format-fixed');
+
+const displaySize = () => {
+  if (FORMAT) return { w: CANVAS_W, h: CANVAS_H };
+  return { w: Math.floor(window.innerWidth), h: Math.floor(window.innerHeight) };
+};
+
+// Art field = format buffer, or landscape composition in viewport mode
+const ART_W = FORMAT ? CANVAS_W : 3840;
+const ART_H = FORMAT ? CANVAS_H : 2160;
+
+const GROUND = [241, 232, 219]; // cream (Study for the Muses)
+const BORDER = [195, 108, 91];   // terracotta frame
+const COLORS = [
+  [238, 189, 46],  // gold yellow
+  [125, 141, 146], // slate blue-grey
+  [195, 108, 91],  // terracotta
+  [125, 136, 110], // olive mute
+];
+
+const MAX_POINTS = 7200;
+const GROW_PER_FRAME = 5;
+const WEIGHT = 78;
+const COLOR_SEGMENT = 95;
+
+let activeSeed = 0;
+let trail = null;
+let linenTex = null;
+let artCanvas = null;
+let liveLoop = true;
+
+const parseInitialSeed = () => {
+  try {
+    const q = new URLSearchParams(location.search).get('seed');
+    if (q != null && q !== '') {
+      const n = Number(q) >>> 0;
+      if (Number.isFinite(n)) return n;
+    }
+  } catch (_) {}
+  return DEFAULT_SEED >>> 0;
+};
+
+const freshSeed = () => ((Math.random() * 0x100000000) >>> 0);
+
+const setSeedInUrl = (seed) => {
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('seed', String(seed >>> 0));
+    history.replaceState(null, '', url.toString());
+  } catch (_) {}
+};
+
+const seriesTitle = (seed) => {
+  const base = `Study for the Muses · ${seed >>> 0}`;
+  return FORMAT ? `${base} · ${FORMAT} ${CANVAS_W}×${CANVAS_H}` : base;
+};
+
+const updateSeedHud = (extra) => {
+  const label = seriesTitle(activeSeed);
+  let line = label;
+  if (instrumentsReady && world.alive) {
+    line += ` · ${world.phase} · ${(world.life * 100).toFixed(0)}%`;
+  }
+  if (extra) line += ` · ${extra}`;
+  const el = document.getElementById('seed-hud');
+  if (el) el.textContent = line;
+  document.title = label;
+};
+
+const applySeed = (seed) => {
+  activeSeed = seed >>> 0;
+  randomSeed(activeSeed); // p5
+  noiseSeed(activeSeed);  // p5
+  setSeedInUrl(activeSeed);
+  trail = makeTrail(activeSeed);
+  dna = createDNA(activeSeed);
+  updateSeedHud();
+};
+
+/** August-29 shape: rebirth(t, nextSeed) — omit nextSeed → fresh random */
+const rebirth = (t, nextSeed) => {
+  applySeed(nextSeed !== undefined ? nextSeed >>> 0 : freshSeed());
+  world.ended = false;
+  world.pulse = 0;
+  recT0 = t ?? performance.now();
+  if (instrumentsReady) {
+    world.alive = true;
+    lifeStart = Tone.now();
+    scheduleLife();
+  } else {
+    world.alive = false;
+  }
+  updateSeedHud();
+};
+
+// --- Sonification COPY from sampled-arc.html (Tone life arc) ---
+const SAMPLE_BASE = '../coupled-av-portal/samples/';
+
+const PHASES = [
+  { id: 'seed', label: 'Seed', from: 0, to: 0.12 },
+  { id: 'germinate', label: 'Germinate', from: 0.12, to: 0.28 },
+  { id: 'bloom', label: 'Bloom', from: 0.28, to: 0.52 },
+  { id: 'climax', label: 'Climax', from: 0.52, to: 0.72 },
+  { id: 'fade', label: 'Fade', from: 0.72, to: 0.9 },
+  { id: 'silence', label: 'Silence', from: 0.9, to: 1 },
+];
+
+const SCALES = {
+  fMinor: ['F', 'G', 'Ab', 'Bb', 'C', 'Db', 'Eb'],
+  dDorian: ['D', 'E', 'F', 'G', 'A', 'B', 'C'],
+  aAeolian: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+};
+
+const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
+
+const createDNA = (seed = (Math.random() * 1e9) | 0) => {
+  const rng = mulberry32(seed);
+  const scaleKeys = Object.keys(SCALES);
+  const scaleKey = pick(rng, scaleKeys);
+  return {
+    seed,
+    lifespan: 50 + rng() * 45,
+    scaleKey,
+    scale: SCALES[scaleKey],
+    rootOctave: 2 + Math.floor(rng() * 2),
+    motif: [0, 2, 4, 2, 5, 4, 0, 3].map((d) => (d + Math.floor(rng() * 2)) % 7),
+    hueBias: rng(),
+    energyBias: 0.25 + rng() * 0.45,
+    tempo: 52 + rng() * 28,
+  };
+};
+
+const smoothstep = (x, e0, e1) => {
+  const t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
+  return t * t * (3 - 2 * t);
+};
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+let dna = createDNA(DEFAULT_SEED);
+let piano, violin, mallets;
+let filter, delay, reverb;
+let instrumentsReady = false;
+let audioMuted = false;
+let schedulers = [];
+let lifeStart = 0;
+let recT0 = 0;
+let toneRecDest = null;
+
+const world = {
+  life: 0,
+  phase: 'seed',
+  phaseT: 0,
+  energy: 0.2,
+  pulse: 0,
+  alive: false,
+  ended: false,
+};
+
+function phaseIndex(life) {
+  for (let i = 0; i < PHASES.length; i++) {
+    if (life >= PHASES[i].from && life < PHASES[i].to) return i;
+  }
+  return PHASES.length - 1;
+}
+
+function noteName(degree, octaveOffset = 0) {
+  const deg = ((degree % 7) + 7) % 7;
+  const raw = dna.scale[deg];
+  const sharp = raw
+    .replace('Ab', 'G#')
+    .replace('Bb', 'A#')
+    .replace('Db', 'C#')
+    .replace('Eb', 'D#');
+  const oct = dna.rootOctave + octaveOffset;
+  return `${sharp}${oct}`;
+}
+
+function loadSampler(folder, urls) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (!settled) reject(new Error(`Timeout loading ${folder} samples`));
+    }, 45000);
+    const finish = (fn, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      fn(value);
+    };
+    const sampler = new Tone.Sampler({
+      urls,
+      baseUrl: `${SAMPLE_BASE}${folder}/`,
+      onload: () => finish(resolve, sampler),
+      onerror: (e) => finish(reject, e || new Error(`Failed loading ${folder}`)),
+    });
+  });
+}
+
+async function initInstruments() {
+  if (instrumentsReady) return;
+  if (!window.Tone?.start) throw new Error('Tone.js failed to load');
+  await Tone.start();
+  if (Tone.context?.state !== 'running') await Tone.context.resume();
+
+  reverb = new Tone.Reverb({ decay: 4.5, wet: 0.3 }).toDestination();
+  delay = new Tone.FeedbackDelay({
+    delayTime: 0.28,
+    feedback: 0.22,
+    wet: 0.15,
+  }).connect(reverb);
+  filter = new Tone.Filter({
+    frequency: 2400,
+    type: 'lowpass',
+    rolloff: -12,
+  }).connect(delay);
+
+  const [p, v, m] = await Promise.all([
+    loadSampler('piano', {
+      C2: 'C2.mp3', E2: 'E2.mp3', A2: 'A2.mp3',
+      C3: 'C3.mp3', E3: 'E3.mp3', A3: 'A3.mp3',
+      C4: 'C4.mp3', E4: 'E4.mp3', A4: 'A4.mp3',
+      C5: 'C5.mp3', E5: 'E5.mp3', A5: 'A5.mp3',
+      C6: 'C6.mp3',
+    }),
+    loadSampler('violin', {
+      G3: 'G3.mp3', A3: 'A3.mp3', C4: 'C4.mp3', E4: 'E4.mp3',
+      G4: 'G4.mp3', A4: 'A4.mp3', C5: 'C5.mp3', E5: 'E5.mp3',
+      G5: 'G5.mp3', A5: 'A5.mp3', C6: 'C6.mp3',
+    }),
+    loadSampler('xylophone', {
+      G4: 'G4.mp3', C5: 'C5.mp3', G5: 'G5.mp3',
+      C6: 'C6.mp3', G6: 'G6.mp3', C7: 'C7.mp3',
+    }),
+  ]);
+
+  piano = p;
+  violin = v;
+  mallets = m;
+  piano.disconnect();
+  violin.disconnect();
+  mallets.disconnect();
+
+  const master = new Tone.Gain(0.9).toDestination();
+  piano.connect(master);
+  piano.connect(filter);
+  violin.connect(master);
+  violin.connect(reverb);
+  mallets.connect(master);
+  mallets.connect(delay);
+
+  piano.volume.value = -4;
+  violin.volume.value = -8;
+  mallets.volume.value = -6;
+  instrumentsReady = true;
+}
+
+function clearSchedulers() {
+  schedulers.forEach((id) => Tone.Transport.clear(id));
+  schedulers = [];
+}
+
+function scheduleLife() {
+  clearSchedulers();
+  Tone.Transport.cancel(0);
+  Tone.Transport.bpm.value = dna.tempo;
+  Tone.Transport.seconds = 0;
+  let stepCounter = 0;
+
+  const id = Tone.Transport.scheduleRepeat((time) => {
+    if (!world.alive || world.ended) return;
+    const phase = world.phase;
+    const motif = dna.motif;
+    const step = stepCounter % motif.length;
+    stepCounter += 1;
+    const degree = motif[step];
+    const harmony = motif[(step + 2) % motif.length];
+    try {
+      if (phase === 'seed') {
+        if (step % 2 === 0) {
+          piano.triggerAttackRelease(noteName(degree, 1), '2n', time, 0.55);
+        }
+        if (step % 4 === 0) {
+          mallets.triggerAttackRelease(noteName(harmony, 3), '8n', time, 0.4);
+        }
+      } else if (phase === 'germinate') {
+        piano.triggerAttackRelease(noteName(degree, 1), '4n', time, 0.55);
+        if (step % 2 === 1) {
+          mallets.triggerAttackRelease(noteName(degree, 3), '8n', time, 0.5);
+        }
+      } else if (phase === 'bloom') {
+        piano.triggerAttackRelease(noteName(degree, 1), '4n', time, 0.6);
+        if (step % 2 === 0) {
+          mallets.triggerAttackRelease(noteName(harmony, 3), '16n', time, 0.55);
+        }
+        if (step % 4 === 0) {
+          violin.triggerAttackRelease(noteName(degree, 2), '2n', time, 0.4);
+        }
+      } else if (phase === 'climax') {
+        piano.triggerAttackRelease(noteName(degree, 1), '8n', time, 0.7);
+        piano.triggerAttackRelease(noteName(harmony, 2), '8n', time + 0.02, 0.4);
+        mallets.triggerAttackRelease(noteName(degree, 3), '16n', time, 0.65);
+        if (step % 2 === 0) {
+          violin.triggerAttackRelease(noteName(harmony, 2), '2n', time, 0.5);
+        }
+        world.pulse = 1;
+      } else if (phase === 'fade') {
+        if (step % 2 === 0) {
+          piano.triggerAttackRelease(
+            noteName(degree, 1),
+            '2n',
+            time,
+            Math.max(0.12, 0.45 * (1 - world.life))
+          );
+        }
+        if (step % 4 === 0) {
+          violin.triggerAttackRelease(
+            noteName(degree, 2),
+            '2n',
+            time,
+            Math.max(0.08, 0.3 * (1 - world.life))
+          );
+        }
+      }
+    } catch (err) {
+      console.warn('note trigger failed', err);
+    }
+  }, '8n');
+
+  schedulers.push(id);
+
+  const t0 = Tone.now() + 0.05;
+  try {
+    piano.triggerAttackRelease(noteName(dna.motif[0], 1), '2n', t0, 0.7);
+    mallets.triggerAttackRelease(noteName(dna.motif[2], 3), '8n', t0 + 0.08, 0.55);
+    violin.triggerAttackRelease(noteName(dna.motif[0], 2), '2n', t0 + 0.15, 0.35);
+  } catch (err) {
+    console.warn('start chord failed', err);
+  }
+  Tone.Transport.start();
+}
+
+function updateWorldFromElapsed(elapsed) {
+  const life = Math.min(1, elapsed / dna.lifespan);
+  world.life = life;
+  const idx = phaseIndex(life);
+  const ph = PHASES[idx];
+  world.phase = ph.id;
+  world.phaseT = (life - ph.from) / Math.max(1e-6, ph.to - ph.from);
+
+  const arc =
+    life < 0.55
+      ? smoothstep(life, 0, 0.55)
+      : 1 - smoothstep(life, 0.55, 1);
+  world.energy = clamp(dna.energyBias * 0.5 + arc * 0.7, 0.05, 1);
+  world.pulse *= 0.85;
+
+  if (instrumentsReady) {
+    const open =
+      world.phase === 'climax' ? 1 :
+      world.phase === 'bloom' ? 0.7 :
+      world.phase === 'fade' ? 0.4 : 0.35;
+    filter.frequency.rampTo(1200 + world.energy * 3600 * open, 0.15);
+    delay.wet.rampTo(0.1 + open * 0.22, 0.2);
+    delay.feedback.rampTo(0.12 + open * 0.2, 0.2);
+    reverb.wet.rampTo(0.22 + open * 0.28 + (world.phase === 'fade' ? 0.2 : 0), 0.25);
+    piano.volume.rampTo(-6 + world.energy * 4, 0.2);
+    violin.volume.rampTo(-10 + world.energy * 5, 0.2);
+    mallets.volume.rampTo(-8 + world.energy * 4, 0.2);
+  }
+
+  // Loop the arc — line keeps drawing
+  if (life >= 1) {
+    lifeStart = Tone.now();
+    recT0 = performance.now();
+    scheduleLife();
+  }
+}
+
+function beginLife() {
+  world.ended = false;
+  world.alive = true;
+  world.pulse = 0;
+  lifeStart = Tone.now();
+  recT0 = performance.now();
+  scheduleLife();
+  updateSeedHud();
+}
+
+async function ensureAudio() {
+  await initInstruments();
+  if (!world.alive) beginLife();
+  if (Tone.Destination) Tone.Destination.mute = audioMuted;
+}
+
+/** Tone → MediaStream for CanvasRecorder (Sampled Arc / august-29 shape) */
+const getAudioStream = async () => {
+  await ensureAudio();
+  if (!toneRecDest) {
+    toneRecDest = Tone.context.createMediaStreamDestination();
+    Tone.getDestination().connect(toneRecDest);
+  }
+  return toneRecDest.stream;
+};
+
+/** COPY from invisible-layer-august-29-2026.html — CanvasRecorder (wired to this canvas). */
+const CanvasRecorder = (getCanvas, getAudioStream) => {
+  let active = false;
+  let abort = false;
+  let frameIndex = 0;
+  let totalFrames = 0;
+  let compositeCanvas = null;
+  let compositeCtx = null;
+  let videoTrack = null;
+  let mediaStream = null;
+  let recW = 0;
+  let recH = 0;
+
+  const pickMime = () => {
+    const types = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm',
+      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4',
+    ];
+    return types.find((t) =>
+      typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
+    ) || '';
+  };
+
+  const recExt = (mt) => (mt.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+  const setRecHint = (on, sticky) => {
+    const hint = document.getElementById('hint');
+    if (hint) hint.dataset.rec = on ? '1' : '';
+    if (sticky != null) updateSeedHud(sticky);
+  };
+
+  const ensureComposite = () => {
+    const src = getCanvas();
+    const d = displaySize();
+    const w = FORMAT ? CANVAS_W : (src?.width || d.w);
+    const h = FORMAT ? CANVAS_H : (src?.height || d.h);
+    if (!compositeCanvas) {
+      compositeCanvas = document.createElement('canvas');
+      compositeCanvas.setAttribute('aria-hidden', 'true');
+      compositeCanvas.style.cssText =
+        'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+      document.body.appendChild(compositeCanvas);
+    }
+    if (compositeCanvas.width !== w || compositeCanvas.height !== h) {
+      compositeCanvas.width = w;
+      compositeCanvas.height = h;
+      compositeCtx = compositeCanvas.getContext('2d');
+    } else if (!compositeCtx) {
+      compositeCtx = compositeCanvas.getContext('2d');
+    }
+    recW = w;
+    recH = h;
+  };
+
+  const notifyFrame = () => {
+    if (!active || !compositeCtx || !compositeCanvas) return;
+    const src = getCanvas();
+    if (!src) return;
+    compositeCtx.fillStyle = '#ffffff';
+    compositeCtx.fillRect(0, 0, recW, recH);
+    compositeCtx.drawImage(src, 0, 0, recW, recH);
+    if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+  };
+
+  const start = async () => {
+    if (active) return false;
+    const canvas = getCanvas();
+    if (!canvas) return false;
+
+    const mimeType = pickMime();
+    if (!mimeType) {
+      setRecHint(false, 'MediaRecorder not supported — use Chrome');
+      return false;
+    }
+
+    const ext = recExt(mimeType);
+    const fmt = FORMAT || 'viewport';
+    let filename = `study-for-the-muses-${fmt}-seed${activeSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
+
+    let saveHandle = null;
+    if (typeof window.showSaveFilePicker === 'function') {
+      try {
+        saveHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{
+            description: ext === 'mp4' ? 'MP4 video' : 'WebM video',
+            accept: ext === 'mp4'
+              ? { 'video/mp4': ['.mp4'] }
+              : { 'video/webm': ['.webm'] },
+          }],
+        });
+      } catch (e) {
+        if (e && e.name === 'AbortError') {
+          setRecHint(false, 'Save dialog cancelled — no file');
+          return false;
+        }
+        throw e;
+      }
+    }
+    if (!saveHandle) {
+      setRecHint(false, 'Chrome Save dialog required — use Chrome');
+      return false;
+    }
+    filename = saveHandle.name || filename;
+
+    abort = false;
+    active = true;
+    liveLoop = false;
+    totalFrames = RECORD_SECONDS * RECORD_FPS;
+    frameIndex = 0;
+    setRecHint(true, `recording 0/${totalFrames} → ${filename}`);
+
+    const t0 = performance.now();
+    rebirth(t0, activeSeed);
+    ensureComposite();
+    renderOneFrame(t0);
+    notifyFrame();
+
+    let writable = null;
+    let recorder = null;
+    let writeChain = Promise.resolve();
+    let payloadBytes = 0;
+    let recErr = null;
+
+    try {
+      writable = await saveHandle.createWritable({ keepExistingData: false });
+      const videoOnly = compositeCanvas.captureStream(0);
+      const audioStream = await getAudioStream();
+      mediaStream = new MediaStream([
+        ...videoOnly.getVideoTracks(),
+        ...audioStream.getAudioTracks(),
+      ]);
+      videoTrack = mediaStream.getVideoTracks()[0] || null;
+      recorder = new MediaRecorder(mediaStream, {
+        mimeType,
+        videoBitsPerSecond: 40_000_000,
+      });
+      recorder.ondataavailable = (e) => {
+        if (!e.data || !e.data.size) return;
+        payloadBytes += e.data.size;
+        const blob = e.data;
+        writeChain = writeChain.then(() => writable.write({ type: 'write', data: blob }));
+      };
+      recorder.onerror = (e) => {
+        recErr = e.error || new Error('MediaRecorder error');
+      };
+
+      recorder.start(500);
+      if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+      const dtMs = 1000 / RECORD_FPS;
+      for (let i = 0; i < totalFrames; i++) {
+        if (abort) break;
+        if (recErr) throw recErr;
+        frameIndex = i;
+        const t = t0 + i * dtMs;
+        renderOneFrame(t);
+        notifyFrame();
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+        setRecHint(
+          true,
+          `recording ${i + 1}/${totalFrames}  ${(payloadBytes / 1e6).toFixed(1)} MB → ${filename}`
+        );
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+
+      await new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+        try { if (recorder.state === 'recording') recorder.requestData(); } catch (_) {}
+        recorder.stop();
+      });
+      await writeChain;
+      await writable.close();
+      writable = null;
+      setRecHint(
+        false,
+        abort
+          ? `stopped — file may be incomplete · ${filename}`
+          : `saved ${filename}  ${(payloadBytes / 1e6).toFixed(1)} MB · ${totalFrames}f`
+      );
+    } catch (err) {
+      console.error(err);
+      setRecHint(false, String(err && err.message ? err.message : err));
+      if (writable) { try { await writable.close(); } catch (_) {} }
+    } finally {
+      try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch (_) {}
+      try { mediaStream && mediaStream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+      videoTrack = null;
+      mediaStream = null;
+      active = false;
+      frameIndex = 0;
+      totalFrames = 0;
+      liveLoop = true;
+    }
+    return true;
+  };
+
+  const stop = () => {
+    if (active) abort = true;
+  };
+
+  const toggle = async () => {
+    if (active) {
+      stop();
+      return false;
+    }
+    return start();
+  };
+
+  return {
+    toggle,
+    isActive: () => active,
+    notifyFrame,
+    frameIndex: () => frameIndex,
+    totalFrames: () => totalFrames,
+  };
+};
+
+const rec = CanvasRecorder(
+  () => artCanvas?.elt || document.querySelector('canvas'),
+  getAudioStream
+);
+
+function mulberry32(a) {
+  return function () {
+    let t = (a += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function makeTrail(seed) {
+  const rng = mulberry32(seed ^ 0xB41CE);
+  const margin = 200;
+  const startX = margin + rng() * (ART_W - margin * 2);
+  const startY = margin + rng() * (ART_H - margin * 2);
+  const colorStart = Math.floor(rng() * COLORS.length);
+  return {
+    points: [{ x: startX, y: startY, z: 0, colorIndex: colorStart }],
+    x: startX,
+    y: startY,
+    z: 0,
+    heading: rng() * Math.PI * 2,
+    pitch: 0,
+    noiseScale: 0.00055 + rng() * 0.00045,
+    turnAmp: 0.055 + rng() * 0.06,
+    speed: 5.8 + rng() * 3.2,
+    noiseOffset: rng() * 1000,
+    colorStart,
+    age: 0,
+  };
+}
+
+const MARGIN = 60; // keep stroke inside art field
+
+function stepTrail(t) {
+  if (!trail) return;
+  const minX = MARGIN;
+  const maxX = ART_W - MARGIN;
+  const minY = MARGIN;
+  const maxY = ART_H - MARGIN;
+
+  for (let i = 0; i < GROW_PER_FRAME; i++) {
+    const n = noise(
+      trail.x * trail.noiseScale,
+      trail.y * trail.noiseScale,
+      trail.noiseOffset + t * 0.0001
+    );
+    const n2 = noise(
+      trail.y * trail.noiseScale * 1.3,
+      trail.noiseOffset + 40,
+      trail.x * trail.noiseScale
+    );
+
+    trail.heading += (n - 0.5) * trail.turnAmp * 2;
+    trail.pitch += (n2 - 0.5) * 0.06;
+    trail.pitch *= 0.98;
+    trail.pitch = constrain(trail.pitch, -0.55, 0.55);
+
+    // steer hard toward center near the edge so it weaves back in
+    const cx = ART_W * 0.5;
+    const cy = ART_H * 0.5;
+    const near = 220;
+    if (
+      trail.x < minX + near ||
+      trail.x > maxX - near ||
+      trail.y < minY + near ||
+      trail.y > maxY - near
+    ) {
+      trail.heading += Math.atan2(cy - trail.y, cx - trail.x) * 0.22;
+    }
+
+    trail.x += Math.cos(trail.heading) * trail.speed;
+    trail.y += Math.sin(trail.heading) * trail.speed;
+
+    // hard stay inside the art canvas
+    if (trail.x < minX) {
+      trail.x = minX;
+      trail.heading = Math.PI - trail.heading;
+    } else if (trail.x > maxX) {
+      trail.x = maxX;
+      trail.heading = Math.PI - trail.heading;
+    }
+    if (trail.y < minY) {
+      trail.y = minY;
+      trail.heading = -trail.heading;
+    } else if (trail.y > maxY) {
+      trail.y = maxY;
+      trail.heading = -trail.heading;
+    }
+
+    trail.z += Math.sin(trail.pitch) * 14;
+    trail.z *= 0.995;
+    trail.z = constrain(trail.z, -180, 180);
+
+    trail.age += 1;
+    const cIdx =
+      (Math.floor(trail.age / COLOR_SEGMENT) + trail.colorStart) % COLORS.length;
+
+    trail.points.push({
+      x: trail.x,
+      y: trail.y,
+      z: trail.z,
+      colorIndex: cIdx,
+    });
+
+    while (trail.points.length > MAX_POINTS) {
+      trail.points.shift();
+    }
+  }
+}
+
+function buildLinenCloth() {
+  // plain-weave linen + chalky gesso (tooth still reads through)
+  const tw = 960;
+  const th = 540;
+  const g = createGraphics(tw, th);
+  g.pixelDensity(1);
+  g.loadPixels();
+  const [br, bg, bb] = GROUND;
+  // traditional gesso: warm chalk white over cream linen
+  const gr = 250;
+  const gg = 246;
+  const gb = 238;
+  const thread = 3;
+
+  for (let y = 0; y < th; y++) {
+    for (let x = 0; x < tw; x++) {
+      const wx = Math.floor(x / thread);
+      const wy = Math.floor(y / thread);
+      const warpOnTop = (wx + wy) % 2 === 0;
+      const fx = x / thread - wx;
+      const fy = y / thread - wy;
+
+      const yarn =
+        warpOnTop
+          ? 0.55 + 0.45 * Math.sin(fx * Math.PI)
+          : 0.55 + 0.45 * Math.sin(fy * Math.PI);
+
+      const fiber =
+        noise(x * 0.35, y * 0.35) * 0.55 +
+        noise(x * 0.04, y * 0.04, 2.1) * 0.45;
+      const slub = noise(x * 0.015, y * 0.015, 7.7);
+      const slubBoost = slub > 0.72 ? (slub - 0.72) * 40 : 0;
+
+      let shade = (yarn - 0.5) * 22 + (fiber - 0.5) * 18 + slubBoost;
+      if (warpOnTop) shade -= 3;
+      else shade += 2;
+
+      const lr = constrain(br + shade * 0.9, 0, 255);
+      const lg = constrain(bg + shade * 0.85, 0, 255);
+      const lb = constrain(bb + shade * 0.7, 0, 255);
+
+      // gesso coverage: thick but uneven; weave valleys hold less primer
+      const brush =
+        noise(x * 0.012, y * 0.045, 3.3) * 0.65 +
+        noise(x * 0.05, y * 0.01, 5.1) * 0.35;
+      const tooth = 1 - yarn; // valleys in the weave
+      let cover = 0.72 + brush * 0.22 - tooth * 0.18;
+      cover = constrain(cover, 0.45, 0.94);
+
+      // chalk grain in the gesso itself
+      const chalk = (noise(x * 0.9, y * 0.9, 9.2) - 0.5) * 10;
+
+      const i = 4 * (y * tw + x);
+      g.pixels[i] = constrain(lr * (1 - cover) + (gr + chalk) * cover, 0, 255);
+      g.pixels[i + 1] = constrain(lg * (1 - cover) + (gg + chalk) * cover, 0, 255);
+      g.pixels[i + 2] = constrain(lb * (1 - cover) + (gb + chalk * 0.8) * cover, 0, 255);
+      g.pixels[i + 3] = 255;
+    }
+  }
+  g.updatePixels();
+  return g;
+}
+
+function drawArtField() {
+  push();
+  translate(0, 0, -220);
+  noStroke();
+  if (linenTex) {
+    texture(linenTex);
+    textureMode(NORMAL);
+  } else {
+    fill(...GROUND);
+  }
+  plane(ART_W, ART_H);
+  pop();
+
+  // thin terracotta frame (Study for the Muses)
+  const m = 48;
+  push();
+  translate(0, 0, -200);
+  noFill();
+  stroke(...BORDER, 220);
+  strokeWeight(6);
+  beginShape();
+  vertex(-ART_W / 2 + m, -ART_H / 2 + m, 0);
+  vertex(ART_W / 2 - m, -ART_H / 2 + m, 0);
+  vertex(ART_W / 2 - m, ART_H / 2 - m, 0);
+  vertex(-ART_W / 2 + m, ART_H / 2 - m, 0);
+  endShape(CLOSE);
+  pop();
+}
+
+function drawWeavingLine() {
+  const pts = trail.points;
+  if (pts.length < 2) return;
+
+  const segs = [];
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1];
+    const b = pts[i];
+    segs.push({
+      a,
+      b,
+      z: (a.z + b.z) * 0.5,
+      colorIndex: b.colorIndex,
+      t: i / pts.length,
+    });
+  }
+  segs.sort((u, v) => u.z - v.z);
+
+  strokeCap(ROUND);
+  strokeJoin(ROUND);
+  noFill();
+
+  for (const s of segs) {
+    const [cr, cg, cb] = COLORS[s.colorIndex % COLORS.length];
+    // hard cut at tail; soft edges on body — more opaque like oil ribbons
+    const baseA = 210;
+    const w = WEIGHT * (0.92 + 0.08 * Math.sin(s.z * 0.02));
+    // kill soft halo near the disappearing end so it doesn't ghost
+    const edge = s.t < 0.04 ? 0 : s.t < 0.1 ? map(s.t, 0.04, 0.1, 0, 1) : 1;
+
+    const ax = s.a.x - ART_W / 2;
+    const ay = s.a.y - ART_H / 2;
+    const bx = s.b.x - ART_W / 2;
+    const by = s.b.y - ART_H / 2;
+
+    if (edge > 0.01) {
+      stroke(cr, cg, cb, baseA * 0.22 * edge);
+      strokeWeight(w * 1.35);
+      beginShape(LINES);
+      vertex(ax, ay, s.a.z);
+      vertex(bx, by, s.b.z);
+      endShape();
+
+      stroke(cr, cg, cb, baseA * 0.4 * edge);
+      strokeWeight(w * 1.12);
+      beginShape(LINES);
+      vertex(ax, ay, s.a.z);
+      vertex(bx, by, s.b.z);
+      endShape();
+    }
+
+    stroke(cr, cg, cb, baseA);
+    strokeWeight(w);
+    beginShape(LINES);
+    vertex(ax, ay, s.a.z);
+    vertex(bx, by, s.b.z);
+    endShape();
+  }
+}
+
+function fitOrtho() {
+  if (FORMAT) {
+    // Buffer is exactly the art field
+    ortho(-ART_W / 2, ART_W / 2, ART_H / 2, -ART_H / 2, -2000, 2000);
+    return;
+  }
+  // Viewport mode: letterbox 3840×2160 art inside the window canvas
+  const viewAspect = width / Math.max(height, 1);
+  const artAspect = ART_W / ART_H;
+  let worldW = ART_W;
+  let worldH = ART_H;
+  if (viewAspect > artAspect) {
+    worldW = ART_H * viewAspect;
+    worldH = ART_H;
+  } else {
+    worldW = ART_W;
+    worldH = ART_W / viewAspect;
+  }
+  ortho(-worldW / 2, worldW / 2, worldH / 2, -worldH / 2, -2000, 2000);
+}
+
+function setup() {
+  pixelDensity(1);
+  const d = displaySize();
+  artCanvas = createCanvas(d.w, d.h, WEBGL);
+  fitOrtho();
+  noiseSeed(4242);
+  linenTex = buildLinenCloth();
+  applySeed(parseInitialSeed());
+}
+
+function windowResized() {
+  if (FORMAT) return;
+  resizeCanvas(windowWidth, windowHeight);
+  fitOrtho();
+}
+
+function renderOneFrame(t) {
+  if (instrumentsReady && world.alive) {
+    if (!liveLoop) {
+      updateWorldFromElapsed(Math.max(0, (t - recT0) / 1000));
+    } else {
+      updateWorldFromElapsed(Math.max(0, Tone.now() - lifeStart));
+    }
+    if (liveLoop && frameCount % 15 === 0) updateSeedHud();
+  }
+  background(0);
+  fitOrtho();
+  stepTrail(t);
+  drawArtField();
+  drawWeavingLine();
+}
+
+function draw() {
+  if (!liveLoop) return;
+  renderOneFrame(millis());
+}
+
+function mousePressed() {
+  void ensureAudio()
+    .then(() => updateSeedHud('sound ready — R to record'))
+    .catch((err) => {
+      console.warn(err);
+      updateSeedHud(String(err && err.message ? err.message : err));
+    });
+}
+
+function keyPressed() {
+  if (key === ' ' || key === 'n' || key === 'N') {
+    if (rec.isActive()) return false;
+    if (!instrumentsReady) {
+      void ensureAudio()
+        .then(() => {
+          rebirth(millis());
+          updateSeedHud('sound ready');
+        })
+        .catch((err) => updateSeedHud(String(err && err.message ? err.message : err)));
+      return false;
+    }
+    rebirth(millis());
+    return false;
+  }
+  if (key === 'm' || key === 'M') {
+    audioMuted = !audioMuted;
+    if (Tone?.Destination) Tone.Destination.mute = audioMuted;
+    updateSeedHud(audioMuted ? 'muted' : 'sound on');
+    return false;
+  }
+  if (key === 'r' || key === 'R') {
+    // Must call toggle in this gesture — awaiting ensureAudio first drops Chrome's save-dialog permission
+    if (!instrumentsReady) {
+      updateSeedHud('click canvas first to load sound, then R');
+      return false;
+    }
+    void rec.toggle().catch((err) => {
+      console.warn(err);
+      updateSeedHud(String(err && err.message ? err.message : err));
+    });
+    return false;
+  }
+}
+</script>
+</body>
+</html>

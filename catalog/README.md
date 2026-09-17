@@ -60,12 +60,14 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 
 | Folder | Description |
 |--------|-------------|
+| [brice-marden/](./brice-marden/) | brice marden |
+| [invisible-layer/](./invisible-layer/) | invisible layer |
 | [fluid-dynamics/](./fluid-dynamics/) | fluid dynamics |
+| [bloom/](./bloom/) | bloom |
 | [centered/](./centered/) | centered |
 | [loop-snippets/](./loop-snippets/) | loop snippets |
 | [digital-twin/](./digital-twin/) | digital twin |
 | [loop-art-critique-alumni-show-2026/](./loop-art-critique-alumni-show-2026/) | loop art critique alumni show 2026 |
-| [invisible-layer/](./invisible-layer/) | invisible layer |
 | [the-wrong-biennale/the-wrong-eclipse-august-2026/](./the-wrong-biennale/the-wrong-eclipse-august-2026/) | The Wrong Biennale — The Wrong Eclipse · August 2026 · *Holes in the Sky* |
 | [the-wrong-biennale/](./the-wrong-biennale/) | The Wrong Biennale — submissions and opportunities |
 | [april-25/](./april-25/) | april 25 |
@@ -91,7 +93,6 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 | [living-commons/](./living-commons/) | living commons |
 | [machine-dna-early-sketches/](./machine-dna-early-sketches/) | machine dna early sketches |
 | [loop-machine-aesthetic/](./loop-machine-aesthetic/) | loop machine aesthetic |
-| [bloom/](./bloom/) | bloom |
 | [moon-walking/](./moon-walking/) | moon walking |
 | [emergent-discs/](./emergent-discs/) | emergent discs |
 | [2026-ars-electronica/](./2026-ars-electronica/) | 2026 ars electronica |

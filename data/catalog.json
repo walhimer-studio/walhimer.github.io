@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-09-13",
+  "updated": "2026-09-17",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Coupled AV Portal",
-          "file": "coupled-av-portal/index.html"
+          "series": "Brice Marden",
+          "file": "brice-marden/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,41 +53,9 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/coupled-av-portal/README.md",
-            "sketches/coupled-av-portal/index.html",
-            "sketches/coupled-av-portal/prismatic-fluid.html",
-            "sketches/coupled-av-portal/sampled-arc.html",
-            "sketches/coupled-av-portal/samples/ATTRIBUTION.md",
-            "sketches/coupled-av-portal/samples/piano/A2.mp3",
-            "sketches/coupled-av-portal/samples/piano/A3.mp3",
-            "sketches/coupled-av-portal/samples/piano/A4.mp3",
-            "sketches/coupled-av-portal/samples/piano/A5.mp3",
-            "sketches/coupled-av-portal/samples/piano/C2.mp3",
-            "sketches/coupled-av-portal/samples/piano/C3.mp3",
-            "sketches/coupled-av-portal/samples/piano/C4.mp3",
-            "sketches/coupled-av-portal/samples/piano/C5.mp3",
-            "sketches/coupled-av-portal/samples/piano/C6.mp3",
-            "sketches/coupled-av-portal/samples/piano/E2.mp3",
-            "sketches/coupled-av-portal/samples/piano/E3.mp3",
-            "sketches/coupled-av-portal/samples/piano/E4.mp3",
-            "sketches/coupled-av-portal/samples/piano/E5.mp3",
-            "sketches/coupled-av-portal/samples/violin/A3.mp3",
-            "sketches/coupled-av-portal/samples/violin/A4.mp3",
-            "sketches/coupled-av-portal/samples/violin/A5.mp3",
-            "sketches/coupled-av-portal/samples/violin/C4.mp3",
-            "sketches/coupled-av-portal/samples/violin/C5.mp3",
-            "sketches/coupled-av-portal/samples/violin/C6.mp3",
-            "sketches/coupled-av-portal/samples/violin/E4.mp3",
-            "sketches/coupled-av-portal/samples/violin/E5.mp3",
-            "sketches/coupled-av-portal/samples/violin/G3.mp3",
-            "sketches/coupled-av-portal/samples/violin/G4.mp3",
-            "sketches/coupled-av-portal/samples/violin/G5.mp3",
-            "sketches/coupled-av-portal/samples/xylophone/C5.mp3",
-            "sketches/coupled-av-portal/samples/xylophone/C6.mp3",
-            "sketches/coupled-av-portal/samples/xylophone/C7.mp3",
-            "sketches/coupled-av-portal/samples/xylophone/G4.mp3",
-            "sketches/coupled-av-portal/samples/xylophone/G5.mp3",
-            "sketches/coupled-av-portal/samples/xylophone/G6.mp3"
+            "sketches/brice-marden/attendant-no-2.html",
+            "sketches/brice-marden/index.html",
+            "sketches/brice-marden/study-for-the -muses.html"
           ],
           "external_urls": []
         },
@@ -707,24 +675,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Blackdove:blackdove-catalog-cube-on-floor-v9",
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
       "dublin_core": {
-        "title": "blackdove-catalog/cube-on-floor-v9",
+        "title": "../catalog/brice-marden/marden-feldman-001.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Blackdove:blackdove-catalog-cube-on-floor-v9",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000369"
+        "catalog_number": "WS-000371"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Blackdove-blackdove-catalog-cube-on-floor-v9",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-001",
         "type": "HumanMadeObject",
-        "_label": "blackdove-catalog/cube-on-floor-v9",
+        "_label": "../catalog/brice-marden/marden-feldman-001.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -738,38 +706,36 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Blackdove",
-          "file": "blackdove-catalog/cube-on-floor-v9.html"
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/marden-feldman-001.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/blackdove-catalog/cube-on-floor-v9.html",
-          "sketches/js/p5-1.11.2.min.js",
-          "sketches/loop-snippets/js/three.min.js"
+          "catalog/brice-marden/marden-feldman-001.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Blackdove:blackdove-catalog-walhimer-forced-perspective",
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-readme",
       "dublin_core": {
-        "title": "blackdove-catalog/walhimer-forced-perspective",
+        "title": "../catalog/brice-marden/README.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Blackdove:blackdove-catalog-walhimer-forced-perspective",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-readme",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000370"
+        "catalog_number": "WS-000372"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Blackdove-blackdove-catalog-walhimer-forced-perspective",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-readme",
         "type": "HumanMadeObject",
-        "_label": "blackdove-catalog/walhimer-forced-perspective",
+        "_label": "../catalog/brice-marden/README.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -783,42 +749,36 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Blackdove",
-          "file": "blackdove-catalog/walhimer-forced-perspective.html"
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/blackdove-catalog/walhimer-forced-perspective.html"
+          "catalog/brice-marden/README.md"
         ],
-        "external_urls": [
-          "https://fonts.googleapis.com",
-          "https://fonts.gstatic.com",
-          "https://mark-walhimer.com",
-          "https://mark-walhimer.com/installations/surrender-machines.html",
-          "https://mark-walhimer.com/sketches/blackdove-catalog/cube-on-floor-v9.html"
-        ]
+        "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-attendant-no-2",
       "dublin_core": {
-        "title": "coupled-av-portal/README.md",
+        "title": "brice-marden/attendant-no-2",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-attendant-no-2",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000366"
+        "catalog_number": "WS-000373"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-readme",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-attendant-no-2",
         "type": "HumanMadeObject",
-        "_label": "coupled-av-portal/README.md",
+        "_label": "brice-marden/attendant-no-2",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -832,13 +792,60 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Coupled AV Portal",
-          "file": "coupled-av-portal/README.md"
+          "series": "Brice Marden",
+          "file": "brice-marden/attendant-no-2.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/coupled-av-portal/README.md"
+          "sketches/brice-marden/attendant-no-2.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
+      "dublin_core": {
+        "title": "brice-marden/study-for-the -muses",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000374"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-study-for-the--muses",
+        "type": "HumanMadeObject",
+        "_label": "brice-marden/study-for-the -muses",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/study-for-the -muses.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/study-for-the -muses.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
       }
@@ -928,6 +935,178 @@
         "repo_paths": [
           "sketches/coupled-av-portal/index.html",
           "sketches/coupled-av-portal/prismatic-fluid.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/README.md",
+          "sketches/coupled-av-portal/index.html",
+          "sketches/coupled-av-portal/prismatic-fluid.html",
+          "sketches/coupled-av-portal/sampled-arc.html",
+          "sketches/coupled-av-portal/samples/ATTRIBUTION.md",
+          "sketches/coupled-av-portal/samples/piano/A2.mp3",
+          "sketches/coupled-av-portal/samples/piano/A3.mp3",
+          "sketches/coupled-av-portal/samples/piano/A4.mp3",
+          "sketches/coupled-av-portal/samples/piano/A5.mp3",
+          "sketches/coupled-av-portal/samples/piano/C2.mp3",
+          "sketches/coupled-av-portal/samples/piano/C3.mp3",
+          "sketches/coupled-av-portal/samples/piano/C4.mp3",
+          "sketches/coupled-av-portal/samples/piano/C5.mp3",
+          "sketches/coupled-av-portal/samples/piano/C6.mp3",
+          "sketches/coupled-av-portal/samples/piano/E2.mp3",
+          "sketches/coupled-av-portal/samples/piano/E3.mp3",
+          "sketches/coupled-av-portal/samples/piano/E4.mp3",
+          "sketches/coupled-av-portal/samples/piano/E5.mp3",
+          "sketches/coupled-av-portal/samples/violin/A3.mp3",
+          "sketches/coupled-av-portal/samples/violin/A4.mp3",
+          "sketches/coupled-av-portal/samples/violin/A5.mp3",
+          "sketches/coupled-av-portal/samples/violin/C4.mp3",
+          "sketches/coupled-av-portal/samples/violin/C5.mp3",
+          "sketches/coupled-av-portal/samples/violin/C6.mp3",
+          "sketches/coupled-av-portal/samples/violin/E4.mp3",
+          "sketches/coupled-av-portal/samples/violin/E5.mp3",
+          "sketches/coupled-av-portal/samples/violin/G3.mp3",
+          "sketches/coupled-av-portal/samples/violin/G4.mp3",
+          "sketches/coupled-av-portal/samples/violin/G5.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/C5.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/C6.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/C7.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/G4.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/G5.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/G6.mp3"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+      "dublin_core": {
+        "title": "coupled-av-portal/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000366"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-readme",
+        "type": "HumanMadeObject",
+        "_label": "coupled-av-portal/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-august-29-2026",
+      "dublin_core": {
+        "title": "invisible-layer/invisible-layer-august-29-2026",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-august-29-2026",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000362"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-august-29-2026",
+        "type": "HumanMadeObject",
+        "_label": "invisible-layer/invisible-layer-august-29-2026",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Invisible Layer",
+          "file": "invisible-layer/invisible-layer-august-29-2026.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/invisible-layer/invisible-layer-august-29-2026.html",
+          "sketches/loop-snippets/js/three.min.js"
         ],
         "external_urls": []
       }
@@ -1141,50 +1320,6 @@
       "artifacts": {
         "repo_paths": [
           "sketches/invisible-layer/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-august-29-2026",
-      "dublin_core": {
-        "title": "invisible-layer/invisible-layer-august-29-2026",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-august-29-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000362"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-august-29-2026",
-        "type": "HumanMadeObject",
-        "_label": "invisible-layer/invisible-layer-august-29-2026",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "invisible-layer/invisible-layer-august-29-2026.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/invisible-layer/invisible-layer-august-29-2026.html",
-          "sketches/loop-snippets/js/three.min.js"
         ],
         "external_urls": []
       }
@@ -4234,6 +4369,49 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):loop-art-critique-2026-machine-aesthetic-ghost_dense_77823_room",
+      "dublin_core": {
+        "title": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:ghost_dense_77823_room",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000202"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-ghost_dense_77823_room",
+        "type": "HumanMadeObject",
+        "_label": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)",
+          "file": "loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):machine-aesthetic-machine-dna",
       "dublin_core": {
         "title": "../machine aesthetic/machine-dna",
@@ -4503,49 +4681,6 @@
       "artifacts": {
         "repo_paths": [
           "catalog/loop-art-critique-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission):loop-art-critique-2026-machine-aesthetic-ghost_dense_77823_room",
-      "dublin_core": {
-        "title": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Loop Art Critique 2026:ghost_dense_77823_room",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000202"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Loop Art Critique 2026-ghost_dense_77823_room",
-        "type": "HumanMadeObject",
-        "_label": "loop-art-critique-2026/machine-aesthetic/ghost dense 77823 room",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Machine DNA · Loop Art Critique 2026 (project: Machine Aesthetic · frozen submission)",
-          "file": "loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/loop-art-critique-2026/machine-aesthetic/ghost_dense_77823_room.html"
         ],
         "external_urls": []
       }
@@ -10076,6 +10211,100 @@
         "repo_paths": [
           "sketches/loop-snippets/loop-machine-aesthetic/ghost_dense_77823_room.html",
           "sketches/loop-snippets/loop-machine-aesthetic/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Blackdove:blackdove-catalog-walhimer-forced-perspective",
+      "dublin_core": {
+        "title": "blackdove-catalog/walhimer-forced-perspective",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Blackdove:blackdove-catalog-walhimer-forced-perspective",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000370"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Blackdove-blackdove-catalog-walhimer-forced-perspective",
+        "type": "HumanMadeObject",
+        "_label": "blackdove-catalog/walhimer-forced-perspective",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Blackdove",
+          "file": "blackdove-catalog/walhimer-forced-perspective.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove-catalog/walhimer-forced-perspective.html"
+        ],
+        "external_urls": [
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com",
+          "https://mark-walhimer.com",
+          "https://mark-walhimer.com/installations/surrender-machines.html",
+          "https://mark-walhimer.com/sketches/blackdove-catalog/cube-on-floor-v9.html"
+        ]
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Blackdove:blackdove-catalog-cube-on-floor-v9",
+      "dublin_core": {
+        "title": "blackdove-catalog/cube-on-floor-v9",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Blackdove:blackdove-catalog-cube-on-floor-v9",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000369"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Blackdove-blackdove-catalog-cube-on-floor-v9",
+        "type": "HumanMadeObject",
+        "_label": "blackdove-catalog/cube-on-floor-v9",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Blackdove",
+          "file": "blackdove-catalog/cube-on-floor-v9.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/blackdove-catalog/cube-on-floor-v9.html",
+          "sketches/js/p5-1.11.2.min.js",
+          "sketches/loop-snippets/js/three.min.js"
         ],
         "external_urls": []
       }
