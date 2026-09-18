@@ -1028,15 +1028,46 @@
     const clear = !opts || opts.clear !== false;
     if (clear) ctx.clearRect(0, 0, w, h);
 
-    // Lower on the canvas, under the machine: lifeline, then the word seed + number
-    const cx = w * 0.5;
+    // Under the machine on visible art (above control sheet): lifeline, then word seed + number
+    const world = new THREE.Vector3(0, 0.05, 0);
+    world.project(camera);
+    let cx = (world.x * 0.5 + 0.5) * w;
+    let underY = (-world.y * 0.5 + 0.5) * h;
+    if (!Number.isFinite(cx) || !Number.isFinite(underY)) {
+      cx = w * 0.5;
+      underY = h * 0.55;
+    }
+    underY += h * 0.18;
+
     const barH = Math.max(5, Math.round(h * 0.006));
     const barW = Math.min(w * 0.62, Math.max(160, w * 0.5));
     const fontPx = Math.max(16, Math.round(h * 0.018));
     const gap = Math.max(10, Math.round(h * 0.01));
-    const barY = h * 0.86;
+    const blockH = barH + gap + fontPx;
+
+    let maxBottom = h * 0.98;
+    const controlsEl = document.querySelector('.controls');
+    const canvasEl = renderer && renderer.domElement;
+    if (controlsEl && canvasEl && !document.body.classList.contains('controls-hidden')) {
+      const cs = getComputedStyle(controlsEl);
+      if (cs.display !== 'none' && cs.visibility !== 'hidden') {
+        const cr = controlsEl.getBoundingClientRect();
+        const ar = canvasEl.getBoundingClientRect();
+        if (ar.height > 0 && cr.top < ar.bottom && cr.top > ar.top) {
+          maxBottom = ((cr.top - ar.top) / ar.height) * h - h * 0.015;
+        }
+      }
+    }
+    let seedY = underY + blockH;
+    if (seedY > maxBottom) {
+      seedY = maxBottom;
+      underY = seedY - blockH;
+    }
+    underY = Math.max(h * 0.2, underY);
+
     const barX = cx - barW * 0.5;
-    const seedY = barY + barH + gap + fontPx;
+    const barY = underY;
+    seedY = barY + barH + gap + fontPx;
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
     ctx.fillRect(barX, barY, barW, barH);
