@@ -198,7 +198,7 @@
       <button type="button" id="btn-record" aria-pressed="false">Record</button>
     </div>
   </div>
-  <div id="seed-hud">Surrender Machines August-30-2026 · 77823</div>
+  <div id="seed-hud">Surrender Machines August-30-2026</div>
 
   <script src="js/three.min.js"></script>
   <script src="js/OrbitControls.js"></script>
@@ -206,7 +206,18 @@
 (function () {
   'use strict';
 
-  const INITIAL_SEED = 77823;
+  const DEFAULT_SEED = 77823;
+  const parseInitialSeed = () => {
+    try {
+      const q = new URLSearchParams(location.search).get('seed');
+      if (q != null && q !== '') {
+        const n = Number(q) >>> 0;
+        if (Number.isFinite(n)) return n;
+      }
+    } catch (_) {}
+    return DEFAULT_SEED >>> 0;
+  };
+  const INITIAL_SEED = parseInitialSeed();
   const DEFAULT_HORIZONTAL_GEAR_COUNT = 40;
   const DEFAULT_VERTICAL_GEAR_COUNT = 40;
   const MIN_HORIZONTAL_GEARS = 40;
@@ -1017,6 +1028,22 @@
     document.title = label;
   }
 
+  function layoutHudOnCanvas() {
+    const canvas = renderer && renderer.domElement;
+    const wrap = document.getElementById('lifebar-wrap');
+    if (!canvas || !wrap || !seedHud) return;
+    const r = canvas.getBoundingClientRect();
+    const barH = 6;
+    const gap = 4;
+    wrap.style.left = `${Math.round(r.left)}px`;
+    wrap.style.width = `${Math.round(r.width)}px`;
+    wrap.style.bottom = `${Math.max(0, Math.round(window.innerHeight - r.bottom))}px`;
+    wrap.style.right = 'auto';
+    seedHud.style.left = `${Math.round(r.left + 10)}px`;
+    seedHud.style.bottom = `${Math.max(0, Math.round(window.innerHeight - r.bottom + barH + gap))}px`;
+    seedHud.style.right = 'auto';
+  }
+
   function layoutRenderer() {
     const d = displaySize();
     const pr = FORMAT ? 1 : Math.min(window.devicePixelRatio, 2);
@@ -1025,6 +1052,7 @@
     camera.aspect = d.w / d.h;
     camera.updateProjectionMatrix();
     renderTarget.setSize(d.w * pr, d.h * pr);
+    layoutHudOnCanvas();
   }
 
   function refreshGearSliders() {
@@ -1525,6 +1553,7 @@
   requestAnimationFrame(frame);
 
   window.addEventListener('resize', layoutRenderer);
+  requestAnimationFrame(layoutHudOnCanvas);
 
   window.__gravityBridge = {
     _lastRemoteTs: 0,
