@@ -9581,6 +9581,51 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machine-black-august-30-2026",
+      "dublin_core": {
+        "title": "loop-snippets/surrender-machine-black-august-30-2026",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machine-black-august-30-2026",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000377"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Loop Snippets-loop-snippets-surrender-machine-black-august-30-2026",
+        "type": "HumanMadeObject",
+        "_label": "loop-snippets/surrender-machine-black-august-30-2026",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Loop Snippets",
+          "file": "loop-snippets/surrender-machine-black-august-30-2026.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/loop-snippets/js/OrbitControls.js",
+          "sketches/loop-snippets/js/three.min.js",
+          "sketches/loop-snippets/surrender-machine-black-august-30-2026.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Loop Snippets:loop-snippets-surrender-machines-three",
       "dublin_core": {
         "title": "loop-snippets/surrender-machines-three",
