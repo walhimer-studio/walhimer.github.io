@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attendant No. 2 — after Brice Marden</title>
+  <title>Marden / Feldman 002</title>
   <style>
     html, body {
       margin: 0;
@@ -69,17 +69,19 @@
 </head>
 <body>
   <p id="hint">click to load sound · N rebirth · M mute · R record · ?seed= · ?format= · ?seconds=</p>
-  <p id="seed-hud">Attendant No. 2</p>
+  <p id="seed-hud">Marden / Feldman 002</p>
 <script>
 /**
- * Attendant No. 2 — one continuous weaving line (after Brice Marden)
+ * Marden / Feldman 002 — same machine as Attendant / 001
+ * Line: seed picks black (current) or off-white
+ * Ground: seed picks linen (as-is) · pink · red · light blue
  * Seed (August-29): ?seed=N · N / space rebirth
  * Format (August-29): ?format=square|portrait|landscape
  * Record (August-29 CanvasRecorder): R · save-first · frame-step 60fps · ?seconds=60
  * Sonification: Morton Feldman character on Arc instruments — soft, sparse, slow · M mute
  * Samples: ../coupled-av-portal/samples/
  */
-const DEFAULT_SEED = 2; // Attendant No. 2 identity when ?seed= omitted
+const DEFAULT_SEED = 2;
 const RECORD_FPS = 60;
 
 const parseSecondsFromUrl = () => {
@@ -119,12 +121,30 @@ const displaySize = () => {
 const ART_W = FORMAT ? CANVAS_W : 3840;
 const ART_H = FORMAT ? CANVAS_H : 2160;
 
-const GROUND = [232, 224, 208]; // linen base
-const COLORS = [
-  [12, 11, 10],   // near black
-  [22, 20, 18],   // soft charcoal
-  [8, 8, 7],      // almost black
-];
+const LINE_PALETTES = {
+  black: [
+    [12, 11, 10],
+    [22, 20, 18],
+    [8, 8, 7],
+  ],
+  offwhite: [
+    [248, 244, 236],
+    [236, 230, 220],
+    [255, 252, 248],
+  ],
+};
+
+const GROUND_OPTIONS = {
+  linen: [232, 224, 208],
+  pink: [242, 176, 188],
+  red: [196, 48, 46],
+  lightblue: [172, 204, 228],
+};
+
+let GROUND = GROUND_OPTIONS.linen.slice();
+let COLORS = LINE_PALETTES.black.map((c) => c.slice());
+let paletteLine = 'black';
+let paletteGround = 'linen';
 
 const GROW_PER_TICK = 2; // half prior speed (was 4)
 const TICK_MS = 1000 / 60;
@@ -138,6 +158,17 @@ let linenTex = null;
 let artCanvas = null;
 let liveLoop = true;
 let lastStepT = 0;
+
+const applyPalette = (seed) => {
+  const rng = mulberry32((seed >>> 0) ^ 0xc0102);
+  paletteLine = pick(rng, Object.keys(LINE_PALETTES));
+  paletteGround = pick(rng, Object.keys(GROUND_OPTIONS));
+  COLORS = LINE_PALETTES[paletteLine].map((c) => c.slice());
+  GROUND = GROUND_OPTIONS[paletteGround].slice();
+  if (typeof createGraphics === 'function') {
+    linenTex = buildLinenCloth();
+  }
+};
 
 const parseInitialSeed = () => {
   try {
@@ -161,7 +192,7 @@ const setSeedInUrl = (seed) => {
 };
 
 const seriesTitle = (seed) => {
-  const base = `Attendant No. 2 · ${seed >>> 0}`;
+  const base = `Marden / Feldman 002 · ${seed >>> 0} · ${paletteLine}/${paletteGround}`;
   return FORMAT ? `${base} · ${FORMAT} ${CANVAS_W}×${CANVAS_H}` : base;
 };
 
@@ -182,6 +213,7 @@ const applySeed = (seed) => {
   randomSeed(activeSeed); // p5
   noiseSeed(activeSeed);  // p5
   setSeedInUrl(activeSeed);
+  applyPalette(activeSeed);
   trail = makeTrail(activeSeed);
   dna = createDNA(activeSeed);
   lastStepT = 0;
@@ -578,7 +610,7 @@ const CanvasRecorder = (getCanvas, getAudioStream) => {
 
     const ext = recExt(mimeType);
     const fmt = FORMAT || 'viewport';
-    let filename = `attendant-no-2-${fmt}-seed${activeSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
+    let filename = `marden-feldman-002-${fmt}-seed${activeSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
 
     let saveHandle = null;
     if (typeof window.showSaveFilePicker === 'function') {
@@ -854,10 +886,10 @@ function buildLinenCloth() {
   g.pixelDensity(1);
   g.loadPixels();
   const [br, bg, bb] = GROUND;
-  // traditional gesso: warm chalk white
-  const gr = 248;
-  const gg = 244;
-  const gb = 236;
+  // chalky gesso — lift of the ground (linen stays warm white; colors get tinted chalk)
+  const gr = constrain(br + (255 - br) * 0.55, 0, 255);
+  const gg = constrain(bg + (255 - bg) * 0.55, 0, 255);
+  const gb = constrain(bb + (255 - bb) * 0.55, 0, 255);
   const thread = 3;
 
   for (let y = 0; y < th; y++) {

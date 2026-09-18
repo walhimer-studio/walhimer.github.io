@@ -18,6 +18,7 @@ https://mark-walhimer.com/sketches/brice-marden/index.html
 | Title | Sketch |
 |-------|--------|
 | Marden / Feldman 001 | `sketches/brice-marden/attendant-no-2.html` · [catalog](./marden-feldman-001.md) |
+| Marden / Feldman 002 | `sketches/brice-marden/marden-feldman-002.html` · [catalog](./marden-feldman-002.md) |
 | Study for the Muses | `sketches/brice-marden/study-for-the -muses.html` |
 
 ## Publish checklist

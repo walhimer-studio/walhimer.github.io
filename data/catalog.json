@@ -55,6 +55,7 @@
           "repo_paths": [
             "sketches/brice-marden/attendant-no-2.html",
             "sketches/brice-marden/index.html",
+            "sketches/brice-marden/marden-feldman-002.html",
             "sketches/brice-marden/study-for-the -muses.html"
           ],
           "external_urls": []
@@ -675,24 +676,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
       "dublin_core": {
-        "title": "../catalog/brice-marden/marden-feldman-001.md",
+        "title": "brice-marden/study-for-the -muses",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000371"
+        "catalog_number": "WS-000374"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-001",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-study-for-the--muses",
         "type": "HumanMadeObject",
-        "_label": "../catalog/brice-marden/marden-feldman-001.md",
+        "_label": "brice-marden/study-for-the -muses",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -707,12 +708,14 @@
         ],
         "sketch": {
           "series": "Brice Marden",
-          "file": "../catalog/brice-marden/marden-feldman-001.md"
+          "file": "brice-marden/study-for-the -muses.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/brice-marden/marden-feldman-001.md"
+          "sketches/brice-marden/study-for-the -muses.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
       }
@@ -756,6 +759,94 @@
       "artifacts": {
         "repo_paths": [
           "catalog/brice-marden/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-002",
+      "dublin_core": {
+        "title": "../catalog/brice-marden/marden-feldman-002.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-002",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000375"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-002",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/brice-marden/marden-feldman-002.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/marden-feldman-002.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/brice-marden/marden-feldman-002.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-002",
+      "dublin_core": {
+        "title": "brice-marden/marden-feldman-002",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-002",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000376"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-marden-feldman-002",
+        "type": "HumanMadeObject",
+        "_label": "brice-marden/marden-feldman-002",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/marden-feldman-002.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/marden-feldman-002.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
         ],
         "external_urls": []
       }
@@ -806,24 +897,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
       "dublin_core": {
-        "title": "brice-marden/study-for-the -muses",
+        "title": "../catalog/brice-marden/marden-feldman-001.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000374"
+        "catalog_number": "WS-000371"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-study-for-the--muses",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-001",
         "type": "HumanMadeObject",
-        "_label": "brice-marden/study-for-the -muses",
+        "_label": "../catalog/brice-marden/marden-feldman-001.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -838,14 +929,12 @@
         ],
         "sketch": {
           "series": "Brice Marden",
-          "file": "brice-marden/study-for-the -muses.html"
+          "file": "../catalog/brice-marden/marden-feldman-001.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/brice-marden/study-for-the -muses.html",
-          "sketches/js/Tone-14.8.49.js",
-          "sketches/js/p5-1.11.2.min.js"
+          "catalog/brice-marden/marden-feldman-001.md"
         ],
         "external_urls": []
       }
