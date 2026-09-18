@@ -1023,13 +1023,10 @@
     paintArtHud();
   }
 
-  function paintArtHud() {
-    const ctx = artHud.getContext('2d');
-    if (!ctx) return;
-    const w = artHud.width;
-    const h = artHud.height;
-    if (!w || !h) return;
-    ctx.clearRect(0, 0, w, h);
+  function paintSeedLifeline(ctx, w, h, opts) {
+    if (!ctx || !w || !h) return;
+    const clear = !opts || opts.clear !== false;
+    if (clear) ctx.clearRect(0, 0, w, h);
 
     // Solid footer band on the art canvas, below the machine
     const barH = Math.max(8, Math.round(h * 0.008));
@@ -1047,14 +1044,24 @@
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, h - barH, w * artHudLifePct, barH);
 
-    // white seed label above lifeline
+    // white seed label above lifeline (no live extras like "orbit · R…" in the file)
     const fontPx = Math.max(12, Math.round(h * 0.011));
     ctx.font = `${fontPx}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     const textY = bandY + (bandH - barH) * 0.5;
-    ctx.fillText(artHudLabel || seriesTitle(), padX, textY);
+    const label = (opts && opts.label) || seriesTitle();
+    ctx.fillText(label, padX, textY);
+  }
+
+  function paintArtHud() {
+    const ctx = artHud.getContext('2d');
+    if (!ctx) return;
+    paintSeedLifeline(ctx, artHud.width, artHud.height, {
+      clear: true,
+      label: artHudLabel || seriesTitle(),
+    });
   }
 
   function layoutHudOnCanvas() {
@@ -1283,6 +1290,11 @@
       compositeCtx.fillStyle = '#000000';
       compositeCtx.fillRect(0, 0, recW, recH);
       compositeCtx.drawImage(src, 0, 0, recW, recH);
+      // Bake seed + lifeline into the recorded frame (overlay is live-only)
+      paintSeedLifeline(compositeCtx, recW, recH, {
+        clear: false,
+        label: seriesTitle(),
+      });
       if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
     };
 
