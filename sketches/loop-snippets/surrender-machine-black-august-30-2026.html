@@ -1035,9 +1035,9 @@
     let underY = (-world.y * 0.5 + 0.5) * h;
     if (!Number.isFinite(cx) || !Number.isFinite(underY)) {
       cx = w * 0.5;
-      underY = h * 0.62;
+      underY = h * 0.72;
     }
-    underY = Math.min(h * 0.88, Math.max(h * 0.35, underY + h * 0.04));
+    underY = Math.min(h * 0.92, Math.max(h * 0.45, underY + h * 0.14));
 
     const barH = Math.max(4, Math.round(h * 0.005));
     const barW = Math.min(w * 0.55, Math.max(120, w * 0.42));
@@ -1056,7 +1056,7 @@
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline = 'alphabetic';
     ctx.textAlign = 'center';
-    ctx.fillText(String(iterationSeed(iteration)), cx, seedY);
+    ctx.fillText(`seed ${iterationSeed(iteration)}`, cx, seedY);
   }
 
   function paintArtHud() {
