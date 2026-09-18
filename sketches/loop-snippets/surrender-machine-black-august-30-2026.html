@@ -1028,30 +1028,35 @@
     const clear = !opts || opts.clear !== false;
     if (clear) ctx.clearRect(0, 0, w, h);
 
-    const barH = Math.max(6, Math.round(h * 0.006));
-    const fontPx = Math.max(14, Math.round(h * 0.014));
-    const padX = Math.max(14, Math.round(w * 0.025));
-    const padBottom = Math.max(10, Math.round(h * 0.012));
-    const gap = Math.max(8, Math.round(h * 0.008));
-    const textH = fontPx;
-    // lifeline, then seed number below it
-    const seedY = h - padBottom;
-    const barY = seedY - textH - gap - barH;
-    const bandTop = barY - Math.max(8, Math.round(h * 0.008));
+    // Anchor under the machine in view (not canvas footer)
+    const world = new THREE.Vector3(0, 0.05, 0);
+    world.project(camera);
+    let cx = (world.x * 0.5 + 0.5) * w;
+    let underY = (-world.y * 0.5 + 0.5) * h;
+    if (!Number.isFinite(cx) || !Number.isFinite(underY)) {
+      cx = w * 0.5;
+      underY = h * 0.62;
+    }
+    underY = Math.min(h * 0.88, Math.max(h * 0.35, underY + h * 0.04));
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
-    ctx.fillRect(0, bandTop, w, h - bandTop);
+    const barH = Math.max(4, Math.round(h * 0.005));
+    const barW = Math.min(w * 0.55, Math.max(120, w * 0.42));
+    const fontPx = Math.max(13, Math.round(h * 0.013));
+    const gap = Math.max(6, Math.round(h * 0.007));
+    const barX = cx - barW * 0.5;
+    const barY = underY;
+    const seedY = barY + barH + gap + fontPx;
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-    ctx.fillRect(0, barY, w, barH);
+    ctx.fillRect(barX, barY, barW, barH);
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, barY, w * artHudLifePct, barH);
+    ctx.fillRect(barX, barY, barW * artHudLifePct, barH);
 
     ctx.font = `${fontPx}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.fillStyle = '#ffffff';
-    ctx.textBaseline = 'bottom';
-    ctx.textAlign = 'left';
-    ctx.fillText(String(iterationSeed(iteration)), padX, seedY);
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'center';
+    ctx.fillText(String(iterationSeed(iteration)), cx, seedY);
   }
 
   function paintArtHud() {
