@@ -24,14 +24,10 @@
       height: auto;
       object-fit: contain;
     }
-    #seed-hud {
-      position: fixed; left: 10px; bottom: 10px; z-index: 20;
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      font-size: 11px; line-height: 1.4;
-      color: #fff;
-      background: rgba(0, 0, 0, 0.72);
-      padding: 5px 8px;
-      pointer-events: none;
+    #seed-hud, #lifebar-wrap { display: none !important; }
+    #art-hud {
+      position: fixed; z-index: 15; pointer-events: none;
+      image-rendering: pixelated;
     }
     .hint {
       position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
@@ -120,7 +116,6 @@
     html.view-display .hint { display: none !important; }
     body.controls-hidden .controls { display: none !important; }
     html.view-display #remote-hud { display: block; }
-    html.view-display #seed-hud { bottom: calc(10px + env(safe-area-inset-bottom)); }
     #lifebar-wrap {
       position: fixed; bottom: 0; left: 0; width: 100%; height: 6px; z-index: 20;
       background: rgba(0, 0, 0, 0.85);
@@ -148,19 +143,6 @@
       .controls input[type="range"] { height: 32px; }
       .controls button { min-height: 44px; touch-action: manipulation; }
       .hint { font-size: 9px; width: 92vw; }
-      /* Keep seed + lifeline on the canvas above the docked control sheet */
-      #seed-hud {
-        bottom: calc(min(52vh, 420px) + 10px);
-      }
-      #lifebar-wrap {
-        bottom: min(52vh, 420px);
-      }
-      body.controls-hidden #seed-hud {
-        bottom: calc(10px + env(safe-area-inset-bottom));
-      }
-      body.controls-hidden #lifebar-wrap {
-        bottom: 0;
-      }
     }
   </style>
 </head>
@@ -931,6 +913,13 @@
   const lifebar = document.getElementById('lifebar');
   const hintEl = document.getElementById('hint');
 
+  const artHud = document.createElement('canvas');
+  artHud.id = 'art-hud';
+  artHud.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(artHud);
+  let artHudLabel = '';
+  let artHudLifePct = 0;
+
   const renderTarget = new THREE.WebGLRenderTarget(1, 1, {
     minFilter: THREE.LinearFilter,
     magFilter: THREE.LinearFilter,
@@ -1024,24 +1013,61 @@
 
   function updateSeedHud(extra) {
     const label = seriesTitle();
-    if (seedHud) seedHud.textContent = extra ? `${label} · ${extra}` : label;
+    artHudLabel = extra ? `${label} · ${extra}` : label;
+    if (seedHud) seedHud.textContent = artHudLabel;
     document.title = label;
+    paintArtHud();
+  }
+
+  function paintArtHud() {
+    const ctx = artHud.getContext('2d');
+    if (!ctx) return;
+    const w = artHud.width;
+    const h = artHud.height;
+    if (!w || !h) return;
+    ctx.clearRect(0, 0, w, h);
+
+    const barH = Math.max(6, Math.round(h * 0.006));
+    const bandH = Math.max(28, Math.round(h * 0.028));
+    const padX = Math.max(12, Math.round(w * 0.02));
+    const bandY = h - bandH;
+
+    // dark band at bottom of canvas (below machine)
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
+    ctx.fillRect(0, bandY, w, bandH);
+
+    // white lifeline
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+    ctx.fillRect(0, h - barH, w, barH);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, h - barH, w * artHudLifePct, barH);
+
+    // white seed label above lifeline
+    const fontPx = Math.max(12, Math.round(h * 0.011));
+    ctx.font = `${fontPx}px "IBM Plex Mono", ui-monospace, monospace`;
+    ctx.fillStyle = '#ffffff';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    const textY = bandY + (bandH - barH) * 0.5;
+    ctx.fillText(artHudLabel || seriesTitle(), padX, textY);
   }
 
   function layoutHudOnCanvas() {
     const canvas = renderer && renderer.domElement;
-    const wrap = document.getElementById('lifebar-wrap');
-    if (!canvas || !wrap || !seedHud) return;
+    if (!canvas || !artHud) return;
     const r = canvas.getBoundingClientRect();
-    const barH = 6;
-    const gap = 4;
-    wrap.style.left = `${Math.round(r.left)}px`;
-    wrap.style.width = `${Math.round(r.width)}px`;
-    wrap.style.bottom = `${Math.max(0, Math.round(window.innerHeight - r.bottom))}px`;
-    wrap.style.right = 'auto';
-    seedHud.style.left = `${Math.round(r.left + 10)}px`;
-    seedHud.style.bottom = `${Math.max(0, Math.round(window.innerHeight - r.bottom + barH + gap))}px`;
-    seedHud.style.right = 'auto';
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    artHud.style.left = `${Math.round(r.left)}px`;
+    artHud.style.top = `${Math.round(r.top)}px`;
+    artHud.style.width = `${Math.round(r.width)}px`;
+    artHud.style.height = `${Math.round(r.height)}px`;
+    const bw = Math.max(1, Math.round(r.width * dpr));
+    const bh = Math.max(1, Math.round(r.height * dpr));
+    if (artHud.width !== bw || artHud.height !== bh) {
+      artHud.width = bw;
+      artHud.height = bh;
+    }
+    paintArtHud();
   }
 
   function layoutRenderer() {
@@ -1065,9 +1091,10 @@
 
   function updateLife(t) {
     if (!lifeStart) lifeStart = t;
-    if (!lifebar) return;
-    const pct = Math.min(100, ((t - lifeStart) / LIFESPAN_MS) * 100);
-    lifebar.style.width = `${pct.toFixed(2)}%`;
+    const pct = Math.min(1, (t - lifeStart) / LIFESPAN_MS);
+    artHudLifePct = pct;
+    if (lifebar) lifebar.style.width = `${(pct * 100).toFixed(2)}%`;
+    paintArtHud();
   }
 
   function syncGearCounts() {
