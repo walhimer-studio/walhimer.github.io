@@ -916,7 +916,11 @@
   const artHud = document.createElement('canvas');
   artHud.id = 'art-hud';
   artHud.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(artHud);
+  if (renderer.domElement.nextSibling) {
+    document.body.insertBefore(artHud, renderer.domElement.nextSibling);
+  } else {
+    document.body.appendChild(artHud);
+  }
   let artHudLabel = '';
   let artHudLifePct = 0;
 
@@ -1027,9 +1031,10 @@
     if (!w || !h) return;
     ctx.clearRect(0, 0, w, h);
 
-    const barH = Math.max(6, Math.round(h * 0.006));
-    const bandH = Math.max(28, Math.round(h * 0.028));
-    const padX = Math.max(12, Math.round(w * 0.02));
+    // Solid footer band on the art canvas, below the machine
+    const barH = Math.max(8, Math.round(h * 0.008));
+    const bandH = Math.max(48, Math.round(h * 0.055));
+    const padX = Math.max(14, Math.round(w * 0.025));
     const bandY = h - bandH;
 
     // dark band at bottom of canvas (below machine)
@@ -1565,6 +1570,7 @@
 
     postMaterial.uniforms.tDiffuse.value = renderTarget.texture;
     renderer.render(postScene, postCamera);
+    layoutHudOnCanvas();
   }
 
   function frame(t) {
