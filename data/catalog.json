@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-09-18",
+  "updated": "2026-09-19",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -57,6 +57,7 @@
             "sketches/brice-marden/index.html",
             "sketches/brice-marden/marden-feldman-002.html",
             "sketches/brice-marden/marden-feldman-003.html",
+            "sketches/brice-marden/marden-feldman-005.html",
             "sketches/brice-marden/study-for-the -muses.html"
           ],
           "external_urls": []
@@ -677,24 +678,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-005",
       "dublin_core": {
-        "title": "../catalog/brice-marden/marden-feldman-003.md",
+        "title": "../catalog/brice-marden/marden-feldman-005.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-005",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000378"
+        "catalog_number": "WS-000380"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-003",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-005",
         "type": "HumanMadeObject",
-        "_label": "../catalog/brice-marden/marden-feldman-003.md",
+        "_label": "../catalog/brice-marden/marden-feldman-005.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -709,12 +710,12 @@
         ],
         "sketch": {
           "series": "Brice Marden",
-          "file": "../catalog/brice-marden/marden-feldman-003.md"
+          "file": "../catalog/brice-marden/marden-feldman-005.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/brice-marden/marden-feldman-003.md"
+          "catalog/brice-marden/marden-feldman-005.md"
         ],
         "external_urls": []
       }
@@ -758,6 +759,94 @@
       "artifacts": {
         "repo_paths": [
           "catalog/brice-marden/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-005",
+      "dublin_core": {
+        "title": "brice-marden/marden-feldman-005",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-005",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000381"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-marden-feldman-005",
+        "type": "HumanMadeObject",
+        "_label": "brice-marden/marden-feldman-005",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/marden-feldman-005.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/marden-feldman-005.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+      "dublin_core": {
+        "title": "../catalog/brice-marden/marden-feldman-003.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000378"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-003",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/brice-marden/marden-feldman-003.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/marden-feldman-003.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/brice-marden/marden-feldman-003.md"
         ],
         "external_urls": []
       }
