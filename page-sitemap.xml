@@ -126,6 +126,12 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://mark-walhimer.com/guide/beyond-the-search.html</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://mark-walhimer.com/guide/what-is-it-called.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>

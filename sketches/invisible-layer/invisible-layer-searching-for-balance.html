@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invisible Layer — Searching for Balance</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #fff; }
+    canvas {
+      display: block;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+    body.format-fixed canvas {
+      position: static;
+      inset: auto;
+      margin: 0 auto;
+      max-width: 100vw;
+      max-height: 100vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    #hint {
+      position: fixed; left: 10px; top: 10px; z-index: 2;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.5);
+      pointer-events: none;
+      max-width: 380px;
+    }
+    #hint[data-rec="1"]::after {
+      content: ' · REC';
+      color: rgba(220, 50, 70, 0.9);
+    }
+    #seed-hud {
+      position: fixed; left: 10px; bottom: 8px; z-index: 2;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: rgba(90, 120, 140, 0.45);
+      pointer-events: none;
+    }
+    #lifebar-wrap {
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 3px; z-index: 2;
+      background: rgba(0, 0, 0, 0.07);
+    }
+    #lifebar {
+      height: 100%; width: 0%;
+      background: rgba(255, 16, 240, 0.55);
+      transition: width 0.12s linear;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">
+    WebGL2 ortho · embedded 924 palette · static host OK<br>
+    H hide · ↑↓←→ pan · 1 RS · 2 R-only · 3 S-only · A auto · R record · N rebirth<br>
+    <code>?seed=N</code> · <code>?format=square|portrait|landscape</code> · <code>?seconds=60</code>
+  </div>
+  <div id="lifebar-wrap"><div id="lifebar"></div></div>
+  <div id="seed-hud">Invisible Layer — Searching for Balance</div>
+  <script src="../loop-snippets/centered-924-data.js"></script>
+  <script>
+/**
+ * Invisible Layer — Searching for Balance — view pan · same engine as June-7-2026 study-webgl.
+ * Invisible layer · G scanners · R layers → GPU; Canvas2D + WebGL2/JavaScript · WebGL feedback (ping-pong buffers).
+ * Format (august-29 contract):
+ *   ?format=square|portrait|landscape
+ *   square 2160×2160 · portrait 2160×3840 · landscape 3840×2160
+ *   omit format → fill viewport (legacy)
+ * Record: august-29 path — save-first · frame-step 60 fps · ?seconds=60 (default) · R starts · R aborts
+ */
+const { floor, min, max, sqrt, pow } = Math;
+const DEFAULT_SEED = 77823;
+const LIFESPAN_MS = 480000;
+const SURRENDER_MS = 4200;
+const RECORD_FPS = 60;
+
+const parseSecondsFromUrl = () => {
+  try {
+    const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
+    if (Number.isFinite(n) && n >= 1) return n;
+  } catch (_) {}
+  return 60;
+};
+const RECORD_SECONDS = parseSecondsFromUrl();
+
+const FORMAT_SIZES = {
+  portrait: [2160, 3840],
+  landscape: [3840, 2160],
+  square: [2160, 2160],
+};
+
+const parseFormatFromUrl = () => {
+  try {
+    const raw = (new URLSearchParams(location.search).get('format') || '').toLowerCase();
+    if (raw && raw in FORMAT_SIZES) return raw;
+  } catch (_) {}
+  return null;
+};
+
+const FORMAT = parseFormatFromUrl();
+const CANVAS_W = FORMAT ? FORMAT_SIZES[FORMAT][0] : null;
+const CANVAS_H = FORMAT ? FORMAT_SIZES[FORMAT][1] : null;
+if (FORMAT) document.body.classList.add('format-fixed');
+
+const displaySize = () => {
+  if (FORMAT) return { w: CANVAS_W, h: CANVAS_H };
+  return { w: Math.floor(window.innerWidth), h: Math.floor(window.innerHeight) };
+};
+
+const makeRng = (seed) => {
+  let s = seed >>> 0;
+  return {
+    random() {
+      s = (s + 0x6d2b79f5) >>> 0;
+      let t = s;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    },
+    uniform(a, b) { return a + this.random() * (b - a); },
+    randint(a, b) { return a + Math.floor(this.random() * (b - a + 1)); },
+    choice(arr) { return arr[this.randint(0, arr.length - 1)]; },
+    chance(p) { return this.random() < p; },
+  };
+};
+
+const parseInitialSeed = () => {
+  try {
+    const q = new URLSearchParams(location.search).get('seed');
+    if (q != null && q !== '') {
+      const n = Number(q) >>> 0;
+      if (Number.isFinite(n)) return n;
+    }
+  } catch (_) {}
+  return DEFAULT_SEED >>> 0;
+};
+
+const rgbToHsl = (r, g, b) => {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) * 0.5;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h = 0;
+  if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+  else if (max === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  return [h / 6, s, l];
+};
+
+const hslToRgb = (h, s, l) => {
+  if (s === 0) return [l, l, l];
+  const hue2rgb = (p, q, t) => {
+    let tt = t;
+    if (tt < 0) tt += 1;
+    if (tt > 1) tt -= 1;
+    if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+    if (tt < 1 / 2) return q;
+    if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+    return p;
+  };
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  return [hue2rgb(p, q, h + 1 / 3), hue2rgb(p, q, h), hue2rgb(p, q, h - 1 / 3)];
+};
+
+const hueRotateRgb = (rgb, deg) => {
+  const [h, s, l] = rgbToHsl(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255);
+  const nh = (h + deg / 360 + 1) % 1;
+  const ns = min(1, max(0.35, s * 1.05));
+  return hslToRgb(nh, ns, min(0.92, max(0.38, l))).map((v) => floor(v * 255));
+};
+
+const shuffleInPlace = (arr, rng) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = rng.randint(0, i);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
+const CENTERED_REF = CENTERED_924_SRC;
+
+/** Fallbacks: fringes, arms, and core on 924_centered. */
+const BASE_PAL = {
+  white: [255, 255, 255],
+  pink: [248, 229, 231],
+  yellow: [255, 255, 226],
+  skyBlue: [199, 225, 250],
+  lavender: [163, 162, 230],
+  blend: [106, 93, 173],
+  peach: [174, 187, 222],
+  magenta: [105, 100, 180],
+  mint: [153, 165, 207],
+  violet: [105, 94, 173],
+};
+
+const PAL = {};
+
+const buildSeedProfile = (seed) => {
+  const r = makeRng(seed);
+  const r2 = makeRng(seed ^ 0x9e3779b9);
+  const r3 = makeRng(seed ^ 0x517cc1b7);
+  const hueShift = r.uniform(0, 360);
+  const palette = {};
+  for (const [k, v] of Object.entries(BASE_PAL)) {
+    if (k === 'white') {
+      palette[k] = v.slice();
+      continue;
+    }
+    palette[k] = hueRotateRgb(v, hueShift + r2.uniform(-24, 24));
+  }
+  const spectrumKeys = shuffleInPlace(Object.keys(BASE_PAL).filter((k) => k !== 'white'), r3);
+  const cell = r.choice([8, 16, 32]);
+  return {
+    seed: seed >>> 0,
+    hueShift,
+    palette,
+    spectrumKeys,
+    canvas: {
+      cell,
+      grid: cell * r.choice([1, 2, 4]),
+      scannerSpawn: r.uniform(0.08, 0.22),
+      layerSpawn: r.uniform(0.06, 0.18),
+      maxLayers: r.randint(2, 8),
+      capMul: r.uniform(0.28, 0.52),
+    },
+    gpu: {
+      specAlphaAB: r.uniform(0.12, 0.36),
+      specAlphaInk: r.uniform(0.2, 0.48),
+      paletteVeil: r.uniform(0.62, 0.94),
+    },
+    defaultMode: r.randint(0, 2),
+    autoMode: r.chance(0.62),
+  };
+};
+
+let activeSeed = parseInitialSeed();
+let seedProfile = null;
+let orgRng = makeRng(activeSeed);
+let lifeStart = 0;
+let lifePhase = 'live';
+let surrenderAt = 0;
+let solidifyK = 0;
+
+const SPECTRUM = [];
+
+const rebuildSpectrum = () => {
+  SPECTRUM.length = 0;
+  const keys = seedProfile?.spectrumKeys ?? Object.keys(BASE_PAL).filter((k) => k !== 'white');
+  for (const k of keys) SPECTRUM.push(PAL[k] ?? BASE_PAL[k]);
+};
+
+const applyPaletteFromProfile = (prof) => {
+  for (const [k, v] of Object.entries(BASE_PAL)) PAL[k] = (prof.palette[k] ?? v).slice();
+  rebuildSpectrum();
+};
+
+const applyCenteredSamples = (img, prof) => {
+  const c = document.createElement('canvas');
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0);
+  const get = (x, y) => {
+    const d = ctx.getImageData(min(w - 1, max(0, floor(x))), min(h - 1, max(0, floor(y))), 1, 1).data;
+    return [d[0], d[1], d[2]];
+  };
+  const onCross = (r, g, b) => r + g + b < 742;
+  const cx = floor(w * 0.5);
+  const cy = floor(h * 0.5);
+  const spanH = [];
+  for (let x = 0; x < w; x++) {
+    const [r, g, b] = get(x, cy);
+    if (onCross(r, g, b)) spanH.push(x);
+  }
+  const spanV = [];
+  for (let y = 0; y < h; y++) {
+    const [r, g, b] = get(cx, y);
+    if (onCross(r, g, b)) spanV.push(y);
+  }
+  const hs = prof?.hueShift ?? 0;
+  const rj = makeRng((prof?.seed ?? 0) ^ 0x9e3779b9);
+  const rot = (rgb) => hueRotateRgb(rgb, hs + rj.uniform(-14, 14));
+  if (spanH.length > 8 && spanV.length > 8) {
+    const pickH = (t) => get(spanH[floor((spanH.length - 1) * t)], cy);
+    const pickV = (t) => get(cx, spanV[floor((spanV.length - 1) * t)]);
+    PAL.pink = rot(pickH(0.03));
+    PAL.peach = rot(pickH(0.2));
+    PAL.magenta = rot(pickH(0.42));
+    PAL.blend = rot(get(cx, cy));
+    PAL.violet = rot(pickH(0.58));
+    PAL.yellow = rot(pickH(0.97));
+    PAL.skyBlue = rot(pickV(0.03));
+    PAL.mint = rot(pickV(0.2));
+    PAL.lavender = rot(pickV(0.97));
+    PAL.white = [255, 255, 255];
+    rebuildSpectrum();
+    return true;
+  }
+  if (prof) applyPaletteFromProfile(prof);
+  return false;
+};
+
+const rnd = () => orgRng.random();
+
+let centeredImg = null;
+
+const refreshSeedPalette = () => {
+  if (!seedProfile) return;
+  applyPaletteFromProfile(seedProfile);
+  if (centeredImg) applyCenteredSamples(centeredImg, seedProfile);
+  gpu.refreshPalette();
+};
+
+const loadCenteredArtwork = (onReady) => {
+  const img = new Image();
+  img.onload = () => {
+    centeredImg = img;
+    applyCenteredSamples(img, seedProfile);
+    onReady?.();
+  };
+  img.src = CENTERED_REF;
+};
+
+const rgb01 = (c) => [c[0] / 255, c[1] / 255, c[2] / 255];
+
+const Canvas2d = () => {
+  let ctx, width, height, scanners = [], layers = [];
+  let profile = {
+    cell: 16,
+    grid: 32,
+    scannerSpawn: 0.14,
+    layerSpawn: 0.1,
+    maxLayers: 4,
+    capMul: 0.4,
+  };
+
+  const setProfile = (p) => { profile = { ...profile, ...p }; };
+  const reset = () => { scanners = []; layers = []; };
+
+  const greenLevel = (time, opt) => {
+    if (!opt.auto) return [1, 2, 4][opt.mode] ?? 1;
+    return [1, 2, 4][floor(time / 90000) % 3];
+  };
+
+  const scanner = (x, y, size, dir, speed, life, g) => {
+    const d = [...dir];
+    return () => {
+      ctx.fillStyle = `rgba(0,${g},0,1)`;
+      ctx.fillRect(x, y, size, size);
+      x += d[0] * speed;
+      y += d[1] * speed;
+      if (d[0]) {
+        if (x < 0 || x > width - size) {
+          x = x < 0 ? 0 : width - size;
+          y += size * d[0];
+          d[0] *= -1;
+        }
+        if (y < -size || y >= height) life = 0;
+      }
+      if (d[1]) {
+        if (y < 0 || y > height - size) {
+          y = y < 0 ? 0 : height - size;
+          x += size * d[1];
+          d[1] *= -1;
+        }
+        if (x < -size || x >= width) life = 0;
+      }
+      return --life > 0;
+    };
+  };
+
+  const layer = (x, y, w, h, grid, life, c) => {
+    const pts = [[x, y]];
+    let yp = y;
+    let xp = x + w;
+
+    const edgeX = () => {
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => a - b);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += rnd() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    };
+    const edgeY = (reverse) => {
+      const s = 1 + floor(rnd() * 3);
+      const ys = Array.from({ length: s }, () => floor(rnd() * (h - grid) / grid) * grid)
+        .sort((a, b) => (reverse ? b - a : a - b));
+      for (let i = 0; i < s; i++) {
+        pts.push([xp, y + ys[i]]);
+        xp += rnd() < 0.5 ? grid : -grid;
+        pts.push([xp, y + ys[i]]);
+      }
+    };
+
+    if (y !== 0) edgeX();
+    pts.push([x + w, yp]);
+    xp = x + w;
+    if (x + w !== width) edgeY(false);
+    pts.push([xp, y + h]);
+    yp = y + h;
+    if (y + h !== height) {
+      const s = 1 + floor(rnd() * 3);
+      const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => b - a);
+      for (let i = 0; i < s; i++) {
+        pts.push([x + xs[i], yp]);
+        yp += rnd() < 0.5 ? grid : -grid;
+        pts.push([x + xs[i], yp]);
+      }
+    }
+    pts.push([x, yp]);
+    xp = x;
+    if (x !== 0) {
+      edgeY(true);
+      pts[0] = [xp, y];
+    }
+
+    return () => {
+      ctx.fillStyle = `rgba(${c},0,0,1)`;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.closePath();
+      ctx.fill();
+      return --life > 0;
+    };
+  };
+
+  const init = () => {
+    const cvs = document.createElement('canvas');
+    ctx = cvs.getContext('2d', { willReadFrequently: true });
+  };
+
+  const setup = () => {
+    const d = displaySize();
+    width = floor(d.w);
+    height = floor(d.h);
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+  };
+
+  const draw = (time, options) => {
+    ctx.clearRect(0, 0, width, height);
+    ctx.globalCompositeOperation = 'source-over';
+    scanners = scanners.filter((fn) => fn());
+    ctx.globalCompositeOperation = 'lighter';
+    layers = layers.filter((fn) => fn());
+
+    const cell = profile.cell;
+    const cap = floor(sqrt(floor(width / cell) * floor(height / cell)) * profile.capMul);
+
+    if (lifePhase === 'live') {
+      if (scanners.length < cap && rnd() < profile.scannerSpawn) {
+        const x = floor(rnd() * floor((width - cell) / cell)) * cell;
+        const y = floor(rnd() * floor((height - cell) / cell)) * cell;
+        const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+        const speed = pow(2, floor(rnd() * 2));
+        const stride = pow(2, floor(rnd() * 2));
+        const g = greenLevel(time, options);
+        const n = dir[0]
+          ? 1 + floor(rnd() * ((dir[0] < 0 ? y : height - y) / (cell * stride)))
+          : 1 + floor(rnd() * ((dir[1] < 0 ? x : width - x) / (cell * stride)));
+        const life = (14 + floor(rnd() * 20)) * 32;
+        for (let i = 0; i < n; i++) {
+          scanners.push(scanner(x + dir[1] * stride * cell * i, y + dir[0] * stride * cell * i, cell, dir, speed, life, g));
+        }
+      }
+
+      const grid = profile.grid;
+      if (layers.length < profile.maxLayers && rnd() < profile.layerSpawn) {
+        const cols = floor(width / grid);
+        const rows = floor(height / grid);
+        const vert = rnd() < 0.5;
+        const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : width;
+        const h = vert ? height : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+        let lx = rnd() < 0.5 ? 0 : width - w;
+        let ly = rnd() < 0.5 ? 0 : height - h;
+        if (rnd() < 0.3) {
+          lx = floor(rnd() * floor((width - w) / grid)) * grid;
+          ly = floor(rnd() * floor((height - h) / grid)) * grid;
+        }
+        layers.push(layer(lx, ly, w, h, grid, (8 + floor(rnd() * 16)) * 32, pow(2, floor(rnd() * 6))));
+      }
+    }
+
+    ctx.globalCompositeOperation = 'source-over';
+    return ctx.getImageData(0, 0, width, height);
+  };
+
+  return { init, setup, draw, setProfile, reset };
+};
+
+const GL = () => {
+  let canvas, gl, width, height, scale;
+  let fbos = [], fboId = 0, imgTex, motTex, vBuf, fProg, dProg;
+  let uOrthoFeedback, uOrthoDisplay;
+  let gpuTune = { specAlphaAB: 0.24, specAlphaInk: 0.36, paletteVeil: 0.88 };
+
+  const orthoMat4 = () => new Float32Array([
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, -1, 0,
+    0, 0, 0, 1,
+  ]);
+
+  const VS = `#version 300 es
+uniform mat4 uOrtho;
+in vec3 pos;
+out vec2 vUv;
+void main() {
+  vUv = 0.5 * (pos.xy + 1.0);
+  gl_Position = uOrtho * vec4(pos.xy, 0.0, 1.0);
+}`;
+
+  const FS = `#version 300 es
+precision highp float;
+uniform sampler2D buf, img, mot;
+uniform float time;
+uniform vec2 dims;
+uniform int doRaster;
+uniform int doSpectrum;
+uniform vec3 specA, specB, specInk;
+uniform float specAlphaAB, specAlphaInk, paletteVeil, uSolidify;
+in vec2 vUv;
+out vec4 frag;
+
+void main() {
+  vec2 pos = floor(vUv * dims);
+  vec3 col = texture(buf, vUv).rgb;
+  vec4 m = texture(mot, vUv);
+  float dr = floor(m.r * 255.0 + 0.5);
+  float dg = floor(m.g * 255.0 + 0.5);
+  vec2 o = vec2(0.0);
+  float motion = 1.0 - uSolidify;
+
+  if (doRaster == 1) {
+    if (mod(dr, 2.0) >= 1.0) o += vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 4.0) >= 2.0) o += vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 8.0) >= 4.0) o -= vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 16.0) >= 8.0) o -= vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 32.0) >= 16.0) o += vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 64.0) >= 32.0) o += vec2(2.0 / dims.x, 0.0);
+    if (mod(dr, 128.0) >= 64.0) o -= vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 256.0) >= 128.0) o -= vec2(2.0 / dims.x, 0.0);
+    o *= motion;
+    col = texture(buf, vUv + o).rgb;
+  }
+
+  if (doSpectrum == 1) {
+    if (mod(dg, 2.0) >= 1.0) {
+      vec2 bUv = mod(pos, 16.0) / 16.0;
+      vec4 tile = texture(img, bUv);
+      col = mix(col, tile.rgb, tile.a * paletteVeil * motion);
+    }
+    if (mod(dg, 4.0) >= 2.0) {
+      vec3 spec = mix(specA, specB, fract(time * 0.14));
+      col = mix(col, spec, specAlphaAB * motion);
+    }
+    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk * motion);
+  }
+
+  if (uSolidify > 0.001) {
+    vec3 freeze = texture(buf, vUv).rgb;
+    col = mix(col, freeze, uSolidify * 0.92);
+    float bands = mix(48.0, 4.0, uSolidify);
+    col = floor(col * bands) / bands;
+  }
+
+  frag = vec4(col, 1.0);
+}`;
+
+  const FS_BLIT = `#version 300 es
+precision highp float;
+uniform sampler2D buf;
+uniform vec2 uPan;
+in vec2 vUv;
+out vec4 frag;
+void main() {
+  frag = texture(buf, vec2(vUv.x, 1.0 - vUv.y) + uPan);
+}`;
+
+  const compile = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+    return s;
+  };
+
+  const link = (vs, fs) => {
+    const p = gl.createProgram();
+    gl.attachShader(p, vs);
+    gl.attachShader(p, fs);
+    gl.linkProgram(p);
+    return p;
+  };
+
+  const makeTex = (w, h, data) => {
+    const t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    return t;
+  };
+
+  const makeFbo = (w, h) => {
+    const tex = makeTex(w, h, null);
+    const f = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    return { fbo: f, tex };
+  };
+
+  const palette16 = () => {
+    const a = new Uint8Array(16 * 16 * 4);
+    for (let i = 0; i < 256; i++) {
+      const x = i % 16;
+      const y = floor(i / 16);
+      const grid = x % 4 === 0 || y % 4 === 0;
+      const c = grid
+        ? SPECTRUM[((x >> 2) + (y >> 2) * 2) % SPECTRUM.length]
+        : PAL.white;
+      const veil = grid ? 0.12 + (((x >> 2) + (y >> 2)) % 5) * 0.07 : 0;
+      a[i * 4] = c[0];
+      a[i * 4 + 1] = c[1];
+      a[i * 4 + 2] = c[2];
+      a[i * 4 + 3] = floor(veil * 255);
+    }
+    return a;
+  };
+
+  const quad = (prog, orthoLoc) => {
+    gl.useProgram(prog);
+    if (orthoLoc != null) gl.uniformMatrix4fv(orthoLoc, false, orthoMat4());
+    const loc = gl.getAttribLocation(prog, 'pos');
+    gl.enableVertexAttribArray(loc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+    gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+
+  const init = () => {
+    canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    gl = canvas.getContext('webgl2', { antialias: false, desynchronized: true });
+    if (!gl) throw new Error('WebGL2 required');
+    gl.disable(gl.BLEND);
+    gl.disable(gl.DEPTH_TEST);
+    vBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, 1, 0, -1, -1, 0, 1, 1, 0, 1, -1, 0]), gl.STATIC_DRAW);
+    fProg = link(compile(gl.VERTEX_SHADER, VS), compile(gl.FRAGMENT_SHADER, FS));
+    dProg = link(compile(gl.VERTEX_SHADER, VS), compile(gl.FRAGMENT_SHADER, FS_BLIT));
+    uOrthoFeedback = gl.getUniformLocation(fProg, 'uOrtho');
+    uOrthoDisplay = gl.getUniformLocation(dProg, 'uOrtho');
+  };
+
+  const setup = () => {
+    const d = displaySize();
+    scale = min(window.devicePixelRatio || 1, 2);
+    if (FORMAT) {
+      canvas.style.width = '';
+      canvas.style.height = '';
+    } else {
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+    }
+    width = floor(d.w);
+    height = floor(d.h);
+    canvas.width = floor(width * scale);
+    canvas.height = floor(height * scale);
+    fbos.forEach(({ fbo, tex }) => {
+      gl.deleteFramebuffer(fbo);
+      gl.deleteTexture(tex);
+    });
+    fbos = [makeFbo(width, height), makeFbo(width, height)];
+    fboId = 0;
+    if (imgTex) gl.deleteTexture(imgTex);
+    if (motTex) gl.deleteTexture(motTex);
+    imgTex = makeTex(16, 16, palette16());
+    motTex = makeTex(width, height, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[0].fbo);
+    gl.clearColor(1, 1, 1, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[1].fbo);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  };
+
+  const modeFlags = (mode) => {
+    if (mode === 1) return { raster: 1, spectrum: 0 };
+    if (mode === 2) return { raster: 0, spectrum: 1 };
+    return { raster: 1, spectrum: 1 };
+  };
+
+  const render = (time, pixels, options, solidify, panUv) => {
+    const prev = fboId;
+    const cur = fboId ^= 1;
+    const { raster, spectrum } = modeFlags(options.mode);
+
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels.data);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[cur].fbo);
+    gl.viewport(0, 0, width, height);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.useProgram(fProg);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, fbos[prev].tex);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, imgTex);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'buf'), 0);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'img'), 1);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'mot'), 2);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'time'), time * 0.001);
+    gl.uniform2f(gl.getUniformLocation(fProg, 'dims'), width, height);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'doRaster'), raster);
+    gl.uniform1i(gl.getUniformLocation(fProg, 'doSpectrum'), spectrum);
+    const ci = floor(time * 0.00035) % SPECTRUM.length;
+    const ca = rgb01(SPECTRUM[ci]);
+    const cb = rgb01(SPECTRUM[(ci + 3) % SPECTRUM.length]);
+    const ink = rgb01(PAL.blend);
+    gl.uniform3f(gl.getUniformLocation(fProg, 'specA'), ca[0], ca[1], ca[2]);
+    gl.uniform3f(gl.getUniformLocation(fProg, 'specB'), cb[0], cb[1], cb[2]);
+    gl.uniform3f(gl.getUniformLocation(fProg, 'specInk'), ink[0], ink[1], ink[2]);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'paletteVeil'), gpuTune.paletteVeil);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaAB'), gpuTune.specAlphaAB);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'specAlphaInk'), gpuTune.specAlphaInk);
+    gl.uniform1f(gl.getUniformLocation(fProg, 'uSolidify'), solidify ?? 0);
+    quad(fProg, uOrthoFeedback);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.useProgram(dProg);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, fbos[cur].tex);
+    gl.uniform1i(gl.getUniformLocation(dProg, 'buf'), 0);
+    gl.uniform2f(gl.getUniformLocation(dProg, 'uPan'), panUv[0], -panUv[1]);
+    quad(dProg, uOrthoDisplay);
+  };
+
+  const refreshPalette = () => {
+    if (!gl || !width) return;
+    if (imgTex) gl.deleteTexture(imgTex);
+    imgTex = makeTex(16, 16, palette16());
+  };
+
+  const applySeedProfile = (g) => {
+    gpuTune = { ...gpuTune, ...g };
+  };
+
+  return { init, setup, render, refreshPalette, applySeedProfile, getCanvas: () => canvas };
+};
+
+const CanvasRecorder = (getCanvas, getAudioStream) => {
+  let active = false;
+  let abort = false;
+  let frameIndex = 0;
+  let totalFrames = 0;
+  let compositeCanvas = null;
+  let compositeCtx = null;
+  let videoTrack = null;
+  let mediaStream = null;
+  let recW = 0;
+  let recH = 0;
+
+  const pickMime = () => {
+    const types = [
+      'video/webm;codecs=vp9,opus',
+      'video/webm;codecs=vp8,opus',
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm',
+      'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+      'video/mp4;codecs=avc1,mp4a.40.2',
+      'video/mp4',
+    ];
+    return types.find((t) =>
+      typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
+    ) || '';
+  };
+
+  const recExt = (mt) => (mt.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+  const setRecHint = (on, sticky) => {
+    const hint = document.getElementById('hint');
+    if (hint) hint.dataset.rec = on ? '1' : '';
+    if (sticky != null) updateSeedHud(sticky);
+  };
+
+  const ensureComposite = () => {
+    const src = getCanvas();
+    const d = displaySize();
+    const w = FORMAT ? CANVAS_W : (src?.width || d.w);
+    const h = FORMAT ? CANVAS_H : (src?.height || d.h);
+    if (!compositeCanvas) {
+      compositeCanvas = document.createElement('canvas');
+      compositeCanvas.setAttribute('aria-hidden', 'true');
+      compositeCanvas.style.cssText =
+        'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+      document.body.appendChild(compositeCanvas);
+    }
+    if (compositeCanvas.width !== w || compositeCanvas.height !== h) {
+      compositeCanvas.width = w;
+      compositeCanvas.height = h;
+      compositeCtx = compositeCanvas.getContext('2d');
+    } else if (!compositeCtx) {
+      compositeCtx = compositeCanvas.getContext('2d');
+    }
+    recW = w;
+    recH = h;
+  };
+
+  const notifyFrame = () => {
+    if (!active || !compositeCtx || !compositeCanvas) return;
+    const src = getCanvas();
+    if (!src) return;
+    compositeCtx.fillStyle = '#ffffff';
+    compositeCtx.fillRect(0, 0, recW, recH);
+    compositeCtx.drawImage(src, 0, 0, recW, recH);
+    if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+  };
+
+  const start = async () => {
+    if (active) return false;
+    const canvas = getCanvas();
+    if (!canvas) return false;
+
+    const mimeType = pickMime();
+    if (!mimeType) {
+      setRecHint(false, 'MediaRecorder not supported — use Chrome');
+      return false;
+    }
+
+    const ext = recExt(mimeType);
+    const fmt = FORMAT || 'viewport';
+    let filename = `invisible-layer-searching-for-balance-${fmt}-seed${activeSeed}-60fps-${RECORD_SECONDS}s.${ext}`;
+
+    let saveHandle = null;
+    if (typeof window.showSaveFilePicker === 'function') {
+      try {
+        saveHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{
+            description: ext === 'mp4' ? 'MP4 video' : 'WebM video',
+            accept: ext === 'mp4'
+              ? { 'video/mp4': ['.mp4'] }
+              : { 'video/webm': ['.webm'] },
+          }],
+        });
+      } catch (e) {
+        if (e && e.name === 'AbortError') {
+          setRecHint(false, 'Save dialog cancelled — no file');
+          return false;
+        }
+        throw e;
+      }
+    }
+    if (!saveHandle) {
+      setRecHint(false, 'Chrome Save dialog required — use Chrome');
+      return false;
+    }
+    filename = saveHandle.name || filename;
+
+    abort = false;
+    active = true;
+    liveLoop = false;
+    totalFrames = RECORD_SECONDS * RECORD_FPS;
+    frameIndex = 0;
+    setRecHint(true, `recording 0/${totalFrames} → ${filename}`);
+
+    // same as smoke-wisps reset(false): back to start, keep the seed you agreed on
+    const t0 = performance.now();
+    rebirth(t0, activeSeed);
+    ensureComposite();
+    renderOneFrame(t0);
+    notifyFrame();
+
+    let writable = null;
+    let recorder = null;
+    let writeChain = Promise.resolve();
+    let payloadBytes = 0;
+    let recErr = null;
+
+    try {
+      writable = await saveHandle.createWritable({ keepExistingData: false });
+      const videoOnly = compositeCanvas.captureStream(0);
+      const audioStream = await getAudioStream();
+      mediaStream = new MediaStream([
+        ...videoOnly.getVideoTracks(),
+        ...audioStream.getAudioTracks(),
+      ]);
+      videoTrack = mediaStream.getVideoTracks()[0] || null;
+      recorder = new MediaRecorder(mediaStream, {
+        mimeType,
+        videoBitsPerSecond: 40_000_000,
+      });
+      recorder.ondataavailable = (e) => {
+        if (!e.data || !e.data.size) return;
+        payloadBytes += e.data.size;
+        const blob = e.data;
+        writeChain = writeChain.then(() => writable.write({ type: 'write', data: blob }));
+      };
+      recorder.onerror = (e) => {
+        recErr = e.error || new Error('MediaRecorder error');
+      };
+
+      recorder.start(500);
+      if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+      const dtMs = 1000 / RECORD_FPS;
+      for (let i = 0; i < totalFrames; i++) {
+        if (abort) break;
+        if (recErr) throw recErr;
+        frameIndex = i;
+        const t = t0 + i * dtMs;
+        renderOneFrame(t);
+        notifyFrame();
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+        setRecHint(
+          true,
+          `recording ${i + 1}/${totalFrames}  ${(payloadBytes / 1e6).toFixed(1)} MB → ${filename}`
+        );
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+
+      await new Promise((resolve, reject) => {
+        recorder.onstop = resolve;
+        recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+        try { if (recorder.state === 'recording') recorder.requestData(); } catch (_) {}
+        recorder.stop();
+      });
+      await writeChain;
+      await writable.close();
+      writable = null;
+      setRecHint(
+        false,
+        abort
+          ? `stopped — file may be incomplete · ${filename}`
+          : `saved ${filename}  ${(payloadBytes / 1e6).toFixed(1)} MB · ${totalFrames}f`
+      );
+    } catch (err) {
+      console.error(err);
+      setRecHint(false, String(err && err.message ? err.message : err));
+      if (writable) { try { await writable.close(); } catch (_) {} }
+    } finally {
+      try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch (_) {}
+      try { mediaStream && mediaStream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+      videoTrack = null;
+      mediaStream = null;
+      active = false;
+      frameIndex = 0;
+      totalFrames = 0;
+      liveLoop = true;
+      requestAnimationFrame(frame);
+    }
+    return true;
+  };
+
+  const stop = () => {
+    if (active) abort = true;
+  };
+
+  const toggle = async () => {
+    if (active) {
+      stop();
+      return false;
+    }
+    return start();
+  };
+
+  return {
+    toggle,
+    isActive: () => active,
+    notifyFrame,
+    frameIndex: () => frameIndex,
+    totalFrames: () => totalFrames,
+  };
+};
+
+const c2d = Canvas2d();
+const gpu = GL();
+const rec = CanvasRecorder(() => gpu.getCanvas(), async () => new MediaStream());
+const lifebar = document.getElementById('lifebar');
+const seedHud = document.getElementById('seed-hud');
+const options = { auto: true, mode: 0 };
+let showHint = true;
+
+const seriesTitle = (seed) => {
+  const base = `Invisible Layer — Searching for Balance · ${seed >>> 0}`;
+  return FORMAT ? `${base} · ${FORMAT} ${CANVAS_W}×${CANVAS_H}` : base;
+};
+
+const setSeedInUrl = (seed) => {
+  try {
+    const url = new URL(location.href);
+    url.searchParams.set('seed', String(seed >>> 0));
+    history.replaceState(null, '', url);
+  } catch (_) {}
+};
+
+const ViewCamera = () => {
+  const pan = { x: 0, y: 0 };
+  const keys = { up: false, down: false, left: false, right: false };
+  const SPEED = 160;
+
+  const setKey = (name, down) => {
+    if (name in keys) keys[name] = down;
+  };
+
+  const releaseAll = () => {
+    keys.up = false;
+    keys.down = false;
+    keys.left = false;
+    keys.right = false;
+  };
+
+  const update = (dt, solidify) => {
+    const motion = 1 - solidify;
+    const s = SPEED * dt * motion;
+    if (keys.up) pan.y += s;
+    if (keys.down) pan.y -= s;
+    if (keys.left) pan.x -= s;
+    if (keys.right) pan.x += s;
+  };
+
+  const uvOffset = (w, h) => [pan.x / w, pan.y / h];
+
+  const reset = () => {
+    pan.x = 0;
+    pan.y = 0;
+    releaseAll();
+  };
+
+  return { setKey, update, uvOffset, getPan: () => pan, reset, releaseAll };
+};
+
+const viewCam = ViewCamera();
+let frameLastMs = 0;
+
+const updateSeedHud = (extra) => {
+  const label = seriesTitle(activeSeed);
+  seedHud.textContent = extra ? `${label} · ${extra}` : label;
+  document.title = label;
+};
+
+const applySeed = (seed) => {
+  activeSeed = seed >>> 0;
+  seedProfile = buildSeedProfile(activeSeed);
+  orgRng = makeRng(activeSeed);
+  applyPaletteFromProfile(seedProfile);
+  c2d.setProfile(seedProfile.canvas);
+  gpu.applySeedProfile(seedProfile.gpu);
+  options.mode = seedProfile.defaultMode;
+  options.auto = seedProfile.autoMode;
+  updateSeedHud();
+  setSeedInUrl(activeSeed);
+};
+
+const randomSeed = () => ((Math.random() * 0x100000000) >>> 0);
+
+const rebirth = (t, nextSeed) => {
+  applySeed(nextSeed ?? randomSeed());
+  c2d.reset();
+  gpu.setup();
+  refreshSeedPalette();
+  lifeStart = t;
+  lifePhase = 'live';
+  surrenderAt = 0;
+  solidifyK = 0;
+  lifebar.style.width = '0%';
+  viewCam.reset();
+  frameLastMs = 0;
+};
+
+const updateLife = (t) => {
+  if (!lifeStart) lifeStart = t;
+
+  if (lifePhase === 'live') {
+    solidifyK = 0;
+    const pct = min(100, ((t - lifeStart) / LIFESPAN_MS) * 100);
+    lifebar.style.width = `${pct.toFixed(2)}%`;
+    if (t - lifeStart >= LIFESPAN_MS) {
+      lifePhase = 'surrender';
+      surrenderAt = t;
+    }
+    return;
+  }
+
+  if (lifePhase === 'surrender') {
+    lifebar.style.width = '100%';
+    solidifyK = min(1, (t - surrenderAt) / SURRENDER_MS);
+    if (t - surrenderAt >= SURRENDER_MS) rebirth(t);
+  }
+};
+
+document.addEventListener('keydown', async (e) => {
+  const k = e.key.toLowerCase();
+  if (e.key === 'ArrowUp') { viewCam.setKey('up', true); e.preventDefault(); }
+  if (e.key === 'ArrowDown') { viewCam.setKey('down', true); e.preventDefault(); }
+  if (e.key === 'ArrowLeft') { viewCam.setKey('left', true); e.preventDefault(); }
+  if (e.key === 'ArrowRight') { viewCam.setKey('right', true); e.preventDefault(); }
+  if (k === 'h') {
+    showHint = !showHint;
+    document.getElementById('hint').style.opacity = showHint ? '1' : '0';
+  }
+  if (k === 'a') options.auto = !options.auto;
+  if (k === '1') { options.mode = 0; options.auto = false; }
+  if (k === '2') { options.mode = 1; options.auto = false; }
+  if (k === '3') { options.mode = 2; options.auto = false; }
+  if (k === 'n') rebirth(performance.now());
+  if (k === 'r') { e.preventDefault(); await rec.toggle(); }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'ArrowUp') viewCam.setKey('up', false);
+  if (e.key === 'ArrowDown') viewCam.setKey('down', false);
+  if (e.key === 'ArrowLeft') viewCam.setKey('left', false);
+  if (e.key === 'ArrowRight') viewCam.setKey('right', false);
+});
+
+window.addEventListener('blur', () => viewCam.releaseAll());
+
+function setup() {
+  c2d.setup();
+  gpu.setup();
+}
+
+let liveLoop = true;
+
+function renderOneFrame(t) {
+  const dt = min(0.05, max(0.001, (t - (frameLastMs || t)) / 1000));
+  frameLastMs = t;
+  updateLife(t);
+  viewCam.update(dt, solidifyK);
+  const pixels = c2d.draw(t, options);
+  gpu.render(t, pixels, options, solidifyK, viewCam.uvOffset(pixels.width, pixels.height));
+}
+
+function frame(t) {
+  if (!liveLoop) return;
+  renderOneFrame(t);
+  requestAnimationFrame(frame);
+}
+
+c2d.init();
+gpu.init();
+applySeed(activeSeed);
+setup();
+loadCenteredArtwork(() => refreshSeedPalette());
+window.addEventListener('resize', setup);
+requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

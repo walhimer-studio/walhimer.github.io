@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-09-19",
+  "updated": "2026-09-20",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Brice Marden",
-          "file": "brice-marden/index.html"
+          "series": "Invisible Layer",
+          "file": "invisible-layer/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,11 +53,41 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/brice-marden/attendant-no-2.html",
-            "sketches/brice-marden/index.html",
-            "sketches/brice-marden/marden-feldman-002.html",
-            "sketches/brice-marden/marden-feldman-003.html",
-            "sketches/brice-marden/study-for-the -muses.html"
+            "sketches/invisible-layer/README.md",
+            "sketches/invisible-layer/index.html",
+            "sketches/invisible-layer/invisible-layer-august-29-2026.html",
+            "sketches/invisible-layer/invisible-layer-july-12-2026.html",
+            "sketches/invisible-layer/invisible-layer-july-16-2026-follow.html",
+            "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
+            "sketches/invisible-layer/invisible-layer-july-8-2026.html",
+            "sketches/invisible-layer/invisible-layer-june-7-2026-2.html",
+            "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html",
+            "sketches/invisible-layer/invisible-layer-searching-for-balance.html",
+            "sketches/invisible-layer/invisible-layer-study-bloom-piano.html",
+            "sketches/invisible-layer/invisible-layer-study-webgl.html",
+            "sketches/invisible-layer/invisible-layer-vol3d.html",
+            "sketches/invisible-layer/js/forward-slice-export.mjs",
+            "sketches/invisible-layer/js/three.min.js",
+            "sketches/invisible-layer/samples/salamander-pentatonic/A2.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/A3.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/A4.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/A5.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/C2.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/C3.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/C4.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/C5.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/C6.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Ds2.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Ds3.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Ds4.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Ds5.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Ds6.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Fs2.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Fs3.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Fs4.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Fs5.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/Fs6.mp3",
+            "sketches/invisible-layer/samples/salamander-pentatonic/README.md"
           ],
           "external_urls": []
         },
@@ -677,24 +707,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-readme",
+      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
       "dublin_core": {
-        "title": "../catalog/brice-marden/README.md",
+        "title": "../catalog/invisible-layer/README.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-readme",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000372"
+        "catalog_number": "WS-000291"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-readme",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-readme",
         "type": "HumanMadeObject",
-        "_label": "../catalog/brice-marden/README.md",
+        "_label": "../catalog/invisible-layer/README.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -708,36 +738,36 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Brice Marden",
-          "file": "../catalog/brice-marden/README.md"
+          "series": "Invisible Layer",
+          "file": "../catalog/invisible-layer/README.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/brice-marden/README.md"
+          "catalog/invisible-layer/README.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-searching-for-balance",
       "dublin_core": {
-        "title": "../catalog/brice-marden/marden-feldman-003.md",
+        "title": "../catalog/invisible-layer/invisible-layer-searching-for-balance.md",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-searching-for-balance",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000378"
+        "catalog_number": "WS-000380"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-003",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-invisible-layer-searching-for-balance",
         "type": "HumanMadeObject",
-        "_label": "../catalog/brice-marden/marden-feldman-003.md",
+        "_label": "../catalog/invisible-layer/invisible-layer-searching-for-balance.md",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -751,36 +781,36 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Brice Marden",
-          "file": "../catalog/brice-marden/marden-feldman-003.md"
+          "series": "Invisible Layer",
+          "file": "../catalog/invisible-layer/invisible-layer-searching-for-balance.md"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "catalog/brice-marden/marden-feldman-003.md"
+          "catalog/invisible-layer/invisible-layer-searching-for-balance.md"
         ],
         "external_urls": []
       }
     },
     {
-      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-003",
+      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-searching-for-balance",
       "dublin_core": {
-        "title": "brice-marden/marden-feldman-003",
+        "title": "invisible-layer/invisible-layer-searching-for-balance",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-003",
+        "identifier": "urn:walhimer:sketch:Invisible Layer:invisible-layer-invisible-layer-searching-for-balance",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000379"
+        "catalog_number": "WS-000381"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-marden-feldman-003",
+        "id": "https://mark-walhimer.com/#work/Invisible Layer-invisible-layer-invisible-layer-searching-for-balance",
         "type": "HumanMadeObject",
-        "_label": "brice-marden/marden-feldman-003",
+        "_label": "invisible-layer/invisible-layer-searching-for-balance",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -794,453 +824,14 @@
           "sketch"
         ],
         "sketch": {
-          "series": "Brice Marden",
-          "file": "brice-marden/marden-feldman-003.html"
+          "series": "Invisible Layer",
+          "file": "invisible-layer/invisible-layer-searching-for-balance.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/brice-marden/marden-feldman-003.html",
-          "sketches/js/Tone-14.8.49.js",
-          "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
-      "dublin_core": {
-        "title": "brice-marden/study-for-the -muses",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000374"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-study-for-the--muses",
-        "type": "HumanMadeObject",
-        "_label": "brice-marden/study-for-the -muses",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Brice Marden",
-          "file": "brice-marden/study-for-the -muses.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/brice-marden/study-for-the -muses.html",
-          "sketches/js/Tone-14.8.49.js",
-          "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-002",
-      "dublin_core": {
-        "title": "../catalog/brice-marden/marden-feldman-002.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-002",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000375"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-002",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/brice-marden/marden-feldman-002.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Brice Marden",
-          "file": "../catalog/brice-marden/marden-feldman-002.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/brice-marden/marden-feldman-002.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-002",
-      "dublin_core": {
-        "title": "brice-marden/marden-feldman-002",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-002",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000376"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-marden-feldman-002",
-        "type": "HumanMadeObject",
-        "_label": "brice-marden/marden-feldman-002",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Brice Marden",
-          "file": "brice-marden/marden-feldman-002.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/brice-marden/marden-feldman-002.html",
-          "sketches/js/Tone-14.8.49.js",
-          "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-attendant-no-2",
-      "dublin_core": {
-        "title": "brice-marden/attendant-no-2",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-attendant-no-2",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000373"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-attendant-no-2",
-        "type": "HumanMadeObject",
-        "_label": "brice-marden/attendant-no-2",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Brice Marden",
-          "file": "brice-marden/attendant-no-2.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/brice-marden/attendant-no-2.html",
-          "sketches/js/Tone-14.8.49.js",
-          "sketches/js/p5-1.11.2.min.js"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
-      "dublin_core": {
-        "title": "../catalog/brice-marden/marden-feldman-001.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000371"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-001",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/brice-marden/marden-feldman-001.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Brice Marden",
-          "file": "../catalog/brice-marden/marden-feldman-001.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/brice-marden/marden-feldman-001.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-sampled-arc",
-      "dublin_core": {
-        "title": "coupled-av-portal/sampled-arc",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-sampled-arc",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000367"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-sampled-arc",
-        "type": "HumanMadeObject",
-        "_label": "coupled-av-portal/sampled-arc",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Coupled AV Portal",
-          "file": "coupled-av-portal/sampled-arc.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/coupled-av-portal/index.html",
-          "sketches/coupled-av-portal/prismatic-fluid.html",
-          "sketches/coupled-av-portal/sampled-arc.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-prismatic-fluid",
-      "dublin_core": {
-        "title": "coupled-av-portal/prismatic-fluid",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-prismatic-fluid",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000368"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-prismatic-fluid",
-        "type": "HumanMadeObject",
-        "_label": "coupled-av-portal/prismatic-fluid",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Coupled AV Portal",
-          "file": "coupled-av-portal/prismatic-fluid.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/coupled-av-portal/index.html",
-          "sketches/coupled-av-portal/prismatic-fluid.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Coupled AV Portal",
-          "file": "coupled-av-portal/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/coupled-av-portal/README.md",
-          "sketches/coupled-av-portal/index.html",
-          "sketches/coupled-av-portal/prismatic-fluid.html",
-          "sketches/coupled-av-portal/sampled-arc.html",
-          "sketches/coupled-av-portal/samples/ATTRIBUTION.md",
-          "sketches/coupled-av-portal/samples/piano/A2.mp3",
-          "sketches/coupled-av-portal/samples/piano/A3.mp3",
-          "sketches/coupled-av-portal/samples/piano/A4.mp3",
-          "sketches/coupled-av-portal/samples/piano/A5.mp3",
-          "sketches/coupled-av-portal/samples/piano/C2.mp3",
-          "sketches/coupled-av-portal/samples/piano/C3.mp3",
-          "sketches/coupled-av-portal/samples/piano/C4.mp3",
-          "sketches/coupled-av-portal/samples/piano/C5.mp3",
-          "sketches/coupled-av-portal/samples/piano/C6.mp3",
-          "sketches/coupled-av-portal/samples/piano/E2.mp3",
-          "sketches/coupled-av-portal/samples/piano/E3.mp3",
-          "sketches/coupled-av-portal/samples/piano/E4.mp3",
-          "sketches/coupled-av-portal/samples/piano/E5.mp3",
-          "sketches/coupled-av-portal/samples/violin/A3.mp3",
-          "sketches/coupled-av-portal/samples/violin/A4.mp3",
-          "sketches/coupled-av-portal/samples/violin/A5.mp3",
-          "sketches/coupled-av-portal/samples/violin/C4.mp3",
-          "sketches/coupled-av-portal/samples/violin/C5.mp3",
-          "sketches/coupled-av-portal/samples/violin/C6.mp3",
-          "sketches/coupled-av-portal/samples/violin/E4.mp3",
-          "sketches/coupled-av-portal/samples/violin/E5.mp3",
-          "sketches/coupled-av-portal/samples/violin/G3.mp3",
-          "sketches/coupled-av-portal/samples/violin/G4.mp3",
-          "sketches/coupled-av-portal/samples/violin/G5.mp3",
-          "sketches/coupled-av-portal/samples/xylophone/C5.mp3",
-          "sketches/coupled-av-portal/samples/xylophone/C6.mp3",
-          "sketches/coupled-av-portal/samples/xylophone/C7.mp3",
-          "sketches/coupled-av-portal/samples/xylophone/G4.mp3",
-          "sketches/coupled-av-portal/samples/xylophone/G5.mp3",
-          "sketches/coupled-av-portal/samples/xylophone/G6.mp3"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
-      "dublin_core": {
-        "title": "coupled-av-portal/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000366"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-readme",
-        "type": "HumanMadeObject",
-        "_label": "coupled-av-portal/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Coupled AV Portal",
-          "file": "coupled-av-portal/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/coupled-av-portal/README.md"
+          "sketches/invisible-layer/invisible-layer-searching-for-balance.html",
+          "sketches/loop-snippets/centered-924-data.js"
         ],
         "external_urls": []
       }
@@ -1290,49 +881,6 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
-      "dublin_core": {
-        "title": "../catalog/invisible-layer/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000291"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Invisible Layer-catalog-invisible-layer-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/invisible-layer/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "../catalog/invisible-layer/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/invisible-layer/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
       "id": "urn:walhimer:sketch:Invisible Layer:catalog-invisible-layer-invisible-layer-august-29-2026",
       "dublin_core": {
         "title": "../catalog/invisible-layer/invisible-layer-august-29-2026.md",
@@ -1371,90 +919,6 @@
       "artifacts": {
         "repo_paths": [
           "catalog/invisible-layer/invisible-layer-august-29-2026.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Invisible Layer:invisible-layer-index",
-      "dublin_core": {
-        "title": "tezos-early-works/index",
-        "creator": "Mark Walhimer",
-        "date": "2026",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000008"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
-        "type": "HumanMadeObject",
-        "_label": "tezos-early-works/index",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Invisible Layer",
-          "file": "invisible-layer/index.html"
-        },
-        "tech": [
-          "Three.js",
-          "WebGL2",
-          "Web Audio"
-        ],
-        "installation": {
-          "homepage": true
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/invisible-layer/README.md",
-          "sketches/invisible-layer/index.html",
-          "sketches/invisible-layer/invisible-layer-august-29-2026.html",
-          "sketches/invisible-layer/invisible-layer-july-12-2026.html",
-          "sketches/invisible-layer/invisible-layer-july-16-2026-follow.html",
-          "sketches/invisible-layer/invisible-layer-july-8-2026-piano-exp.html",
-          "sketches/invisible-layer/invisible-layer-july-8-2026.html",
-          "sketches/invisible-layer/invisible-layer-june-7-2026-2.html",
-          "sketches/invisible-layer/invisible-layer-june-7-2026-vol3d.html",
-          "sketches/invisible-layer/invisible-layer-study-bloom-piano.html",
-          "sketches/invisible-layer/invisible-layer-study-webgl.html",
-          "sketches/invisible-layer/invisible-layer-vol3d.html",
-          "sketches/invisible-layer/js/forward-slice-export.mjs",
-          "sketches/invisible-layer/js/three.min.js",
-          "sketches/invisible-layer/samples/salamander-pentatonic/A2.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/A3.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/A4.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/A5.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/C2.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/C3.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/C4.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/C5.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/C6.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Ds2.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Ds3.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Ds4.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Ds5.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Ds6.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Fs2.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Fs3.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Fs4.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Fs5.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/Fs6.mp3",
-          "sketches/invisible-layer/samples/salamander-pentatonic/README.md"
         ],
         "external_urls": []
       }
@@ -2019,6 +1483,630 @@
         "repo_paths": [
           "sketches/invisible-layer/invisible-layer-vol3d.html",
           "sketches/loop-snippets/js/three.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
+      "dublin_core": {
+        "title": "brice-marden/study-for-the -muses",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-study-for-the--muses",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000374"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-study-for-the--muses",
+        "type": "HumanMadeObject",
+        "_label": "brice-marden/study-for-the -muses",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/study-for-the -muses.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/study-for-the -muses.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-readme",
+      "dublin_core": {
+        "title": "../catalog/brice-marden/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000372"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/brice-marden/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/brice-marden/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/attendant-no-2.html",
+          "sketches/brice-marden/index.html",
+          "sketches/brice-marden/marden-feldman-002.html",
+          "sketches/brice-marden/marden-feldman-003.html",
+          "sketches/brice-marden/study-for-the -muses.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+      "dublin_core": {
+        "title": "../catalog/brice-marden/marden-feldman-003.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-003",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000378"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-003",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/brice-marden/marden-feldman-003.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/marden-feldman-003.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/brice-marden/marden-feldman-003.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-003",
+      "dublin_core": {
+        "title": "brice-marden/marden-feldman-003",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-003",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000379"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-marden-feldman-003",
+        "type": "HumanMadeObject",
+        "_label": "brice-marden/marden-feldman-003",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/marden-feldman-003.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/marden-feldman-003.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-002",
+      "dublin_core": {
+        "title": "../catalog/brice-marden/marden-feldman-002.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-002",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000375"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-002",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/brice-marden/marden-feldman-002.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/marden-feldman-002.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/brice-marden/marden-feldman-002.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-002",
+      "dublin_core": {
+        "title": "brice-marden/marden-feldman-002",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-marden-feldman-002",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000376"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-marden-feldman-002",
+        "type": "HumanMadeObject",
+        "_label": "brice-marden/marden-feldman-002",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/marden-feldman-002.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/marden-feldman-002.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:brice-marden-attendant-no-2",
+      "dublin_core": {
+        "title": "brice-marden/attendant-no-2",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:brice-marden-attendant-no-2",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000373"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-brice-marden-attendant-no-2",
+        "type": "HumanMadeObject",
+        "_label": "brice-marden/attendant-no-2",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "brice-marden/attendant-no-2.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/brice-marden/attendant-no-2.html",
+          "sketches/js/Tone-14.8.49.js",
+          "sketches/js/p5-1.11.2.min.js"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
+      "dublin_core": {
+        "title": "../catalog/brice-marden/marden-feldman-001.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Brice Marden:catalog-brice-marden-marden-feldman-001",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000371"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Brice Marden-catalog-brice-marden-marden-feldman-001",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/brice-marden/marden-feldman-001.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Brice Marden",
+          "file": "../catalog/brice-marden/marden-feldman-001.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/brice-marden/marden-feldman-001.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-sampled-arc",
+      "dublin_core": {
+        "title": "coupled-av-portal/sampled-arc",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-sampled-arc",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000367"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-sampled-arc",
+        "type": "HumanMadeObject",
+        "_label": "coupled-av-portal/sampled-arc",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/sampled-arc.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/index.html",
+          "sketches/coupled-av-portal/prismatic-fluid.html",
+          "sketches/coupled-av-portal/sampled-arc.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-prismatic-fluid",
+      "dublin_core": {
+        "title": "coupled-av-portal/prismatic-fluid",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-prismatic-fluid",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000368"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-prismatic-fluid",
+        "type": "HumanMadeObject",
+        "_label": "coupled-av-portal/prismatic-fluid",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/prismatic-fluid.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/index.html",
+          "sketches/coupled-av-portal/prismatic-fluid.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/README.md",
+          "sketches/coupled-av-portal/index.html",
+          "sketches/coupled-av-portal/prismatic-fluid.html",
+          "sketches/coupled-av-portal/sampled-arc.html",
+          "sketches/coupled-av-portal/samples/ATTRIBUTION.md",
+          "sketches/coupled-av-portal/samples/piano/A2.mp3",
+          "sketches/coupled-av-portal/samples/piano/A3.mp3",
+          "sketches/coupled-av-portal/samples/piano/A4.mp3",
+          "sketches/coupled-av-portal/samples/piano/A5.mp3",
+          "sketches/coupled-av-portal/samples/piano/C2.mp3",
+          "sketches/coupled-av-portal/samples/piano/C3.mp3",
+          "sketches/coupled-av-portal/samples/piano/C4.mp3",
+          "sketches/coupled-av-portal/samples/piano/C5.mp3",
+          "sketches/coupled-av-portal/samples/piano/C6.mp3",
+          "sketches/coupled-av-portal/samples/piano/E2.mp3",
+          "sketches/coupled-av-portal/samples/piano/E3.mp3",
+          "sketches/coupled-av-portal/samples/piano/E4.mp3",
+          "sketches/coupled-av-portal/samples/piano/E5.mp3",
+          "sketches/coupled-av-portal/samples/violin/A3.mp3",
+          "sketches/coupled-av-portal/samples/violin/A4.mp3",
+          "sketches/coupled-av-portal/samples/violin/A5.mp3",
+          "sketches/coupled-av-portal/samples/violin/C4.mp3",
+          "sketches/coupled-av-portal/samples/violin/C5.mp3",
+          "sketches/coupled-av-portal/samples/violin/C6.mp3",
+          "sketches/coupled-av-portal/samples/violin/E4.mp3",
+          "sketches/coupled-av-portal/samples/violin/E5.mp3",
+          "sketches/coupled-av-portal/samples/violin/G3.mp3",
+          "sketches/coupled-av-portal/samples/violin/G4.mp3",
+          "sketches/coupled-av-portal/samples/violin/G5.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/C5.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/C6.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/C7.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/G4.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/G5.mp3",
+          "sketches/coupled-av-portal/samples/xylophone/G6.mp3"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+      "dublin_core": {
+        "title": "coupled-av-portal/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Coupled AV Portal:coupled-av-portal-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000366"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Coupled AV Portal-coupled-av-portal-readme",
+        "type": "HumanMadeObject",
+        "_label": "coupled-av-portal/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Coupled AV Portal",
+          "file": "coupled-av-portal/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/coupled-av-portal/README.md"
         ],
         "external_urls": []
       }
