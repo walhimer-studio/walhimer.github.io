@@ -16,11 +16,11 @@
 
 ## Description
 
-Built like a game engine: invisible RGB layers ping-pong with the GPU — write, read, write again — and the image appears from that exchange. The system is set; the artwork makes itself.
+This work is built like a game engine: invisible RGB layers in the computer ping-pong with the GPU — write, read, write again — and the image appears from that exchange.
 
-A seeded Machine DNA genome — a species with a lifespan — lives, surrenders, and begins again. Balance as process, not a fixed ideal.
+Past experiences keep running underneath — driving motion, color, direction — often without being seen. You notice them when the surface finally catches what was already happening below.
 
-Interactive HTML · WebGL2 · silent.
+Interactive HTML and WebGL2: with a seeded system that births a Machine DNA genome — a species with a lifespan. It lives, surrenders, and begins again. The search as it runs.
 
 ## WIP
 
