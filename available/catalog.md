@@ -20,6 +20,7 @@ Updated: 2026-09-22
 - One Row
 - Centered
 - Witness Mirror
+- Machine Aesthetic
 
 ---
 
@@ -57,7 +58,14 @@ Updated: 2026-09-22
 - **buyUrl:** https://objkt.com/tokens/KT19wRN6ozmy7nzC5drKi8RLyNvodsVqeS2T/7
 - **notes:** Make offer on Objkt. Thumb (video) links to Objkt.
 
-### One Column Landscape (seed 201997397) · 2026-09-19
+### april-28-2026 · 2026-09-19 · **Available #3**
+- **id:** `machine-aesthetic-april-28-2026`
+- **series:** Machine Aesthetic
+- **medium:** p5.js WebGL + HTML · Roland S-1 MIDI · Tezos NFT
+- **buyUrl:** https://objkt.com/tokens/KT1U23eh2JWRVVSPv6wdAJ2tc6s2ynp6XHrr/0
+- **notes:** Live performance record (April 28, 2026). Buy on Objkt. Add local still/MP4 when you have one.
+
+### One Column Landscape (seed 201997397) · 2026-09-18 · Available #4
 - **id:** `centered-one-column-landscape-201997397`
 - **series:** Centered
 - **medium:** p5.js / WebGL · Blackdove digital canvas
@@ -65,7 +73,7 @@ Updated: 2026-09-22
 - **buyUrl:** https://app.blackdove.com/artwork/dc415e98-f3be-4708-a9ba-a130c7494b50
 - **liveUrl:** https://mark-walhimer.com/sketches/blackdove/centered/one-row-v2-record-60-with-soundscape.html?format=portrait&seed=201997397
 - **video:** `media/one-row-v2-portrait-seed201997397-60fps-60s.mp4`
-- **notes:** Blackdove listing — not Shopify. **Available grid #3** (after Sampled Arc, Searching for Balance).
+- **notes:** Blackdove listing — not Shopify.
 
 ### Studio wall piece (placeholder) · 2026-07-01
 - **id:** `placeholder-available-01` · Inquire · add `image` + `buyUrl` later
