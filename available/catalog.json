@@ -54,11 +54,11 @@
       "date": "2026-09-19",
       "price": "Objkt",
       "edition": "1/1",
-      "notes": "Custom p5 WebGL + OSC/sliders + Roland S-1 USB MIDI — live soundscape and seeded visuals (April 28, 2026). Buy on Objkt — not Shopify. Available grid #3.",
+      "notes": "Custom p5 WebGL + OSC/sliders + Roland S-1 USB MIDI — live soundscape and seeded visuals (April 28, 2026). Buy on Objkt — not Shopify. Available grid #3. Grid uses 60s web preview; full ~2:22 on Objkt.",
       "buyUrl": "https://objkt.com/tokens/KT1U23eh2JWRVVSPv6wdAJ2tc6s2ynp6XHrr/0",
       "liveUrl": null,
-      "video": null,
-      "image": null
+      "video": "media/april-28-2026-60s.mp4",
+      "image": "media/april-28-2026.jpg"
     },
     {
       "id": "centered-one-column-landscape-201997397",

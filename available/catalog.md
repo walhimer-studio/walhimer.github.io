@@ -62,8 +62,10 @@ Updated: 2026-09-22
 - **id:** `machine-aesthetic-april-28-2026`
 - **series:** Machine Aesthetic
 - **medium:** p5.js WebGL + HTML · Roland S-1 MIDI · Tezos NFT
+- **video:** `media/april-28-2026-60s.mp4` (60s web preview from artifact.mov)
+- **image:** `media/april-28-2026.jpg`
 - **buyUrl:** https://objkt.com/tokens/KT1U23eh2JWRVVSPv6wdAJ2tc6s2ynp6XHrr/0
-- **notes:** Live performance record (April 28, 2026). Buy on Objkt. Add local still/MP4 when you have one.
+- **notes:** Full ~2:22 on Objkt. Buy on Objkt.
 
 ### One Column Landscape (seed 201997397) · 2026-09-18 · Available #4
 - **id:** `centered-one-column-landscape-201997397`
