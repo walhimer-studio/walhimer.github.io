@@ -1,10 +1,11 @@
-# Mark Walhimer Studio — catalog
+# Available — catalog
 
-Local source of truth (with `catalog.json`). The HTML reads **JSON**.
+Source of truth for [mark-walhimer.com/available/](https://mark-walhimer.com/available/). The page reads **`catalog.json`**.
 
 **Statuses:** `past` · `available` · `upcoming`  
 **date:** `YYYY-MM-DD` (newest → oldest in the grid)  
-**image:** path relative to this folder, e.g. `images/piece.jpg` (optional until you have photos)
+**image / video:** paths relative to `available/` (e.g. `media/piece.mp4`)  
+**buyUrl:** Objkt, Blackdove, or Shopify (one checkout per work)
 
 Updated: 2026-09-22
 
