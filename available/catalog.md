@@ -4,7 +4,7 @@ Source of truth for [mark-walhimer.com/available/](https://mark-walhimer.com/ava
 
 **Statuses:** `past` · `available` · `upcoming`  
 **date:** `YYYY-MM-DD` (newest → oldest in the grid)  
-**image / video:** paths relative to `available/` (e.g. `media/piece.mp4`)  
+**video:** short muted web preview only (`media/*-preview.mp4`) — not masters  
 **buyUrl:** Objkt, Blackdove, or Shopify (one checkout per work)
 
 Updated: 2026-09-22
@@ -44,7 +44,7 @@ Updated: 2026-09-22
 - **series:** Saudade
 - **medium:** Coupled AV / Tezos NFT
 - **status:** available · group show (ACTZ / Saudade)
-- **video:** `media/saudade-arc-square-seed760559126-60fps-60s.mp4`
+- **video:** `media/saudade-arc-preview.mp4` (20s)
 - **liveUrl:** https://mark-walhimer.com/sketches/coupled-av-portal/sampled-arc.html?format=square&seconds=60&seed=760559126
 - **buyUrl:** https://objkt.com/tokens/KT19beXXFz7Zk1sxDyhiRq7YYo8YWdnBx1vz/12
 - **notes:** Not Shopify — checkout on Objkt.
@@ -53,19 +53,18 @@ Updated: 2026-09-22
 - **id:** `il-searching-for-balance-77823`
 - **series:** Invisible Layer
 - **exhibition:** Searching for Balance · ACCOMPART'S
-- **video:** `media/invisible-layer-searching-for-balance-viewport-seed77823-60fps-60s.mp4`
+- **video:** `media/invisible-layer-preview.mp4` (20s)
 - **liveUrl:** https://mark-walhimer.com/sketches/invisible-layer/invisible-layer-searching-for-balance.html?seed=77823
 - **buyUrl:** https://objkt.com/tokens/KT19wRN6ozmy7nzC5drKi8RLyNvodsVqeS2T/7
-- **notes:** Make offer on Objkt. Thumb (video) links to Objkt.
+- **notes:** Make offer on Objkt.
 
 ### april-28-2026 · 2026-09-19 · **Available #3**
 - **id:** `machine-aesthetic-april-28-2026`
 - **series:** Machine Aesthetic
 - **medium:** p5.js WebGL + HTML · Roland S-1 MIDI · Tezos NFT
-- **video:** `media/april-28-2026-60s.mp4` (60s web preview from artifact.mov)
-- **image:** `media/april-28-2026.jpg`
+- **video:** `media/april-28-2026-preview.mp4` (20s)
 - **buyUrl:** https://objkt.com/tokens/KT1U23eh2JWRVVSPv6wdAJ2tc6s2ynp6XHrr/0
-- **notes:** Full ~2:22 on Objkt. Buy on Objkt.
+- **notes:** Full ~2:22 on Objkt.
 
 ### One Column Landscape (seed 201997397) · 2026-09-18 · Available #4
 - **id:** `centered-one-column-landscape-201997397`
@@ -74,7 +73,7 @@ Updated: 2026-09-22
 - **format:** 4K vertical · 2160×3840 HEVC
 - **buyUrl:** https://app.blackdove.com/artwork/dc415e98-f3be-4708-a9ba-a130c7494b50
 - **liveUrl:** https://mark-walhimer.com/sketches/blackdove/centered/one-row-v2-record-60-with-soundscape.html?format=portrait&seed=201997397
-- **video:** `media/one-row-v2-portrait-seed201997397-60fps-60s.mp4`
+- **video:** `media/one-column-preview.mp4` (20s)
 - **notes:** Blackdove listing — not Shopify.
 
 ### Studio wall piece (placeholder) · 2026-07-01
