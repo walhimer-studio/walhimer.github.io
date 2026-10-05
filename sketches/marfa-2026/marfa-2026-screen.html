@@ -17,11 +17,12 @@
       border: 1px solid #0044ff; background: #fff;
       padding: 3px 6px; margin-left: 6px;
     }
+    #seed-form .hint { margin-left: 10px; font-size: 11px; opacity: 0.7; }
   </style>
 </head>
 <body>
   <form id="seed-form" autocomplete="off">
-    <label for="seed">seed</label><input id="seed" inputmode="numeric" maxlength="9" />
+    <label for="seed">seed</label><input id="seed" inputmode="numeric" maxlength="9" /><span class="hint">N new seed</span>
   </form>
   <canvas id="card"></canvas>
   <script>
