@@ -20,11 +20,8 @@
   <canvas id="card"></canvas>
   <script>
 /**
- * Marfa 2026 — pen lines. One still per seed.
- * The swirl is the raster turn, frozen: vertical, horizontal,
- * vertical down, horizontal right. Neighboring lines are one
- * step out of phase, so the corners lock into the whirl.
- * N picks a new seed and writes ?format=square&seconds=60&seed=
+ * Marfa 2026 — pen lines. Same Canvas2D layers and scanners as marfa-2026.html,
+ * stroked. N writes ?format=square&seconds=60&seed=
  */
 const { floor, min, max, ceil } = Math;
 
@@ -84,6 +81,15 @@ const FONT = {
   '7': ['11111', '00001', '00010', '00100', '01000', '01000', '01000'],
   '8': ['01110', '10001', '10001', '01110', '10001', '10001', '01110'],
   '9': ['01110', '10001', '10001', '01111', '00001', '10001', '01110'],
+  I: ['11111', '00100', '00100', '00100', '00100', '00100', '11111'],
+  L: ['10000', '10000', '10000', '10000', '10000', '10000', '11111'],
+  b: ['10000', '10000', '11110', '10001', '10001', '10001', '11110'],
+  u: ['00000', '00000', '10001', '10001', '10001', '10001', '01111'],
+  v: ['00000', '00000', '10001', '10001', '10001', '01010', '00100'],
+  y: ['00000', '00000', '10001', '10001', '01111', '00001', '01110'],
+  '(': ['00010', '00100', '01000', '01000', '01000', '00100', '00010'],
+  ')': ['01000', '00100', '00010', '00010', '00010', '00100', '01000'],
+  '—': ['00000', '00000', '00000', '11111', '00000', '00000', '00000'],
 };
 
 const seedFromUrl = () => {
@@ -274,36 +280,369 @@ const fontPaths = (text, y, s, align) => {
   return paths;
 };
 
+const fitArt = (pts) => {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const [x, y] of pts) {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+  const pad = 8;
+  const bw = maxX - minX || 1;
+  const bh = maxY - minY || 1;
+  const s = min((ART.w - pad * 2) / bw, (ART.h - pad * 2) / bh);
+  const ox = ART.x + (ART.w - bw * s) / 2;
+  const oy = ART.y + (ART.h - bh * s) / 2;
+  return pts.map(([x, y]) => [ox + (x - minX) * s, oy + (y - minY) * s]);
+};
+
+const MAP = 160;
+const PINGS = 18;
+
+const layerPoly = (rnd, x, y, w, h, grid, width, height) => {
+  const pts = [[x, y]];
+  let yp = y;
+  let xp = x + w;
+  const edgeX = () => {
+    const s = 1 + floor(rnd() * 3);
+    const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => a - b);
+    for (let i = 0; i < s; i++) {
+      pts.push([x + xs[i], yp]);
+      yp += rnd() < 0.5 ? grid : -grid;
+      pts.push([x + xs[i], yp]);
+    }
+  };
+  const edgeY = (reverse) => {
+    const s = 1 + floor(rnd() * 3);
+    const ys = Array.from({ length: s }, () => floor(rnd() * (h - grid) / grid) * grid)
+      .sort((a, b) => (reverse ? b - a : a - b));
+    for (let i = 0; i < s; i++) {
+      pts.push([xp, y + ys[i]]);
+      xp += rnd() < 0.5 ? grid : -grid;
+      pts.push([xp, y + ys[i]]);
+    }
+  };
+  if (y !== 0) edgeX();
+  pts.push([x + w, yp]);
+  xp = x + w;
+  if (x + w !== width) edgeY(false);
+  pts.push([xp, y + h]);
+  yp = y + h;
+  if (y + h !== height) {
+    const s = 1 + floor(rnd() * 3);
+    const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => b - a);
+    for (let i = 0; i < s; i++) {
+      pts.push([x + xs[i], yp]);
+      yp += rnd() < 0.5 ? grid : -grid;
+      pts.push([x + xs[i], yp]);
+    }
+  }
+  pts.push([x, yp]);
+  xp = x;
+  if (x !== 0) {
+    edgeY(true);
+    pts[0] = [xp, y];
+  }
+  return pts;
+};
+
+const spawnField = (rnd, W, H) => {
+  const grid = 16;
+  const layers = [];
+  let guard = 0;
+  while (layers.length < 4 && guard < 500) {
+    guard += 1;
+    if (rnd() >= 0.1) continue;
+    const cols = floor(W / grid);
+    const rows = floor(H / grid);
+    const vert = rnd() < 0.5;
+    const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : W;
+    const h = vert ? H : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+    let lx = rnd() < 0.5 ? 0 : W - w;
+    let ly = rnd() < 0.5 ? 0 : H - h;
+    if (rnd() < 0.3) {
+      lx = floor(rnd() * floor((W - w) / grid)) * grid;
+      ly = floor(rnd() * floor((H - h) / grid)) * grid;
+    }
+    const red = 2 ** floor(rnd() * 6);
+    layers.push({ pts: layerPoly(rnd, lx, ly, w, h, grid, W, H), red });
+  }
+  const cell = 16;
+  const scanners = [];
+  const cap = floor(Math.sqrt(floor(W / cell) * floor(H / cell)) * 0.4);
+  guard = 0;
+  while (scanners.length < cap && guard < 400) {
+    guard += 1;
+    if (rnd() >= 0.14) continue;
+    const x = floor(rnd() * floor((W - cell) / cell)) * cell;
+    const y = floor(rnd() * floor((H - cell) / cell)) * cell;
+    const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+    const speed = 2 ** floor(rnd() * 2);
+    const stride = 2 ** floor(rnd() * 2);
+    const g = [1, 2, 4][floor(rnd() * 3)];
+    const n = dir[0]
+      ? 1 + floor(rnd() * ((dir[0] < 0 ? y : H - y) / (cell * stride)))
+      : 1 + floor(rnd() * ((dir[1] < 0 ? x : W - x) / (cell * stride)));
+    for (let i = 0; i < n; i++) {
+      scanners.push({
+        x: x + dir[1] * stride * cell * i,
+        y: y + dir[0] * stride * cell * i,
+        size: cell,
+        d: [dir[0], dir[1]],
+        speed,
+        g,
+      });
+    }
+  }
+  return { layers, scanners };
+};
+
+const stepScanners = (scanners, W, H) => {
+  for (const s of scanners) {
+    s.x += s.d[0] * s.speed;
+    s.y += s.d[1] * s.speed;
+    if (s.d[0]) {
+      if (s.x < 0 || s.x > W - s.size) {
+        s.x = s.x < 0 ? 0 : W - s.size;
+        s.y += s.size * s.d[0];
+        s.d[0] *= -1;
+      }
+    }
+    if (s.d[1]) {
+      if (s.y < 0 || s.y > H - s.size) {
+        s.y = s.y < 0 ? 0 : H - s.size;
+        s.x += s.size * s.d[1];
+        s.d[1] *= -1;
+      }
+    }
+  }
+};
+
+const motionBytes = (layers, scanners, W, H) => {
+  const cvs = document.createElement('canvas');
+  cvs.width = W;
+  cvs.height = H;
+  const ctx = cvs.getContext('2d', { willReadFrequently: true });
+  ctx.clearRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over';
+  for (const s of scanners) {
+    ctx.fillStyle = `rgba(0,${s.g},0,1)`;
+    ctx.fillRect(s.x, s.y, s.size, s.size);
+  }
+  ctx.globalCompositeOperation = 'lighter';
+  for (const layer of layers) {
+    ctx.fillStyle = `rgb(${layer.red},0,0)`;
+    ctx.beginPath();
+    ctx.moveTo(layer.pts[0][0], layer.pts[0][1]);
+    for (let i = 1; i < layer.pts.length; i++) ctx.lineTo(layer.pts[i][0], layer.pts[i][1]);
+    ctx.closePath();
+    ctx.fill();
+  }
+  const img = ctx.getImageData(0, 0, W, H);
+  const data = new Uint8Array(W * H * 4);
+  for (let y = 0; y < H; y++) {
+    const src = (H - 1 - y) * W * 4;
+    data.set(img.data.subarray(src, src + W * 4), y * W * 4);
+  }
+  return data;
+};
+
+const toMap = (pts, H) => pts.map(([x, y]) => [x, H - 1 - y]);
+
+let chuteGpu = null;
+
+const ChuteGpu = () => {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2', { antialias: false });
+  if (!gl) return null;
+  const VS = `#version 300 es
+uniform mat4 uOrtho;
+in vec3 pos;
+out vec2 vUv;
+void main() {
+  vUv = 0.5 * (pos.xy + 1.0);
+  gl_Position = uOrtho * vec4(pos.xy, 0.0, 1.0);
+}`;
+  const FS = `#version 300 es
+precision highp float;
+uniform sampler2D buf, img, mot;
+uniform float time;
+uniform vec2 dims;
+uniform int doRaster;
+uniform int doSpectrum;
+uniform vec3 specA, specB, specInk;
+uniform float specAlphaAB, specAlphaInk, paletteVeil;
+in vec2 vUv;
+out vec4 frag;
+void main() {
+  vec2 pos = floor(vUv * dims);
+  vec3 col = texture(buf, vUv).rgb;
+  vec4 m = texture(mot, vUv);
+  float dr = floor(m.r * 255.0 + 0.5);
+  float dg = floor(m.g * 255.0 + 0.5);
+  vec2 o = vec2(0.0);
+  if (doRaster == 1) {
+    if (mod(dr, 2.0) >= 1.0) o += vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 4.0) >= 2.0) o += vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 8.0) >= 4.0) o -= vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 16.0) >= 8.0) o -= vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 32.0) >= 16.0) o += vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 64.0) >= 32.0) o += vec2(2.0 / dims.x, 0.0);
+    if (mod(dr, 128.0) >= 64.0) o -= vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 256.0) >= 128.0) o -= vec2(2.0 / dims.x, 0.0);
+    col = texture(buf, vUv + o).rgb;
+  }
+  if (doSpectrum == 1) {
+    if (mod(dg, 2.0) >= 1.0) {
+      vec2 bUv = mod(pos, 16.0) / 16.0;
+      vec4 tile = texture(img, bUv);
+      col = mix(col, tile.rgb, tile.a * paletteVeil);
+    }
+    if (mod(dg, 4.0) >= 2.0) {
+      vec3 spec = mix(specA, specB, fract(time * 0.14));
+      col = mix(col, spec, specAlphaAB);
+    }
+    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk);
+  }
+  frag = vec4(col, 1.0);
+}`;
+  const compile = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog);
+  const vBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, 1, 0, -1, -1, 0, 1, 1, 0, 1, -1, 0]), gl.STATIC_DRAW);
+  const tex = () => {
+    const t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return t;
+  };
+  const fboTex = (t) => {
+    const f = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+    return f;
+  };
+  const bufTex = [tex(), tex()];
+  const fbos = [fboTex(bufTex[0]), fboTex(bufTex[1])];
+  const motTex = tex();
+  const imgTex = tex();
+  gl.bindTexture(gl.TEXTURE_2D, imgTex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 16, 16, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(16 * 16 * 4));
+  const read = new Uint8Array(MAP * MAP * 4);
+  let which = 0;
+
+  const ping = (motion, polys, W, H) => {
+    const buf = new Uint8Array(W * H * 4);
+    buf.fill(255);
+    const ids = polys.map((poly) => poly.map(() => 0));
+    let n = 1;
+    polys.forEach((poly, pi) => {
+      poly.forEach(([x, y], vi) => {
+        const px = clamp(floor(x), 0, W - 1);
+        const py = clamp(floor(y), 0, H - 1);
+        const i = (py * W + px) * 4;
+        buf[i] = n;
+        buf[i + 1] = 0;
+        buf[i + 2] = 64;
+        buf[i + 3] = 255;
+        ids[pi][vi] = n;
+        n += 1;
+      });
+    });
+    which ^= 1;
+    const prev = 1 - which;
+    gl.bindTexture(gl.TEXTURE_2D, bufTex[prev]);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, motion);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[which]);
+    gl.viewport(0, 0, W, H);
+    gl.useProgram(prog);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, bufTex[prev]);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, imgTex);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.uniform1i(gl.getUniformLocation(prog, 'buf'), 0);
+    gl.uniform1i(gl.getUniformLocation(prog, 'img'), 1);
+    gl.uniform1i(gl.getUniformLocation(prog, 'mot'), 2);
+    gl.uniform1f(gl.getUniformLocation(prog, 'time'), 0);
+    gl.uniform2f(gl.getUniformLocation(prog, 'dims'), W, H);
+    gl.uniform1i(gl.getUniformLocation(prog, 'doRaster'), 1);
+    gl.uniform1i(gl.getUniformLocation(prog, 'doSpectrum'), 0);
+    gl.uniform3f(gl.getUniformLocation(prog, 'specA'), 0, 0, 0);
+    gl.uniform3f(gl.getUniformLocation(prog, 'specB'), 0, 0, 0);
+    gl.uniform3f(gl.getUniformLocation(prog, 'specInk'), 0, 0, 0);
+    gl.uniform1f(gl.getUniformLocation(prog, 'paletteVeil'), 0);
+    gl.uniform1f(gl.getUniformLocation(prog, 'specAlphaAB'), 0);
+    gl.uniform1f(gl.getUniformLocation(prog, 'specAlphaInk'), 0);
+    gl.uniformMatrix4fv(gl.getUniformLocation(prog, 'uOrtho'), false, new Float32Array([
+      1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1,
+    ]));
+    const loc = gl.getAttribLocation(prog, 'pos');
+    gl.enableVertexAttribArray(loc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+    gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, read);
+    const found = new Map();
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = (y * W + x) * 4;
+        const r = read[i];
+        const g = read[i + 1];
+        const b = read[i + 2];
+        if (g < 8 && b > 40 && b < 90 && r > 0 && r < 250) found.set(r, [x, y]);
+      }
+    }
+    return ids.map((row, pi) => row.map((id, vi) => found.get(id) || polys[pi][vi]));
+  };
+
+  return { ping };
+};
+
+const chuteLines = (rnd) => {
+  if (!chuteGpu) chuteGpu = ChuteGpu();
+  if (!chuteGpu) return [];
+  const W = MAP;
+  const H = MAP;
+  const { layers, scanners } = spawnField(rnd, W, H);
+  let polys = layers.map((layer) => toMap(layer.pts, H));
+  const scale = ART.w / W;
+  const place = (pts) => pts.map(([x, y]) => [ART.x + x * scale, ART.y + (H - 1 - y) * scale]);
+  const out = [];
+  for (let n = 0; n < PINGS; n++) {
+    for (const pts of polys) {
+      for (const part of clipPoly(place(pts), ART)) out.push(part);
+    }
+    stepScanners(scanners, W, H);
+    const motion = motionBytes(layers, scanners, W, H);
+    polys = chuteGpu.ping(motion, polys, W, H);
+  }
+  return out;
+};
+
+
 const build = (seed, card) => {
   const rnd = mulberry32(seed);
-  const art = [];
-  const bands = 2;
-  for (let b = 0; b < bands; b++) {
-    const gap = 4;
-    const seg = 32 + floor(rnd() * 16);
-    const count = 16 + floor(rnd() * 6);
-    const steps = 12;
-    const x0 = ART.x + floor(rnd() * 28);
-    const y0 = ART.y + 64 + floor(rnd() * 36);
-    for (const pts of swirl(x0, y0, count, gap, seg, steps)) {
-      for (const part of clipPoly(pts, ART)) {
-        art.push({ closed: false, pts: part });
-      }
-    }
-  }
-  if (rnd() < 0.75) {
-    const vertical = rnd() < 0.5;
-    const gap = 4 + floor(rnd() * 2);
-    const x = ART.x + floor(rnd() * (ART.w * 0.4));
-    const y = ART.y + floor(rnd() * (ART.h * 0.3));
-    const w = 48 + floor(rnd() * 70);
-    const h = 36 + floor(rnd() * 50);
-    for (const pts of hatch(x, y, w, h, gap, vertical)) {
-      for (const part of clipPoly(pts, ART)) {
-        art.push({ closed: false, pts: part });
-      }
-    }
-  }
+  const art = chuteLines(rnd).map((pts) => ({ closed: false, pts }));
 
   const letters = [];
   art.unshift({
@@ -319,20 +658,22 @@ const build = (seed, card) => {
   const LINE_GAP = 5;
   const SEED_GAP = 18;
   const BOTTOM = 16;
+  const TITLE_S = 1.15;
   const lines = [
+    ['Invisable Layer - Marfa 2026', TITLE_S, 'left'],
     [`seed ${seedLabel(seed)} - ${card}/100`, SEED_S, 'left'],
     ...CARD_LINES.map(([text, s]) => [text, s, 'center']),
   ];
   let block = 0;
   lines.forEach(([, s], i) => {
     block += 7 * s;
-    if (i === 0) block += SEED_GAP;
+    if (i === 1) block += SEED_GAP;
     else if (i < lines.length - 1) block += LINE_GAP;
   });
   let y = FIELD_H - BOTTOM - block;
   lines.forEach(([text, s, align], i) => {
     letters.push(...fontPaths(text, y, s, align));
-    y += 7 * s + (i === 0 ? SEED_GAP : LINE_GAP);
+    y += 7 * s + (i === 1 ? SEED_GAP : LINE_GAP);
   });
   return { art, letters };
 };

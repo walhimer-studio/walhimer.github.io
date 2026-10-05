@@ -60,8 +60,9 @@ Ordered **newest first** by catalog folder index file mtime (see `_scripts/reord
 
 | Folder | Description |
 |--------|-------------|
-| [brice-marden/](./brice-marden/) | brice marden |
+| [installation-creator/](./installation-creator/) | installation creator |
 | [invisible-layer/](./invisible-layer/) | invisible layer |
+| [brice-marden/](./brice-marden/) | brice marden |
 | [fluid-dynamics/](./fluid-dynamics/) | fluid dynamics |
 | [bloom/](./bloom/) | bloom |
 | [centered/](./centered/) | centered |

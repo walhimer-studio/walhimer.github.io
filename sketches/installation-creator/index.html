@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Installation Creator — full room · sampled arc</title>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #3a3a3e; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #hud {
+      position: fixed; left: 16px; bottom: 16px; z-index: 10;
+      max-width: min(340px, calc(100vw - 32px));
+      padding: 14px 16px;
+      background: rgba(12, 12, 14, 0.82);
+      color: #e8e8ea;
+      font: 12px/1.45 "IBM Plex Mono", "SF Mono", ui-monospace, monospace;
+      letter-spacing: 0.02em;
+      pointer-events: none;
+      user-select: none;
+    }
+    #hud .title {
+      font-size: 13px; font-weight: 600; color: #fff;
+      margin: 0 0 2px; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    #hud .sub { color: #9a9aa3; margin: 0 0 12px; font-size: 11px; }
+    #hud dl {
+      margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 14px;
+    }
+    #hud dt { color: #8b8b96; margin: 0; }
+    #hud dd { margin: 0; color: #f0f0f2; }
+    #lifeTrack {
+      margin-top: 10px; height: 3px;
+      background: rgba(255,255,255,0.12); overflow: hidden;
+    }
+    #lifeFill {
+      height: 100%; width: 0%;
+      background: #c8d8ff;
+      transition: width 0.05s linear;
+    }
+    #panel {
+      position: fixed; top: 16px; right: 16px; z-index: 10;
+      width: min(300px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+      padding: 14px 16px;
+      background: rgba(12, 12, 14, 0.88);
+      color: #e8e8ea;
+      font: 12px/1.45 "IBM Plex Mono", "SF Mono", ui-monospace, monospace;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    #panel h2 {
+      margin: 0 0 10px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; color: #fff;
+    }
+    #panel label {
+      display: block; margin: 10px 0 4px; color: #8b8b96; font-size: 10px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    #panel select, #panel input, #panel button {
+      width: 100%; box-sizing: border-box;
+      font: inherit; color: #f0f0f2;
+      background: #1a1a1e; border: 1px solid #3a3a42;
+      padding: 7px 8px; border-radius: 0;
+    }
+    #panel button {
+      margin-top: 10px; cursor: pointer; background: #2a2a30;
+    }
+    #panel button:hover { background: #3a3a44; }
+    #panel button:disabled { opacity: 0.45; cursor: wait; }
+    #panel .row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    #panel .row3 {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+    }
+    #panel .hint { margin: 8px 0 0; color: #6a6a74; font-size: 10px; line-height: 1.4; }
+    #panel .divider {
+      margin: 14px 0; border: 0; border-top: 1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+<body>
+  <aside id="hud" aria-label="Room measurements">
+    <p class="title">Installation Creator</p>
+    <p class="sub">Full room · sampled arc sound ↔ visuals</p>
+    <dl>
+      <dt>Room</dt><dd id="hud-room">—</dd>
+      <dt>Arc</dt><dd id="hud-arc">off</dd>
+      <dt>Phase</dt><dd id="hud-phase">—</dd>
+      <dt>Energy</dt><dd id="hud-energy">—</dd>
+      <dt>Surface</dt><dd id="hud-surface">—</dd>
+      <dt>Source</dt><dd id="hud-source">—</dd>
+    </dl>
+    <div id="lifeTrack"><div id="lifeFill"></div></div>
+  </aside>
+
+  <aside id="panel" aria-label="Installation controls">
+    <h2>Sampled Arc</h2>
+    <button type="button" id="btn-arc-start">Start sound + visuals</button>
+    <button type="button" id="btn-arc-mute">Mute / unmute (M)</button>
+    <button type="button" id="btn-arc-rebirth">Rebirth arc (N)</button>
+    <p class="hint">Piano · violin · mallets — COPY from Desktop 06-sampled-arc. Life arc drives wall color + surface glow.</p>
+
+    <hr class="divider" />
+    <h2>Room</h2>
+    <div class="row3">
+      <div>
+        <label for="room-w">Width ″</label>
+        <input id="room-w" type="number" step="1" min="96" />
+      </div>
+      <div>
+        <label for="room-d">Depth ″</label>
+        <input id="room-d" type="number" step="1" min="96" />
+      </div>
+      <div>
+        <label for="room-h">Height ″</label>
+        <input id="room-h" type="number" step="1" min="84" />
+      </div>
+    </div>
+    <button type="button" id="btn-apply-room">Apply room size</button>
+
+    <hr class="divider" />
+    <h2>Surfaces</h2>
+    <label for="surface-select">Active surface</label>
+    <select id="surface-select"></select>
+
+    <label for="source-select">Blackdove source</label>
+    <select id="source-select"></select>
+
+    <hr class="divider" />
+    <h2>Monitor</h2>
+    <div class="row">
+      <div>
+        <label for="mon-w">Width ″</label>
+        <input id="mon-w" type="number" step="1" min="6" />
+      </div>
+      <div>
+        <label for="mon-h">Height ″</label>
+        <input id="mon-h" type="number" step="1" min="6" />
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="mon-x">X ″</label>
+        <input id="mon-x" type="number" step="1" />
+      </div>
+      <div>
+        <label for="mon-z">Z ″</label>
+        <input id="mon-z" type="number" step="1" />
+      </div>
+    </div>
+    <label for="mon-y">Bottom AFF ″</label>
+    <input id="mon-y" type="number" step="1" min="0" />
+
+    <label for="mon-wall">Mount</label>
+    <select id="mon-wall">
+      <option value="free">Freestanding (face +Z)</option>
+      <option value="wall-w">Wall W · x=0</option>
+      <option value="wall-n">Wall N · z=0</option>
+      <option value="wall-e">Wall E · x=W</option>
+      <option value="wall-s">Wall S · z=D</option>
+    </select>
+
+    <button type="button" id="btn-add-monitor">Add monitor</button>
+    <button type="button" id="btn-remove-monitor">Remove selected monitor</button>
+    <button type="button" id="btn-station">Snap to station</button>
+    <button type="button" id="btn-center">View room center</button>
+    <p class="hint">Orbit: drag · pan: right-drag · scroll: zoom. Labels only for Blackdove sources — no iframes.</p>
+  </aside>
+
+  <script src="../loop-snippets/js/three.min.js"></script>
+  <script src="../loop-snippets/js/OrbitControls.js"></script>
+  <script src="../js/Tone-14.8.49.js"></script>
+  <script>
+    // —— Black Dove corner measurements (cube-on-floor-v9) ——
+    const PANEL_H = 108;
+    const PANEL_BOTTOM = 12;
+    const PANEL_A_W = 12;
+    const PANEL_B_W = 48;
+    const STATION_OUT = 100;
+    const STATION_PAST = 60;
+    const EYE_AFF = 63;
+    const WALL_EPS = 0.35;
+
+    let roomW = 240;
+    let roomD = 240;
+    let roomH = 120;
+
+    const parseInitialSeed = () => {
+      try {
+        const q = new URLSearchParams(location.search).get('seed');
+        if (q != null && q !== '') {
+          const n = Number(q) >>> 0;
+          if (Number.isFinite(n)) return n;
+        }
+      } catch (_) {}
+      return ((Math.random() * 1e9) | 0) >>> 0;
+    };
+    let activeSeed = parseInitialSeed();
+
+    const BLACKDOVE_SOURCES = [
+      { id: 'empty', label: '— empty —', path: '' },
+      {
+        id: 'corner-v9',
+        label: 'Corner as a Window (v9)',
+        path: '../blackdove-catalog/cube-on-floor-v9.html'
+      },
+      {
+        id: 'forced-perspective',
+        label: 'Walhimer Forced Perspective',
+        path: '../blackdove-catalog/walhimer-forced-perspective.html'
+      },
+      {
+        id: 'one-column-gradient',
+        label: 'One Column · custom gradient + soundscape',
+        path: '../blackdove/centered/one-row-v2-record-60-with-soundscape-custom-gradient.html'
+      },
+      {
+        id: 'one-column-soundscape',
+        label: 'One Column · soundscape',
+        path: '../blackdove/centered/one-row-v2-record-60-with-soundscape.html'
+      },
+      {
+        id: 'one-row-v2-record',
+        label: 'One Row V2 · landscape recorder',
+        path: '../blackdove/centered/one-row-v2-record-60.html'
+      },
+      {
+        id: 'sampled-arc',
+        label: 'Sampled Arc (this room’s engine)',
+        path: '../invisible-layer/samples/sampled-arc/'
+      }
+    ];
+
+    // —— Sampled Arc sound engine — COPY from Desktop artwork-2026/06-sampled-arc/sampled-arc.html
+    //    (same transplant used in invisible-layer-september-19-2026.html)
+    const SAMPLE_BASE = '../invisible-layer/samples/sampled-arc/';
+
+    const ARC_PHASES = [
+      { id: 'seed', label: 'Seed', from: 0, to: 0.12 },
+      { id: 'germinate', label: 'Germinate', from: 0.12, to: 0.28 },
+      { id: 'bloom', label: 'Bloom', from: 0.28, to: 0.52 },
+      { id: 'climax', label: 'Climax', from: 0.52, to: 0.72 },
+      { id: 'fade', label: 'Fade', from: 0.72, to: 0.9 },
+      { id: 'silence', label: 'Silence', from: 0.9, to: 1 },
+    ];
+
+    const ARC_SCALES = {
+      fMinor: ['F', 'G', 'Ab', 'Bb', 'C', 'Db', 'Eb'],
+      dDorian: ['D', 'E', 'F', 'G', 'A', 'B', 'C'],
+      aAeolian: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+    };
+
+    const ArcSoundscape = () => {
+      let piano, violin, mallets;
+      let filter, delay, reverb, master;
+      let instrumentsReady = false;
+      let loading = null;
+      let on = false;
+      let schedulers = [];
+      let lifeStart = 0;
+      let dna = null;
+      const world = {
+        life: 0,
+        phase: 'seed',
+        phaseT: 0,
+        energy: 0.2,
+        hue: 0.55,
+        turbulence: 0.2,
+        pulse: 0,
+        alive: false,
+        ended: false,
+      };
+
+      const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
+
+      const mulberry32 = (a) => {
+        return function () {
+          let t = (a += 0x6d2b79f5);
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      };
+
+      const createDNA = (seed = (Math.random() * 1e9) | 0) => {
+        const rng = mulberry32(seed >>> 0);
+        const scaleKey = pick(rng, Object.keys(ARC_SCALES));
+        return {
+          seed: seed >>> 0,
+          lifespan: 50 + rng() * 45,
+          scaleKey,
+          scale: ARC_SCALES[scaleKey],
+          rootOctave: 2 + Math.floor(rng() * 2),
+          motif: [0, 2, 4, 2, 5, 4, 0, 3].map((d) => (d + Math.floor(rng() * 2)) % 7),
+          hueBias: rng(),
+          energyBias: 0.25 + rng() * 0.45,
+          tempo: 52 + rng() * 28,
+        };
+      };
+
+      const phaseIndex = (life) => {
+        for (let i = 0; i < ARC_PHASES.length; i++) {
+          if (life >= ARC_PHASES[i].from && life < ARC_PHASES[i].to) return i;
+        }
+        return ARC_PHASES.length - 1;
+      };
+
+      const noteName = (degree, octaveOffset = 0) => {
+        const deg = ((degree % 7) + 7) % 7;
+        const raw = dna.scale[deg];
+        const sharp = raw
+          .replace('Ab', 'G#')
+          .replace('Bb', 'A#')
+          .replace('Db', 'C#')
+          .replace('Eb', 'D#');
+        return `${sharp}${dna.rootOctave + octaveOffset}`;
+      };
+
+      const loadSampler = (folder, urls) =>
+        new Promise((resolve, reject) => {
+          let settled = false;
+          const timer = setTimeout(() => {
+            if (!settled) reject(new Error(`Timeout loading ${folder} samples`));
+          }, 45000);
+          const finish = (fn, value) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            fn(value);
+          };
+          const sampler = new Tone.Sampler({
+            urls,
+            baseUrl: `${SAMPLE_BASE}${folder}/`,
+            onload: () => finish(resolve, sampler),
+            onerror: (e) => finish(reject, e || new Error(`Failed loading ${folder}`)),
+          });
+        });
+
+      const clearSchedulers = () => {
+        schedulers.forEach((id) => Tone.Transport.clear(id));
+        schedulers = [];
+      };
+
+      const scheduleLife = () => {
+        if (!instrumentsReady || !dna) return;
+        clearSchedulers();
+        Tone.Transport.cancel(0);
+        Tone.Transport.bpm.value = dna.tempo;
+        Tone.Transport.seconds = 0;
+
+        let stepCounter = 0;
+        const id = Tone.Transport.scheduleRepeat((time) => {
+          if (!world.alive || world.ended || !on) return;
+          const phase = world.phase;
+          const motif = dna.motif;
+          const step = stepCounter % motif.length;
+          stepCounter += 1;
+          const degree = motif[step];
+          const harmony = motif[(step + 2) % motif.length];
+          try {
+            if (phase === 'seed') {
+              if (step % 2 === 0) piano.triggerAttackRelease(noteName(degree, 1), '2n', time, 0.55);
+              if (step % 4 === 0) mallets.triggerAttackRelease(noteName(harmony, 3), '8n', time, 0.4);
+            } else if (phase === 'germinate') {
+              piano.triggerAttackRelease(noteName(degree, 1), '4n', time, 0.55);
+              if (step % 2 === 1) mallets.triggerAttackRelease(noteName(degree, 3), '8n', time, 0.5);
+            } else if (phase === 'bloom') {
+              piano.triggerAttackRelease(noteName(degree, 1), '4n', time, 0.6);
+              if (step % 2 === 0) mallets.triggerAttackRelease(noteName(harmony, 3), '16n', time, 0.55);
+              if (step % 4 === 0) violin.triggerAttackRelease(noteName(degree, 2), '2n', time, 0.4);
+            } else if (phase === 'climax') {
+              piano.triggerAttackRelease(noteName(degree, 1), '8n', time, 0.7);
+              piano.triggerAttackRelease(noteName(harmony, 2), '8n', time + 0.02, 0.4);
+              mallets.triggerAttackRelease(noteName(degree, 3), '16n', time, 0.65);
+              if (step % 2 === 0) violin.triggerAttackRelease(noteName(harmony, 2), '2n', time, 0.5);
+              world.pulse = 1;
+            } else if (phase === 'fade') {
+              if (step % 2 === 0) {
+                piano.triggerAttackRelease(noteName(degree, 1), '2n', time, Math.max(0.12, 0.45 * (1 - world.life)));
+              }
+              if (step % 4 === 0) {
+                violin.triggerAttackRelease(noteName(degree, 2), '2n', time, Math.max(0.08, 0.3 * (1 - world.life)));
+              }
+            }
+          } catch (err) {
+            console.warn('note trigger failed', err);
+          }
+        }, '8n');
+        schedulers.push(id);
+
+        const t0 = Tone.now() + 0.05;
+        try {
+          piano.triggerAttackRelease(noteName(dna.motif[0], 1), '2n', t0, 0.7);
+          mallets.triggerAttackRelease(noteName(dna.motif[2], 3), '8n', t0 + 0.08, 0.55);
+          violin.triggerAttackRelease(noteName(dna.motif[0], 2), '2n', t0 + 0.15, 0.35);
+        } catch (err) {
+          console.warn('start chord failed', err);
+        }
+        Tone.Transport.start();
+      };
+
+      const updateWorldFromElapsed = (elapsed) => {
+        if (!dna) return;
+        const life = Math.min(1, elapsed / dna.lifespan);
+        world.life = life;
+        const idx = phaseIndex(life);
+        const ph = ARC_PHASES[idx];
+        world.phase = ph.id;
+        world.phaseT = (life - ph.from) / Math.max(1e-6, ph.to - ph.from);
+        const arc =
+          life < 0.55
+            ? (life / 0.55) * (life / 0.55) * (3 - 2 * (life / 0.55))
+            : 1 - ((life - 0.55) / 0.45) * ((life - 0.55) / 0.45) * (3 - 2 * ((life - 0.55) / 0.45));
+        world.energy = Math.min(1, Math.max(0.05, dna.energyBias * 0.5 + arc * 0.7));
+        world.hue = (dna.hueBias + life * 0.12 + world.phaseT * 0.03) % 1;
+        world.turbulence = world.energy * (0.35 + (idx / ARC_PHASES.length) * 0.5);
+        world.pulse *= 0.85;
+
+        if (instrumentsReady && on) {
+          const open =
+            world.phase === 'climax' ? 1 :
+            world.phase === 'bloom' ? 0.7 :
+            world.phase === 'fade' ? 0.4 : 0.35;
+          filter.frequency.rampTo(1200 + world.energy * 3600 * open, 0.15);
+          delay.wet.rampTo(0.1 + open * 0.22, 0.2);
+          delay.feedback.rampTo(0.12 + open * 0.2, 0.2);
+          reverb.wet.rampTo(0.22 + open * 0.28 + (world.phase === 'fade' ? 0.2 : 0), 0.25);
+          piano.volume.rampTo(-6 + world.energy * 4, 0.2);
+          violin.volume.rampTo(-10 + world.energy * 5, 0.2);
+          mallets.volume.rampTo(-8 + world.energy * 4, 0.2);
+        }
+
+        if (life >= 1 && !world.ended) {
+          world.ended = true;
+          world.alive = false;
+          clearSchedulers();
+          try { Tone.Transport.stop(); } catch (_) {}
+        }
+      };
+
+      const initInstruments = async () => {
+        if (instrumentsReady) return;
+        if (loading) return loading;
+        if (!window.Tone?.start) throw new Error('Tone.js required');
+        loading = (async () => {
+          await Tone.start();
+          if (Tone.context?.state !== 'running') await Tone.context.resume();
+
+          reverb = new Tone.Reverb({ decay: 4.5, wet: 0.3 }).toDestination();
+          delay = new Tone.FeedbackDelay({ delayTime: 0.28, feedback: 0.22, wet: 0.15 }).connect(reverb);
+          filter = new Tone.Filter({ frequency: 2400, type: 'lowpass', rolloff: -12 }).connect(delay);
+
+          const [p, v, m] = await Promise.all([
+            loadSampler('piano', {
+              C2: 'C2.mp3', E2: 'E2.mp3', A2: 'A2.mp3',
+              C3: 'C3.mp3', E3: 'E3.mp3', A3: 'A3.mp3',
+              C4: 'C4.mp3', E4: 'E4.mp3', A4: 'A4.mp3',
+              C5: 'C5.mp3', E5: 'E5.mp3', A5: 'A5.mp3', C6: 'C6.mp3',
+            }),
+            loadSampler('violin', {
+              G3: 'G3.mp3', A3: 'A3.mp3', C4: 'C4.mp3', E4: 'E4.mp3',
+              G4: 'G4.mp3', A4: 'A4.mp3', C5: 'C5.mp3', E5: 'E5.mp3',
+              G5: 'G5.mp3', A5: 'A5.mp3', C6: 'C6.mp3',
+            }),
+            loadSampler('xylophone', {
+              G4: 'G4.mp3', C5: 'C5.mp3', G5: 'G5.mp3',
+              C6: 'C6.mp3', G6: 'G6.mp3', C7: 'C7.mp3',
+            }),
+          ]);
+
+          piano = p;
+          violin = v;
+          mallets = m;
+          piano.disconnect();
+          violin.disconnect();
+          mallets.disconnect();
+
+          master = new Tone.Gain(0.9).toDestination();
+          piano.connect(master);
+          piano.connect(filter);
+          violin.connect(master);
+          violin.connect(reverb);
+          mallets.connect(master);
+          mallets.connect(delay);
+
+          piano.volume.value = -4;
+          violin.volume.value = -8;
+          mallets.volume.value = -6;
+          instrumentsReady = true;
+          loading = null;
+        })();
+        return loading;
+      };
+
+      const beginLife = () => {
+        if (!dna) dna = createDNA(activeSeed);
+        world.ended = false;
+        world.alive = true;
+        world.pulse = 0;
+        world.life = 0;
+        lifeStart = Tone.now();
+        scheduleLife();
+      };
+
+      const setDNAFromSeed = (seed) => {
+        dna = createDNA(seed >>> 0);
+      };
+
+      const resume = async () => {
+        await initInstruments();
+        if (Tone.context?.state !== 'running') await Tone.context.resume();
+      };
+
+      const ensureOn = async () => {
+        await resume();
+        if (!dna) setDNAFromSeed(activeSeed);
+        if (!on) {
+          on = true;
+          if (master) master.gain.rampTo(0.9, 0.08);
+        }
+        if (!world.alive && !world.ended) beginLife();
+        else if (world.alive && Tone.Transport.state !== 'started') Tone.Transport.start();
+        return true;
+      };
+
+      const toggle = async () => {
+        await resume();
+        on = !on;
+        if (master) master.gain.rampTo(on ? 0.9 : 0, 0.08);
+        if (on && !world.alive && !world.ended) beginLife();
+        return on;
+      };
+
+      const update = () => {
+        if (!dna) return;
+        if (world.alive && !world.ended && instrumentsReady) {
+          updateWorldFromElapsed(Math.max(0, Tone.now() - lifeStart));
+        }
+      };
+
+      const rebirthAudio = (seed) => {
+        setDNAFromSeed(seed);
+        world.ended = false;
+        world.alive = false;
+        world.pulse = 0;
+        world.life = 0;
+        clearSchedulers();
+        try { Tone.Transport.stop(); } catch (_) {}
+        if (on && instrumentsReady) beginLife();
+      };
+
+      return {
+        resume,
+        ensureOn,
+        toggle,
+        update,
+        rebirthAudio,
+        isOn: () => on,
+        getWorld: () => world,
+        getDNA: () => dna,
+        isReady: () => instrumentsReady,
+      };
+    };
+
+    const snd = ArcSoundscape();
+
+    // —— Scene ——
+    const scene = new THREE.Scene();
+    // Exterior void — should almost never be seen; camera stays clamped inside the room
+    scene.background = new THREE.Color(0x0a0a0c);
+
+    const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 8000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 12;
+    controls.maxPolarAngle = Math.PI * 0.92;
+    const CAM_MARGIN = 18; // inches inset from walls / floor / ceiling
+
+    const roomGroup = new THREE.Group();
+    scene.add(roomGroup);
+
+    const wallMat = new THREE.MeshBasicMaterial({ color: 0x6e6e72, side: THREE.DoubleSide });
+    const floorMat = new THREE.MeshBasicMaterial({ color: 0x2a2a2c });
+    const ceilMat = new THREE.MeshBasicMaterial({ color: 0x4a4a4e, side: THREE.DoubleSide });
+    const tickMat = new THREE.LineBasicMaterial({ color: 0xc8c8d0 });
+    const shellWalls = [];
+
+    function clearRoomShell() {
+      while (roomGroup.children.length) {
+        const c = roomGroup.children[0];
+        roomGroup.remove(c);
+        if (c.geometry) c.geometry.dispose();
+        if (c.children) {
+          c.children.forEach((ch) => {
+            if (ch.geometry) ch.geometry.dispose();
+            if (ch.material) ch.material.dispose();
+          });
+        }
+      }
+      shellWalls.length = 0;
+    }
+
+    function buildRoomShell() {
+      clearRoomShell();
+
+      const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(roomW, roomD), floorMat);
+      floorMesh.rotation.x = -Math.PI / 2;
+      floorMesh.position.set(roomW / 2, 0, roomD / 2);
+      roomGroup.add(floorMesh);
+
+      const ceilingMesh = new THREE.Mesh(new THREE.PlaneGeometry(roomW, roomD), ceilMat);
+      ceilingMesh.rotation.x = Math.PI / 2;
+      ceilingMesh.position.set(roomW / 2, roomH, roomD / 2);
+      roomGroup.add(ceilingMesh);
+
+      function addShellWall(w, h, x, y, z, rotY) {
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), wallMat.clone());
+        m.position.set(x, y, z);
+        m.rotation.y = rotY;
+        roomGroup.add(m);
+        const edges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(m.geometry),
+          new THREE.LineBasicMaterial({ color: 0x9a9aa0 })
+        );
+        m.add(edges);
+        shellWalls.push(m);
+        return m;
+      }
+
+      addShellWall(roomD, roomH, 0, roomH / 2, roomD / 2, Math.PI / 2);
+      addShellWall(roomW, roomH, roomW / 2, roomH / 2, 0, 0);
+      addShellWall(roomD, roomH, roomW, roomH / 2, roomD / 2, -Math.PI / 2);
+      addShellWall(roomW, roomH, roomW / 2, roomH / 2, roomD, Math.PI);
+
+      function dimLine(a, b) {
+        const g = new THREE.BufferGeometry().setFromPoints([a, b]);
+        roomGroup.add(new THREE.Line(g, tickMat));
+      }
+      dimLine(new THREE.Vector3(0, 0.5, 0), new THREE.Vector3(Math.min(PANEL_A_W, roomW), 0.5, 0));
+      dimLine(new THREE.Vector3(0, 0.5, 0), new THREE.Vector3(0, 0.5, Math.min(PANEL_B_W, roomD)));
+      const tickTop = Math.min(PANEL_BOTTOM + PANEL_H, roomH);
+      dimLine(new THREE.Vector3(0, PANEL_BOTTOM, 0.2), new THREE.Vector3(0, tickTop, 0.2));
+    }
+
+    function hslToHex(h, s, l) {
+      const c = new THREE.Color();
+      c.setHSL(h, s, l);
+      return c;
+    }
+
+    function makeSourceTexture(sourceId, wPx, hPx, tint) {
+      const src = BLACKDOVE_SOURCES.find((s) => s.id === sourceId) || BLACKDOVE_SOURCES[0];
+      const c = document.createElement('canvas');
+      c.width = wPx;
+      c.height = hPx;
+      const g = c.getContext('2d');
+      const energy = tint ? tint.energy : 0.2;
+      const hue = tint ? tint.hue : 0.55;
+      const pulse = tint ? tint.pulse : 0;
+      if (src.id === 'empty') {
+        g.fillStyle = `hsl(${hue * 360}, ${12 + energy * 20}%, ${8 + energy * 10}%)`;
+        g.fillRect(0, 0, wPx, hPx);
+        g.strokeStyle = `hsla(${hue * 360}, 40%, ${40 + pulse * 40}%, ${0.35 + energy * 0.4})`;
+        g.lineWidth = 2 + pulse * 4;
+        g.strokeRect(8, 8, wPx - 16, hPx - 16);
+        g.fillStyle = `hsla(${hue * 360}, 30%, ${55 + energy * 25}%, 0.7)`;
+        g.font = `${Math.round(hPx * 0.04)}px "IBM Plex Mono", monospace`;
+        g.textAlign = 'center';
+        g.textBaseline = 'middle';
+        g.fillText('EMPTY · ARC', wPx / 2, hPx / 2);
+      } else {
+        g.fillStyle = `hsl(${hue * 360}, ${18 + energy * 35}%, ${7 + energy * 12}%)`;
+        g.fillRect(0, 0, wPx, hPx);
+        g.fillStyle = `hsla(${hue * 360}, 45%, ${25 + energy * 30}%, ${0.55 + pulse * 0.35})`;
+        g.fillRect(0, 0, wPx, Math.round(hPx * 0.12));
+        g.fillStyle = '#e8e8ea';
+        g.font = `600 ${Math.round(hPx * 0.045)}px "IBM Plex Mono", monospace`;
+        g.textAlign = 'center';
+        g.textBaseline = 'middle';
+        const lines = wrapText(g, src.label, wPx * 0.86);
+        const lineH = Math.round(hPx * 0.055);
+        const startY = hPx * 0.42 - ((lines.length - 1) * lineH) / 2;
+        lines.forEach((line, i) => g.fillText(line, wPx / 2, startY + i * lineH));
+        g.fillStyle = '#8b8b96';
+        g.font = `${Math.round(hPx * 0.028)}px "IBM Plex Mono", monospace`;
+        g.fillText('BLACKDOVE · LABEL · ARC-LIT', wPx / 2, hPx * 0.72);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      return tex;
+    }
+
+    function wrapText(ctx, text, maxW) {
+      const words = text.split(' ');
+      const lines = [];
+      let line = '';
+      for (const w of words) {
+        const test = line ? line + ' ' + w : w;
+        if (ctx.measureText(test).width > maxW && line) {
+          lines.push(line);
+          line = w;
+        } else line = test;
+      }
+      if (line) lines.push(line);
+      return lines.slice(0, 4);
+    }
+
+    const surfaces = [];
+    let activeId = null;
+    let monitorSerial = 0;
+    let lastTexEnergy = -1;
+
+    function tintFromWorld() {
+      const w = snd.getWorld();
+      return { energy: w.energy, hue: w.hue, pulse: w.pulse, phase: w.phase };
+    }
+
+    function setSurfaceSource(surface, sourceId, forceTex) {
+      surface.sourceId = sourceId;
+      const tint = tintFromWorld();
+      const pxW = Math.max(256, Math.round(surface.w * 8));
+      const pxH = Math.max(256, Math.round(surface.h * 8));
+      const tex = makeSourceTexture(sourceId, pxW, pxH, tint);
+      if (surface.mesh.material.map) surface.mesh.material.map.dispose();
+      surface.mesh.material.map = tex;
+      surface.mesh.material.needsUpdate = true;
+      refreshHud();
+      syncPanelFields();
+    }
+
+    function refreshSurfaceTexturesIfNeeded() {
+      const w = snd.getWorld();
+      const bucket = Math.round(w.energy * 12) + Math.round(w.pulse * 4) * 20;
+      if (bucket === lastTexEnergy) return;
+      lastTexEnergy = bucket;
+      surfaces.forEach((s) => setSurfaceSource(s, s.sourceId, true));
+    }
+
+    function replaceMeshGeometry(mesh, w, h) {
+      mesh.geometry.dispose();
+      mesh.geometry = new THREE.PlaneGeometry(w, h);
+      const frame = mesh.children[0];
+      if (frame && frame.isLineSegments) {
+        frame.geometry.dispose();
+        frame.geometry = new THREE.EdgesGeometry(mesh.geometry);
+      }
+    }
+
+    function wallLayout(id) {
+      if (id === 'wall-w') {
+        return { w: roomD, h: roomH, x: WALL_EPS, y: roomH / 2, z: roomD / 2, rotY: Math.PI / 2, bottom: 0 };
+      }
+      if (id === 'wall-n') {
+        return { w: roomW, h: roomH, x: roomW / 2, y: roomH / 2, z: WALL_EPS, rotY: 0, bottom: 0 };
+      }
+      if (id === 'wall-e') {
+        return { w: roomD, h: roomH, x: roomW - WALL_EPS, y: roomH / 2, z: roomD / 2, rotY: -Math.PI / 2, bottom: 0 };
+      }
+      if (id === 'wall-s') {
+        return { w: roomW, h: roomH, x: roomW / 2, y: roomH / 2, z: roomD - WALL_EPS, rotY: Math.PI, bottom: 0 };
+      }
+      if (id === 'panel-a') {
+        const w = Math.min(PANEL_A_W, roomW);
+        const h = Math.min(PANEL_H, Math.max(12, roomH - PANEL_BOTTOM));
+        return { w, h, x: w / 2, y: PANEL_BOTTOM + h / 2, z: WALL_EPS + 0.15, rotY: 0, bottom: PANEL_BOTTOM };
+      }
+      if (id === 'panel-b') {
+        const w = Math.min(PANEL_B_W, roomD);
+        const h = Math.min(PANEL_H, Math.max(12, roomH - PANEL_BOTTOM));
+        return { w, h, x: WALL_EPS + 0.15, y: PANEL_BOTTOM + h / 2, z: w / 2, rotY: Math.PI / 2, bottom: PANEL_BOTTOM };
+      }
+      return null;
+    }
+
+    function addFixedSurface(id, label, kind, edgeColor, sourceId) {
+      const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
+      const frame = new THREE.LineSegments(
+        new THREE.EdgesGeometry(mesh.geometry),
+        new THREE.LineBasicMaterial({ color: edgeColor })
+      );
+      mesh.add(frame);
+      scene.add(mesh);
+      const s = {
+        id, kind, label, sourceId: sourceId || 'empty',
+        mesh, frame, w: 1, h: 1, x: 0, y: 0, z: 0, wall: id
+      };
+      surfaces.push(s);
+      layoutFixedSurface(s);
+      setSurfaceSource(s, s.sourceId);
+      return s;
+    }
+
+    function layoutFixedSurface(s) {
+      const L = wallLayout(s.id);
+      if (!L) return;
+      s.w = L.w;
+      s.h = L.h;
+      s.x = L.x;
+      s.y = L.bottom;
+      s.z = L.z;
+      replaceMeshGeometry(s.mesh, L.w, L.h);
+      s.mesh.position.set(L.x, L.y, L.z);
+      s.mesh.rotation.set(0, L.rotY, 0);
+      if (s.kind === 'wall') s.label = wallLabel(s.id);
+    }
+
+    function wallLabel(id) {
+      if (id === 'wall-w') return 'Wall W · x=0 · ' + roomD + '×' + roomH + '″';
+      if (id === 'wall-n') return 'Wall N · z=0 · ' + roomW + '×' + roomH + '″';
+      if (id === 'wall-e') return 'Wall E · x=W · ' + roomD + '×' + roomH + '″';
+      if (id === 'wall-s') return 'Wall S · z=D · ' + roomW + '×' + roomH + '″';
+      return id;
+    }
+
+    function placeMonitorMesh(s) {
+      const { mesh, w, h, wall } = s;
+      let x = s.x;
+      let y = s.y + h / 2;
+      let z = s.z;
+      let rotY = 0;
+      if (wall === 'wall-w') {
+        x = WALL_EPS + 0.2;
+        rotY = Math.PI / 2;
+      } else if (wall === 'wall-n') {
+        z = WALL_EPS + 0.2;
+        rotY = 0;
+      } else if (wall === 'wall-e') {
+        x = roomW - WALL_EPS - 0.2;
+        rotY = -Math.PI / 2;
+      } else if (wall === 'wall-s') {
+        z = roomD - WALL_EPS - 0.2;
+        rotY = Math.PI;
+      }
+      if (wall === 'free') {
+        x = Math.min(Math.max(w / 2, s.x), roomW - w / 2);
+        z = Math.min(Math.max(0.5, s.z), roomD - 0.5);
+        y = Math.min(Math.max(h / 2, s.y + h / 2), roomH - h / 2);
+        s.x = x;
+        s.z = z;
+        s.y = y - h / 2;
+      } else {
+        s.x = x;
+        s.z = z;
+        y = Math.min(Math.max(h / 2, s.y + h / 2), roomH - h / 2);
+        s.y = y - h / 2;
+      }
+      replaceMeshGeometry(mesh, w, h);
+      mesh.position.set(s.x, s.y + h / 2, s.z);
+      mesh.rotation.set(0, rotY, 0);
+    }
+
+    function addMonitor(opts = {}) {
+      monitorSerial += 1;
+      const id = 'monitor-' + monitorSerial;
+      const w = opts.w ?? 55;
+      const h = opts.h ?? 31;
+      const x = opts.x ?? Math.round(roomW * 0.55);
+      const y = opts.y ?? 42;
+      const z = opts.z ?? Math.round(roomD * 0.42);
+      const wall = opts.wall ?? 'free';
+      const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+      const frame = new THREE.LineSegments(
+        new THREE.EdgesGeometry(mesh.geometry),
+        new THREE.LineBasicMaterial({ color: 0xa0d0ff })
+      );
+      mesh.add(frame);
+      scene.add(mesh);
+      const s = {
+        id, kind: 'monitor',
+        label: 'Monitor ' + monitorSerial + ' · ' + w + '×' + h + '″',
+        sourceId: opts.sourceId ?? 'empty',
+        mesh, frame, w, h, x, y, z, wall
+      };
+      surfaces.push(s);
+      placeMonitorMesh(s);
+      setSurfaceSource(s, s.sourceId);
+      setActive(id);
+      rebuildSurfaceSelect();
+      return s;
+    }
+
+    function removeActiveMonitor() {
+      const s = getActive();
+      if (!s || s.kind !== 'monitor') return;
+      scene.remove(s.mesh);
+      s.mesh.geometry.dispose();
+      if (s.mesh.material.map) s.mesh.material.map.dispose();
+      s.mesh.material.dispose();
+      const i = surfaces.indexOf(s);
+      if (i >= 0) surfaces.splice(i, 1);
+      setActive(surfaces[0] ? surfaces[0].id : null);
+      rebuildSurfaceSelect();
+    }
+
+    function getActive() {
+      return surfaces.find((s) => s.id === activeId) || null;
+    }
+
+    function setActive(id) {
+      activeId = id;
+      surfaces.forEach((s) => {
+        const edge = s.mesh.children[0];
+        if (edge && edge.material) {
+          let col = 0xffffff;
+          if (s.kind === 'monitor') col = 0xa0d0ff;
+          if (s.kind === 'wall') col = 0xb8b8c0;
+          if (s.id === activeId) col = 0xffcc66;
+          edge.material.color.setHex(col);
+        }
+      });
+      refreshHud();
+      syncPanelFields();
+      const sel = document.getElementById('surface-select');
+      if (sel && id) sel.value = id;
+    }
+
+    function rebuildSurfaceSelect() {
+      const sel = document.getElementById('surface-select');
+      sel.innerHTML = '';
+      surfaces.forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.label;
+        sel.appendChild(opt);
+      });
+      if (activeId) sel.value = activeId;
+    }
+
+    function fillSourceSelect() {
+      const sel = document.getElementById('source-select');
+      sel.innerHTML = '';
+      BLACKDOVE_SOURCES.forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.label;
+        sel.appendChild(opt);
+      });
+    }
+
+    function refreshHud() {
+      document.getElementById('hud-room').textContent =
+        roomW + ' × ' + roomD + ' × ' + roomH + '″';
+      const world = snd.getWorld();
+      const dna = snd.getDNA();
+      document.getElementById('hud-arc').textContent = snd.isOn()
+        ? (dna ? 'seed ' + dna.seed + ' · ' + dna.scaleKey : 'on')
+        : 'off';
+      const ph = ARC_PHASES.find((p) => p.id === world.phase);
+      document.getElementById('hud-phase').textContent = ph ? ph.label : world.phase;
+      document.getElementById('hud-energy').textContent = world.energy.toFixed(2);
+      document.getElementById('lifeFill').style.width = Math.round(world.life * 100) + '%';
+
+      const s = getActive();
+      if (!s) {
+        document.getElementById('hud-surface').textContent = '—';
+        document.getElementById('hud-source').textContent = '—';
+        return;
+      }
+      document.getElementById('hud-surface').textContent =
+        s.label + (s.kind === 'wall' ? '' : ' · ' + s.w + '×' + s.h + '″');
+      const src = BLACKDOVE_SOURCES.find((x) => x.id === s.sourceId);
+      document.getElementById('hud-source').textContent = src ? src.label : '—';
+    }
+
+    function syncPanelFields() {
+      const s = getActive();
+      const srcSel = document.getElementById('source-select');
+      const isMon = !!(s && s.kind === 'monitor');
+      ['mon-w', 'mon-h', 'mon-x', 'mon-y', 'mon-z', 'mon-wall'].forEach((id) => {
+        document.getElementById(id).disabled = !isMon;
+      });
+      document.getElementById('btn-remove-monitor').disabled = !isMon;
+      srcSel.disabled = !s;
+      if (!s) return;
+      srcSel.value = s.sourceId;
+      if (isMon) {
+        document.getElementById('mon-w').value = s.w;
+        document.getElementById('mon-h').value = s.h;
+        document.getElementById('mon-x').value = Math.round(s.x);
+        document.getElementById('mon-y').value = Math.round(s.y);
+        document.getElementById('mon-z').value = Math.round(s.z);
+        document.getElementById('mon-wall').value = s.wall;
+      }
+    }
+
+    function syncRoomFields() {
+      document.getElementById('room-w').value = roomW;
+      document.getElementById('room-d').value = roomD;
+      document.getElementById('room-h').value = roomH;
+    }
+
+    function readMonitorFieldsIntoActive() {
+      const s = getActive();
+      if (!s || s.kind !== 'monitor') return;
+      s.w = Number(document.getElementById('mon-w').value) || s.w;
+      s.h = Number(document.getElementById('mon-h').value) || s.h;
+      s.x = Number(document.getElementById('mon-x').value);
+      s.y = Number(document.getElementById('mon-y').value);
+      s.z = Number(document.getElementById('mon-z').value);
+      s.wall = document.getElementById('mon-wall').value;
+      s.label = 'Monitor ' + s.id.replace('monitor-', '') + ' · ' + s.w + '×' + s.h + '″';
+      placeMonitorMesh(s);
+      setSurfaceSource(s, s.sourceId);
+      rebuildSurfaceSelect();
+      refreshHud();
+    }
+
+    function applyRoomSize() {
+      const w = Math.max(96, Number(document.getElementById('room-w').value) || roomW);
+      const d = Math.max(96, Number(document.getElementById('room-d').value) || roomD);
+      const h = Math.max(84, Number(document.getElementById('room-h').value) || roomH);
+      roomW = Math.round(w);
+      roomD = Math.round(d);
+      roomH = Math.round(h);
+      syncRoomFields();
+      buildRoomShell();
+      surfaces.forEach((s) => {
+        if (s.kind === 'wall' || s.kind === 'panel') {
+          layoutFixedSurface(s);
+          setSurfaceSource(s, s.sourceId);
+        } else if (s.kind === 'monitor') {
+          placeMonitorMesh(s);
+        }
+      });
+      rebuildSurfaceSelect();
+      refreshHud();
+      updateOrbitLimits();
+      viewRoomCenter();
+    }
+
+    function clampInsideRoom(v, margin) {
+      const m = margin == null ? CAM_MARGIN : margin;
+      v.x = Math.min(Math.max(m, v.x), roomW - m);
+      v.y = Math.min(Math.max(m, v.y), roomH - m);
+      v.z = Math.min(Math.max(m, v.z), roomD - m);
+      return v;
+    }
+
+    function updateOrbitLimits() {
+      const span = Math.min(roomW, roomD, roomH);
+      controls.maxDistance = Math.max(40, span * 0.72);
+      controls.minDistance = Math.min(12, span * 0.08);
+    }
+
+    /** Keep eye + look-at inside the box so orbit never shows the exterior gray void. */
+    function keepCameraInRoom() {
+      clampInsideRoom(camera.position);
+      clampInsideRoom(controls.target, CAM_MARGIN + 6);
+      // Avoid zero-length look when clamped to same point
+      if (camera.position.distanceTo(controls.target) < 8) {
+        controls.target.set(roomW / 2, Math.min(EYE_AFF, roomH * 0.5), roomD / 2);
+        clampInsideRoom(controls.target, CAM_MARGIN + 6);
+      }
+      controls.target.y = Math.min(Math.max(CAM_MARGIN, controls.target.y), roomH - CAM_MARGIN);
+    }
+
+    function snapToStation() {
+      const x = Math.min(STATION_OUT, roomW - CAM_MARGIN);
+      const z = Math.min(STATION_PAST, roomD - CAM_MARGIN);
+      const y = Math.min(EYE_AFF, roomH - CAM_MARGIN);
+      camera.position.set(x, y, z);
+      controls.target.set(CAM_MARGIN + 6, y, CAM_MARGIN + 6);
+      clampInsideRoom(camera.position);
+      clampInsideRoom(controls.target, CAM_MARGIN + 6);
+      controls.update();
+    }
+
+    function viewRoomCenter() {
+      const cx = roomW / 2;
+      const cz = roomD / 2;
+      const ey = Math.min(EYE_AFF, roomH * 0.45);
+      // Stay inside: stand in the south half looking toward room center (was outside before)
+      camera.position.set(
+        cx,
+        ey,
+        Math.min(roomD - CAM_MARGIN, cz + Math.min(roomD * 0.28, roomD / 2 - CAM_MARGIN - 4))
+      );
+      controls.target.set(cx, ey, cz);
+      clampInsideRoom(camera.position);
+      clampInsideRoom(controls.target, CAM_MARGIN + 6);
+      updateOrbitLimits();
+      controls.update();
+    }
+
+    function applyArcVisuals() {
+      const w = snd.getWorld();
+      const e = w.energy;
+      const hue = w.hue;
+      const pulse = w.pulse;
+      // Tint interior only — do not wash scene.background (that caused gray flashes when orbiting)
+      shellWalls.forEach((m) => {
+        m.material.color.copy(hslToHex(hue, 0.14 + e * 0.22, 0.38 + e * 0.16 + pulse * 0.06));
+      });
+      floorMat.color.copy(hslToHex(hue, 0.12, 0.12 + e * 0.1));
+      ceilMat.color.copy(hslToHex(hue, 0.1, 0.28 + e * 0.12));
+      surfaces.forEach((s) => {
+        const edge = s.mesh.children[0];
+        if (!edge || !edge.material) return;
+        if (s.id === activeId) {
+          edge.material.color.copy(hslToHex(0.12, 0.85, 0.55 + pulse * 0.2));
+        } else if (s.kind === 'monitor') {
+          edge.material.color.copy(hslToHex(hue, 0.55, 0.55 + e * 0.25 + pulse * 0.2));
+        } else {
+          edge.material.color.copy(hslToHex(hue, 0.2, 0.55 + e * 0.2));
+        }
+      });
+      refreshSurfaceTexturesIfNeeded();
+      refreshHud();
+    }
+
+    // —— Build ——
+    buildRoomShell();
+    fillSourceSelect();
+    syncRoomFields();
+
+    addFixedSurface('wall-w', wallLabel('wall-w'), 'wall', 0xb8b8c0, 'empty');
+    addFixedSurface('wall-n', wallLabel('wall-n'), 'wall', 0xb8b8c0, 'sampled-arc');
+    addFixedSurface('wall-e', wallLabel('wall-e'), 'wall', 0xb8b8c0, 'empty');
+    addFixedSurface('wall-s', wallLabel('wall-s'), 'wall', 0xb8b8c0, 'empty');
+    addFixedSurface('panel-a', 'Panel A · return 12″', 'panel', 0xffffff, 'corner-v9');
+    addFixedSurface('panel-b', 'Panel B · main 48″', 'panel', 0xffffff, 'one-column-gradient');
+
+    // Opaque projection walls — transparency showed the exterior void through the surfaces
+    surfaces.filter((s) => s.kind === 'wall').forEach((s) => {
+      s.mesh.material.opacity = 1;
+      s.mesh.material.transparent = false;
+      s.mesh.material.depthWrite = true;
+    });
+
+    rebuildSurfaceSelect();
+    setActive('wall-n');
+    addMonitor({ w: 55, h: 31, x: 140, y: 42, z: 100, wall: 'free', sourceId: 'one-row-v2-record' });
+    updateOrbitLimits();
+    viewRoomCenter();
+
+    document.getElementById('surface-select').addEventListener('change', (e) => {
+      setActive(e.target.value);
+    });
+    document.getElementById('source-select').addEventListener('change', (e) => {
+      const s = getActive();
+      if (!s) return;
+      setSurfaceSource(s, e.target.value);
+    });
+    ['mon-w', 'mon-h', 'mon-x', 'mon-y', 'mon-z', 'mon-wall'].forEach((id) => {
+      document.getElementById(id).addEventListener('change', readMonitorFieldsIntoActive);
+    });
+    document.getElementById('btn-apply-room').addEventListener('click', applyRoomSize);
+    ['room-w', 'room-d', 'room-h'].forEach((id) => {
+      document.getElementById(id).addEventListener('change', applyRoomSize);
+    });
+    document.getElementById('btn-add-monitor').addEventListener('click', () => addMonitor({}));
+    document.getElementById('btn-remove-monitor').addEventListener('click', removeActiveMonitor);
+    document.getElementById('btn-station').addEventListener('click', snapToStation);
+    document.getElementById('btn-center').addEventListener('click', viewRoomCenter);
+
+    const btnStart = document.getElementById('btn-arc-start');
+    btnStart.addEventListener('click', async () => {
+      btnStart.disabled = true;
+      btnStart.textContent = 'Loading samples…';
+      try {
+        await snd.ensureOn();
+        btnStart.textContent = 'Arc running';
+      } catch (err) {
+        console.error(err);
+        alert('Could not load Sampled Arc samples. Serve over http (not file://).');
+        btnStart.textContent = 'Start sound + visuals';
+      } finally {
+        btnStart.disabled = false;
+      }
+    });
+    document.getElementById('btn-arc-mute').addEventListener('click', async () => {
+      try {
+        const on = await snd.toggle();
+        document.getElementById('btn-arc-mute').textContent = on ? 'Mute (M)' : 'Unmute (M)';
+      } catch (err) {
+        console.error(err);
+      }
+    });
+    document.getElementById('btn-arc-rebirth').addEventListener('click', () => {
+      activeSeed = ((Math.random() * 1e9) | 0) >>> 0;
+      snd.rebirthAudio(activeSeed);
+      lastTexEnergy = -1;
+    });
+
+    document.addEventListener('keydown', async (e) => {
+      const k = e.key.toLowerCase();
+      if (k === 'm') {
+        const on = await snd.toggle();
+        document.getElementById('btn-arc-mute').textContent = on ? 'Mute (M)' : 'Unmute (M)';
+      }
+      if (k === 'n') {
+        activeSeed = ((Math.random() * 1e9) | 0) >>> 0;
+        snd.rebirthAudio(activeSeed);
+        lastTexEnergy = -1;
+      }
+    });
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+
+    function tick() {
+      snd.update();
+      applyArcVisuals();
+      controls.update();
+      keepCameraInRoom();
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    tick();
+  </script>
+</body>
+</html>
