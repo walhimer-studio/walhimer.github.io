@@ -17,11 +17,13 @@ Made for Art Blocks Marfa 2026. One hundred signed 4×6 cards, numbered 1/100 to
 |------|------|------|
 | Marfa 2026 — Chutes | `sketches/marfa-2026/marfa-2026.html` | October 5, 2026 |
 | Marfa 2026 — pen card | `sketches/marfa-2026/marfa-2026-lines.html` | October 5, 2026 |
+| Marfa 2026 — screen · enter your seed | `sketches/marfa-2026/marfa-2026-screen.html` | October 5, 2026 |
 
 ## Live URLs
 
 - https://mark-walhimer.com/sketches/marfa-2026/marfa-2026.html
 - https://mark-walhimer.com/sketches/marfa-2026/marfa-2026-lines.html
+- https://mark-walhimer.com/sketches/marfa-2026/marfa-2026-screen.html
 
 ## Publish checklist
 

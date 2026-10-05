@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invisable Layer — Marfa 2026 — screen</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #fff; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #seed-form {
+      position: fixed; left: 12px; top: 12px; z-index: 2;
+      font: 13px/1.4 ui-monospace, monospace;
+      color: #0044ff;
+    }
+    #seed-form input {
+      font: inherit; color: inherit; width: 10ch;
+      border: 1px solid #0044ff; background: #fff;
+      padding: 3px 6px; margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <form id="seed-form" autocomplete="off">
+    <label for="seed">seed</label><input id="seed" inputmode="numeric" maxlength="9" />
+  </form>
+  <canvas id="card"></canvas>
+  <script>
+/**
+ * Marfa 2026 — pen lines. Same Canvas2D layers and scanners as marfa-2026.html,
+ * stroked. N writes ?format=square&seconds=60&seed=
+ */
+const { floor, min, max, ceil } = Math;
+
+const FIELD_W = 256;
+const FIELD_H = 384;
+const INCH_W = 4;
+const INCH_H = 6;
+const INK = '#0044ff';
+const ART = { x: 10, y: 12, w: 236, h: 236 };
+const CARD_NAME = 'Mark Walhimer';
+const CARD_URL = 'https://mark-walhimer.com/marfa-2026';
+const CARD_IG = 'https://www.instagram.com/markwalhimer/';
+const CARD_LINES = [
+  ['Mark Walhimer', 2.4],
+  ['mark-walhimer.com', 1.85],
+  ['/marfa-2026', 1.85],
+  ['@markwalhimer', 1.85],
+];
+
+// vertical, horizontal, vertical down, horizontal right
+const TURN = [[0, -1], [1, 0], [0, 1], [1, 0]];
+
+const FONT = {
+  ' ': ['00000', '00000', '00000', '00000', '00000', '00000', '00000'],
+  M: ['10001', '11011', '10101', '10001', '10001', '10001', '10001'],
+  W: ['10001', '10001', '10001', '10101', '10101', '11011', '10001'],
+  a: ['00000', '00000', '01110', '00001', '01111', '10001', '01111'],
+  c: ['00000', '00000', '01111', '10000', '10000', '10000', '01111'],
+  e: ['00000', '00000', '01110', '10001', '11111', '10000', '01110'],
+  f: ['00110', '01001', '01000', '11100', '01000', '01000', '01000'],
+  g: ['00000', '01111', '10001', '10001', '01111', '00001', '01110'],
+  h: ['10000', '10000', '10110', '11001', '10001', '10001', '10001'],
+  i: ['00100', '00000', '01100', '00100', '00100', '00100', '01110'],
+  k: ['10000', '10010', '10100', '11000', '10100', '10010', '10001'],
+  l: ['01100', '00100', '00100', '00100', '00100', '00100', '01110'],
+  m: ['00000', '00000', '11010', '10101', '10101', '10001', '10001'],
+  n: ['00000', '00000', '10110', '11001', '10001', '10001', '10001'],
+  o: ['00000', '00000', '01110', '10001', '10001', '10001', '01110'],
+  p: ['00000', '01110', '10001', '10001', '11110', '10000', '10000'],
+  r: ['00000', '00000', '10110', '11001', '10000', '10000', '10000'],
+  s: ['00000', '00000', '01111', '10000', '01110', '00001', '11110'],
+  t: ['01000', '01000', '11100', '01000', '01000', '01001', '00110'],
+  w: ['00000', '00000', '10001', '10101', '10101', '10101', '01010'],
+  ':': ['00000', '00100', '00100', '00000', '00100', '00100', '00000'],
+  '/': ['00001', '00010', '00100', '00100', '00100', '01000', '10000'],
+  '@': ['01110', '10001', '10111', '10101', '10111', '10000', '01110'],
+  '.': ['00000', '00000', '00000', '00000', '00000', '01100', '01100'],
+  '-': ['00000', '00000', '00000', '01110', '00000', '00000', '00000'],
+  d: ['00001', '00001', '01111', '10001', '10001', '10001', '01111'],
+  '0': ['01110', '10001', '10011', '10101', '11001', '10001', '01110'],
+  '1': ['00100', '01100', '00100', '00100', '00100', '00100', '01110'],
+  '2': ['01110', '10001', '00001', '00110', '01000', '10000', '11111'],
+  '3': ['01110', '10001', '00001', '00110', '00001', '10001', '01110'],
+  '4': ['00010', '00110', '01010', '10010', '11111', '00010', '00010'],
+  '5': ['11111', '10000', '11110', '00001', '00001', '10001', '01110'],
+  '6': ['01110', '10000', '10000', '11110', '10001', '10001', '01110'],
+  '7': ['11111', '00001', '00010', '00100', '01000', '01000', '01000'],
+  '8': ['01110', '10001', '10001', '01110', '10001', '10001', '01110'],
+  '9': ['01110', '10001', '10001', '01111', '00001', '10001', '01110'],
+  I: ['11111', '00100', '00100', '00100', '00100', '00100', '11111'],
+  L: ['10000', '10000', '10000', '10000', '10000', '10000', '11111'],
+  b: ['10000', '10000', '11110', '10001', '10001', '10001', '11110'],
+  u: ['00000', '00000', '10001', '10001', '10001', '10001', '01111'],
+  v: ['00000', '00000', '10001', '10001', '10001', '01010', '00100'],
+  y: ['00000', '00000', '10001', '10001', '01111', '00001', '01110'],
+  '(': ['00010', '00100', '01000', '01000', '01000', '00100', '00010'],
+  ')': ['01000', '00100', '00010', '00010', '00010', '00100', '01000'],
+  '—': ['00000', '00000', '00000', '11111', '00000', '00000', '00000'],
+};
+
+const seedFromUrl = () => {
+  const raw = new URLSearchParams(location.search).get('seed');
+  const n = raw == null || raw === '' ? 1 : Number(raw);
+  if (!Number.isFinite(n)) return 1;
+  return (n >>> 0) % 1000000000;
+};
+
+const seedLabel = (seed) => String(seed).padStart(9, '0');
+
+const cardFromUrl = () => {
+  const raw = new URLSearchParams(location.search).get('card');
+  const n = raw == null || raw === '' ? 1 : Number(raw);
+  if (!Number.isFinite(n)) return 1;
+  return min(100, max(1, floor(n)));
+};
+
+const setSeedUrl = (seed, card) => {
+  const url = new URL(location.href);
+  url.search = `?format=square&seconds=60&seed=${seed >>> 0}&card=${card}`;
+  history.replaceState(null, '', url.toString());
+};
+
+const mulberry32 = (seed) => {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0;
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const clamp = (v, lo, hi) => min(hi, max(lo, v));
+
+const clipPoly = (pts, box) => {
+  const L = box.x;
+  const T = box.y;
+  const R = box.x + box.w;
+  const B = box.y + box.h;
+  const inside = (p) => p[0] >= L && p[0] <= R && p[1] >= T && p[1] <= B;
+  const cut = (a, b) => {
+    const vertical = a[0] === b[0];
+    if (vertical) {
+      if (a[0] < L || a[0] > R) return null;
+      const y0 = clamp(a[1], T, B);
+      const y1 = clamp(b[1], T, B);
+      if (y0 === y1) return null;
+      return [[a[0], y0], [a[0], y1]];
+    }
+    if (a[1] < T || a[1] > B) return null;
+    const x0 = clamp(a[0], L, R);
+    const x1 = clamp(b[0], L, R);
+    if (x0 === x1) return null;
+    return [[x0, a[1]], [x1, a[1]]];
+  };
+  const paths = [];
+  let cur = [];
+  const flush = () => {
+    if (cur.length > 1) paths.push(cur);
+    cur = [];
+  };
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i];
+    const b = pts[i + 1];
+    if (inside(a) && inside(b)) {
+      if (!cur.length) cur.push(a);
+      cur.push(b);
+      continue;
+    }
+    const seg = cut(a, b);
+    if (!seg) {
+      flush();
+      continue;
+    }
+    if (!cur.length) cur.push(seg[0]);
+    else {
+      const last = cur[cur.length - 1];
+      if (last[0] !== seg[0][0] || last[1] !== seg[0][1]) {
+        flush();
+        cur.push(seg[0]);
+      }
+    }
+    cur.push(seg[1]);
+    if (!inside(b)) flush();
+  }
+  flush();
+  return paths;
+};
+
+const along = (dist, seg) => {
+  let d = dist;
+  let x = 0;
+  let y = 0;
+  let n = 0;
+  while (d > 0.01 && n < 64) {
+    const [dx, dy] = TURN[n % 4];
+    const step = min(seg, d);
+    x += dx * step;
+    y += dy * step;
+    d -= step;
+    n += 1;
+  }
+  return [x, y];
+};
+
+const swirl = (x0, y0, count, gap, seg, steps) => {
+  const lines = [];
+  const span = steps * seg;
+  for (let i = 0; i < count; i++) {
+    const phase = i * gap;
+    const pts = [along(phase, seg)];
+    const firstCorner = ceil(phase / seg) * seg;
+    for (let d = firstCorner; d < phase + span; d += seg) pts.push(along(d, seg));
+    pts.push(along(phase + span, seg));
+    lines.push(pts.map(([x, y]) => [x0 + x, y0 + y + i * gap]));
+  }
+  return lines;
+};
+
+const hatch = (x, y, w, h, gap, vertical) => {
+  const lines = [];
+  if (vertical) {
+    for (let px = x; px <= x + w; px += gap) lines.push([[px, y], [px, y + h]]);
+  } else {
+    for (let py = y; py <= y + h; py += gap) lines.push([[x, py], [x + w, py]]);
+  }
+  return lines;
+};
+
+const textWidth = (text, s) => text.length * 6 * s;
+
+const fontPaths = (text, y, s, align) => {
+  const paths = [];
+  const ink = (text.length - 1) * 6 * s + 5 * s;
+  const x0 = align === 'right'
+    ? ART.x + ART.w - ink
+    : align === 'left'
+      ? ART.x
+      : (FIELD_W - textWidth(text, s)) / 2;
+  let x = x0;
+  for (const ch of text) {
+    const rows = FONT[ch] || FONT[' '];
+    const h = rows.length;
+    const w = rows[0].length;
+    for (let ry = 0; ry < h; ry++) {
+      let run = -1;
+      for (let rx = 0; rx <= w; rx++) {
+        const on = rx < w && rows[ry][rx] === '1';
+        if (on && run < 0) run = rx;
+        if (!on && run >= 0) {
+          paths.push({
+            closed: false,
+            kind: 'letter',
+            weight: s * 0.92,
+            pts: [
+              [x + run * s, y + (ry + 0.5) * s],
+              [x + rx * s, y + (ry + 0.5) * s],
+            ],
+          });
+          run = -1;
+        }
+      }
+    }
+    for (let rx = 0; rx < w; rx++) {
+      let run = -1;
+      for (let ry = 0; ry <= h; ry++) {
+        const on = ry < h && rows[ry][rx] === '1';
+        if (on && run < 0) run = ry;
+        if (!on && run >= 0) {
+          paths.push({
+            closed: false,
+            kind: 'letter',
+            weight: s * 0.92,
+            pts: [
+              [x + (rx + 0.5) * s, y + run * s],
+              [x + (rx + 0.5) * s, y + ry * s],
+            ],
+          });
+          run = -1;
+        }
+      }
+    }
+    x += 6 * s;
+  }
+  return paths;
+};
+
+const fitArt = (pts) => {
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const [x, y] of pts) {
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  }
+  const pad = 8;
+  const bw = maxX - minX || 1;
+  const bh = maxY - minY || 1;
+  const s = min((ART.w - pad * 2) / bw, (ART.h - pad * 2) / bh);
+  const ox = ART.x + (ART.w - bw * s) / 2;
+  const oy = ART.y + (ART.h - bh * s) / 2;
+  return pts.map(([x, y]) => [ox + (x - minX) * s, oy + (y - minY) * s]);
+};
+
+const MAP = 160;
+const PINGS = 18;
+
+const layerPoly = (rnd, x, y, w, h, grid, width, height) => {
+  const pts = [[x, y]];
+  let yp = y;
+  let xp = x + w;
+  const edgeX = () => {
+    const s = 1 + floor(rnd() * 3);
+    const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => a - b);
+    for (let i = 0; i < s; i++) {
+      pts.push([x + xs[i], yp]);
+      yp += rnd() < 0.5 ? grid : -grid;
+      pts.push([x + xs[i], yp]);
+    }
+  };
+  const edgeY = (reverse) => {
+    const s = 1 + floor(rnd() * 3);
+    const ys = Array.from({ length: s }, () => floor(rnd() * (h - grid) / grid) * grid)
+      .sort((a, b) => (reverse ? b - a : a - b));
+    for (let i = 0; i < s; i++) {
+      pts.push([xp, y + ys[i]]);
+      xp += rnd() < 0.5 ? grid : -grid;
+      pts.push([xp, y + ys[i]]);
+    }
+  };
+  if (y !== 0) edgeX();
+  pts.push([x + w, yp]);
+  xp = x + w;
+  if (x + w !== width) edgeY(false);
+  pts.push([xp, y + h]);
+  yp = y + h;
+  if (y + h !== height) {
+    const s = 1 + floor(rnd() * 3);
+    const xs = Array.from({ length: s }, () => floor(rnd() * (w - grid) / grid) * grid).sort((a, b) => b - a);
+    for (let i = 0; i < s; i++) {
+      pts.push([x + xs[i], yp]);
+      yp += rnd() < 0.5 ? grid : -grid;
+      pts.push([x + xs[i], yp]);
+    }
+  }
+  pts.push([x, yp]);
+  xp = x;
+  if (x !== 0) {
+    edgeY(true);
+    pts[0] = [xp, y];
+  }
+  return pts;
+};
+
+const spawnField = (rnd, W, H) => {
+  const grid = 16;
+  const layers = [];
+  let guard = 0;
+  while (layers.length < 4 && guard < 500) {
+    guard += 1;
+    if (rnd() >= 0.1) continue;
+    const cols = floor(W / grid);
+    const rows = floor(H / grid);
+    const vert = rnd() < 0.5;
+    const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : W;
+    const h = vert ? H : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+    let lx = rnd() < 0.5 ? 0 : W - w;
+    let ly = rnd() < 0.5 ? 0 : H - h;
+    if (rnd() < 0.3) {
+      lx = floor(rnd() * floor((W - w) / grid)) * grid;
+      ly = floor(rnd() * floor((H - h) / grid)) * grid;
+    }
+    const red = 2 ** floor(rnd() * 6);
+    layers.push({ pts: layerPoly(rnd, lx, ly, w, h, grid, W, H), red });
+  }
+  const cell = 16;
+  const scanners = [];
+  const cap = floor(Math.sqrt(floor(W / cell) * floor(H / cell)) * 0.4);
+  guard = 0;
+  while (scanners.length < cap && guard < 400) {
+    guard += 1;
+    if (rnd() >= 0.14) continue;
+    const x = floor(rnd() * floor((W - cell) / cell)) * cell;
+    const y = floor(rnd() * floor((H - cell) / cell)) * cell;
+    const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+    const speed = 2 ** floor(rnd() * 2);
+    const stride = 2 ** floor(rnd() * 2);
+    const g = [1, 2, 4][floor(rnd() * 3)];
+    const n = dir[0]
+      ? 1 + floor(rnd() * ((dir[0] < 0 ? y : H - y) / (cell * stride)))
+      : 1 + floor(rnd() * ((dir[1] < 0 ? x : W - x) / (cell * stride)));
+    for (let i = 0; i < n; i++) {
+      scanners.push({
+        x: x + dir[1] * stride * cell * i,
+        y: y + dir[0] * stride * cell * i,
+        size: cell,
+        d: [dir[0], dir[1]],
+        speed,
+        g,
+      });
+    }
+  }
+  return { layers, scanners };
+};
+
+const stepScanners = (scanners, W, H) => {
+  for (const s of scanners) {
+    s.x += s.d[0] * s.speed;
+    s.y += s.d[1] * s.speed;
+    if (s.d[0]) {
+      if (s.x < 0 || s.x > W - s.size) {
+        s.x = s.x < 0 ? 0 : W - s.size;
+        s.y += s.size * s.d[0];
+        s.d[0] *= -1;
+      }
+    }
+    if (s.d[1]) {
+      if (s.y < 0 || s.y > H - s.size) {
+        s.y = s.y < 0 ? 0 : H - s.size;
+        s.x += s.size * s.d[1];
+        s.d[1] *= -1;
+      }
+    }
+  }
+};
+
+const motionBytes = (layers, scanners, W, H) => {
+  const cvs = document.createElement('canvas');
+  cvs.width = W;
+  cvs.height = H;
+  const ctx = cvs.getContext('2d', { willReadFrequently: true });
+  ctx.clearRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over';
+  for (const s of scanners) {
+    ctx.fillStyle = `rgba(0,${s.g},0,1)`;
+    ctx.fillRect(s.x, s.y, s.size, s.size);
+  }
+  ctx.globalCompositeOperation = 'lighter';
+  for (const layer of layers) {
+    ctx.fillStyle = `rgb(${layer.red},0,0)`;
+    ctx.beginPath();
+    ctx.moveTo(layer.pts[0][0], layer.pts[0][1]);
+    for (let i = 1; i < layer.pts.length; i++) ctx.lineTo(layer.pts[i][0], layer.pts[i][1]);
+    ctx.closePath();
+    ctx.fill();
+  }
+  const img = ctx.getImageData(0, 0, W, H);
+  const data = new Uint8Array(W * H * 4);
+  for (let y = 0; y < H; y++) {
+    const src = (H - 1 - y) * W * 4;
+    data.set(img.data.subarray(src, src + W * 4), y * W * 4);
+  }
+  return data;
+};
+
+const toMap = (pts, H) => pts.map(([x, y]) => [x, H - 1 - y]);
+
+let chuteGpu = null;
+
+const ChuteGpu = () => {
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2', { antialias: false });
+  if (!gl) return null;
+  const VS = `#version 300 es
+uniform mat4 uOrtho;
+in vec3 pos;
+out vec2 vUv;
+void main() {
+  vUv = 0.5 * (pos.xy + 1.0);
+  gl_Position = uOrtho * vec4(pos.xy, 0.0, 1.0);
+}`;
+  const FS = `#version 300 es
+precision highp float;
+uniform sampler2D buf, img, mot;
+uniform float time;
+uniform vec2 dims;
+uniform int doRaster;
+uniform int doSpectrum;
+uniform vec3 specA, specB, specInk;
+uniform float specAlphaAB, specAlphaInk, paletteVeil;
+in vec2 vUv;
+out vec4 frag;
+void main() {
+  vec2 pos = floor(vUv * dims);
+  vec3 col = texture(buf, vUv).rgb;
+  vec4 m = texture(mot, vUv);
+  float dr = floor(m.r * 255.0 + 0.5);
+  float dg = floor(m.g * 255.0 + 0.5);
+  vec2 o = vec2(0.0);
+  if (doRaster == 1) {
+    if (mod(dr, 2.0) >= 1.0) o += vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 4.0) >= 2.0) o += vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 8.0) >= 4.0) o -= vec2(0.0, 1.0 / dims.y);
+    if (mod(dr, 16.0) >= 8.0) o -= vec2(1.0 / dims.x, 0.0);
+    if (mod(dr, 32.0) >= 16.0) o += vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 64.0) >= 32.0) o += vec2(2.0 / dims.x, 0.0);
+    if (mod(dr, 128.0) >= 64.0) o -= vec2(0.0, 2.0 / dims.y);
+    if (mod(dr, 256.0) >= 128.0) o -= vec2(2.0 / dims.x, 0.0);
+    col = texture(buf, vUv + o).rgb;
+  }
+  if (doSpectrum == 1) {
+    if (mod(dg, 2.0) >= 1.0) {
+      vec2 bUv = mod(pos, 16.0) / 16.0;
+      vec4 tile = texture(img, bUv);
+      col = mix(col, tile.rgb, tile.a * paletteVeil);
+    }
+    if (mod(dg, 4.0) >= 2.0) {
+      vec3 spec = mix(specA, specB, fract(time * 0.14));
+      col = mix(col, spec, specAlphaAB);
+    }
+    if (mod(dg, 8.0) >= 4.0) col = mix(col, specInk, specAlphaInk);
+  }
+  frag = vec4(col, 1.0);
+}`;
+  const compile = (type, src) => {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog);
+  const vBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, 1, 0, -1, -1, 0, 1, 1, 0, 1, -1, 0]), gl.STATIC_DRAW);
+  const tex = () => {
+    const t = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return t;
+  };
+  const fboTex = (t) => {
+    const f = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+    return f;
+  };
+  const bufTex = [tex(), tex()];
+  const fbos = [fboTex(bufTex[0]), fboTex(bufTex[1])];
+  const motTex = tex();
+  const imgTex = tex();
+  gl.bindTexture(gl.TEXTURE_2D, imgTex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 16, 16, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(16 * 16 * 4));
+  const read = new Uint8Array(MAP * MAP * 4);
+  let which = 0;
+
+  const ping = (motion, polys, W, H) => {
+    const buf = new Uint8Array(W * H * 4);
+    buf.fill(255);
+    const ids = polys.map((poly) => poly.map(() => 0));
+    let n = 1;
+    polys.forEach((poly, pi) => {
+      poly.forEach(([x, y], vi) => {
+        const px = clamp(floor(x), 0, W - 1);
+        const py = clamp(floor(y), 0, H - 1);
+        const i = (py * W + px) * 4;
+        buf[i] = n;
+        buf[i + 1] = 0;
+        buf[i + 2] = 64;
+        buf[i + 3] = 255;
+        ids[pi][vi] = n;
+        n += 1;
+      });
+    });
+    which ^= 1;
+    const prev = 1 - which;
+    gl.bindTexture(gl.TEXTURE_2D, bufTex[prev]);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, motion);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[which]);
+    gl.viewport(0, 0, W, H);
+    gl.useProgram(prog);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, bufTex[prev]);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, imgTex);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, motTex);
+    gl.uniform1i(gl.getUniformLocation(prog, 'buf'), 0);
+    gl.uniform1i(gl.getUniformLocation(prog, 'img'), 1);
+    gl.uniform1i(gl.getUniformLocation(prog, 'mot'), 2);
+    gl.uniform1f(gl.getUniformLocation(prog, 'time'), 0);
+    gl.uniform2f(gl.getUniformLocation(prog, 'dims'), W, H);
+    gl.uniform1i(gl.getUniformLocation(prog, 'doRaster'), 1);
+    gl.uniform1i(gl.getUniformLocation(prog, 'doSpectrum'), 0);
+    gl.uniform3f(gl.getUniformLocation(prog, 'specA'), 0, 0, 0);
+    gl.uniform3f(gl.getUniformLocation(prog, 'specB'), 0, 0, 0);
+    gl.uniform3f(gl.getUniformLocation(prog, 'specInk'), 0, 0, 0);
+    gl.uniform1f(gl.getUniformLocation(prog, 'paletteVeil'), 0);
+    gl.uniform1f(gl.getUniformLocation(prog, 'specAlphaAB'), 0);
+    gl.uniform1f(gl.getUniformLocation(prog, 'specAlphaInk'), 0);
+    gl.uniformMatrix4fv(gl.getUniformLocation(prog, 'uOrtho'), false, new Float32Array([
+      1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1,
+    ]));
+    const loc = gl.getAttribLocation(prog, 'pos');
+    gl.enableVertexAttribArray(loc);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuf);
+    gl.vertexAttribPointer(loc, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, read);
+    const found = new Map();
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = (y * W + x) * 4;
+        const r = read[i];
+        const g = read[i + 1];
+        const b = read[i + 2];
+        if (g < 8 && b > 40 && b < 90 && r > 0 && r < 250) found.set(r, [x, y]);
+      }
+    }
+    return ids.map((row, pi) => row.map((id, vi) => found.get(id) || polys[pi][vi]));
+  };
+
+  return { ping };
+};
+
+const chuteLines = (rnd) => {
+  if (!chuteGpu) chuteGpu = ChuteGpu();
+  if (!chuteGpu) return [];
+  const W = MAP;
+  const H = MAP;
+  const { layers, scanners } = spawnField(rnd, W, H);
+  let polys = layers.map((layer) => toMap(layer.pts, H));
+  const scale = ART.w / W;
+  const place = (pts) => pts.map(([x, y]) => [ART.x + x * scale, ART.y + (H - 1 - y) * scale]);
+  const out = [];
+  for (let n = 0; n < PINGS; n++) {
+    for (const pts of polys) {
+      for (const part of clipPoly(place(pts), ART)) out.push(part);
+    }
+    stepScanners(scanners, W, H);
+    const motion = motionBytes(layers, scanners, W, H);
+    polys = chuteGpu.ping(motion, polys, W, H);
+  }
+  return out;
+};
+
+
+const SQUARE = {
+  closed: true,
+  pts: [
+    [ART.x, ART.y],
+    [ART.x + ART.w, ART.y],
+    [ART.x + ART.w, ART.y + ART.h],
+    [ART.x, ART.y + ART.h],
+  ],
+};
+
+let run = null;
+
+const layerLife = (rnd) => (8 + floor(rnd() * 16)) * 32;
+const scannerLife = (rnd) => (14 + floor(rnd() * 20)) * 32;
+
+const spawnLayer = (rnd, W, H) => {
+  const grid = 16;
+  const cols = floor(W / grid);
+  const rows = floor(H / grid);
+  const vert = rnd() < 0.5;
+  const w = vert ? floor(cols * (0.2 + rnd() * 0.5)) * grid : W;
+  const h = vert ? H : floor(rows * (0.2 + rnd() * 0.5)) * grid;
+  let lx = rnd() < 0.5 ? 0 : W - w;
+  let ly = rnd() < 0.5 ? 0 : H - h;
+  if (rnd() < 0.3) {
+    lx = floor(rnd() * floor((W - w) / grid)) * grid;
+    ly = floor(rnd() * floor((H - h) / grid)) * grid;
+  }
+  const red = 2 ** floor(rnd() * 6);
+  return { pts: layerPoly(rnd, lx, ly, w, h, grid, W, H), red, life: layerLife(rnd) };
+};
+
+const spawnScanners = (rnd, W, H) => {
+  const cell = 16;
+  const x = floor(rnd() * floor((W - cell) / cell)) * cell;
+  const y = floor(rnd() * floor((H - cell) / cell)) * cell;
+  const dir = rnd() < 0.5 ? [floor(rnd() * 2) * 2 - 1, 0] : [0, floor(rnd() * 2) * 2 - 1];
+  const speed = 2 ** floor(rnd() * 2);
+  const stride = 2 ** floor(rnd() * 2);
+  const g = [1, 2, 4][floor(rnd() * 3)];
+  const n = dir[0]
+    ? 1 + floor(rnd() * ((dir[0] < 0 ? y : H - y) / (cell * stride)))
+    : 1 + floor(rnd() * ((dir[1] < 0 ? x : W - x) / (cell * stride)));
+  const life = scannerLife(rnd);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    out.push({
+      x: x + dir[1] * stride * cell * i,
+      y: y + dir[0] * stride * cell * i,
+      size: cell,
+      d: [dir[0], dir[1]],
+      speed,
+      g,
+      life,
+    });
+  }
+  return out;
+};
+
+const startRun = (seed) => {
+  if (!chuteGpu) chuteGpu = ChuteGpu();
+  if (!chuteGpu) return;
+  const rnd = mulberry32(seed);
+  const life = mulberry32((seed ^ 0x9e3779b9) >>> 0);
+  const W = MAP;
+  const H = MAP;
+  const { layers, scanners } = spawnField(rnd, W, H);
+  for (const layer of layers) {
+    layer.life = layerLife(life);
+    layer.poly = toMap(layer.pts, H);
+  }
+  for (const s of scanners) s.life = scannerLife(life);
+  run = { seed, W, H, layers, scanners, life, passes: [] };
+};
+
+const pass = () => {
+  if (!run) return;
+  const { W, H, life } = run;
+  const scale = ART.w / W;
+  const place = (pts) => pts.map(([x, y]) => [ART.x + x * scale, ART.y + (H - 1 - y) * scale]);
+  const out = [];
+  for (const layer of run.layers) {
+    for (const part of clipPoly(place(layer.poly), ART)) out.push(part);
+  }
+  run.passes.push(out);
+  if (run.passes.length > PINGS) run.passes.shift();
+
+  stepScanners(run.scanners, W, H);
+  run.scanners = run.scanners.filter((s) => --s.life > 0);
+  run.layers = run.layers.filter((layer) => --layer.life > 0);
+  const cap = floor(Math.sqrt(floor(W / 16) * floor(H / 16)) * 0.4);
+  if (run.scanners.length < cap && life() < 0.14) run.scanners.push(...spawnScanners(life, W, H));
+  if (run.layers.length < 4 && life() < 0.1) {
+    const layer = spawnLayer(life, W, H);
+    layer.poly = toMap(layer.pts, H);
+    run.layers.push(layer);
+  }
+
+  const motion = motionBytes(run.layers, run.scanners, W, H);
+  const polys = chuteGpu.ping(motion, run.layers.map((layer) => layer.poly), W, H);
+  run.layers.forEach((layer, i) => {
+    layer.poly = polys[i];
+  });
+};
+
+const canvas = document.getElementById('card');
+const ctx = canvas.getContext('2d');
+
+const render = () => {
+  const dpr = min(2, window.devicePixelRatio || 1);
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  if (canvas.width !== floor(vw * dpr) || canvas.height !== floor(vh * dpr)) {
+    canvas.width = floor(vw * dpr);
+    canvas.height = floor(vh * dpr);
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, vw, vh);
+  const margin = 28;
+  const size = ART.w + ART.x * 2;
+  const scale = min((vw - margin * 2) / size, (vh - margin * 2) / size);
+  const ox = (vw - size * scale) / 2;
+  const oy = (vh - size * scale) / 2;
+  ctx.save();
+  ctx.translate(ox, oy + (ART.x - ART.y) * scale);
+  ctx.scale(scale, scale);
+  ctx.strokeStyle = INK;
+  ctx.lineJoin = 'miter';
+  ctx.lineCap = 'square';
+  ctx.lineWidth = 1.05;
+  const paths = [SQUARE];
+  if (run) for (const out of run.passes) for (const pts of out) paths.push({ closed: false, pts });
+  for (const path of paths) {
+    ctx.beginPath();
+    ctx.moveTo(path.pts[0][0], path.pts[0][1]);
+    for (let i = 1; i < path.pts.length; i++) ctx.lineTo(path.pts[i][0], path.pts[i][1]);
+    if (path.closed) ctx.closePath();
+    ctx.stroke();
+  }
+  ctx.restore();
+};
+
+const frame = () => {
+  pass();
+  render();
+  requestAnimationFrame(frame);
+};
+
+const seedInput = document.getElementById('seed');
+const showSeed = (seed) => {
+  seedInput.value = seedLabel(seed);
+};
+
+const useSeed = (seed) => {
+  setSeedUrl(seed, cardFromUrl());
+  showSeed(seed);
+  startRun(seed);
+};
+
+document.getElementById('seed-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const digits = seedInput.value.replace(/\D/g, '');
+  if (!digits) return;
+  useSeed(Number(digits) % 1000000000);
+  seedInput.blur();
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.target === seedInput) return;
+  if (e.key !== 'n' && e.key !== 'N' || e.repeat) return;
+  useSeed(floor(Math.random() * 1000000000));
+});
+
+showSeed(seedFromUrl());
+startRun(seedFromUrl());
+requestAnimationFrame(frame);
+  </script>
+</body>
+</html>
