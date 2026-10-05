@@ -11,6 +11,12 @@
 
 Made for Art Blocks Marfa 2026. One hundred signed 4×6 cards, numbered 1/100 to 100/100, each with its own seed and a pen-plotter drawing of the Chutes invisible layer. Enter the seed from your card online to see the same piece on screen.
 
+## In the artist's words
+
+It reminds me of when you break a mirror and the image becomes distorted. It looks like another image is breaking through, which is exactly what happens with Invisible Layer: the unconscious, the trauma-driven issues come through, and it's not until you see something like this that you understand it's being driven by something underneath.
+
+— Mark Walhimer
+
 ## Works
 
 | Work | File | Date |
