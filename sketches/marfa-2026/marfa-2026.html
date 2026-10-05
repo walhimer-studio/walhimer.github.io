@@ -23,7 +23,7 @@
 <body>
   <div id="hint">
     WebGL2 ortho · embedded 924 palette · static host OK<br>
-    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle · R record
+    H hide · 1 RS · 2 R-only · 3 S-only · A auto cycle · S save png · R record
   </div>
   <script>
 /** 924_centered.png embedded for static / file:// hosting */
@@ -600,6 +600,24 @@ const gpu = GL();
 const rec = CanvasRecorder(() => gpu.getCanvas());
 const options = { auto: true, mode: 0 };
 let showHint = true;
+let saveFrame = false;
+
+const saveScreenshot = (src) => {
+  const copy = document.createElement('canvas');
+  copy.width = src.width;
+  copy.height = src.height;
+  copy.getContext('2d').drawImage(src, 0, 0);
+  copy.toBlob((blob) => {
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    a.href = url;
+    a.download = `chutes-study-${ts}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, 'image/png');
+};
 
 document.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -611,6 +629,7 @@ document.addEventListener('keydown', (e) => {
   if (k === '1') { options.mode = 0; options.auto = false; }
   if (k === '2') { options.mode = 1; options.auto = false; }
   if (k === '3') { options.mode = 2; options.auto = false; }
+  if (k === 's' && !e.repeat) saveFrame = true;
   if (k === 'r') rec.toggle();
 });
 
@@ -622,6 +641,10 @@ function setup() {
 function frame(t) {
   const pixels = c2d.draw(t, options);
   gpu.render(t, pixels, options);
+  if (saveFrame) {
+    saveFrame = false;
+    saveScreenshot(gpu.getCanvas());
+  }
   requestAnimationFrame(frame);
 }
 
