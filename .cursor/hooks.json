@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "hooks": {
+    "preToolUse": [
+      {
+        "command": "python3 /Users/markwalhimer/Documents/GitHub/walhimer.github.io/.cursor/hooks/guard-artwork-write.py",
+        "matcher": "Write|StrReplace|Delete",
+        "failClosed": true,
+        "timeout": 5
+      },
+      {
+        "command": "python3 /Users/markwalhimer/Documents/GitHub/walhimer.github.io/.cursor/hooks/guard-artwork-2026-kit.py",
+        "matcher": "Write|StrReplace|Delete",
+        "failClosed": true,
+        "timeout": 8
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "python3 /Users/markwalhimer/Documents/GitHub/walhimer.github.io/.cursor/hooks/guard-destructive-shell.py",
+        "failClosed": true,
+        "timeout": 5
+      },
+      {
+        "command": "python3 /Users/markwalhimer/Documents/GitHub/walhimer.github.io/.cursor/hooks/guard-artwork-shell.py",
+        "failClosed": true,
+        "timeout": 5
+      }
+    ]
+  }
+}
