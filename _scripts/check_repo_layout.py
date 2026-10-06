@@ -17,6 +17,7 @@ ALLOWED_DIRS = {
     "data",
     "docs",
     "installations",
+    "marfa-2026",
     "sketches",
 }
 

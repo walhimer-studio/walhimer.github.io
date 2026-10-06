@@ -156,9 +156,17 @@ def check_series_paths(series: list[dict], catalog_names: set[str]) -> list[str]
     return errors
 
 
+# Short-URL redirect stubs allowed at repo root (one file each, redirect only).
+STAGED_ROOT_STUB_ALLOW = {
+    "marfa-2026/index.html",
+}
+
+
 def check_staged_layout(catalog_names: set[str]) -> list[str]:
     errors: list[str] = []
     for rel in staged_paths():
+        if rel in STAGED_ROOT_STUB_ALLOW:
+            continue
         top = rel.split("/", 1)[0]
         if top in catalog_names and not rel.startswith("sketches/"):
             if rel.endswith((".html", ".md", ".mjs", ".js")) or "/assets/" in rel:
