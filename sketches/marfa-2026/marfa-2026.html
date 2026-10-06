@@ -37,21 +37,41 @@ const CENTERED_924_SRC="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSU
  */
 const { floor, min, max, sqrt, pow } = Math;
 
-class Rand {
-  constructor(seed) { this.s = (seed >>> 0) || 1; }
-  next() { const x = Math.sin(this.s++) * 10000; return x - Math.floor(x); }
-  range(a, b) { return a + this.next() * (b - a); }
-}
+const splitmix32 = (a) => () => {
+  a = (a + 0x9e3779b9) | 0;
+  let t = a ^ (a >>> 16);
+  t = Math.imul(t, 0x21f0aaad);
+  t ^= t >>> 15;
+  t = Math.imul(t, 0x735a2d97);
+  t ^= t >>> 15;
+  return t >>> 0;
+};
+const sfc32 = (a, b, c, d) => () => {
+  a |= 0; b |= 0; c |= 0; d |= 0;
+  const t = (((a + b) | 0) + d) | 0;
+  d = (d + 1) | 0;
+  a = b ^ (b >>> 9);
+  b = (c + (c << 3)) | 0;
+  c = (c << 21) | (c >>> 11);
+  c = (c + t) | 0;
+  return (t >>> 0) / 4294967296;
+};
+const makeSeededRandom = (seed) => {
+  const mix = splitmix32(seed >>> 0);
+  const rand = sfc32(mix(), mix(), mix(), mix());
+  for (let i = 0; i < 15; i++) rand();
+  return rand;
+};
 
 const seedFromUrl = () => {
   const raw = new URLSearchParams(location.search).get('seed');
-  const n = raw == null || raw === '' ? 1 : Number(raw);
+  if (raw == null || raw === '') return floor(Math.random() * 1000000000);
+  const n = Number(raw);
   if (!Number.isFinite(n)) return 1;
   return (n >>> 0) % 1000000000;
 };
 
-const rand = new Rand(seedFromUrl());
-const random = () => rand.next();
+const random = makeSeededRandom(seedFromUrl());
 
 const CENTERED_REF = CENTERED_924_SRC;
 
