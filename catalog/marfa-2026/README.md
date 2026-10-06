@@ -22,13 +22,13 @@ It reminds me of when you break a mirror and the image becomes distorted. It loo
 | Work | File | Date |
 |------|------|------|
 | Invisible Layer, Marfa 2026 | `sketches/marfa-2026/marfa-2026.html` | October 5, 2026 |
-| Marfa 2026 — pen card | `sketches/marfa-2026/marfa-2026-lines.html` | October 5, 2026 |
+| Marfa 2026 — pen card | `sketches/marfa-2026/marfa-2026-card.html` | October 5, 2026 |
 | Marfa 2026 — screen · enter your seed | `sketches/marfa-2026/marfa-2026-screen.html` | October 5, 2026 |
 
 ## Live URLs
 
 - https://mark-walhimer.com/sketches/marfa-2026/marfa-2026.html
-- https://mark-walhimer.com/sketches/marfa-2026/marfa-2026-lines.html
+- https://mark-walhimer.com/sketches/marfa-2026/marfa-2026-card.html
 - https://mark-walhimer.com/sketches/marfa-2026/marfa-2026-screen.html
 
 ## Publish checklist

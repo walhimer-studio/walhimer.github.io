@@ -716,24 +716,24 @@
       }
     },
     {
-      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-lines",
+      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-card",
       "dublin_core": {
-        "title": "marfa-2026/marfa-2026-lines",
+        "title": "marfa-2026/marfa-2026-card",
         "creator": "Mark Walhimer",
         "date": "",
         "description": "",
-        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-lines",
+        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-card",
         "type": "InteractiveResource",
         "format": "text/html",
         "language": "en",
         "relation": "",
-        "catalog_number": "WS-000384"
+        "catalog_number": "WS-000386"
       },
       "linked_art": {
         "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026-lines",
+        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026-card",
         "type": "HumanMadeObject",
-        "_label": "marfa-2026/marfa-2026-lines",
+        "_label": "marfa-2026/marfa-2026-card",
         "classified_as": [
           {
             "id": "http://vocab.getty.edu/aat/300375748",
@@ -748,12 +748,12 @@
         ],
         "sketch": {
           "series": "Marfa 2026",
-          "file": "marfa-2026/marfa-2026-lines.html"
+          "file": "marfa-2026/marfa-2026-card.html"
         }
       },
       "artifacts": {
         "repo_paths": [
-          "sketches/marfa-2026/marfa-2026-lines.html"
+          "sketches/marfa-2026/marfa-2026-card.html"
         ],
         "external_urls": []
       }

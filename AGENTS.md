@@ -8,8 +8,8 @@
 
 ## Before editing sketches / installations / artwork
 
-- **Changing or deleting an existing file:** `.cursor/ALLOW_EDIT` must list the **exact path** for this session. Default is **empty** (hooks block changes to existing work).
-- **Creating a new file:** no `ALLOW_EDIT` entry needed — a create cannot overwrite existing work. The user must still have asked for it; do not invent files.
+- **Creating, changing, or deleting any file:** `.cursor/ALLOW_EDIT` must list the **exact path** and the user must approve it with `AUTHORIZE EDIT @path: exact change`. **New files are not exempt.** Default is **empty** (hooks block every write to protected paths not listed).
+- **Any file that uses a seed must follow Machine DNA:** read Machine-DNA `docs/SPEC.md` and `docs/SPEC-LOCK.md` first, and use the canonical `Rand` verbatim. No other generator (mulberry32, sfc32, xorshift, splitmix, …). The hook and the commit check refuse seeded files without it.
 - User message must name the path and the change. No inferred “fixes.”
 - Run before commit: `python3 _scripts/check_machine_dna.py`
 

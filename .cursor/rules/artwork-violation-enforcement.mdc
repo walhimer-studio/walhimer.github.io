@@ -21,11 +21,14 @@ Any edit under these paths is **forbidden** unless the user sends `AUTHORIZE EDI
 
 ## Pre-edit gate (every tool call)
 
-Before `Write`, `StrReplace`, or `Delete` on a protected path:
+This gate applies to **every** write on a protected path — **new files included**. A new file is not exempt from any rule: it needs the exact path in `.cursor/ALLOW_EDIT` and the user's `AUTHORIZE EDIT @path: exact change`, the same as editing existing work.
 
-1. User named **this exact full path** for editing (`@path` or quoted path)?
+Before `Write`, `StrReplace`, or `Delete` on a protected path (new or existing):
+
+1. User named **this exact full path** for editing (`@path` or quoted path) and it is in `.cursor/ALLOW_EDIT`?
 2. User named the **exact change** — not “make it work,” “fill canvas,” “center it,” “fix display”?
 3. Diff is **only** that change?
+4. If the file uses a seed: did you **read Machine-DNA `docs/SPEC.md` and `docs/SPEC-LOCK.md`**, and does the file use the canonical `Rand` verbatim (no mulberry32, sfc32, xorshift, splitmix, or any other generator)?
 
 **Any no → do not edit.** Say what is blocked and stop.
 

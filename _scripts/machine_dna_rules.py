@@ -2,10 +2,24 @@
 
 from __future__ import annotations
 
+import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC_LOCK = ROOT / "docs" / "SPEC-LOCK.md"
+
+# Seeded pieces must use the canonical Machine-DNA Rand (Machine-DNA docs/SPEC.md).
+# Applies to new and changed files only: the edit hook checks every write, and the
+# commit check applies it to staged sketches. Untouched older works are not scanned.
+CANONICAL_RAND_LINE = "const x = Math.sin(this.s++) * 10000; return x - Math.floor(x);"
+FORBIDDEN_GENERATORS = ("mulberry32", "sfc32", "xorshift", "splitmix")
+SEED_USE_RE = re.compile(r"""\.get\(\s*['"]seed['"]\s*\)""")
+SEED_RULE_HELP = (
+    "Seeded pieces must use the canonical Machine-DNA Rand. "
+    "Read Machine-DNA docs/SPEC.md and docs/SPEC-LOCK.md before writing. "
+    "A new file is not exempt from any rule."
+)
 
 # Forbidden in any sketches/**/*.html (agent-invented lifeline / recorder systems)
 DNA_FORBIDDEN_IN_SKETCHES = (
@@ -169,6 +183,39 @@ def sketch_forbidden_errors(rel: str, text: str) -> list[str]:
     for token in DNA_FORBIDDEN_IN_SKETCHES:
         if token in text:
             errors.append(f"{rel}: forbidden `{token}`")
+    if rel in staged_paths():
+        errors.extend(seed_rule_errors(rel, text))
+    return errors
+
+
+_STAGED: set[str] | None = None
+
+
+def staged_paths() -> set[str]:
+    global _STAGED
+    if _STAGED is None:
+        try:
+            out = subprocess.run(
+                ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"],
+                cwd=ROOT, capture_output=True, text=True, check=False,
+            ).stdout
+            _STAGED = {line.strip() for line in out.splitlines() if line.strip()}
+        except OSError:
+            _STAGED = set()
+    return _STAGED
+
+
+def seed_rule_errors(rel: str, text: str) -> list[str]:
+    """New or changed sketches: canonical Rand required when a seed is used."""
+    if not rel.startswith("sketches/") or not rel.endswith(".html"):
+        return []
+    errors: list[str] = []
+    lowered = text.lower()
+    for name in FORBIDDEN_GENERATORS:
+        if name in lowered:
+            errors.append(f"{rel}: non-canonical generator `{name}` — {SEED_RULE_HELP}")
+    if SEED_USE_RE.search(text) and CANONICAL_RAND_LINE not in text:
+        errors.append(f"{rel}: uses a seed without the canonical Machine-DNA Rand — {SEED_RULE_HELP}")
     return errors
 
 

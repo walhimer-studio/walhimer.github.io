@@ -35,7 +35,23 @@ const CENTERED_924_SRC="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSU
  * Canvas2D → motion map; WebGL2 ping-pong feedback. Original code, same idea.
  * Colors: sampled along the 924 centered cross (924_centered.png).
  */
-const { floor, min, max, random, sqrt, pow } = Math;
+const { floor, min, max, sqrt, pow } = Math;
+
+class Rand {
+  constructor(seed) { this.s = (seed >>> 0) || 1; }
+  next() { const x = Math.sin(this.s++) * 10000; return x - Math.floor(x); }
+  range(a, b) { return a + this.next() * (b - a); }
+}
+
+const seedFromUrl = () => {
+  const raw = new URLSearchParams(location.search).get('seed');
+  const n = raw == null || raw === '' ? 1 : Number(raw);
+  if (!Number.isFinite(n)) return 1;
+  return (n >>> 0) % 1000000000;
+};
+
+const rand = new Rand(seedFromUrl());
+const random = () => rand.next();
 
 const CENTERED_REF = CENTERED_924_SRC;
 
