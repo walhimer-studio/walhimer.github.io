@@ -45,9 +45,10 @@ def rel_path(raw: str) -> str:
 
 
 def is_protected(rel: str) -> bool:
-    if rel in PROTECTED_EXACT:
-        return True
-    return any(rel.startswith(prefix) for prefix in PROTECTED_PREFIXES)
+    """Every path inside the repo is protected: any agent write needs an ALLOW_EDIT entry."""
+    if rel.startswith(("/", "~", "..")):
+        return False
+    return bool(rel.strip())
 
 
 def target_exists(rel: str) -> bool:
