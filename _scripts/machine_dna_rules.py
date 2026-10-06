@@ -9,16 +9,48 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SPEC_LOCK = ROOT / "docs" / "SPEC-LOCK.md"
 
-# Seeded pieces must use the canonical Machine-DNA Rand (Machine-DNA docs/SPEC.md).
+# Seeded pieces must use sfc32 seeded via splitmix32, copied verbatim:
+#
+#   const splitmix32 = (a) => () => {
+#     a = (a + 0x9e3779b9) | 0;
+#     let t = a ^ (a >>> 16);
+#     t = Math.imul(t, 0x21f0aaad);
+#     t ^= t >>> 15;
+#     t = Math.imul(t, 0x735a2d97);
+#     t ^= t >>> 15;
+#     return t >>> 0;
+#   };
+#   const sfc32 = (a, b, c, d) => () => {
+#     a |= 0; b |= 0; c |= 0; d |= 0;
+#     const t = (((a + b) | 0) + d) | 0;
+#     d = (d + 1) | 0;
+#     a = b ^ (b >>> 9);
+#     b = (c + (c << 3)) | 0;
+#     c = (c << 21) | (c >>> 11);
+#     c = (c + t) | 0;
+#     return (t >>> 0) / 4294967296;
+#   };
+#   const makeSeededRandom = (seed) => {
+#     const mix = splitmix32(seed >>> 0);
+#     const rand = sfc32(mix(), mix(), mix(), mix());
+#     for (let i = 0; i < 15; i++) rand();
+#     return rand;
+#   };
+#
 # Applies to new and changed files only: the edit hook checks every write, and the
 # commit check applies it to staged sketches. Untouched older works are not scanned.
-CANONICAL_RAND_LINE = "const x = Math.sin(this.s++) * 10000; return x - Math.floor(x);"
-FORBIDDEN_GENERATORS = ("mulberry32", "sfc32", "xorshift", "splitmix")
+CANONICAL_GENERATOR_LINES = (
+    "t = Math.imul(t, 0x21f0aaad);",
+    "t = Math.imul(t, 0x735a2d97);",
+    "a = b ^ (b >>> 9);",
+    "c = (c << 21) | (c >>> 11);",
+    "const rand = sfc32(mix(), mix(), mix(), mix());",
+)
+FORBIDDEN_GENERATORS = ("mulberry32", "xorshift")
 SEED_USE_RE = re.compile(r"""\.get\(\s*['"]seed['"]\s*\)""")
 SEED_RULE_HELP = (
-    "Seeded pieces must use the canonical Machine-DNA Rand. "
-    "Read Machine-DNA docs/SPEC.md and docs/SPEC-LOCK.md before writing. "
-    "A new file is not exempt from any rule."
+    "Seeded pieces must use sfc32 seeded via splitmix32, copied verbatim from "
+    "_scripts/machine_dna_rules.py. A new file is not exempt from any rule."
 )
 
 # Forbidden in any sketches/**/*.html (agent-invented lifeline / recorder systems)
@@ -206,7 +238,7 @@ def staged_paths() -> set[str]:
 
 
 def seed_rule_errors(rel: str, text: str) -> list[str]:
-    """New or changed sketches: canonical Rand required when a seed is used."""
+    """New or changed sketches: sfc32 seeded via splitmix32 required when a seed is used."""
     if not rel.startswith("sketches/") or not rel.endswith(".html"):
         return []
     errors: list[str] = []
@@ -214,8 +246,8 @@ def seed_rule_errors(rel: str, text: str) -> list[str]:
     for name in FORBIDDEN_GENERATORS:
         if name in lowered:
             errors.append(f"{rel}: non-canonical generator `{name}` — {SEED_RULE_HELP}")
-    if SEED_USE_RE.search(text) and CANONICAL_RAND_LINE not in text:
-        errors.append(f"{rel}: uses a seed without the canonical Machine-DNA Rand — {SEED_RULE_HELP}")
+    if SEED_USE_RE.search(text) and not all(line in text for line in CANONICAL_GENERATOR_LINES):
+        errors.append(f"{rel}: uses a seed without sfc32 seeded via splitmix32 — {SEED_RULE_HELP}")
     return errors
 
 
