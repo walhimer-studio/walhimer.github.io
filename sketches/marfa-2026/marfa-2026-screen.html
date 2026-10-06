@@ -9,16 +9,15 @@
     canvas { display: block; width: 100%; height: 100%; }
     body.format-fixed { overflow: hidden; }
     body.format-fixed canvas {
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      max-width: none;
-      max-height: none;
+      position: static;
+      inset: auto;
+      margin: 0 auto;
+      max-width: 100vw;
+      max-height: 100vh;
+      width: auto;
+      height: auto;
+      object-fit: contain;
     }
-    body.format-landscape canvas { width: auto; height: 100vmin; }
-    body.format-portrait canvas { width: 100vmin; height: auto; }
-    body.format-square canvas { width: 100vmin; height: 100vmin; }
     #seed-form {
       position: fixed; left: 12px; top: 12px; z-index: 2;
       font: 13px/1.4 ui-monospace, monospace;
@@ -95,7 +94,13 @@ const FIELD_H = 384;
 const INCH_W = 4;
 const INCH_H = 6;
 const INK = '#0044ff';
-const ART = { x: 10, y: 12, w: 236, h: 236 };
+const MAP = 160;
+const FIELD = FORMAT === 'landscape'
+  ? [floor(MAP * 16 / 9), MAP]
+  : FORMAT === 'portrait'
+    ? [MAP, floor(MAP * 16 / 9)]
+    : [MAP, MAP];
+const ART = { x: 10, y: 12, w: 236 * FIELD[0] / MAP, h: 236 * FIELD[1] / MAP };
 const CARD_NAME = 'Mark Walhimer';
 const CARD_URL = 'https://mark-walhimer.com/marfa-2026';
 const CARD_IG = 'https://www.instagram.com/markwalhimer/';
@@ -383,7 +388,6 @@ const fitArt = (pts) => {
   return pts.map(([x, y]) => [ox + (x - minX) * s, oy + (y - minY) * s]);
 };
 
-const MAP = 160;
 const PINGS = 18;
 
 const layerPoly = (rnd, x, y, w, h, grid, width, height) => {
@@ -627,7 +631,7 @@ void main() {
   const imgTex = tex();
   gl.bindTexture(gl.TEXTURE_2D, imgTex);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 16, 16, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(16 * 16 * 4));
-  const read = new Uint8Array(MAP * MAP * 4);
+  const read = new Uint8Array(FIELD[0] * FIELD[1] * 4);
   let which = 0;
 
   const ping = (motion, polys, W, H) => {
@@ -787,8 +791,8 @@ const startRun = (seed) => {
   if (!chuteGpu) return;
   const rnd = makeSeededRandom(seed);
   const life = makeSeededRandom((seed ^ 0x9e3779b9) >>> 0);
-  const W = MAP;
-  const H = MAP;
+  const W = FIELD[0];
+  const H = FIELD[1];
   const { layers, scanners } = spawnField(rnd, W, H);
   for (const layer of layers) {
     layer.life = layerLife(life);
@@ -844,10 +848,11 @@ const render = () => {
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, vw, vh);
   const margin = 28;
-  const size = ART.w + ART.x * 2;
-  const scale = min((vw - margin * 2) / size, (vh - margin * 2) / size);
-  const ox = (vw - size * scale) / 2;
-  const oy = (vh - size * scale) / 2;
+  const sizeW = ART.w + ART.x * 2;
+  const sizeH = ART.h + ART.x * 2;
+  const scale = min((vw - margin * 2) / sizeW, (vh - margin * 2) / sizeH);
+  const ox = (vw - sizeW * scale) / 2;
+  const oy = (vh - sizeH * scale) / 2;
   ctx.save();
   ctx.translate(ox, oy + (ART.x - ART.y) * scale);
   ctx.scale(scale, scale);
