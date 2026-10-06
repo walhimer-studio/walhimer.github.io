@@ -9,7 +9,7 @@
 | Catalog path | `catalog/marfa-2026/` |
 | WIP sketches | `sketches/marfa-2026/` |
 
-Made for Art Blocks Marfa 2026. One hundred signed 4×6 cards, numbered 1/100 to 100/100, each with its own seed and a pen-plotter drawing of the Chutes invisible layer. Enter the seed from your card online to see the same piece on screen.
+Made for Art Blocks Marfa 2026. One hundred signed 4×6 cards, numbered 1/100 to 100/100, each with its own seed and a pen-plotter drawing of the Invisible Layer. Enter the seed from your card online to see the same piece on screen.
 
 ## In the artist's words
 
@@ -21,7 +21,7 @@ It reminds me of when you break a mirror and the image becomes distorted. It loo
 
 | Work | File | Date |
 |------|------|------|
-| Marfa 2026 — Chutes | `sketches/marfa-2026/marfa-2026.html` | October 5, 2026 |
+| Invisible Layer, Marfa 2026 | `sketches/marfa-2026/marfa-2026.html` | October 5, 2026 |
 | Marfa 2026 — pen card | `sketches/marfa-2026/marfa-2026-lines.html` | October 5, 2026 |
 | Marfa 2026 — screen · enter your seed | `sketches/marfa-2026/marfa-2026-screen.html` | October 5, 2026 |
 
