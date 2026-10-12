@@ -75,7 +75,7 @@
     nav.site .links a.active { color: var(--ink); }
 
     main {
-      max-width: 720px;
+      max-width: 920px;
       margin: 0 auto;
       padding: 48px 20px 80px;
     }
@@ -189,6 +189,82 @@
       min-height: 1.2em;
     }
 
+    .view {
+      margin: 0 0 36px;
+    }
+    .view h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .view .hint {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 42em;
+    }
+    .edition-grid {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 6px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    @media (max-width: 720px) {
+      .edition-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    }
+    @media (max-width: 420px) {
+      .edition-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    .edition-grid li {
+      margin: 0;
+      min-width: 0;
+    }
+    .edition-grid a.cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      min-height: 52px;
+      padding: 8px 4px;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--black);
+      font-family: var(--mono);
+      background: #fff;
+    }
+    .edition-grid a.cell:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .edition-grid a.cell.is-active {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: #fff;
+    }
+    .edition-grid a.cell .num {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .edition-grid a.cell .mark {
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      min-height: 1em;
+    }
+    .edition-grid a.cell.has-buy .mark {
+      color: inherit;
+      opacity: 1;
+    }
+    .edition-grid a.cell.is-active .mark {
+      opacity: 0.9;
+    }
+
     .versions h2 {
       margin: 0 0 12px;
       font-size: 1rem;
@@ -231,7 +307,7 @@
     <a class="brand" href="/">Mark Walhimer</a>
     <div class="links">
       <a href="/marfa-2026/" class="active">Marfa 2026</a>
-      <a href="/available/">Available</a>
+      <a href="#view">View</a>
       <a href="/catalog/">Catalog</a>
       <a href="/contact.html">Contact</a>
     </div>
@@ -268,6 +344,14 @@
       <p class="status" id="card-status" role="status"></p>
     </section>
 
+    <section class="view" id="view" aria-labelledby="view-heading">
+      <h2 id="view-heading">View · 100</h2>
+      <p class="hint">
+        Every card is its seed. Click a cell to open that piece. Cells marked Buy have a Transient listing — use Acquire on your card, or open the piece then buy from Transient.
+      </p>
+      <ol class="edition-grid" id="edition-grid"></ol>
+    </section>
+
     <section class="versions" aria-labelledby="versions-heading">
       <h2 id="versions-heading">Four bodies, one vocabulary</h2>
       <ul>
@@ -278,17 +362,17 @@
         <li>
           <span class="name">Screen</span>
           <span class="desc">2-D living piece — what your card opens</span>
-          <a href="../sketches/marfa-2026/marfa-2026-screen.html?format=landscape&amp;seconds=60&amp;seed=1&amp;card=1">Open screen</a>
+          <a id="link-screen" href="./marfa-2026-screen.html?format=landscape&amp;seconds=60&amp;seed=1&amp;card=1">Open screen</a>
         </li>
         <li>
           <span class="name">Online</span>
           <span class="desc">Interactive studio version</span>
-          <a href="../sketches/marfa-2026/marfa-2026.html">Open online</a>
+          <a href="./marfa-2026.html">Open online</a>
         </li>
         <li>
           <span class="name">Wall</span>
           <span class="desc">3-D on your phone — Marfa wall NFC</span>
-          <a href="../sketches/invisible-layer/invisible-layer-august-29-2026.html">Open wall</a>
+          <a href="../invisible-layer/invisible-layer-august-29-2026.html">Open wall</a>
         </li>
       </ul>
     </section>
@@ -297,7 +381,7 @@
       <span>Mark Walhimer</span>
       <a href="https://www.instagram.com/markwalhimer/">Instagram</a>
       <a href="https://x.com/WalhimerArt">X</a>
-      <a href="/available/">Available</a>
+      <a href="/catalog/">Catalog</a>
       <a href="/contact.html">Contact</a>
     </footer>
   </main>
@@ -305,7 +389,7 @@
   <script>
 /**
  * Marfa 2026 hub — NFC / share URL: /marfa-2026/?n=47
- * Card n = seed n. Buy URLs filled as Transient tokens mint.
+ * Card n = seed n. Monogrid-style View of 1–100. BUY_URL as Transient tokens mint.
  */
 (function () {
   const EDITION_MAX = 100;
@@ -319,6 +403,8 @@
   const form = document.getElementById('card-form');
   const statusEl = document.getElementById('card-status');
   const buyBtn = document.getElementById('buy-btn');
+  const gridEl = document.getElementById('edition-grid');
+  const linkScreen = document.getElementById('link-screen');
 
   const clampCard = (raw) => {
     const n = parseInt(String(raw).replace(/\D/g, ''), 10);
@@ -333,7 +419,7 @@
       seed: String(n),
       card: String(n),
     });
-    return '../sketches/marfa-2026/marfa-2026-screen.html?' + q.toString();
+    return './marfa-2026-screen.html?' + q.toString();
   };
 
   const hubUrl = (n) => {
@@ -355,12 +441,52 @@
     }
   };
 
+  const highlightGrid = (n) => {
+    const cells = gridEl.querySelectorAll('a.cell');
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i];
+      const num = Number(cell.getAttribute('data-n'));
+      cell.classList.toggle('is-active', num === n);
+    }
+  };
+
   const applyCard = (n, pushUrl) => {
     const card = clampCard(n);
     cardInput.value = String(card);
     setBuy(card);
+    highlightGrid(card);
+    if (linkScreen) linkScreen.href = pieceUrl(card);
     if (pushUrl) history.replaceState(null, '', hubUrl(card));
     return card;
+  };
+
+  const buildGrid = () => {
+    const frag = document.createDocumentFragment();
+    for (let n = 1; n <= EDITION_MAX; n++) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.className = 'cell';
+      a.href = pieceUrl(n);
+      a.setAttribute('data-n', String(n));
+      a.setAttribute('title', 'Card ' + n + '/100 · seed ' + n);
+      if (BUY_URL[n]) {
+        a.classList.add('has-buy');
+        a.innerHTML =
+          '<span class="num">' +
+          n +
+          '</span><span class="mark">Buy</span>';
+      } else {
+        a.innerHTML =
+          '<span class="num">' + n + '</span><span class="mark"></span>';
+      }
+      a.addEventListener('click', (e) => {
+        // Keep default navigation to the piece; sync hub state for back-nav.
+        applyCard(n, true);
+      });
+      li.appendChild(a);
+      frag.appendChild(li);
+    }
+    gridEl.appendChild(frag);
   };
 
   form.addEventListener('submit', (e) => {
@@ -370,6 +496,8 @@
   });
 
   cardInput.addEventListener('change', () => applyCard(cardInput.value, true));
+
+  buildGrid();
 
   const q = new URLSearchParams(location.search);
   applyCard(q.get('n') || q.get('card') || '1', false);
