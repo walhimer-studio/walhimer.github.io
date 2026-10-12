@@ -212,26 +212,37 @@
       opacity: 0.75;
       max-width: 48em;
     }
+    /* 10-col base: cards span 2 (5/row); 101/102 span 5 (half row each — larger for $300/$600) */
     .edition-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(10, minmax(0, 1fr));
       gap: 10px;
       list-style: none;
       margin: 0;
       padding: 0;
     }
-    @media (max-width: 900px) {
-      .edition-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    }
-    @media (max-width: 640px) {
-      .edition-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-    }
-    @media (max-width: 420px) {
-      .edition-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
     .edition-grid li {
       margin: 0;
       min-width: 0;
+      grid-column: span 2;
+    }
+    .edition-grid li.featured {
+      grid-column: span 5;
+    }
+    @media (max-width: 900px) {
+      .edition-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+      .edition-grid li { grid-column: span 2; }
+      .edition-grid li.featured { grid-column: span 4; }
+    }
+    @media (max-width: 640px) {
+      .edition-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+      .edition-grid li { grid-column: span 2; }
+      .edition-grid li.featured { grid-column: span 3; }
+    }
+    @media (max-width: 420px) {
+      .edition-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .edition-grid li,
+      .edition-grid li.featured { grid-column: span 1; }
     }
     .edition-grid a.cell {
       position: relative;
@@ -242,6 +253,16 @@
       color: var(--ink);
       background: var(--paper);
       overflow: hidden;
+    }
+    .edition-grid li.featured a.cell {
+      border-width: 2px;
+    }
+    .edition-grid li.featured a.cell .cap {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .edition-grid li.featured a.cell .mark {
+      font-size: 11px;
     }
     .edition-grid a.cell:hover {
       outline: 2px solid var(--ink);
@@ -433,15 +454,15 @@
   const SPECIAL = {
     101: {
       label: '101',
-      sub: '2D',
-      title: '101 · 2D online 1/1',
+      sub: '2D · $300',
+      title: '101 · 2D online 1/1 · $300',
       alt: '2D online edition',
       href: './marfa-2026.html',
     },
     102: {
       label: '102',
-      sub: '3D',
-      title: '102 · 3D wall 1/1',
+      sub: '3D · $600',
+      title: '102 · 3D wall 1/1 · $600',
       alt: '3D wall edition',
       href: '../invisible-layer/invisible-layer-august-29-2026.html',
     },
@@ -530,6 +551,7 @@
 
   const appendCell = (frag, n, opts) => {
     const li = document.createElement('li');
+    if (opts.special) li.className = 'featured';
     const a = document.createElement('a');
     a.className = 'cell' + (BUY_URL[n] ? ' has-buy' : '');
     a.href = opts.href;
