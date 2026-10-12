@@ -1,0 +1,11 @@
+# Launch pages → Available
+
+When shipping a public launch hub (`/{name}/` redirect stub + series hub under the site sketches tree):
+
+1. Add an **Available** row the same day (`available/catalog.md` + `available/catalog.json`).
+2. **liveUrl** = `https://mark-walhimer.com/{name}/`
+3. Short muted preview in `available/media/` when you have one
+4. **buyUrl** = marketplace listing when it exists (Objkt, Transient, Blackdove, Shopify); `null` until then is fine — grid still shows View live
+5. One Available row per launch — not one row per edition number. Per-card / per-token buy maps stay on the hub.
+
+Source of truth detail: `available/catalog.md` § Launch pages → Available.

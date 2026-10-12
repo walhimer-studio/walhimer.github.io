@@ -1,7 +1,8 @@
 {
-  "updated": "2026-09-22",
-  "note": "Source of truth. Grid videos = short muted web previews only (not masters). date = YYYY-MM-DD. buyUrl = Objkt, Blackdove, or Shopify.",
+  "updated": "2026-10-11",
+  "note": "Source of truth. Grid videos = short muted web previews only (not masters). date = YYYY-MM-DD. buyUrl = Objkt, Blackdove, Transient Labs, or Shopify. Launch hubs (/{name}/) get an Available row the day they ship — liveUrl = hub; buyUrl when marketplace listing exists.",
   "series": [
+    "Marfa 2026",
     "Saudade",
     "Artificial Flowers",
     "Invisible Layer",
@@ -12,6 +13,22 @@
     "Machine Aesthetic"
   ],
   "works": [
+    {
+      "id": "marfa-2026-invisible-layer",
+      "title": "Invisible Layer — Marfa 2026",
+      "series": "Marfa 2026",
+      "medium": "Free signed cards 1/100 · optional digital twins · Base / Transient Labs",
+      "format": "Launch hub · NFC cards · Fixed Price 1/1s",
+      "status": "available",
+      "date": "2026-10-11",
+      "price": "~$10 digital twin · Transient · from ~Oct 20",
+      "edition": "Cards 1/100–100/100 · free physical",
+      "notes": "Art Blocks Marfa Weekend. Cards free; digital twins on Transient (Base). View live opens the hub (card n = seed n). Paste buyUrl when Transient listing is public. Checkout off-site — same as Objkt.",
+      "buyUrl": null,
+      "liveUrl": "https://mark-walhimer.com/marfa-2026/",
+      "video": "media/marfa-2026-preview.mp4",
+      "image": null
+    },
     {
       "id": "saudade-sampled-arc-760559126",
       "title": "Sampled Arc (seed 760559126)",

@@ -652,7 +652,9 @@
             ? "Buy on Objkt"
             : /blackdove\.com/i.test(w.buyUrl)
               ? "View on Blackdove"
-              : "Buy";
+              : /transient/i.test(w.buyUrl)
+                ? "Buy on Transient"
+                : "Buy";
           links.push(
             '<a class="buy" href="' +
               escapeAttr(w.buyUrl) +

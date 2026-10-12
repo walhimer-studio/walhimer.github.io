@@ -5,14 +5,24 @@ Source of truth for [mark-walhimer.com/available/](https://mark-walhimer.com/ava
 **Statuses:** `past` · `available` · `upcoming`  
 **date:** `YYYY-MM-DD` (newest → oldest in the grid)  
 **video:** short muted web preview only (`media/*-preview.mp4`) — not masters  
-**buyUrl:** Objkt, Blackdove, or Shopify (one checkout per work)
+**buyUrl:** Objkt, Blackdove, Transient Labs, or Shopify (one checkout per work — live on site, buy off-site)
 
-Updated: 2026-09-22
+Updated: 2026-10-11
+
+### Launch pages → Available (standing rule)
+
+Every public launch hub (`/{name}/` redirect → matching series folder under the site sketches tree) gets an **Available** entry the same day the hub ships:
+
+- **liveUrl:** the public hub (`https://mark-walhimer.com/{name}/`)
+- **video / image:** short preview in `available/media/`
+- **buyUrl:** marketplace listing when it exists; leave `null` until then — grid still shows **View live**
+- One row for the launch (not one row per edition). Per-card checkout stays on the hub via `BUY_URL` / NFC.
 
 ---
 
 ## Series
 
+- Marfa 2026
 - Saudade
 - Artificial Flowers
 - Invisible Layer
@@ -38,6 +48,16 @@ Updated: 2026-09-22
 ---
 
 ## Available (grid, newest first)
+
+### Invisible Layer — Marfa 2026 · 2026-10-11
+- **id:** `marfa-2026-invisible-layer`
+- **series:** Marfa 2026
+- **medium:** Free signed cards 1/100 · optional digital twins on Base (Transient Labs)
+- **status:** available · Art Blocks Marfa Weekend
+- **video:** `media/marfa-2026-preview.mp4` (20s)
+- **liveUrl:** https://mark-walhimer.com/marfa-2026/
+- **buyUrl:** null — paste Transient listing URL when token sales go live (~Oct 20)
+- **notes:** Cards free at Marfa. Digital twins ~$10 Fixed Price 1/1s. Hub opens card n = seed n. Checkout on Transient — same pattern as Objkt.
 
 ### Sampled Arc (seed 760559126) · 2026-09-22
 - **id:** `saudade-sampled-arc-760559126`
