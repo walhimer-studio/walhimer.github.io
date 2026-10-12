@@ -18,23 +18,21 @@
   <meta property="og:description" content="Card 1/100 to 100/100. Tap to open your piece. Optional acquire on Transient Labs." />
   <meta property="og:url" content="https://mark-walhimer.com/marfa-2026/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#f3efe6" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <style>
     :root {
       --ink: #0044ff;
-      --black: #0a0a0a;
-      --muted: #5a5a5a;
-      --line: #d8d8d8;
-      --bg: #ffffff;
-      --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --cream: #f3efe6;
+      --line: #c8c0b0;
+      --paper: #ffffff;
       --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--black); }
+    html, body { margin: 0; min-height: 100%; background: var(--cream); color: var(--ink); }
     body {
-      font-family: var(--sans);
-      font-size: 16px;
+      font-family: var(--mono);
+      font-size: 15px;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
@@ -46,17 +44,18 @@
       align-items: center;
       gap: 16px;
       min-height: 52px;
-      padding: 0 20px;
+      padding: 0 16px;
       border-bottom: 1px solid var(--line);
+      background: var(--cream);
     }
     nav.site .brand {
-      font-size: 17px;
+      font-size: 15px;
       font-weight: 500;
-      color: var(--black);
+      color: var(--ink);
       text-decoration: none;
       letter-spacing: -0.02em;
     }
-    nav.site .brand:hover { color: var(--ink); text-decoration: none; }
+    nav.site .brand:hover { text-decoration: none; opacity: 0.8; }
     nav.site .links {
       margin-left: auto;
       display: flex;
@@ -64,24 +63,28 @@
       gap: 8px 18px;
     }
     nav.site .links a {
-      font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--ink);
       text-decoration: none;
+      opacity: 0.7;
     }
     nav.site .links a:hover,
-    nav.site .links a.active { color: var(--ink); }
+    nav.site .links a.active { opacity: 1; text-decoration: none; }
 
     main {
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 48px 20px 80px;
+      max-width: none;
+      margin: 0;
+      padding: 40px 12px 80px;
+    }
+    .intro {
+      max-width: 40em;
+      margin: 0 auto 36px;
+      padding: 0 8px;
     }
 
     .eyebrow {
-      font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -94,17 +97,17 @@
       font-weight: 500;
       letter-spacing: -0.03em;
       line-height: 1.15;
+      color: var(--ink);
     }
     .lead {
       margin: 0 0 28px;
       font-size: 1.05rem;
-      color: var(--black);
-      max-width: 36em;
+      color: var(--ink);
     }
     .story {
       margin: 0 0 36px;
-      color: var(--muted);
-      max-width: 36em;
+      color: var(--ink);
+      opacity: 0.85;
     }
     .story p { margin: 0 0 1em; }
     .story p:last-child { margin-bottom: 0; }
@@ -113,16 +116,19 @@
       border: 1px solid var(--ink);
       padding: 22px 20px;
       margin: 0 0 36px;
+      background: var(--paper);
     }
     .panel h2 {
       margin: 0 0 8px;
       font-size: 1rem;
       font-weight: 600;
+      color: var(--ink);
     }
     .panel .hint {
       margin: 0 0 16px;
-      font-size: 14px;
-      color: var(--muted);
+      font-size: 13px;
+      color: var(--ink);
+      opacity: 0.75;
     }
     .row {
       display: flex;
@@ -131,7 +137,6 @@
       align-items: center;
     }
     label.card-label {
-      font-family: var(--mono);
       font-size: 12px;
       color: var(--ink);
     }
@@ -142,12 +147,12 @@
       padding: 8px 10px;
       border: 1px solid var(--ink);
       color: var(--ink);
-      background: #fff;
+      background: var(--paper);
     }
     .slash {
-      font-family: var(--mono);
       font-size: 14px;
-      color: var(--muted);
+      color: var(--ink);
+      opacity: 0.7;
     }
     .actions {
       display: flex;
@@ -170,11 +175,11 @@
       border: 1px solid var(--ink);
       cursor: pointer;
       background: var(--ink);
-      color: #fff;
+      color: var(--cream);
     }
     .btn:hover { filter: brightness(1.08); text-decoration: none; }
     .btn.secondary {
-      background: #fff;
+      background: var(--paper);
       color: var(--ink);
     }
     .btn[aria-disabled="true"] {
@@ -183,9 +188,9 @@
     }
     .status {
       margin-top: 12px;
-      font-family: var(--mono);
       font-size: 12px;
-      color: var(--muted);
+      color: var(--ink);
+      opacity: 0.75;
       min-height: 1.2em;
     }
 
@@ -194,80 +199,99 @@
     }
     .view h2 {
       margin: 0 0 8px;
+      padding: 0 8px;
       font-size: 1rem;
       font-weight: 600;
+      color: var(--ink);
     }
     .view .hint {
       margin: 0 0 16px;
-      font-size: 14px;
-      color: var(--muted);
-      max-width: 42em;
+      padding: 0 8px;
+      font-size: 13px;
+      color: var(--ink);
+      opacity: 0.75;
+      max-width: 48em;
     }
     .edition-grid {
       display: grid;
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-      gap: 6px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
       list-style: none;
       margin: 0;
       padding: 0;
     }
-    @media (max-width: 720px) {
-      .edition-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    @media (max-width: 900px) {
+      .edition-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .edition-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     }
     @media (max-width: 420px) {
-      .edition-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .edition-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .edition-grid li {
       margin: 0;
       min-width: 0;
     }
     .edition-grid a.cell {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      min-height: 52px;
-      padding: 8px 4px;
-      border: 1px solid var(--line);
+      position: relative;
+      display: block;
+      aspect-ratio: 1;
+      border: 1px solid var(--ink);
       text-decoration: none;
-      color: var(--black);
-      font-family: var(--mono);
-      background: #fff;
+      color: var(--ink);
+      background: var(--paper);
+      overflow: hidden;
     }
     .edition-grid a.cell:hover {
-      border-color: var(--ink);
-      color: var(--ink);
+      outline: 2px solid var(--ink);
+      outline-offset: -1px;
       text-decoration: none;
     }
     .edition-grid a.cell.is-active {
-      border-color: var(--ink);
-      background: var(--ink);
-      color: #fff;
+      outline: 3px solid var(--ink);
+      outline-offset: -1px;
     }
-    .edition-grid a.cell .num {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
+    .edition-grid a.cell img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: var(--paper);
     }
+    .edition-grid a.cell .cap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+      padding: 6px 8px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      background: linear-gradient(transparent, rgba(243, 239, 230, 0.92));
+      color: var(--ink);
+    }
+    .edition-grid a.cell .num { font-weight: 600; }
     .edition-grid a.cell .mark {
       font-size: 9px;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      opacity: 0.75;
-      min-height: 1em;
+      opacity: 0;
     }
-    .edition-grid a.cell.has-buy .mark {
-      color: inherit;
-      opacity: 1;
-    }
-    .edition-grid a.cell.is-active .mark {
-      opacity: 0.9;
-    }
+    .edition-grid a.cell.has-buy .mark { opacity: 1; }
 
+    .versions {
+      max-width: 40em;
+      margin: 0 auto;
+      padding: 0 8px;
+    }
     .versions h2 {
       margin: 0 0 12px;
       font-size: 1rem;
+      color: var(--ink);
     }
     .versions ul {
       margin: 0;
@@ -281,25 +305,27 @@
       padding: 12px 0;
       border-top: 1px solid var(--line);
       font-size: 14px;
+      color: var(--ink);
     }
     .versions li:last-child { border-bottom: 1px solid var(--line); }
-    .versions .name { font-weight: 600; color: var(--black); min-width: 4.5em; }
-    .versions .desc { color: var(--muted); flex: 1 1 12em; }
-    .versions a { font-family: var(--mono); font-size: 12px; }
+    .versions .name { font-weight: 600; min-width: 4.5em; }
+    .versions .desc { opacity: 0.8; flex: 1 1 12em; }
+    .versions a { font-size: 12px; }
 
     footer.page {
-      margin-top: 48px;
-      padding-top: 20px;
+      max-width: 40em;
+      margin: 48px auto 0;
+      padding: 20px 8px 0;
       border-top: 1px solid var(--line);
-      font-family: var(--mono);
       font-size: 11px;
-      color: var(--muted);
+      color: var(--ink);
+      opacity: 0.75;
       display: flex;
       flex-wrap: wrap;
       gap: 8px 16px;
     }
-    footer.page a { color: var(--muted); text-decoration: none; }
-    footer.page a:hover { color: var(--ink); }
+    footer.page a { color: var(--ink); text-decoration: none; }
+    footer.page a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -314,40 +340,42 @@
   </nav>
 
   <main>
-    <p class="eyebrow">Art Blocks Marfa Weekend · 2026</p>
-    <h1>Invisible Layer</h1>
-    <p class="lead">
-      One system — the invisible layer of the screen — as a free signed card, a living screen piece, and an optional digital twin.
-    </p>
+    <div class="intro">
+      <p class="eyebrow">Art Blocks Marfa Weekend · 2026</p>
+      <h1>Invisible Layer</h1>
+      <p class="lead">
+        One system — the invisible layer of the screen — as a free signed card, a living screen piece, and an optional digital twin.
+      </p>
 
-    <div class="story">
-      <p>
-        I started coding in 2022 while my mother was dying. It became a refuge — total focus, like painting. After she died, I understood what had been running underneath all along.
-      </p>
-      <p>
-        One hundred cards, hand-numbered 1/100 to 100/100. Tap the NFC on the back to open your piece. Cards are free. The digital edition is available on Transient Labs if you want to keep it.
-      </p>
+      <div class="story">
+        <p>
+          I started coding in 2022 while my mother was dying. It became a refuge — total focus, like painting. After she died, I understood what had been running underneath all along.
+        </p>
+        <p>
+          One hundred cards, hand-numbered 1/100 to 100/100. Tap the NFC on the back to open your piece. Cards are free. The digital edition is available on Transient Labs if you want to keep it.
+        </p>
+      </div>
+
+      <section class="panel" aria-labelledby="open-heading">
+        <h2 id="open-heading">Your card</h2>
+        <p class="hint">Enter the number on your card (1–100). NFC links land here with your number already set.</p>
+        <form id="card-form" class="row" autocomplete="off">
+          <label class="card-label" for="card">Card</label>
+          <input id="card" name="card" inputmode="numeric" maxlength="3" pattern="[0-9]*" value="1" aria-describedby="card-status" />
+          <span class="slash">/ 100</span>
+          <div class="actions">
+            <button type="submit" class="btn" id="open-btn">Open your piece</button>
+            <a class="btn secondary" id="buy-btn" href="#" aria-disabled="true">Acquire on Transient</a>
+          </div>
+        </form>
+        <p class="status" id="card-status" role="status"></p>
+      </section>
     </div>
-
-    <section class="panel" aria-labelledby="open-heading">
-      <h2 id="open-heading">Your card</h2>
-      <p class="hint">Enter the number on your card (1–100). NFC links land here with your number already set.</p>
-      <form id="card-form" class="row" autocomplete="off">
-        <label class="card-label" for="card">Card</label>
-        <input id="card" name="card" inputmode="numeric" maxlength="3" pattern="[0-9]*" value="1" aria-describedby="card-status" />
-        <span class="slash">/ 100</span>
-        <div class="actions">
-          <button type="submit" class="btn" id="open-btn">Open your piece</button>
-          <a class="btn secondary" id="buy-btn" href="#" aria-disabled="true">Acquire on Transient</a>
-        </div>
-      </form>
-      <p class="status" id="card-status" role="status"></p>
-    </section>
 
     <section class="view" id="view" aria-labelledby="view-heading">
       <h2 id="view-heading">View · 100</h2>
       <p class="hint">
-        Every card is its seed. Click a cell to open that piece. Cells marked Buy have a Transient listing — use Acquire on your card, or open the piece then buy from Transient.
+        Every card is its seed. Still of the artwork on the card — click to open that piece. Buy appears when a Transient listing is set.
       </p>
       <ol class="edition-grid" id="edition-grid"></ol>
     </section>
@@ -389,7 +417,7 @@
   <script>
 /**
  * Marfa 2026 hub — NFC / share URL: /marfa-2026/?n=47
- * Card n = seed n. Monogrid-style View of 1–100. BUY_URL as Transient tokens mint.
+ * Card n = seed n. View grid uses artwork-only stills from ./thumbs/NNN.png
  */
 (function () {
   const EDITION_MAX = 100;
@@ -406,6 +434,8 @@
   const gridEl = document.getElementById('edition-grid');
   const linkScreen = document.getElementById('link-screen');
 
+  const pad3 = (n) => String(n).padStart(3, '0');
+
   const clampCard = (raw) => {
     const n = parseInt(String(raw).replace(/\D/g, ''), 10);
     if (!Number.isFinite(n)) return 1;
@@ -421,6 +451,8 @@
     });
     return './marfa-2026-screen.html?' + q.toString();
   };
+
+  const thumbUrl = (n) => './thumbs/' + pad3(n) + '.png';
 
   const hubUrl = (n) => {
     const path = location.pathname.replace(/\/?$/, '/');
@@ -465,22 +497,27 @@
     for (let n = 1; n <= EDITION_MAX; n++) {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.className = 'cell';
+      a.className = 'cell' + (BUY_URL[n] ? ' has-buy' : '');
       a.href = pieceUrl(n);
       a.setAttribute('data-n', String(n));
       a.setAttribute('title', 'Card ' + n + '/100 · seed ' + n);
-      if (BUY_URL[n]) {
-        a.classList.add('has-buy');
-        a.innerHTML =
-          '<span class="num">' +
-          n +
-          '</span><span class="mark">Buy</span>';
-      } else {
-        a.innerHTML =
-          '<span class="num">' + n + '</span><span class="mark"></span>';
-      }
-      a.addEventListener('click', (e) => {
-        // Keep default navigation to the piece; sync hub state for back-nav.
+      const img = document.createElement('img');
+      img.src = thumbUrl(n);
+      img.alt = 'Card ' + n + ' artwork';
+      img.loading = 'lazy';
+      img.width = 512;
+      img.height = 512;
+      const cap = document.createElement('span');
+      cap.className = 'cap';
+      cap.innerHTML =
+        '<span class="num">' +
+        n +
+        '</span><span class="mark">' +
+        (BUY_URL[n] ? 'Buy' : '') +
+        '</span>';
+      a.appendChild(img);
+      a.appendChild(cap);
+      a.addEventListener('click', () => {
         applyCard(n, true);
       });
       li.appendChild(a);
