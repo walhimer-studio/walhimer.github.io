@@ -281,7 +281,7 @@
       text-transform: uppercase;
       opacity: 0;
     }
-    .edition-grid a.cell.has-buy .mark { opacity: 1; }
+    .edition-grid a.cell .mark:not(:empty) { opacity: 1; }
 
     .versions {
       max-width: 40em;
@@ -373,9 +373,9 @@
     </div>
 
     <section class="view" id="view" aria-labelledby="view-heading">
-      <h2 id="view-heading">View · 100</h2>
+      <h2 id="view-heading">View · 102</h2>
       <p class="hint">
-        Every card is its seed. Still of the artwork on the card — click to open that piece. Buy appears when a Transient listing is set.
+        Cards 1–100: card number is the seed. 101 is the 2D screen 1/1; 102 is the 3D wall 1/1. Stills of the artwork — click to open. Buy appears when a Transient listing is set.
       </p>
       <ol class="edition-grid" id="edition-grid"></ol>
     </section>
@@ -417,14 +417,34 @@
   <script>
 /**
  * Marfa 2026 hub — NFC / share URL: /marfa-2026/?n=47
- * Card n = seed n. View grid uses artwork-only stills from ./thumbs/NNN.png
+ * Cards 1–100: card n = seed n. 101 = 2D screen 1/1. 102 = 3D wall 1/1.
+ * View stills: ./thumbs/NNN.png
  */
 (function () {
-  const EDITION_MAX = 100;
+  const CARD_MAX = 100;
 
-  /** Transient Labs token pages by card number — add as you mint. */
+  /** Transient Labs token pages — add as you mint. */
   const BUY_URL = {
     1: null, // paste Transient “View on Transient” URL for token 1
+    101: null, // 2D screen 1/1 ~$300
+    102: null, // 3D wall 1/1 ~$600
+  };
+
+  const SPECIAL = {
+    101: {
+      label: '101',
+      sub: '2D',
+      title: '101 · 2D screen 1/1',
+      alt: '2D screen edition',
+      href: './marfa-2026-screen.html?format=landscape&seconds=60&seed=101&card=101',
+    },
+    102: {
+      label: '102',
+      sub: '3D',
+      title: '102 · 3D wall 1/1',
+      alt: '3D wall edition',
+      href: '../invisible-layer/invisible-layer-august-29-2026.html',
+    },
   };
 
   const cardInput = document.getElementById('card');
@@ -439,10 +459,11 @@
   const clampCard = (raw) => {
     const n = parseInt(String(raw).replace(/\D/g, ''), 10);
     if (!Number.isFinite(n)) return 1;
-    return Math.min(EDITION_MAX, Math.max(1, n));
+    return Math.min(CARD_MAX, Math.max(1, n));
   };
 
   const pieceUrl = (n) => {
+    if (SPECIAL[n]) return SPECIAL[n].href;
     const q = new URLSearchParams({
       format: 'landscape',
       seconds: '60',
@@ -459,17 +480,26 @@
     return path + '?n=' + n;
   };
 
-  const setBuy = (n) => {
+  const setBuy = (n, kind) => {
     const href = BUY_URL[n];
     if (href) {
       buyBtn.href = href;
       buyBtn.removeAttribute('aria-disabled');
-      statusEl.textContent = 'Card ' + n + '/100 · digital twin available';
+      if (kind === 'special') {
+        statusEl.textContent = SPECIAL[n].title + ' · available on Transient';
+      } else {
+        statusEl.textContent = 'Card ' + n + '/100 · digital twin available';
+      }
     } else {
       buyBtn.href = '#';
       buyBtn.setAttribute('aria-disabled', 'true');
-      statusEl.textContent =
-        'Card ' + n + '/100 · Transient listing added here as each edition mints';
+      if (kind === 'special') {
+        statusEl.textContent =
+          SPECIAL[n].title + ' · Transient listing added when minted';
+      } else {
+        statusEl.textContent =
+          'Card ' + n + '/100 · Transient listing added here as each edition mints';
+      }
     }
   };
 
@@ -485,44 +515,74 @@
   const applyCard = (n, pushUrl) => {
     const card = clampCard(n);
     cardInput.value = String(card);
-    setBuy(card);
+    setBuy(card, 'card');
     highlightGrid(card);
     if (linkScreen) linkScreen.href = pieceUrl(card);
     if (pushUrl) history.replaceState(null, '', hubUrl(card));
     return card;
   };
 
+  const applySpecial = (n, pushUrl) => {
+    setBuy(n, 'special');
+    highlightGrid(n);
+    if (pushUrl) history.replaceState(null, '', hubUrl(n));
+  };
+
+  const appendCell = (frag, n, opts) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.className = 'cell' + (BUY_URL[n] ? ' has-buy' : '');
+    a.href = opts.href;
+    a.setAttribute('data-n', String(n));
+    a.setAttribute('title', opts.title);
+    const img = document.createElement('img');
+    img.src = thumbUrl(n);
+    img.alt = opts.alt;
+    img.loading = 'lazy';
+    img.width = 512;
+    img.height = 512;
+    const cap = document.createElement('span');
+    cap.className = 'cap';
+    const mark = BUY_URL[n] ? 'Buy' : opts.sub || '';
+    cap.innerHTML =
+      '<span class="num">' +
+      opts.label +
+      '</span><span class="mark">' +
+      mark +
+      '</span>';
+    a.appendChild(img);
+    a.appendChild(cap);
+    a.addEventListener('click', () => {
+      if (opts.special) applySpecial(n, true);
+      else applyCard(n, true);
+    });
+    li.appendChild(a);
+    frag.appendChild(li);
+  };
+
   const buildGrid = () => {
     const frag = document.createDocumentFragment();
-    for (let n = 1; n <= EDITION_MAX; n++) {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.className = 'cell' + (BUY_URL[n] ? ' has-buy' : '');
-      a.href = pieceUrl(n);
-      a.setAttribute('data-n', String(n));
-      a.setAttribute('title', 'Card ' + n + '/100 · seed ' + n);
-      const img = document.createElement('img');
-      img.src = thumbUrl(n);
-      img.alt = 'Card ' + n + ' artwork';
-      img.loading = 'lazy';
-      img.width = 512;
-      img.height = 512;
-      const cap = document.createElement('span');
-      cap.className = 'cap';
-      cap.innerHTML =
-        '<span class="num">' +
-        n +
-        '</span><span class="mark">' +
-        (BUY_URL[n] ? 'Buy' : '') +
-        '</span>';
-      a.appendChild(img);
-      a.appendChild(cap);
-      a.addEventListener('click', () => {
-        applyCard(n, true);
+    for (let n = 1; n <= CARD_MAX; n++) {
+      appendCell(frag, n, {
+        label: String(n),
+        sub: '',
+        title: 'Card ' + n + '/100 · seed ' + n,
+        alt: 'Card ' + n + ' artwork',
+        href: pieceUrl(n),
+        special: false,
       });
-      li.appendChild(a);
-      frag.appendChild(li);
     }
+    [101, 102].forEach((n) => {
+      const s = SPECIAL[n];
+      appendCell(frag, n, {
+        label: s.label,
+        sub: s.sub,
+        title: s.title,
+        alt: s.alt,
+        href: s.href,
+        special: true,
+      });
+    });
     gridEl.appendChild(frag);
   };
 
@@ -537,8 +597,12 @@
   buildGrid();
 
   const q = new URLSearchParams(location.search);
-  applyCard(q.get('n') || q.get('card') || '1', false);
+  const raw = q.get('n') || q.get('card') || '1';
+  const initial = parseInt(String(raw).replace(/\D/g, ''), 10);
+  if (SPECIAL[initial]) applySpecial(initial, false);
+  else applyCard(raw, false);
 })();
+
   </script>
 </body>
 </html>
