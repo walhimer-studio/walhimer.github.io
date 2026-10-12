@@ -67,6 +67,7 @@ Agent entry point: `AGENTS.md`
 
 - **Meaning:** [Machine-DNA chronicle](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md) — genotype vs ecology vs phenotype. Do not equate “species” with the phrase “Machine DNA.”
 - **Genotype package:** [walhimer-studio/Machine-DNA](https://github.com/walhimer-studio/Machine-DNA).
+- **Seeded PRNG (going forward):** **splitmix32 + sfc32** (`makeSeededRandom`, 15 warm-up draws) — copy verbatim from `_scripts/machine_dna_rules.py`. **Not** sine `Rand` / `SeedRng`. Enforced on new/changed seeded sketches. Do not silently switch PRNG under a published seed that used another engine.
 - **Lifespan / lifeline duration** = per species / per catalog entry — read `catalog/{piece}.md`, do not assume one global duration.
 
 ---

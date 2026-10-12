@@ -16,7 +16,7 @@ This file mirrors that contract for agents working in **walhimer.github.io** and
 |-----|-----|
 | **[Machine-DNA CHRONICLE](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md)** | **Canonical meaning** |
 | **[Machine-DNA RECORDING](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/RECORDING.md)** | **Solidification recording** — two-step deliverable · formats · copy august-29 |
-| [Machine-DNA SPEC](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/SPEC.md) | Type 1/2/3 + canonical `Rand` |
+| [Machine-DNA SPEC](https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/SPEC.md) | Type 1/2/3 + canonical **splitmix32 + sfc32** |
 | [`practice/machine-dna.html`](../practice/machine-dna.html) | Public essay |
 | [`machine-aesthetic/emergent-dna/README.md`](../machine-aesthetic/emergent-dna/README.md) | Site organism / `express()` host experiment — must not redefine DNA |
 | [`practice/artwork-pipeline.html`](../practice/artwork-pipeline.html) | Shipping checklist |
@@ -31,12 +31,12 @@ This file mirrors that contract for agents working in **walhimer.github.io** and
 ## Contract (summary — full text in Machine-DNA)
 
 1. **Many nests (species / series)** — Centered · Fluid Dynamics · Surrender Machines · Witness Mirror · Invisible Layer · Bloom · … New nests can be founded; old ones keep living.  
-2. **Genotype** — seed / `Rand` / traits from [Machine-DNA](https://github.com/walhimer-studio/Machine-DNA); Type 1 · 2 · 3 per SPEC.  
+2. **Genotype** — seed / **splitmix32 + sfc32** / traits from [Machine-DNA](https://github.com/walhimer-studio/Machine-DNA); Type 1 · 2 · 3 per SPEC.  
 3. **Co-created phenotype** — `visualExpress` + `soundExpress` same snapshot; no reactive master/slave as DNA.  
 4. **Ecology** — each **artwork** is an individual life inside a nest (short, aggressive, protected, long) — **not** a global 8 min / `480000`  
 5. **Bodies** — browser · N150 · wall · Black Dove · OF · PD · LED.  
 6. **Solidification** — exports from one seeded run; **slice ≠ whole life**.  
-7. **PRNG tension** — sine `Rand` in Machine-DNA vs hash preference in `blackdove-system.md`: document engine per locked seed; no silent switch.
+7. **PRNG (closed)** — going forward: **splitmix32 + sfc32** only. Legacy sine `Rand` seeds stay on the engine they shipped with; no silent switch.
 
 ---
 

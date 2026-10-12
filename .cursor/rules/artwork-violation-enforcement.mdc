@@ -28,7 +28,7 @@ Before `Write`, `StrReplace`, or `Delete` on a protected path (new or existing):
 1. User named **this exact full path** for editing (`@path` or quoted path) and it is in `.cursor/ALLOW_EDIT`?
 2. User named the **exact change** — not “make it work,” “fill canvas,” “center it,” “fix display”?
 3. Diff is **only** that change?
-4. If the file uses a seed: did you **read Machine-DNA `docs/SPEC.md` and `docs/SPEC-LOCK.md`**, and does the file use the canonical `Rand` verbatim (no mulberry32, sfc32, xorshift, splitmix, or any other generator)?
+4. If the file uses a seed: did you **read Machine-DNA `docs/SPEC.md` and `docs/SPEC-LOCK.md`**, and does the file use **splitmix32 + sfc32** (`makeSeededRandom`) verbatim from `_scripts/machine_dna_rules.py` (no sine `Rand`, mulberry32, xorshift, or any other generator)?
 
 **Any no → do not edit.** Say what is blocked and stop.
 
