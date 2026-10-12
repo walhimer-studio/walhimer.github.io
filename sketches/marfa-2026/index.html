@@ -375,7 +375,7 @@
     <section class="view" id="view" aria-labelledby="view-heading">
       <h2 id="view-heading">View · 102</h2>
       <p class="hint">
-        Cards 1–100: card number is the seed. 101 is the 2D screen 1/1; 102 is the 3D wall 1/1. Stills of the artwork — click to open. Buy appears when a Transient listing is set.
+        Cards 1–100: card number is the seed. 101 is the 2D online 1/1; 102 is the 3D wall 1/1. Stills of the artwork — click to open. Buy appears when a Transient listing is set.
       </p>
       <ol class="edition-grid" id="edition-grid"></ol>
     </section>
@@ -434,9 +434,9 @@
     101: {
       label: '101',
       sub: '2D',
-      title: '101 · 2D screen 1/1',
-      alt: '2D screen edition',
-      href: './marfa-2026-screen.html?format=landscape&seconds=60&seed=101&card=101',
+      title: '101 · 2D online 1/1',
+      alt: '2D online edition',
+      href: './marfa-2026.html',
     },
     102: {
       label: '102',
@@ -562,16 +562,6 @@
 
   const buildGrid = () => {
     const frag = document.createDocumentFragment();
-    for (let n = 1; n <= CARD_MAX; n++) {
-      appendCell(frag, n, {
-        label: String(n),
-        sub: '',
-        title: 'Card ' + n + '/100 · seed ' + n,
-        alt: 'Card ' + n + ' artwork',
-        href: pieceUrl(n),
-        special: false,
-      });
-    }
     [101, 102].forEach((n) => {
       const s = SPECIAL[n];
       appendCell(frag, n, {
@@ -583,6 +573,16 @@
         special: true,
       });
     });
+    for (let n = 1; n <= CARD_MAX; n++) {
+      appendCell(frag, n, {
+        label: String(n),
+        sub: '',
+        title: 'Card ' + n + '/100 · seed ' + n,
+        alt: 'Card ' + n + ' artwork',
+        href: pieceUrl(n),
+        special: false,
+      });
+    }
     gridEl.appendChild(frag);
   };
 
