@@ -100,7 +100,7 @@ const seedFromUrl = () => {
   return (n >>> 0) % 1000000000;
 };
 
-const seedLabel = (seed) => String(seed).padStart(9, '0');
+const seedLabel = (seed) => String(seed).padStart(3, '0');
 
 const cardFromUrl = () => {
   const raw = new URLSearchParams(location.search).get('card');
