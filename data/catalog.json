@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-10-05",
+  "updated": "2026-10-17",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -670,135 +670,6 @@
             "https://objkt.com"
           ]
         }
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026",
-      "dublin_core": {
-        "title": "marfa-2026/marfa-2026",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000383"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026",
-        "type": "HumanMadeObject",
-        "_label": "marfa-2026/marfa-2026",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Marfa 2026",
-          "file": "marfa-2026/marfa-2026.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/marfa-2026/marfa-2026.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-card",
-      "dublin_core": {
-        "title": "marfa-2026/marfa-2026-card",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-card",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000386"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026-card",
-        "type": "HumanMadeObject",
-        "_label": "marfa-2026/marfa-2026-card",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Marfa 2026",
-          "file": "marfa-2026/marfa-2026-card.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/marfa-2026/marfa-2026-card.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-screen",
-      "dublin_core": {
-        "title": "marfa-2026/marfa-2026-screen",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-screen",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000385"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026-screen",
-        "type": "HumanMadeObject",
-        "_label": "marfa-2026/marfa-2026-screen",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Marfa 2026",
-          "file": "marfa-2026/marfa-2026-screen.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/marfa-2026/marfa-2026-screen.html"
-        ],
-        "external_urls": []
       }
     },
     {
@@ -10745,6 +10616,221 @@
         "repo_paths": [
           "sketches/loop-snippets/loop-machine-aesthetic/ghost_dense_77823_room.html",
           "sketches/loop-snippets/loop-machine-aesthetic/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Marfa 2026:catalog-marfa-2026-plot_card",
+      "dublin_core": {
+        "title": "../catalog/marfa-2026/plot card.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Marfa 2026:catalog-marfa-2026-plot_card",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000387"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Marfa 2026-catalog-marfa-2026-plot_card",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/marfa-2026/plot card.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Marfa 2026",
+          "file": "../catalog/marfa-2026/plot_card.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/marfa-2026/plot_card.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Marfa 2026:plotter-idraw-se-a3-bin-plot_card",
+      "dublin_core": {
+        "title": "../plotter/idraw-se-a3/bin/plot card.py",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Marfa 2026:plotter-idraw-se-a3-bin-plot_card",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000388"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Marfa 2026-plotter-idraw-se-a3-bin-plot_card",
+        "type": "HumanMadeObject",
+        "_label": "../plotter/idraw-se-a3/bin/plot card.py",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Marfa 2026",
+          "file": "../plotter/idraw-se-a3/bin/plot_card.py"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "plotter/idraw-se-a3/bin/plot_card.py"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-card",
+      "dublin_core": {
+        "title": "marfa-2026/marfa-2026-card",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-card",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000386"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026-card",
+        "type": "HumanMadeObject",
+        "_label": "marfa-2026/marfa-2026-card",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Marfa 2026",
+          "file": "marfa-2026/marfa-2026-card.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/marfa-2026/marfa-2026-card.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-screen",
+      "dublin_core": {
+        "title": "marfa-2026/marfa-2026-screen",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026-screen",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000385"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026-screen",
+        "type": "HumanMadeObject",
+        "_label": "marfa-2026/marfa-2026-screen",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Marfa 2026",
+          "file": "marfa-2026/marfa-2026-screen.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/marfa-2026/marfa-2026-screen.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026",
+      "dublin_core": {
+        "title": "marfa-2026/marfa-2026",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Marfa 2026:marfa-2026-marfa-2026",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000383"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Marfa 2026-marfa-2026-marfa-2026",
+        "type": "HumanMadeObject",
+        "_label": "marfa-2026/marfa-2026",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Marfa 2026",
+          "file": "marfa-2026/marfa-2026.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/marfa-2026/marfa-2026.html"
         ],
         "external_urls": []
       }
