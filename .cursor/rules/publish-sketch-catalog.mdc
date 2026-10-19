@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Publish sketch / catalog (binding)
 
-**Source of truth:** `README.md` § Add a new sketch; `catalog/README.md`; each `catalog/{series}/README.md` publish checklist.
+**Source of truth:** `README.md` § Add a new sketch; `catalog/README.md`; each `catalog/{series}/README.md` publish checklist; `docs/submission-and-series-structure.md` (show/year series).
 
 Creating or shipping sketch HTML is **not done** until the full publish steps below are complete and committed.
 
@@ -14,11 +14,15 @@ Creating or shipping sketch HTML is **not done** until the full publish steps be
 ```
 catalog/{path}/README.md          ← catalog statement
 sketches/{same-path}/              ← WIP + hub (mirrors catalog)
+{path}/index.html                  ← optional short-URL redirect stub only
 ```
+
+**Public series unit:** `{show}-{year}` (e.g. `marfa-2026`, `miami-2026`) → `https://mark-walhimer.com/{path}/`.
 
 | Forbidden | Required |
 |-----------|----------|
-| Project folder at **repo root** (`loop-art-critique-alumni-show-2026/` next to `catalog/`) | Hub HTML at `sketches/{path}/index.html` |
+| Full project tree at **repo root** | Hub HTML at `sketches/{path}/index.html` |
+| Root folder with real artwork (only redirect stub allowed) | Root stub listed in `STAGED_ROOT_STUB_ALLOW` in `_scripts/check_catalog_mirror.py` |
 | SERIES HTML pointing outside `sketches/` | SERIES `../catalog/{path}/README.md` for catalog markdown |
 | Inventing parallel folders “for GitHub visibility” | `github.com/.../tree/main/sketches/{path}/` **is** the GitHub folder |
 | Skipping mirror because user said “own folder” | **Stop.** Explain mirror rule; do not move to repo root |
@@ -34,28 +38,33 @@ sketches/{same-path}/              ← WIP + hub (mirrors catalog)
 
 ## Publish checklist (required order)
 
-When adding or changing work under `sketches/` (or promoting to `installations/`):
+When adding a **new show/year series** or changing work under `sketches/`:
 
-1. Register paths in **`sketches/index.html`** → `const SERIES` (or **`sketches/catalog-work.html`** when that file is the SERIES source).
-2. Update **`catalog/{series}/README.md`** (and `{artwork}.md` when applicable).
-3. `python3 _scripts/reorder_series_by_index_mtime.py`
-4. `python3 _scripts/refresh_catalog.py` → commit **`data/catalog.json`**
-5. `python3 _scripts/check_catalog_mirror.py` (must exit 0)
-6. `python3 _scripts/check_catalog_sync.py` (must exit 0)
-7. `python3 _scripts/check_self_contained.py` (must exit 0 — see `self-contained-published-html.mdc`)
+1. `catalog/{series}/README.md` (+ `{artwork}.md` when applicable)
+2. Hub + works under `sketches/{series}/`
+3. Root `{series}/index.html` redirect stub (if shipping `mark-walhimer.com/{series}/`)
+4. Add `{series}/index.html` to **`STAGED_ROOT_STUB_ALLOW`** in `_scripts/check_catalog_mirror.py`
+5. Register paths in **`sketches/index.html`** → `const SERIES` (or **`sketches/catalog-work.html`** when that file is the SERIES source)
+6. Available row same day — `.cursor/rules/launch-pages-available.mdc`
+7. `python3 _scripts/reorder_series_by_index_mtime.py`
+8. `python3 _scripts/refresh_catalog.py` → commit **`data/catalog.json`**
+9. `python3 _scripts/check_catalog_mirror.py` (must exit 0)
+10. `python3 _scripts/check_catalog_sync.py` (must exit 0)
+11. `python3 _scripts/check_self_contained.py` (must exit 0 — see `self-contained-published-html.mdc`)
 
 ## Pre-ship checklist
 
 - [ ] `sketches/{path}/` mirrors `catalog/{path}/`
+- [ ] Root redirect stub only (if any) + allowlist entry
 - [ ] SERIES lists every new sketch `.html` path under `sketches/` (not only the series hub `index.html`)
+- [ ] Available row when the hub is a public launch
 - [ ] `data/catalog.json` refreshed and staged in the same commit
 - [ ] Mirror + sync + self-contained checks pass locally
 - [ ] If user asked to publish: run `_scripts/safe_publish.sh` or equivalent full sequence before push
 
-## Technical series example
+## Examples
 
-New file `sketches/technical/foo.html` requires entries in:
+- Marfa 2026 — https://mark-walhimer.com/marfa-2026/
+- Miami 2026 — https://mark-walhimer.com/miami-2026/
 
-- `sketches/index.html` SERIES → Technical
-- `sketches/technical/index.html` series list (when that hub exists)
-- `python3 _scripts/refresh_catalog.py` so `data/catalog.json` includes the work
+New file `sketches/technical/foo.html` still requires SERIES → Technical, hub list when present, and `refresh_catalog.py`.

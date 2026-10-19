@@ -22,7 +22,7 @@ Two tiers on the site, plus a JSON manifest and optional narrative archive pages
 | `data/catalog.json` | **Single manifest** — canonical **`works[]`** only. Refresh merges **`SERIES`** from **`sketches/catalog-work.html`** (fallback: **`sketches/index.html`** when **`SERIES`** is empty) and **`installations/*.html`**. See **[docs/unified-catalog.md](docs/unified-catalog.md)**. |
 | `docs/unified-catalog.md` | Full workflow, recovery notes, DC fields. |
 | `docs/archive-chronicle.md` | How the sketch index, catalog workspace, and narrative archives relate to the manifest. |
-| `docs/submission-and-series-structure.md` | **Prize / residency / event folders** — living workspace vs dated submission snapshots, naming, README template, catalog checklist. |
+| `docs/submission-and-series-structure.md` | **Show/year series** (`marfa-2026`, `miami-2026`…) + prize/frozen submissions secondary — short URL, catalog mirror, publish checklist. |
 | `docs/bloom-inventory.md` | **Bloom** series: canonical paths under `sketches/bloom/`, redirect stubs, what stays outside (installations, Loop Miami, drafts). |
 
 Site nav: **Selected Works · Catalog · Bio / CV · Contact**
@@ -35,9 +35,23 @@ Catalog footer includes a low-visibility link to **Collection DB** (`/catalog-db
 
 ## Workflow
 
-### Add a new sketch
+### Add a show / year series (preferred)
 
-1. Add self-contained HTML under `sketches/`.
+Public unit for new work: **`{show}-{year}`** (e.g. `marfa-2026`, `miami-2026`).
+
+1. `catalog/{name}/README.md` + hub under `sketches/{name}/` (self-contained HTML).
+2. Root `{name}/index.html` redirect stub → `sketches/{name}/` (copy Marfa/Miami).
+3. Add `{name}/index.html` to **`STAGED_ROOT_STUB_ALLOW`** in `_scripts/check_catalog_mirror.py`.
+4. Register in **`sketches/index.html`** → **`SERIES`** (or **`sketches/catalog-work.html`** when that file is the source).
+5. Available row same day — `available/catalog.md` + `available/catalog.json` (`liveUrl` = `https://mark-walhimer.com/{name}/`).
+6. `python3 _scripts/reorder_series_by_index_mtime.py` then `python3 _scripts/refresh_catalog.py`; commit **`data/catalog.json`**.
+7. Push. Live: `https://mark-walhimer.com/{name}/`.
+
+Detail: [docs/submission-and-series-structure.md](docs/submission-and-series-structure.md).
+
+### Add a new sketch (into an existing series)
+
+1. Add self-contained HTML under `sketches/{series}/`.
 2. Register it in **`sketches/catalog-work.html`** → **`SERIES`** when that file is your source (or **`sketches/index.html`** while **`catalog-work`** is still empty).
 3. Refresh the catalog: `python3 _scripts/refresh_catalog.py` (or `python3 _scripts/sync_artworks_json.py`), then commit **`data/catalog.json`** and push.
 4. Push the repo.

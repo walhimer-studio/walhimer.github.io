@@ -1,99 +1,85 @@
-# Submission & series folder structure
+# Series & submission folder structure
 
-How to organize **competitions**, **residencies**, **critiques**, and **ongoing series** under `sketches/` so future-you can always find what you submitted, when, and where.
+**Default for new public work:** one **show / year series** with a short URL, catalog mirror, and sketches hub. That is the long-term archive unit (Marfa 2026, Miami 2026, Loop 2026, Marfa 2027…).
 
-**All artwork follows one studio pipeline** (Machine DNA, seed identity, hosts, publish gates): [Artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [catalog/STUDIO-DIRECTION.md](../catalog/STUDIO-DIRECTION.md). Mirror that direction in every `catalog/{path}/{artwork}.md` statement.
-
-**Examples in this repo:**
-
-| Folder | Type | Role |
-|--------|------|------|
-| [`sketches/loop-machine-aesthetic/`](../sketches/loop-machine-aesthetic/) | **Living workspace** | Ongoing Machine Aesthetic development |
-| [`sketches/2026-ars-electronica/`](../sketches/2026-ars-electronica/) | **Frozen submission** | Prix Ars Electronica 2026 — add entry files here |
-| [`sketches/2026-lumen-prize-machine-aesthetic/`](../sketches/2026-lumen-prize-machine-aesthetic/) | **Frozen submission** | The Lumen Prize 2026 — do not edit after submit |
-| [`sketches/loop-art-critique-2026/`](../sketches/loop-art-critique-2026/) | **Event bundle** | Loop Art Critique 2026 — all Loop 2026 project files |
+**All artwork follows one studio pipeline** (Machine DNA, seed identity, hosts, publish gates): [Artwork pipeline](https://mark-walhimer.com/practice/artwork-pipeline.html) · [catalog/STUDIO-DIRECTION.md](../catalog/STUDIO-DIRECTION.md).
 
 ---
 
-## Two layers (always separate)
+## 1. Show / year series (primary)
 
-### 1. Living workspace
+One show or year = one series name = one public page.
 
-Where you **keep working**. Names describe the **project**, not the prize.
+| Piece | Path |
+|-------|------|
+| Catalog statement | `catalog/{name}/README.md` |
+| Hub + WIP | `sketches/{name}/` (hub = `index.html`) |
+| Short URL | `https://mark-walhimer.com/{name}/` |
+| Root redirect stub | `{name}/index.html` → `sketches/{name}/` (redirect only) |
+
+**Canonical examples**
+
+| Series | Live |
+|--------|------|
+| Marfa 2026 | https://mark-walhimer.com/marfa-2026/ |
+| Miami 2026 | https://mark-walhimer.com/miami-2026/ |
+
+**Naming:** lowercase kebab-case, usually `{show}-{year}` — `marfa-2026`, `miami-2026`, `loop-2026`. Next year is a **new** folder (`marfa-2027`), not an edit of last year’s freeze.
 
 ```
-sketches/loop-machine-aesthetic/
-sketches/bloom/
+catalog/marfa-2026/README.md
+sketches/marfa-2026/index.html    ← hub + works
+marfa-2026/index.html             ← redirect stub only
 ```
 
-- Edit freely.
-- Internal filenames (`ghost_dense_77823_room.mjs`) are fine here.
-- When a deadline approaches, **copy** (do not move) into a dated submission folder.
+### New series checklist
 
-### 2. Frozen submission / event bundle
+1. `catalog/{name}/README.md` (+ `{artwork}.md` when named)
+2. `sketches/{name}/index.html` hub; put works in that folder
+3. Root `{name}/index.html` redirect stub (copy Marfa/Miami pattern)
+4. Add `{name}/index.html` to `STAGED_ROOT_STUB_ALLOW` in `_scripts/check_catalog_mirror.py`
+5. Register in `sketches/index.html` → `SERIES`
+6. Available row same day — see `.cursor/rules/launch-pages-available.mdc`
+7. `python3 _scripts/reorder_series_by_index_mtime.py`
+8. `python3 _scripts/refresh_catalog.py` → commit `data/catalog.json`
+9. `check_catalog_mirror.py` · `check_catalog_sync.py` · `check_self_contained.py` → push
 
-A **snapshot** for one opportunity. Names include **year + opportunity + project**.
-
-```
-sketches/2026-lumen-prize-machine-aesthetic/
-sketches/loop-art-critique-2026/
-sketches/2027-lumen-prize-machine-aesthetic/   ← next year, new copy
-```
-
-- Copy the workspace at submission time.
-- **Do not edit** after you submit (except redirects or typos in metadata).
-- README must record the **exact URL** you pasted into the form.
+**Forbidden:** a full project tree at repo root next to `catalog/`. Root may only hold a **redirect stub**.
 
 ---
 
-## Folder naming
+## 2. Prize / frozen submission (secondary)
 
-Use lowercase kebab-case under `sketches/`.
+Use when a **competition or residency** needs a frozen snapshot separate from the living show series.
 
 | Kind | Pattern | Example |
 |------|---------|---------|
 | Prize / competition | `{year}-{prize-or-org}-{project}` | `2026-lumen-prize-machine-aesthetic` |
-| Residency / event / critique | `{event}-{year}` or `{year}-{event}-{project}` | `loop-art-critique-2026` |
-| Living series | `{project}` or `{project}-{variant}` | `loop-machine-aesthetic`, `bloom` |
+| Residency / event / critique (legacy) | `{event}-{year}` | `loop-art-critique-2026` |
+| Living workspace (internal) | `{project}` | `loop-machine-aesthetic`, `bloom` |
 
-**Avoid:** `lumen-machine-aesthetic` without a year — you will not find it next year next to ARS, Loop, and Lumen folders.
+**Prefer** promoting a critique/show into a **show/year series** (`loop-2026`) when it is public-facing. Keep prize folders for form URLs and freeze dates.
 
----
+### Living workspace vs frozen copy
 
-## Public entry file (what you submit)
+1. **Living workspace** — keep working (`sketches/loop-machine-aesthetic/`).
+2. **Frozen submission** — **copy** (do not move) into a dated folder; do not edit after submit except redirects/typos.
+3. README must record the **exact URL** pasted into the form.
 
-The URL you give jurors should **describe the work**, not internal build names.
+### Public entry file (juried forms)
 
 | Avoid (internal) | Prefer (public) |
 |------------------|-----------------|
 | `ghost_dense_77823_room.html` | `seed-77823-rooms.html` |
-| `surrender-machines-three-core.js` | (support file — not the form URL) |
 
-Rules:
+1. One primary entry HTML for the form.
+2. Pair the module (`seed-77823-rooms.html` + `.mjs`).
+3. Series hub `index.html` lists entry + docs (usually not the form URL).
 
-1. **One primary entry HTML** — the full experience jurors should see.
-2. **Pair the module** — `seed-77823-rooms.html` loads `seed-77823-rooms.mjs`.
-3. **Series hub** — `index.html` in the same folder lists entry + PDFs + README (not usually the form URL).
-4. **Build artifacts** (`.glb`, etc.) stay gitignored unless the piece requires them on the live site.
-
-**Lumen Prize 2026 submit URL:**
-
+**Lumen Prize 2026 submit URL (example):**  
 `https://mark-walhimer.com/sketches/2026-lumen-prize-machine-aesthetic/seed-77823-rooms.html`
 
----
-
-## Required files in a submission folder
-
-```
-sketches/2026-lumen-prize-machine-aesthetic/
-├── README.md              ← metadata + submit URL (required)
-├── index.html             ← series hub for catalog visitors
-├── seed-77823-rooms.html  ← primary entry (form URL)
-├── seed-77823-rooms.mjs     ← walkthrough logic
-└── …                      ← assets, essay PDF, core modules
-```
-
-### README template (copy for each submission)
+### README template (frozen submission)
 
 ```markdown
 # {Opportunity} · {Project title}
@@ -118,70 +104,26 @@ https://mark-walhimer.com/sketches/{folder}/{entry}.html
 ## GitHub
 
 Path: `sketches/{folder}/`
-
-## Files
-
-| File | Role |
-|------|------|
-| `{entry}.html` | Entry page — paste this URL in the form |
-| `index.html` | Series hub |
-| … | … |
-
-## Run locally
-
-cd sketches/{folder}
-python3 -m http.server 8765
-# open http://localhost:8765/{entry}.html
 ```
 
----
-
-## Catalog registration checklist
-
-After creating or renaming a submission folder:
-
-1. **Catalog mirror** — `catalog/{path}/README.md` (+ `{artwork}.md` when named); mirror [Wrong Eclipse](../catalog/the-wrong-biennale/the-wrong-eclipse-august-2026/) pattern.
-2. **Series card** — add/update in [`sketches/index.html`](../sketches/index.html) under **Catalog series**.
-3. **`SERIES` array** — include `../catalog/{path}/README.md` link in that file (or run `python3 _scripts/bootstrap_catalog_mirrors.py`).
-4. **Reorder** — `python3 _scripts/reorder_series_by_index_mtime.py`
-5. **Refresh manifest** — `python3 _scripts/refresh_catalog.py`, commit `data/catalog.json`.
-6. **Self-contained** — `python3 _scripts/check_self_contained.py` (full repo, exit 0) before commit.
-7. **Push** — GitHub Pages rebuilds mark-walhimer.com.
-8. **Redirects** — if you renamed a folder or entry file, leave stub HTML at the old path (see [`sketches/lumen-machine-aesthetic/`](../sketches/lumen-machine-aesthetic/) → redirects to `2026-lumen-prize-machine-aesthetic/`).
-
----
-
-## Workflow: new prize or residency
+### Workflow: new prize
 
 ```
-1. Work in living workspace     sketches/loop-machine-aesthetic/
-2. Copy folder                  → sketches/2026-{prize}-{project}/
-3. Rename public entry          → seed-77823-rooms.html (+ .mjs)
-4. Write README                 → submit URL, date, opportunity name
-5. Register in catalog          → index.html card + SERIES + refresh_catalog.py
-6. Push
-7. Paste README submit URL      → application form
-8. Freeze folder                → no further edits
+1. Work in living workspace or show series
+2. Copy → sketches/2026-{prize}-{project}/
+3. Public entry + README (submit URL, date)
+4. Catalog mirror + SERIES + refresh_catalog.py
+5. Push · paste URL into form · freeze
 ```
 
-Next year: repeat from step 2 with `2027-…`; leave `2026-…` untouched.
-
----
-
-## What you may still be missing
-
-| Gap | Recommendation |
-|-----|----------------|
-| **Prix Ars Electronica 2026** | Folder ready at `sketches/2026-ars-electronica/`. Copy entry files from sources listed in that README; update submit URL before filing. |
-| **Submission date in README** | Add `Submitted: YYYY-MM-DD` when you file — helps distinguish frozen copies. |
-| **`catalog-work.html`** | When populated, mirror new series there (see [unified-catalog.md](./unified-catalog.md)); until then `sketches/index.html` is the source. |
-| **Standalone vs walkthrough URL** | Submit the **full** piece URL unless the form asks for one component only. |
-| **Old paths** | Any rename needs redirect stubs so bookmarks and old forms still resolve. |
+Next year: new `2027-…` folder; leave `2026-…` untouched.
 
 ---
 
 ## Related docs
 
-- [unified-catalog.md](./unified-catalog.md) — `data/catalog.json`, refresh script, Dublin Core
-- [archive-chronicle.md](./archive-chronicle.md) — public catalog vs manifest vs narrative archives
-- [bloom-inventory.md](./bloom-inventory.md) — Bloom series paths and redirects
+- [catalog/STUDIO-DIRECTION.md](../catalog/STUDIO-DIRECTION.md) — public series unit
+- [unified-catalog.md](./unified-catalog.md) — `data/catalog.json`
+- [archive-chronicle.md](./archive-chronicle.md) — catalog vs manifest
+- [available/catalog.md](../available/catalog.md) — launch hubs → Available
+- `.cursor/rules/publish-sketch-catalog.mdc` · `.cursor/rules/launch-pages-available.mdc`

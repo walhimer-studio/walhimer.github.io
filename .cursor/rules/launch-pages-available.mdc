@@ -1,3 +1,8 @@
+---
+description: Public /{name}/ launch hubs get an Available row the same day
+alwaysApply: true
+---
+
 # Launch pages → Available
 
 When shipping a public launch hub (`/{name}/` redirect stub + series hub under the site sketches tree):
@@ -7,5 +12,7 @@ When shipping a public launch hub (`/{name}/` redirect stub + series hub under t
 3. Short muted preview in `available/media/` when you have one
 4. **buyUrl** = marketplace listing when it exists (Objkt, Transient, Blackdove, Shopify); `null` until then is fine — grid still shows View live
 5. One Available row per launch — not one row per edition number. Per-card / per-token buy maps stay on the hub.
+
+**Canonical examples:** [Marfa 2026](https://mark-walhimer.com/marfa-2026/) · [Miami 2026](https://mark-walhimer.com/miami-2026/) — show/year series shape in `docs/submission-and-series-structure.md`.
 
 Source of truth detail: `available/catalog.md` § Launch pages → Available.

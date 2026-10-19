@@ -11,11 +11,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <title>Machine DNA — Mark Walhimer</title>
-  <meta name="description" content="Machine DNA — one kernel, one genome, many bodies. Essay on acceptance, control, and agency in real-time generative installation work by Mark Walhimer." />
+  <title>Machine DNA — Bible — Mark Walhimer</title>
+  <meta name="description" content="Machine DNA bible: splitmix32 + sfc32, seed and species structure, show/year series process, and links to SPEC-LOCK, chronicle, and artwork pipeline." />
   <link rel="canonical" href="https://mark-walhimer.com/practice/machine-dna.html" />
-  <meta property="og:title" content="Machine DNA — Mark Walhimer" />
-  <meta property="og:description" content="I use code and real-time systems as a lens for acceptance, control, and agency." />
+  <meta property="og:title" content="Machine DNA — Bible — Mark Walhimer" />
+  <meta property="og:description" content="One index for Machine DNA law: RNG, structure, shows, and source docs." />
   <meta property="og:url" content="https://mark-walhimer.com/practice/machine-dna.html" />
   <meta property="og:type" content="article" />
   <meta name="twitter:card" content="summary" />
@@ -206,6 +206,81 @@
       text-decoration: none;
     }
     .back a:hover { text-decoration: underline; }
+    .law {
+      max-width: 44rem;
+      margin: 0 0 48px;
+      padding: 28px 24px;
+      background: var(--off);
+      border: 1px solid var(--line);
+    }
+    .law h2 {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin: 0 0 18px;
+      font-weight: 400;
+    }
+    .law h3 {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      margin: 28px 0 12px;
+    }
+    .law h3:first-of-type { margin-top: 0; }
+    .law p {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink-soft);
+      margin: 0 0 14px;
+    }
+    .law p strong { color: var(--ink); font-weight: 500; }
+    .law table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0 0 8px;
+    }
+    .law th,
+    .law td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .law th {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      background: var(--pale);
+      font-weight: 400;
+    }
+    .law td { color: var(--ink-soft); }
+    .law td strong { color: var(--ink); font-weight: 500; }
+    .law a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(184, 151, 106, 0.45);
+    }
+    .law a:hover { color: var(--ink); }
+    .law code {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink);
+    }
+    .law ul {
+      margin: 0 0 8px;
+      padding: 0 0 0 1.15em;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .law li { margin: 0 0 0.35em; }
   </style>
 </head>
 <body class="shell-page">
@@ -225,10 +300,51 @@
 </nav>
 
 <main class="page">
-  <p class="kicker">Practice · Essay</p>
+  <p class="kicker">Practice · Bible</p>
   <h1>Machine DNA</h1>
-  <p class="deck">“I use code and real-time systems as a lens for acceptance, control, and agency.”</p>
-  <p class="date-line">Mark Walhimer · July 2026 · Formerly Emergent DNA</p>
+  <p class="deck">One kernel, one genome, many bodies — law index first, essay below.</p>
+  <p class="date-line">Mark Walhimer · Updated October 2026 · Formerly Emergent DNA</p>
+
+  <section class="law" aria-labelledby="law-heading">
+    <h2 id="law-heading">Law — start here</h2>
+
+    <h3>Random number generator</h3>
+    <p><strong>Going forward: splitmix32 + sfc32</strong> via <code>makeSeededRandom</code> — copy verbatim from <code>_scripts/machine_dna_rules.py</code>. Not sine <code>Rand</code> / <code>SeedRng</code>. Enforced on new or changed seeded sketches.</p>
+    <ul>
+      <li><a href="/docs/SPEC-LOCK.md">docs/SPEC-LOCK.md</a> — user non-negotiables</li>
+      <li><a href="/docs/machine-dna-chronicle.md">docs/machine-dna-chronicle.md</a> — site mirror of meaning + PRNG note</li>
+    </ul>
+
+    <h3>Structure</h3>
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>What it is</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Seed</strong></td><td>Identity of the organism — title · seed</td></tr>
+        <tr><td><strong>Species</strong></td><td>Genome contract / traits / <code>express()</code> snapshot</td></tr>
+        <tr><td><strong>Lifeline</strong></td><td>Birth → age → death; duration per piece (catalog), not one global law</td></tr>
+        <tr><td><strong>Bodies</strong></td><td>HTML · OF · Pure Data · LED · plotter · steppers · lights · archive…</td></tr>
+        <tr><td><strong>Mode</strong></td><td>Votive / witness or surrender / mirror</td></tr>
+      </tbody>
+    </table>
+    <p>Same genome, many bodies. Meaning: <a href="https://github.com/walhimer-studio/Machine-DNA/blob/main/docs/CHRONICLE.md" rel="noopener noreferrer">Machine-DNA CHRONICLE</a> · lifeline + record copy sources: <a href="https://github.com/walhimer-studio/walhimer.github.io/blob/main/.cursor/MACHINE_DNA_CANON.md" rel="noopener noreferrer">MACHINE_DNA_CANON.md</a>.</p>
+
+    <h3>Shows going forward</h3>
+    <p>Public unit = <strong>show / year series</strong>: <code>catalog/{name}/</code> ↔ <code>sketches/{name}/</code> ↔ <code>https://mark-walhimer.com/{name}/</code>.</p>
+    <ul>
+      <li><a href="/marfa-2026/">Marfa 2026</a> · <a href="/miami-2026/">Miami 2026</a></li>
+      <li>Next year = new folder (<code>marfa-2027</code>), same shape</li>
+      <li>Full checklist: <a href="/docs/submission-and-series-structure.md">submission &amp; series structure</a></li>
+    </ul>
+
+    <h3>Working checklists</h3>
+    <ul>
+      <li><a href="/practice/artwork-pipeline.html">Artwork pipeline</a> — living checklist (species, seed, bodies, publish)</li>
+      <li><a href="/catalog/STUDIO-DIRECTION.md">Studio direction</a> — catalog vocabulary</li>
+      <li><a href="/practice/index.html">Practice</a> — human argument (this page is the bible + essay)</li>
+    </ul>
+  </section>
 
   <figure class="figure">
     <a href="/installations/surrender-machines.html"><img src="/images/practice/machine-dna-surrender-machines.png" width="1024" height="701" alt="Surrender Machines — anger, ego, attachment sliders over generative 3D form" loading="lazy" /></a>
@@ -236,6 +352,7 @@
   </figure>
 
   <article class="body">
+    <p class="date-line" style="margin-top:8px">Essay</p>
     <h2>The method — <em>Conditions, then recognition</em></h2>
     <p>For nearly thirty years, my work has been in interactive museums and educational settings, designing exhibits and environments that visitors complete by moving through them — an experience made rather than an explanation given. I now turn the same methodology toward existential questions. The habit predates the code, a phenomenon set in motion and left to proceed. I learned to begin with a rough sketch, set it aside for a day, and return to it — and the judgment was always the same one. Not whether I had made the thing, but whether the thing could stand without me.</p>
     <p>Working for <a href="https://www.judypfaffstudio.com/" rel="noopener noreferrer">Judy Pfaff</a>, I came to understand a sculpture as something entered rather than viewed; in Edward Kienholz I found environments that are, before anything else, about a feeling — the room, or machine, as the carrier of an emotional state. What I build now is such a room, out of running code.</p>

@@ -375,11 +375,33 @@ Switch ──┤         └─ projector / map slice
       </ul>
     </section>
 
+    <section id="series">
+      <h2>Public series shape (archive unit)</h2>
+      <p>Long-term home for a show or year: one genome family, one short URL, one catalog folder. Examples: <a class="link" href="/marfa-2026/">Marfa 2026</a> · <a class="link" href="/miami-2026/">Miami 2026</a>. Next year is a new folder (<code>marfa-2027</code>), same shape. Detail: <a class="link" href="/docs/submission-and-series-structure.md">submission &amp; series structure</a>.</p>
+      <table class="data">
+        <thead>
+          <tr><th>Piece</th><th>Path</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Catalog</td><td><code>catalog/{name}/</code></td></tr>
+          <tr><td>Hub + code</td><td><code>sketches/{name}/</code></td></tr>
+          <tr><td>Short URL</td><td><code>https://mark-walhimer.com/{name}/</code></td></tr>
+          <tr><td>Root stub</td><td><code>{name}/index.html</code> → sketches (redirect only)</td></tr>
+        </tbody>
+      </table>
+      <ul class="checklist">
+        <li><input type="checkbox" id="ser1" /><label for="ser1"><strong>Series named</strong> — <code>{show}-{year}</code> kebab-case</label></li>
+        <li><input type="checkbox" id="ser2" /><label for="ser2"><strong>Catalog + sketches mirror</strong> — same path under both trees</label></li>
+        <li><input type="checkbox" id="ser3" /><label for="ser3"><strong>Short URL stub</strong> — root redirect + <code>STAGED_ROOT_STUB_ALLOW</code> entry</label></li>
+        <li><input type="checkbox" id="ser4" /><label for="ser4"><strong>SERIES + Available</strong> — registered; Available row the day the hub ships</label></li>
+      </ul>
+    </section>
+
     <section id="publish">
       <h2>Publish on mark-walhimer.com</h2>
       <ul class="checklist">
         <li><input type="checkbox" id="pub1" /><label for="pub1"><strong>Catalog refreshed</strong> — <code>python3 _scripts/refresh_catalog.py</code></label></li>
-        <li><input type="checkbox" id="pub2" /><label for="pub2"><strong>Public URL resolves</strong> — sketch or <code>installations/</code> canonical path</label></li>
+        <li><input type="checkbox" id="pub2" /><label for="pub2"><strong>Public URL resolves</strong> — series short URL <code>/{name}/</code>, sketch, or <code>installations/</code> canonical path</label></li>
         <li><input type="checkbox" id="pub3" /><label for="pub3"><strong>Self-contained check</strong> — <code>python3 _scripts/check_self_contained.py</code> exits 0 on the full repo before commit or push (see README § Self-contained rule; CI and <code>_scripts/safe_publish.sh</code> run the same gate)</label></li>
         <li><input type="checkbox" id="pub4" /><label for="pub4"><strong>Wi‑Fi off test</strong> — page loads and runs with network disabled</label></li>
         <li><input type="checkbox" id="pub5" /><label for="pub5"><strong>Lifespan verified</strong> — work does not loop forever as a perfect monument</label></li>
@@ -395,6 +417,7 @@ Switch ──┤         └─ projector / map slice
         <li><strong>Relation mode</strong> — votive witness, surrender mirror, or both in sequence?</li>
         <li><strong>Bodies</strong> — browser only · LED · room mesh · which nodes?</li>
         <li><strong>Interactivity</strong> — only if mode 4 says surrender; else omit Supabase / phone HUD</li>
+        <li><strong>Series</strong> — which show/year hub owns this piece (<code>marfa-2026</code>, <code>miami-2026</code>, …)?</li>
       </ol>
     </section>
 
