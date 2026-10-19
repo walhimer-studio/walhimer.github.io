@@ -9,7 +9,25 @@
 | Catalog path | `catalog/miami-2026/` |
 | WIP sketches | `sketches/miami-2026/` |
 
-Invisible Layer expanded for Miami 2026 — same organism, additional channels: video, sensors, monitors, steppers / kinetic sculpture, soundscape. Hub stub; works land here as they are built.
+Machine DNA for Miami 2026: a seed-driven lifeline with a genome / species that lives as one organism across many bodies. Hub stub; works and install surfaces land here as they are built.
+
+## Bodies / channels
+
+| Channel | Role |
+|---------|------|
+| HTML webpage | Live piece in the browser |
+| Thumbnails | Site previews (mark-walhimer.com) |
+| Transient Labs / sales | Edition and checkout |
+| Visuals | Generative image / animation |
+| Soundscape | Audio body (Pd / OF) |
+| Real-time video | Timeline animation / playback |
+| Monitors / projection | Room display surfaces |
+| LED panels | Pixel surface (dumb receiver) |
+| Steppers / kinetic | Motor sculpture |
+| CNC pen plotters | Physical drawing |
+| Sensors | Input into the organism |
+| Lighting (DMX / Art-Net) | Room light control |
+| Archive record | Master video / stills |
 
 ## Works
 
