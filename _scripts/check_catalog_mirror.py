@@ -159,6 +159,7 @@ def check_series_paths(series: list[dict], catalog_names: set[str]) -> list[str]
 # Short-URL redirect stubs allowed at repo root (one file each, redirect only).
 STAGED_ROOT_STUB_ALLOW = {
     "marfa-2026/index.html",
+    "miami-2026/index.html",
 }
 
 
