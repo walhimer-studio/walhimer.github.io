@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "updated": "2026-11-06",
+  "updated": "2026-11-07",
   "profile": "Walhimer Studio unified catalog. Canonical rows are works[]. Sketch series order comes from sketches/index.html (fallback; catalog-work SERIES empty) on refresh; installation HTML is merged from works[] and installations/*.html. Soundscape list is derived from works, not stored separately.",
   "canonical_base": "https://mark-walhimer.com",
   "works": [
@@ -10616,6 +10616,92 @@
         "repo_paths": [
           "sketches/loop-snippets/loop-machine-aesthetic/ghost_dense_77823_room.html",
           "sketches/loop-snippets/loop-machine-aesthetic/index.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Node Occupy 2026:catalog-node-occupy-2026-readme",
+      "dublin_core": {
+        "title": "../catalog/node-occupy-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Node Occupy 2026:catalog-node-occupy-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000392"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-catalog-node-occupy-2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/node-occupy-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Node Occupy 2026",
+          "file": "../catalog/node-occupy-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/node-occupy-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
+      "dublin_core": {
+        "title": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000394"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
+        "type": "HumanMadeObject",
+        "_label": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Node Occupy 2026",
+          "file": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-occupy.html"
         ],
         "external_urls": []
       }
