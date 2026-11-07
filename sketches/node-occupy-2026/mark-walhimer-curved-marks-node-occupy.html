@@ -803,7 +803,7 @@
     };
     // One recorder frame: the build at time t, so the last of the seconds×60 frames is the finished picture.
     function renderOneFrame(t) {
-      const span = RECORD_SECONDS * 1000 - 1000 / RECORD_FPS;
+      const span = (RECORD_SECONDS * RECORD_FPS - 1) * (1000 / RECORD_FPS);
       stepBuild(Math.min(1, Math.max(0, (t - recordT0) / span)));
     }
     // After a record the page keeps the last frame; the live clock is not restarted.

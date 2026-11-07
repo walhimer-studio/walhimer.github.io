@@ -42,8 +42,8 @@
           "Web Audio"
         ],
         "sketch": {
-          "series": "Installation Creator",
-          "file": "installation-creator/index.html"
+          "series": "Node Occupy 2026",
+          "file": "node-occupy-2026/index.html"
         },
         "surfaces": [
           "installation",
@@ -53,7 +53,12 @@
       "artifacts": {
         "sketch_entry": {
           "repo_paths": [
-            "sketches/installation-creator/index.html"
+            "sketches/node-occupy-2026/index.html",
+            "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-occupy.html",
+            "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-occupy.txt",
+            "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-1-20s.png",
+            "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-2-20s.png",
+            "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-4-1-20s.png"
           ],
           "external_urls": []
         },
@@ -673,6 +678,221 @@
       }
     },
     {
+      "id": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-4-1-20s",
+      "dublin_core": {
+        "title": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-4-1-20s.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-4-1-20s",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000395"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222",
+        "type": "HumanMadeObject",
+        "_label": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-4-1-20s.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Node Occupy 2026",
+          "file": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-4-1-20s.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-4-1-20s.png"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-2-20s",
+      "dublin_core": {
+        "title": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-2-20s.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-2-20s",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000396"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222",
+        "type": "HumanMadeObject",
+        "_label": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-2-20s.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Node Occupy 2026",
+          "file": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-2-20s.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-2-20s.png"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-1-20s",
+      "dublin_core": {
+        "title": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-1-20s.png",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-1-20s",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000397"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-node-occupy-2026-mark-walhimer-curved-marks-node-seed3235151222",
+        "type": "HumanMadeObject",
+        "_label": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-1-20s.png",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Node Occupy 2026",
+          "file": "node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-1-20s.png"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-seed3235151222-60fps-30s-1-1-1-20s.png"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
+      "dublin_core": {
+        "title": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000394"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
+        "type": "HumanMadeObject",
+        "_label": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Node Occupy 2026",
+          "file": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy.html"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-occupy.html"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Node Occupy 2026:catalog-node-occupy-2026-readme",
+      "dublin_core": {
+        "title": "../catalog/node-occupy-2026/README.md",
+        "creator": "Mark Walhimer",
+        "date": "",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Node Occupy 2026:catalog-node-occupy-2026-readme",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000392"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-catalog-node-occupy-2026-readme",
+        "type": "HumanMadeObject",
+        "_label": "../catalog/node-occupy-2026/README.md",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Node Occupy 2026",
+          "file": "../catalog/node-occupy-2026/README.md"
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "catalog/node-occupy-2026/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
       "id": "urn:walhimer:sketch:Installation Creator:catalog-installation-creator-readme",
       "dublin_core": {
         "title": "../catalog/installation-creator/README.md",
@@ -711,6 +931,57 @@
       "artifacts": {
         "repo_paths": [
           "catalog/installation-creator/README.md"
+        ],
+        "external_urls": []
+      }
+    },
+    {
+      "id": "urn:walhimer:sketch:Installation Creator:installation-creator-index",
+      "dublin_core": {
+        "title": "tezos-early-works/index",
+        "creator": "Mark Walhimer",
+        "date": "2026",
+        "description": "",
+        "identifier": "urn:walhimer:sketch:Tezos / Objkt — archive:index",
+        "type": "InteractiveResource",
+        "format": "text/html",
+        "language": "en",
+        "relation": "",
+        "catalog_number": "WS-000008"
+      },
+      "linked_art": {
+        "@context": "https://linked.art/ns/v1/linked-art.json",
+        "id": "https://mark-walhimer.com/#work/Tezos / Objkt — archive-index",
+        "type": "HumanMadeObject",
+        "_label": "tezos-early-works/index",
+        "classified_as": [
+          {
+            "id": "http://vocab.getty.edu/aat/300375748",
+            "type": "Type",
+            "_label": "digital art"
+          }
+        ]
+      },
+      "site": {
+        "surfaces": [
+          "sketch"
+        ],
+        "sketch": {
+          "series": "Installation Creator",
+          "file": "installation-creator/index.html"
+        },
+        "tech": [
+          "Three.js",
+          "WebGL2",
+          "Web Audio"
+        ],
+        "installation": {
+          "homepage": true
+        }
+      },
+      "artifacts": {
+        "repo_paths": [
+          "sketches/installation-creator/index.html"
         ],
         "external_urls": []
       }
@@ -10616,92 +10887,6 @@
         "repo_paths": [
           "sketches/loop-snippets/loop-machine-aesthetic/ghost_dense_77823_room.html",
           "sketches/loop-snippets/loop-machine-aesthetic/index.html"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Node Occupy 2026:catalog-node-occupy-2026-readme",
-      "dublin_core": {
-        "title": "../catalog/node-occupy-2026/README.md",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Node Occupy 2026:catalog-node-occupy-2026-readme",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000392"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-catalog-node-occupy-2026-readme",
-        "type": "HumanMadeObject",
-        "_label": "../catalog/node-occupy-2026/README.md",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Node Occupy 2026",
-          "file": "../catalog/node-occupy-2026/README.md"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "catalog/node-occupy-2026/README.md"
-        ],
-        "external_urls": []
-      }
-    },
-    {
-      "id": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
-      "dublin_core": {
-        "title": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy",
-        "creator": "Mark Walhimer",
-        "date": "",
-        "description": "",
-        "identifier": "urn:walhimer:sketch:Node Occupy 2026:node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
-        "type": "InteractiveResource",
-        "format": "text/html",
-        "language": "en",
-        "relation": "",
-        "catalog_number": "WS-000394"
-      },
-      "linked_art": {
-        "@context": "https://linked.art/ns/v1/linked-art.json",
-        "id": "https://mark-walhimer.com/#work/Node Occupy 2026-node-occupy-2026-mark-walhimer-curved-marks-node-occupy",
-        "type": "HumanMadeObject",
-        "_label": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy",
-        "classified_as": [
-          {
-            "id": "http://vocab.getty.edu/aat/300375748",
-            "type": "Type",
-            "_label": "digital art"
-          }
-        ]
-      },
-      "site": {
-        "surfaces": [
-          "sketch"
-        ],
-        "sketch": {
-          "series": "Node Occupy 2026",
-          "file": "node-occupy-2026/mark-walhimer-curved-marks-node-occupy.html"
-        }
-      },
-      "artifacts": {
-        "repo_paths": [
-          "sketches/node-occupy-2026/mark-walhimer-curved-marks-node-occupy.html"
         ],
         "external_urls": []
       }
