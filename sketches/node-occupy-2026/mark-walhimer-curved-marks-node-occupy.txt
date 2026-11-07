@@ -1,0 +1,11 @@
+
+ Curved Marks NODE, Occupy, seed 3235151222 Mark Walhimer, 2026
+
+One Machine DNA system, drawn in the browser and built mark by mark over 30 seconds. The same code drives a plotter drawing, a digital screen, smart technical object and technical landscapes. The seed sets every curve, color area and mark.
+
+Layouts: 1600×1600 (1:1) square, 2160×3840 portrait, 8640×2160 landscape (4:1).
+
+Video capture of the real-time animation, 60 fps, 30 seconds. HTML, 2D canvas.
+
+#MachineDNA #Machine_DNA
+
