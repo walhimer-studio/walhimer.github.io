@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Make areas image</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #1c1b19; }
+    canvas { display: block; margin: 0 auto; max-width: 100vw; max-height: 100vh; width: auto; height: auto; }
+    #hint {
+      position: fixed; left: 16px; bottom: 12px; margin: 0; color: #f3ede2;
+      font: 14px/1.4 Palatino, Georgia, serif; z-index: 2;
+    }
+    #hint[data-rec="1"]::after { content: ' · REC'; color: rgba(220, 50, 70, 0.9); }
+  </style>
+</head>
+<body>
+  <p id="hint"></p>
+  <canvas id="art"></canvas>
+  <script>
+    // One mark, one to ten pens. Each seed places soft irregular color areas
+    // and picks which pen fills each. Press N for a new seed.
+
+    const splitmix32 = (a) => () => {
+      a = (a + 0x9e3779b9) | 0;
+      let t = a ^ (a >>> 16);
+      t = Math.imul(t, 0x21f0aaad);
+      t ^= t >>> 15;
+      t = Math.imul(t, 0x735a2d97);
+      t ^= t >>> 15;
+      return t >>> 0;
+    };
+    const sfc32 = (a, b, c, d) => () => {
+      a |= 0; b |= 0; c |= 0; d |= 0;
+      const t = (((a + b) | 0) + d) | 0;
+      d = (d + 1) | 0;
+      a = b ^ (b >>> 9);
+      b = (c + (c << 3)) | 0;
+      c = (c << 21) | (c >>> 11);
+      c = (c + t) | 0;
+      return (t >>> 0) / 4294967296;
+    };
+    const makeSeededRandom = (seed) => {
+      const mix = splitmix32(seed >>> 0);
+      const rand = sfc32(mix(), mix(), mix(), mix());
+      for (let i = 0; i < 15; i++) rand();
+      return rand;
+    };
+
+    const RED = [214, 8, 12];
+    const YELLOW = [247, 202, 0];
+    const PINK = [230, 48, 140];
+    const BLUE = [24, 64, 190];
+    const LIGHT = [100, 150, 205];
+    const PENS = [RED, YELLOW, PINK, BLUE, LIGHT];
+
+    // Five more pens, used when ?colors= is 6 to 10.
+    const ORANGE = [240, 120, 20];
+    const GREEN = [30, 150, 70];
+    const VIOLET = [110, 50, 160];
+    const BLACK = [20, 20, 20];
+    const BROWN = [120, 70, 40];
+    const EXTRA_PENS = [ORANGE, GREEN, VIOLET, BLACK, BROWN];
+
+    // Sheet size. No ?format= is the 864×1152 sheet; the three 4K formats are
+    // square 2160×2160, portrait 2160×3840, landscape 3840×2160.
+    const BASE_W = 864;
+    const BASE_H = 1152;
+    const FORMATS = {
+      square: [1600, 1600],
+      portrait: [2160, 3840],
+      landscape: [8640, 2160],
+    };
+    let format = "";
+    try {
+      const raw = new URLSearchParams(location.search).get("format");
+      if (raw && FORMATS[raw.toLowerCase()]) format = raw.toLowerCase();
+    } catch (_) {}
+    const [SHEET_W, SHEET_H] = format ? FORMATS[format] : [BASE_W, BASE_H];
+    // Marks, spacing, and areas grow together with the short side of the sheet.
+    const SCALE = Math.min(SHEET_W, SHEET_H) / Math.min(BASE_W, BASE_H);
+
+    const STEP = 3.5 * SCALE;
+    const MARGIN = 2 * SCALE;
+    const DROP = 0.44; // share of marks dropped so white paper shows through
+
+    // How far the area edges wander.
+    const WARP = 0.4;
+    const EDGE = 0.12;
+
+    const canvas = document.getElementById("art");
+    const ctx = canvas.getContext("2d");
+    const hint = document.getElementById("hint");
+
+    let seed = 42;
+    try {
+      const raw = new URLSearchParams(location.search).get("seed");
+      if (raw != null && Number.isFinite(Number(raw))) seed = Number(raw) >>> 0;
+    } catch (_) {}
+
+    // ?colors=1..10 (default 5) is how many pens are in play.
+    // ?percent=1..1000 (default 100) is the share of the full set of marks that is drawn.
+    // Above 100 there are that many times as many marks (200 is double, 1000 is ten times).
+    // ?depth=1 (default off) sets each mark's curve length from a hidden depth map:
+    // longer curves read as closer, shorter curves as farther away.
+    // ?seconds=5..120 (default off) builds the picture over that many seconds, every
+    // color zone growing at once, and stops on the finished picture. Without it the
+    // page is a still.
+    let colors = 5;
+    let percent = 100;
+    let depth = false;
+    let seconds = 0;
+    // ?peaks=1..6 (default off) draws that many seeded topographic mountains: each a
+    // circle in the middle, with parts of concentric arcs around it that fade with
+    // distance. At most 50 marks per page. The fade replaces ?depth, so depth is
+    // ignored while peaks is on.
+    let peaks = 0;
+    try {
+      const q = new URLSearchParams(location.search);
+      depth = q.get("depth") === "1";
+      const pk = q.get("peaks");
+      if (pk && Number.isFinite(Number(pk))) peaks = Math.max(1, Math.min(6, Math.round(Number(pk))));
+      const s = q.get("seconds");
+      if (s && Number.isFinite(Number(s))) seconds = Math.max(5, Math.min(120, Number(s)));
+      const c = q.get("colors");
+      if (c && Number.isFinite(Number(c))) colors = Math.max(1, Math.min(10, Math.round(Number(c))));
+      const p = q.get("percent");
+      if (p && Number.isFinite(Number(p))) percent = Math.max(1, Math.min(1000, Number(p)));
+    } catch (_) {}
+    if (peaks) depth = false;
+    // Drop rate for the chosen percent. 100 is exactly DROP.
+    const MARK_DROP = percent === 100 ? DROP : percent > 100 ? 0 : 1 - (1 - DROP) * percent / 100;
+
+    // The pens in play for a seed. 1 to 5: the seed picks that many of the five
+    // pens. 6 to 10: all five pens plus the seed's pick of the five extra pens.
+    function penPalette(n) {
+      if (colors === 1) return [BLUE]; // one pen is always the royal blue
+      const rand = makeSeededRandom((n ^ 0x2545f491) >>> 0);
+      const pool = colors <= 5 ? PENS : EXTRA_PENS;
+      const want = colors <= 5 ? colors : colors - 5;
+      const idx = pool.map((_, i) => i);
+      for (let i = idx.length - 1; i > 0; i--) {
+        const j = (rand() * (i + 1)) | 0;
+        const tmp = idx[i];
+        idx[i] = idx[j];
+        idx[j] = tmp;
+      }
+      const picked = idx.slice(0, want).sort((a, b) => a - b).map((i) => pool[i]);
+      return colors <= 5 ? picked : PENS.concat(picked);
+    }
+
+    // Every mark's curve radius is this many times the radii below.
+    const LONG = 20;
+
+    // Curve radius for the nearest and farthest marks when ?depth=1.
+    const NEAR_RADIUS = 18;
+    const FAR_RADIUS = 3;
+    // Opacity of the farthest marks when ?depth=1. The nearest marks are opaque.
+    const FAR_ALPHA = 0.35;
+
+    // The seed's depth map: smooth hills and valleys, returns 0 (far) to 1 (near).
+    function depthForSeed(n) {
+      const rand = makeSeededRandom((n ^ 0x68e31da4) >>> 0);
+      const broad = noiseField(rand, 3);
+      const fine = noiseField(rand, 8);
+      return (u, v) => {
+        const h = (0.65 * broad(u, v) + 0.35 * fine(u, v) - 0.25) / 0.5;
+        return Math.max(0, Math.min(1, h));
+      };
+    }
+
+    // Work out one mark. `near` is 0..1 from the depth map, or undefined when depth is off.
+    function planMark(x, y, color, rand, near) {
+      // One short C-arc: pen down → curve → lift.
+      // Direction of the curve varies per mark (up / down / left / right),
+      // and sweep can run either way so the bend doesn't all face the same side.
+      const width = (3 + (rand() * 2 | 0)) * SCALE;
+      const spread = rand();
+      const radius = (near === undefined
+        ? 5.0 + spread * 8.0
+        : FAR_RADIUS + near * (NEAR_RADIUS - FAR_RADIUS)) * SCALE * LONG;
+      let sweep = ((50 + rand() * 95) * Math.PI) / 180;
+      if (rand() < 0.5) sweep = -sweep;
+      const start = rand() * Math.PI * 2;
+      const cx = x + (rand() - 0.5) * 1.5 * SCALE;
+      const cy = y + (rand() - 0.5) * 1.5 * SCALE;
+      return {
+        x, y, color, near, width, radius, sweep, start, cx, cy,
+        alpha: near === undefined ? 1 : FAR_ALPHA + near * (1 - FAR_ALPHA),
+      };
+    }
+
+    const MARK_STEPS = 60;
+
+    // The point a fraction u (0..1) of the way along a mark's curve.
+    function markPoint(m, u) {
+      const a = m.start + m.sweep * u;
+      if (m.ry !== undefined) {
+        // ?peaks= marks: a piece of an oblong ring (ellipse) instead of a circle.
+        const ex = Math.cos(a) * m.rx;
+        const ey = Math.sin(a) * m.ry;
+        return [
+          m.cx + ex * Math.cos(m.tilt) - ey * Math.sin(m.tilt),
+          m.cy + ex * Math.sin(m.tilt) + ey * Math.cos(m.tilt),
+        ];
+      }
+      return [m.cx + Math.cos(a) * m.radius, m.cy + Math.sin(a) * m.radius];
+    }
+
+    function drawMark(m) {
+      const { color, width } = m;
+      ctx.strokeStyle = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+      ctx.lineWidth = width;
+      ctx.lineCap = "round";
+      ctx.globalAlpha = m.alpha;
+      ctx.beginPath();
+      for (let i = 0; i <= MARK_STEPS; i++) {
+        const [px, py] = markPoint(m, i / MARK_STEPS);
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    // Etch-a-sketch growth for ?seconds=: draw a mark's curve from where it got to
+    // last frame up to fraction u. The ends get round caps as half-discs, so the
+    // finished mark matches the still without doubling the color where pieces meet.
+    function growMark(m, u) {
+      const from = m.u || 0;
+      if (u <= from) return;
+      const { color, width } = m;
+      const css = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+      ctx.strokeStyle = css;
+      ctx.fillStyle = css;
+      ctx.lineWidth = width;
+      ctx.lineCap = "butt";
+      ctx.globalAlpha = m.alpha;
+      const cap = (p, q) => {
+        // Half-disc on the p side, away from q.
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], width / 2, Math.atan2(p[1] - q[1], p[0] - q[0]) - Math.PI / 2, Math.atan2(p[1] - q[1], p[0] - q[0]) + Math.PI / 2);
+        ctx.fill();
+      };
+      if (from === 0) cap(markPoint(m, 0), markPoint(m, 1 / MARK_STEPS));
+      const p0 = markPoint(m, from);
+      ctx.beginPath();
+      ctx.moveTo(p0[0], p0[1]);
+      for (let i = Math.floor(from * MARK_STEPS) + 1; i / MARK_STEPS < u; i++) {
+        const p = markPoint(m, i / MARK_STEPS);
+        ctx.lineTo(p[0], p[1]);
+      }
+      const p1 = markPoint(m, u);
+      ctx.lineTo(p1[0], p1[1]);
+      ctx.stroke();
+      if (u >= 1) cap(markPoint(m, 1), markPoint(m, 1 - 1 / MARK_STEPS));
+      m.u = u;
+    }
+
+    // Smooth value noise on an n×n grid; returns f(u, v) in 0..1.
+    function noiseField(rand, n) {
+      const g = [];
+      for (let i = 0; i < (n + 1) * (n + 1); i++) g.push(rand());
+      return (u, v) => {
+        const x = Math.max(0, Math.min(1, u)) * n;
+        const y = Math.max(0, Math.min(1, v)) * n;
+        const ix = Math.min(n - 1, x | 0);
+        const iy = Math.min(n - 1, y | 0);
+        let fx = x - ix;
+        let fy = y - iy;
+        fx = fx * fx * (3 - 2 * fx);
+        fy = fy * fy * (3 - 2 * fy);
+        const a = g[iy * (n + 1) + ix];
+        const b = g[iy * (n + 1) + ix + 1];
+        const c = g[(iy + 1) * (n + 1) + ix];
+        const d = g[(iy + 1) * (n + 1) + ix + 1];
+        return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
+      };
+    }
+
+    // The seed's color areas: where they sit, how big, which pen fills each.
+    function areasForSeed(n) {
+      const rand = makeSeededRandom((n ^ 0x5bd1e995) >>> 0);
+      const count = 5 + ((rand() * 5) | 0);
+      const palette = penPalette(n);
+      const areas = [];
+      for (let i = 0; i < count; i++) {
+        areas.push({
+          x: rand(),
+          y: rand(),
+          r: 0.16 + rand() * 0.3,
+          pen: palette[(rand() * palette.length) | 0],
+        });
+      }
+      return {
+        areas,
+        weights: new Array(count),
+        warpX: noiseField(rand, 4),
+        warpY: noiseField(rand, 4),
+        edgeX: noiseField(rand, 11),
+        edgeY: noiseField(rand, 11),
+        pick: rand,
+      };
+    }
+
+    // Pen for a mark at (x, y): areas blend softly, edges wander.
+    function areaPen(field, x, y) {
+      const u = x / SHEET_W;
+      const v = y / SHEET_H;
+      const k = Math.min(SHEET_W, SHEET_H);
+      const wx = x + ((field.warpX(u, v) - 0.5) * WARP + (field.edgeX(u, v) - 0.5) * EDGE) * k;
+      const wy = y + ((field.warpY(u, v) - 0.5) * WARP + (field.edgeY(u, v) - 0.5) * EDGE) * k;
+      const { areas, weights } = field;
+      let total = 0;
+      for (let i = 0; i < areas.length; i++) {
+        const a = areas[i];
+        const d = Math.hypot(wx - a.x * SHEET_W, wy - a.y * SHEET_H) / (a.r * k);
+        const d2 = d * d;
+        weights[i] = 1 / (1 + d2 * d2 * d2);
+        total += weights[i];
+      }
+      let t = field.pick() * total;
+      for (let i = 0; i < areas.length; i++) {
+        t -= weights[i];
+        if (t <= 0) return areas[i].pen;
+      }
+      return areas[areas.length - 1].pen;
+    }
+
+    let frameId = 0;
+
+    // Build over time: every color zone grows at once. Each mark is drawn along its
+    // curve like an etch a sketch, taking BUILD_SPAN of the build to draw; marks
+    // start in the same order as before and all finish by the end.
+    const BUILD_SPAN = 0.04;
+    let build = null;
+
+    // Draw the build up to `share` (0..1 of the whole build). Returns true when done.
+    function stepBuild(share) {
+      const { schedule } = build;
+      while (build.started < schedule.length && schedule[build.started].when * (1 - BUILD_SPAN) <= share) build.started++;
+      for (let i = build.finished; i < build.started; i++) {
+        const m = schedule[i];
+        growMark(m, Math.min(1, (share - m.when * (1 - BUILD_SPAN)) / BUILD_SPAN));
+      }
+      while (build.finished < build.started && schedule[build.finished].u >= 1) build.finished++;
+      return build.finished >= schedule.length;
+    }
+
+    // `manual` is the recorder: set the build up at its start and let the recorder
+    // step it frame by frame over RECORD_SECONDS, with no live clock running.
+    function paint(manual) {
+      canvas.width = SHEET_W;
+      canvas.height = SHEET_H;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, SHEET_W, SHEET_H);
+      hintBase = "One mark · " + colors + (colors === 1 ? " color · " : " colors · ") + percent + "% · " + (depth ? "depth · " : "") + (peaks ? peaks + (peaks === 1 ? " peak · " : " peaks · ") : "") +
+        (seconds ? seconds + "s build · " : "") +
+        (format || "sheet") + " " + SHEET_W + "×" + SHEET_H + " · seed " + (seed >>> 0) + " · N new seed · S save PNG · R record";
+      updateSeedHud();
+      document.title = "Make areas · " + (seed >>> 0);
+      cancelAnimationFrame(frameId);
+      const marks = [...sheetMarks()];
+      const schedule = buildOrder(marks);
+      if (!seconds && !manual) {
+        for (const m of marks) drawMark(m);
+        return;
+      }
+      build = { schedule, started: 0, finished: 0 };
+      if (manual) return;
+      const startedAt = performance.now();
+      const tick = () => {
+        if (!liveLoop) return;
+        const done = stepBuild(Math.min(1, (performance.now() - startedAt) / (seconds * 1000)));
+        if (!done) frameId = requestAnimationFrame(tick);
+      };
+      frameId = requestAnimationFrame(tick);
+    }
+
+    // The sheet's marks, one at a time, in the order the still draws them.
+    function* sheetMarks() {
+      if (peaks) {
+        yield* peakMarks();
+        return;
+      }
+      const rand = makeSeededRandom(seed);
+      const field = areasForSeed(seed);
+      const depthAt = depth ? depthForSeed(seed) : null;
+      for (let y = MARGIN; y < SHEET_H - MARGIN; y += STEP) {
+        for (let x = MARGIN; x < SHEET_W - MARGIN; x += STEP) {
+          if (percent > 100) {
+            // Above 100%: percent/100 times as many marks as the 100% picture, so each
+            // cell holds a whole number of marks plus a seeded chance of one more.
+            const each = (1 - DROP) * percent / 100;
+            const count = Math.floor(each) + (rand() < each - Math.floor(each) ? 1 : 0);
+            for (let j = 0; j < count; j++) {
+              const jx = x + (rand() - 0.5) * STEP;
+              const jy = y + (rand() - 0.5) * STEP;
+              const color = areaPen(field, jx, jy);
+              yield planMark(jx, jy, color, rand, depthAt ? depthAt(jx / SHEET_W, jy / SHEET_H) : undefined);
+            }
+            continue;
+          }
+          const jx = x + (rand() - 0.5) * STEP;
+          const jy = y + (rand() - 0.5) * STEP;
+          const color = areaPen(field, jx, jy);
+          if (rand() >= MARK_DROP) {
+            yield planMark(jx, jy, color, rand, depthAt ? depthAt(jx / SHEET_W, jy / SHEET_H) : undefined);
+          }
+        }
+      }
+    }
+
+    // ?peaks=N marks. The seed sets where each mountain sits, how big it is, how oblong
+    // it is, and which way it leans. Each mark is the same kind of short arc as before,
+    // but its curve is a piece of an oblong ring (ellipse) around the mountain's
+    // center, so a mountain reads as an oblong bullseye made of parts of curves, never
+    // a full ring. Rings run from a small one at the center out to the mountain's edge,
+    // and marks fade with distance. 50 marks per page at most.
+    const MAX_PEAK_MARKS = 50;
+    function* peakMarks() {
+      const rand = makeSeededRandom((seed ^ 0x7a3c91d5) >>> 0);
+      const field = areasForSeed(seed);
+      const k = Math.min(SHEET_W, SHEET_H);
+      // Mountain centers: best of a few seeded tries, so mountains spread apart.
+      const centers = [];
+      for (let p = 0; p < peaks; p++) {
+        let best = null;
+        let bestGap = -1;
+        for (let t = 0; t < 8; t++) {
+          const c = { x: (0.2 + rand() * 0.6) * SHEET_W, y: (0.2 + rand() * 0.6) * SHEET_H };
+          let gap = Infinity;
+          for (const o of centers) gap = Math.min(gap, Math.hypot(c.x - o.x, c.y - o.y));
+          if (gap > bestGap) {
+            best = c;
+            bestGap = gap;
+          }
+        }
+        best.reach = (0.12 + rand() * 0.18) * k;
+        best.oblong = 1.4 + rand() * 1.0; // long side over short side
+        best.tilt = rand() * Math.PI;
+        centers.push(best);
+      }
+      const perPeak = Math.max(1, Math.round(Math.floor(MAX_PEAK_MARKS / peaks) * percent / 100));
+      const rings = Math.max(2, Math.round(perPeak / 4));
+      for (const c of centers) {
+        // Each ring gets its own seeded drift, tilt, oblong ratio, and spacing, so the
+        // rings don't line up as a bullseye.
+        const ringSet = [];
+        for (let r = 0; r < rings; r++) {
+          ringSet.push({
+            t: Math.max(0, Math.min(1, (r + (rand() - 0.5) * 0.8) / (rings - 1))),
+            x: c.x + (rand() - 0.5) * 0.35 * c.reach,
+            y: c.y + (rand() - 0.5) * 0.35 * c.reach,
+            tilt: c.tilt + (rand() - 0.5) * 0.8,
+            oblong: c.oblong * (0.75 + rand() * 0.5),
+          });
+        }
+        for (let i = 0; i < perPeak; i++) {
+          const rg = ringSet[i % rings];
+          const t = rg.t;
+          const radius = c.reach * (0.08 + 0.92 * t);
+          const width = (3 + (rand() * 2 | 0)) * SCALE;
+          let sweep = ((50 + rand() * 95) * Math.PI) / 180;
+          if (rand() < 0.5) sweep = -sweep;
+          const rx = radius * Math.sqrt(rg.oblong);
+          const ry = radius / Math.sqrt(rg.oblong);
+          const at = (a) => {
+            const ex = Math.cos(a) * rx;
+            const ey = Math.sin(a) * ry;
+            return [rg.x + ex * Math.cos(rg.tilt) - ey * Math.sin(rg.tilt), rg.y + ex * Math.sin(rg.tilt) + ey * Math.cos(rg.tilt)];
+          };
+          let angle = rand() * Math.PI * 2;
+          let [x, y] = at(angle);
+          for (let tries = 0; tries < 12 && (x < MARGIN || y < MARGIN || x > SHEET_W - MARGIN || y > SHEET_H - MARGIN); tries++) {
+            angle = rand() * Math.PI * 2;
+            [x, y] = at(angle);
+          }
+          yield {
+            x, y, color: areaPen(field, x, y), near: undefined, width, radius, sweep,
+            start: angle - sweep / 2, cx: rg.x, cy: rg.y, rx, ry, tilt: rg.tilt,
+            alpha: 1 - (1 - FAR_ALPHA) * t,
+          };
+        }
+      }
+    }
+
+    // How far a zone's growing edge wanders from a circle, and how wide the round
+    // center is. Both are shares of the short side of the sheet.
+    const WANDER = 0.6;
+    const ROUND_CENTER = 0.12;
+
+    // Curve radius at the center of a zone and at its outer edge, when ?depth is off.
+    const INNER_RADIUS = 3;
+    const OUTER_RADIUS = 18;
+
+    // The order marks appear in. Each pen color is a zone. Inside a zone the marks
+    // grow outward from its closest point: nearest (longest) first with ?depth=1,
+    // otherwise from the zone's center, with the edge bent into a wandering contour
+    // (round at the center). Every zone moves at the same pace, so all zones finish
+    // together. With depth off, a mark's curve radius also grows with its place in
+    // that outward order: small at the center, large at the edge. `marks` keeps the
+    // still's draw order; the returned list is the order they appear in a build.
+    function buildOrder(marks) {
+      const zones = new Map();
+      marks.forEach((m, i) => {
+        m.index = i;
+        if (!zones.has(m.color)) zones.set(m.color, []);
+        zones.get(m.color).push(m);
+      });
+      const order = [];
+      const k = Math.min(SHEET_W, SHEET_H);
+      let zoneNo = 0;
+      for (const zone of zones.values()) {
+        const midX = zone.reduce((s, m) => s + m.x, 0) / zone.length;
+        const midY = zone.reduce((s, m) => s + m.y, 0) / zone.length;
+        const bend = noiseField(makeSeededRandom(((seed ^ 0x3c6ef372) + zoneNo++ * 0x9e3779b1) >>> 0), 6);
+        for (const m of zone) {
+          const dist = Math.hypot(m.x - midX, m.y - midY);
+          const wander = WANDER * k * Math.min(1, dist / (ROUND_CENTER * k)) * (bend(m.x / SHEET_W, m.y / SHEET_H) - 0.5);
+          m.key = depth ? -m.near : dist + wander;
+        }
+        zone.sort((a, b) => a.key - b.key || a.index - b.index);
+        zone.forEach((m, rank) => {
+          m.when = (rank + 0.5) / zone.length;
+          if (!depth && !peaks) m.radius = (INNER_RADIUS + m.when * (OUTER_RADIUS - INNER_RADIUS)) * SCALE * LONG;
+          order.push(m);
+        });
+      }
+      return order.sort((a, b) => a.when - b.when || a.index - b.index);
+    }
+
+    function savePng() {
+      canvas.toBlob((blob) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "curved-marks-2-" + (format || "sheet") + "-" + SHEET_W + "x" + SHEET_H +
+          "-colors-" + colors + "-percent-" + percent + (depth ? "-depth" : "") + (peaks ? "-peaks-" + peaks : "") + "-seed-" + (seed >>> 0) + ".png";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }, "image/png");
+    }
+
+    // ---- Record (copied from sketches/invisible-layer/invisible-layer-august-29-2026.html) ----
+    // Save-first · frame-step 60 fps · ?seconds=60 (default, 5–120) · R starts · R aborts.
+    // Deliverable is step 2: ffmpeg setpts=N/(60*TB) → HEVC MP4. WebM alone is not done.
+    const RECORD_FPS = 60;
+
+    const parseSecondsFromUrl = () => {
+      try {
+        const n = parseInt(new URLSearchParams(location.search).get('seconds'), 10);
+        if (Number.isFinite(n) && n >= 5 && n <= 120) return n;
+      } catch (_) {}
+      return 60;
+    };
+    const RECORD_SECONDS = parseSecondsFromUrl();
+
+    // ?format=square|portrait|landscape is parsed above (FORMATS: 2160² / 2160×3840 /
+    // 3840×2160); the recorder reads it through these names.
+    const FORMAT = format || null;
+    const CANVAS_W = FORMAT ? SHEET_W : null;
+    const CANVAS_H = FORMAT ? SHEET_H : null;
+    const displaySize = () => ({ w: SHEET_W, h: SHEET_H });
+
+    let hintBase = "";
+    const updateSeedHud = (extra) => {
+      hint.textContent = extra ? hintBase + " · " + extra : hintBase;
+    };
+
+    const CanvasRecorder = (getCanvas, getAudioStream) => {
+      let active = false;
+      let abort = false;
+      let frameIndex = 0;
+      let totalFrames = 0;
+      let compositeCanvas = null;
+      let compositeCtx = null;
+      let videoTrack = null;
+      let mediaStream = null;
+      let recW = 0;
+      let recH = 0;
+
+      const pickMime = () => {
+        const types = [
+          'video/webm;codecs=vp9,opus',
+          'video/webm;codecs=vp8,opus',
+          'video/webm;codecs=vp9',
+          'video/webm;codecs=vp8',
+          'video/webm',
+          'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
+          'video/mp4;codecs=avc1,mp4a.40.2',
+          'video/mp4',
+        ];
+        return types.find((t) =>
+          typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(t)
+        ) || '';
+      };
+
+      const recExt = (mt) => (mt.startsWith('video/mp4') ? 'mp4' : 'webm');
+
+      const setRecHint = (on, sticky) => {
+        hint.dataset.rec = on ? '1' : '';
+        if (sticky != null) updateSeedHud(sticky);
+      };
+
+      const ensureComposite = () => {
+        const src = getCanvas();
+        const d = displaySize();
+        const w = FORMAT ? CANVAS_W : (src?.width || d.w);
+        const h = FORMAT ? CANVAS_H : (src?.height || d.h);
+        if (!compositeCanvas) {
+          compositeCanvas = document.createElement('canvas');
+          compositeCanvas.setAttribute('aria-hidden', 'true');
+          compositeCanvas.style.cssText =
+            'position:fixed;left:0;top:0;opacity:0;pointer-events:none;z-index:-1';
+          document.body.appendChild(compositeCanvas);
+        }
+        if (compositeCanvas.width !== w || compositeCanvas.height !== h) {
+          compositeCanvas.width = w;
+          compositeCanvas.height = h;
+          compositeCtx = compositeCanvas.getContext('2d');
+        } else if (!compositeCtx) {
+          compositeCtx = compositeCanvas.getContext('2d');
+        }
+        recW = w;
+        recH = h;
+      };
+
+      const notifyFrame = () => {
+        if (!active || !compositeCtx || !compositeCanvas) return;
+        const src = getCanvas();
+        if (!src) return;
+        compositeCtx.fillStyle = '#ffffff';
+        compositeCtx.fillRect(0, 0, recW, recH);
+        compositeCtx.drawImage(src, 0, 0, recW, recH);
+        if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+      };
+
+      const start = async () => {
+        if (active) return false;
+        const canvas = getCanvas();
+        if (!canvas) return false;
+
+        const mimeType = pickMime();
+        if (!mimeType) {
+          setRecHint(false, 'MediaRecorder not supported — use Chrome');
+          return false;
+        }
+
+        const ext = recExt(mimeType);
+        const fmt = FORMAT || 'sheet';
+        let filename = `curved-marks-3-${fmt}-seed${seed >>> 0}-60fps-${RECORD_SECONDS}s.${ext}`;
+
+        let saveHandle = null;
+        if (typeof window.showSaveFilePicker === 'function') {
+          try {
+            saveHandle = await window.showSaveFilePicker({
+              suggestedName: filename,
+              types: [{
+                description: ext === 'mp4' ? 'MP4 video' : 'WebM video',
+                accept: ext === 'mp4'
+                  ? { 'video/mp4': ['.mp4'] }
+                  : { 'video/webm': ['.webm'] },
+              }],
+            });
+          } catch (e) {
+            if (e && e.name === 'AbortError') {
+              setRecHint(false, 'Save dialog cancelled — no file');
+              return false;
+            }
+            throw e;
+          }
+        }
+        if (!saveHandle) {
+          setRecHint(false, 'Chrome Save dialog required — use Chrome');
+          return false;
+        }
+        filename = saveHandle.name || filename;
+
+        abort = false;
+        active = true;
+        liveLoop = false;
+        totalFrames = RECORD_SECONDS * RECORD_FPS;
+        frameIndex = 0;
+        setRecHint(true, `recording 0/${totalFrames} → ${filename}`);
+
+        // back to the start of the build, keep the seed you agreed on
+        const t0 = performance.now();
+        rebirth(t0, seed >>> 0);
+        ensureComposite();
+        renderOneFrame(t0);
+        notifyFrame();
+
+        let writable = null;
+        let recorder = null;
+        let writeChain = Promise.resolve();
+        let payloadBytes = 0;
+        let recErr = null;
+
+        try {
+          writable = await saveHandle.createWritable({ keepExistingData: false });
+          const videoOnly = compositeCanvas.captureStream(0);
+          const audioStream = await getAudioStream();
+          mediaStream = new MediaStream([
+            ...videoOnly.getVideoTracks(),
+            ...audioStream.getAudioTracks(),
+          ]);
+          videoTrack = mediaStream.getVideoTracks()[0] || null;
+          recorder = new MediaRecorder(mediaStream, {
+            mimeType,
+            videoBitsPerSecond: 40_000_000,
+          });
+          recorder.ondataavailable = (e) => {
+            if (!e.data || !e.data.size) return;
+            payloadBytes += e.data.size;
+            const blob = e.data;
+            writeChain = writeChain.then(() => writable.write({ type: 'write', data: blob }));
+          };
+          recorder.onerror = (e) => {
+            recErr = e.error || new Error('MediaRecorder error');
+          };
+
+          recorder.start(500);
+          if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+
+          const dtMs = 1000 / RECORD_FPS;
+          for (let i = 0; i < totalFrames; i++) {
+            if (abort) break;
+            if (recErr) throw recErr;
+            frameIndex = i;
+            const t = t0 + i * dtMs;
+            renderOneFrame(t);
+            notifyFrame();
+            if (videoTrack && videoTrack.requestFrame) videoTrack.requestFrame();
+            setRecHint(
+              true,
+              `recording ${i + 1}/${totalFrames}  ${(payloadBytes / 1e6).toFixed(1)} MB → ${filename}`
+            );
+            await new Promise((r) => requestAnimationFrame(r));
+          }
+
+          await new Promise((resolve, reject) => {
+            recorder.onstop = resolve;
+            recorder.onerror = (e) => reject(e.error || new Error('MediaRecorder error'));
+            try { if (recorder.state === 'recording') recorder.requestData(); } catch (_) {}
+            recorder.stop();
+          });
+          await writeChain;
+          await writable.close();
+          writable = null;
+          setRecHint(
+            false,
+            abort
+              ? `stopped — file may be incomplete · ${filename}`
+              : `saved ${filename}  ${(payloadBytes / 1e6).toFixed(1)} MB · ${totalFrames}f`
+          );
+        } catch (err) {
+          console.error(err);
+          setRecHint(false, String(err && err.message ? err.message : err));
+          if (writable) { try { await writable.close(); } catch (_) {} }
+        } finally {
+          try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch (_) {}
+          try { mediaStream && mediaStream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+          videoTrack = null;
+          mediaStream = null;
+          active = false;
+          frameIndex = 0;
+          totalFrames = 0;
+          liveLoop = true;
+          requestAnimationFrame(frame);
+        }
+        return true;
+      };
+
+      const stop = () => {
+        if (active) abort = true;
+      };
+
+      const toggle = async () => {
+        if (active) {
+          stop();
+          return false;
+        }
+        return start();
+      };
+
+      return {
+        toggle,
+        isActive: () => active,
+        notifyFrame,
+        frameIndex: () => frameIndex,
+        totalFrames: () => totalFrames,
+      };
+    };
+
+    // Wiring the recorder needs (the only parts that are not copied):
+    // the art canvas, a video-only audio stub, and the build driven by the recorder's clock.
+    let liveLoop = true;
+    let recordT0 = 0;
+    // Restart the build from the beginning on the same seed, with no live clock.
+    const rebirth = (t, nextSeed) => {
+      recordT0 = t;
+      seed = nextSeed >>> 0;
+      paint(true);
+    };
+    // One recorder frame: the build at time t, so the last of the seconds×60 frames is the finished picture.
+    function renderOneFrame(t) {
+      const span = RECORD_SECONDS * 1000 - 1000 / RECORD_FPS;
+      stepBuild(Math.min(1, Math.max(0, (t - recordT0) / span)));
+    }
+    // After a record the page keeps the last frame; the live clock is not restarted.
+    function frame() {}
+    const rec = CanvasRecorder(() => canvas, async () => new MediaStream());
+
+    document.addEventListener("keydown", (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const key = e.key.toLowerCase();
+      if (key === "s") {
+        savePng();
+        return;
+      }
+      if (key === "r") {
+        rec.toggle();
+        return;
+      }
+      if (key !== "n") return;
+      if (rec.isActive()) return;
+      seed = (Math.random() * 0x100000000) >>> 0;
+      const params = new URLSearchParams(location.search);
+      params.set("seed", String(seed));
+      history.replaceState(null, "", location.pathname + "?" + params + (location.hash || ""));
+      paint();
+    });
+
+    paint();
+  </script>
+</body>
+</html>
