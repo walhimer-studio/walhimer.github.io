@@ -16,7 +16,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
   <title>Mark Walhimer — New Media, Generative &amp; Systems-Based Artist</title>
-  <meta name="description" content="Mark Walhimer is a new media, generative, and systems-based artist working in digital installation art. Machine DNA — one seed, many bodies. Series: Surrender Machines, Centered, Witness Mirror, Artificial Flowers. Institutional commissions and private collections." />
+  <meta name="description" content="Mark Walhimer makes live, generative digital installations. Machine DNA: one seed of code, many bodies. The room is the art. Commissions and collections." />
   <meta name="keywords" content="Mark Walhimer, new media artist, generative artist, systems-based artist, digital installation art, Machine DNA, Surrender Machines, Centered, Witness Mirror, Artificial Flowers, generative installation, p5.js, WebGL, GLSL" />
   <style>
     /* DRAFT CANDIDATE ONLY — deployment map in the first screen */
@@ -63,6 +63,8 @@
     }
     .deploy-work { flex: 1 1 auto; }
     .deploy-work em { font-style: italic; }
+    .deploy-work a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,.2); }
+    .deploy-work a:hover { border-color: var(--ink); }
     .deploy-where {
       flex: 0 0 auto; text-align: right; font-size: 12.5px;
       color: var(--muted, #6b6f76); font-family: var(--mono, monospace);
@@ -79,23 +81,23 @@
   <link rel="canonical" href="https://mark-walhimer.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Mark Walhimer — New Media, Generative &amp; Systems-Based Artist" />
-  <meta property="og:description" content="New media, generative, and systems-based artist. Machine DNA — one seed, many bodies. Series: Surrender Machines, Centered, Witness Mirror, Artificial Flowers." />
+  <meta property="og:description" content="Live, generative digital installations. Machine DNA: one seed of code, many bodies. The room is the art." />
   <meta property="og:url" content="https://mark-walhimer.com/" />
   <meta property="og:site_name" content="Mark Walhimer" />
   <meta property="og:image" content="https://mark-walhimer.com/images/homepage-featured/001.png" />
   <meta property="og:image:width" content="1024" />
   <meta property="og:image:height" content="529" />
-  <meta property="og:image:alt" content="Bloom / Four Walls — featured installation preview" />
+  <meta property="og:image:alt" content="Bloom / Four Walls — soft colored forms drifting on a white field, still from the generative installation" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@WalhimerArt" />
   <meta name="twitter:title" content="Mark Walhimer — New Media, Generative &amp; Systems-Based Artist" />
-  <meta name="twitter:description" content="New media, generative, and systems-based artist. Machine DNA — one seed, many bodies. Series: Surrender Machines, Centered, Witness Mirror, Artificial Flowers." />
+  <meta name="twitter:description" content="Live, generative digital installations. Machine DNA: one seed of code, many bodies. The room is the art." />
   <meta name="twitter:image" content="https://mark-walhimer.com/images/homepage-featured/001.png" />
-  <meta name="twitter:image:alt" content="Bloom / Four Walls — featured installation preview" />
+  <meta name="twitter:image:alt" content="Bloom / Four Walls — soft colored forms drifting on a white field, still from the generative installation" />
   <meta name="theme-color" content="#ffffff" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"VisualArtist","name":"Mark Walhimer","url":"https://mark-walhimer.com/","description":"New media, generative, and systems-based artist working in digital installation art. Machine DNA — one seed, many bodies. Artwork series: Surrender Machines, Centered, Witness Mirror, Artificial Flowers.","email":"mark@walhimer.com","sameAs":["https://www.instagram.com/markwalhimer/","https://x.com/WalhimerArt"],"knowsAbout":["new media artist","generative artist","systems-based artist","digital installation art","Machine DNA","Surrender Machines","Centered","Witness Mirror","Artificial Flowers","creative coding","WebGL","GLSL","p5.js"]}
+  {"@context":"https://schema.org","@type":"VisualArtist","name":"Mark Walhimer","url":"https://mark-walhimer.com/","description":"New media, generative, and systems-based artist working in digital installation art. Machine DNA: one seed of code, many bodies. The room is the art. Series: Surrender Machines, Invisible Layer, Witness Mirror, Bloom, Miami 2026, Marfa 2026.","email":"mark@walhimer.com","sameAs":["https://www.instagram.com/markwalhimer/","https://x.com/WalhimerArt"],"knowsAbout":["new media artist","generative artist","systems-based artist","digital installation art","Machine DNA","Surrender Machines","Centered","Witness Mirror","Artificial Flowers","creative coding","WebGL","GLSL","p5.js"]}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -215,8 +217,7 @@
     .featured {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      height: calc(100vh - 56px);
-      min-height: 560px;
+      min-height: max(560px, calc(100vh - 56px));
       border-bottom: 1px solid var(--rule);
     }
     .featured-live {
@@ -229,11 +230,71 @@
       min-height: 0;
     }
     .featured-text {
-      padding: 64px 56px;
+      padding: 40px 56px 36px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      gap: 24px;
     }
+    .featured-live { min-height: 480px; }
+    /* Desktop: the text column can run taller than the window; keep the carousel,
+       with its controls, pinned to one screen while it scrolls. */
+    @media (min-width: 901px) {
+      .featured-live {
+        position: sticky;
+        top: 56px;
+        align-self: start;
+        height: calc(100vh - 56px);
+        min-height: 480px;
+        border-right: none;
+      }
+      .featured-text { border-left: 1px solid var(--rule); }
+    }
+    .artist-intro {
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: clamp(16px, 1.5vw, 19px);
+      line-height: 1.55;
+      color: var(--ink);
+      max-width: 520px;
+      margin: 14px 0 20px;
+      animation: fadeUp 0.7s 0.2s both;
+    }
+    .artist-intro strong { font-weight: 400; }
+    .hero-offer {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 16px 0;
+      margin-bottom: 8px;
+      max-width: 520px;
+      animation: fadeUp 0.7s 0.3s both;
+    }
+    .hero-offer p {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--mid);
+      margin-bottom: 14px;
+    }
+    .hero-offer p strong { color: var(--ink); font-weight: 400; }
+    a.inquire-btn {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--white);
+      background: var(--ink);
+      border: 1px solid var(--ink);
+      padding: 13px 26px;
+      transition: background 0.2s, color 0.2s;
+    }
+    a.inquire-btn:hover { background: var(--white); color: var(--ink); }
+    a.inquire-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+    .deploy { margin-top: 12px; }
+    .deploy-group { margin-bottom: 14px; }
     .featured-eyebrow {
       font-family: var(--mono);
       font-size: 9px;
@@ -563,6 +624,79 @@
       transition: color 0.2s;
     }
     .catalog-link:hover { color: var(--mid); }
+
+    /* SERIES */
+    .series { padding: 56px 48px 48px; border-bottom: 1px solid var(--rule); }
+    .series-inner { max-width: 1300px; margin: 0 auto; }
+    .series-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 400;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .series-grid {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+    .series-grid a {
+      display: block;
+      height: 100%;
+      background: var(--white);
+      padding: 22px 24px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: background 0.2s;
+    }
+    .series-grid a:hover { background: var(--off); }
+    .series-grid a:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
+    .series-name {
+      display: block;
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .series-desc { display: block; font-size: 13px; line-height: 1.6; color: var(--mid); }
+    .series-more { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 24px; }
+    .series-more a {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink);
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 2px;
+    }
+    .series-more a:hover { color: var(--mid); border-color: var(--mid); }
+    @media (max-width: 900px) {
+      .series { padding: 40px 24px; }
+      .series-grid { grid-template-columns: 1fr; }
+    }
+
+    /* CLOSING INQUIRY */
+    .closing-cta {
+      padding: 64px 48px;
+      text-align: center;
+      border-bottom: 1px solid var(--rule);
+    }
+    .closing-cta p {
+      font-family: var(--serif);
+      font-size: clamp(20px, 2.4vw, 28px);
+      font-weight: 300;
+      color: var(--ink);
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .closing-cta { padding: 48px 24px; } }
 
     /* PRACTICE */
     .practice {
@@ -1173,8 +1307,8 @@
             </a>
             <div class="slide-caption install-slide-caption">
               <div class="slide-caption-inner">
-                <span>Currently on view · ICA Miami</span>
-                <span class="slide-caption-desc">Technical Objects Exist — Loop Art Critique + ICA Miami, curated by Doreen Rios · through 5 October 2026</span>
+                <span>Installed · ICA Miami</span>
+                <span class="slide-caption-desc">Surrender Machine 77823 in <em>Technical Objects Exist</em> — Loop Art Critique + ICA Miami, curated by Doreen Rios · 2026</span>
               </div>
             </div>
           </article>
@@ -1200,10 +1334,9 @@
                   src="/images/homepage-featured/008.png"
                   width="1024"
                   height="522"
-                  alt="Surrender Machine 77823 — Mark Walhimer, 2026"
-                  loading="eager"
+                  alt="Surrender Machine 77823 — a corridor of pink, orange and yellow code text and distorted letterforms wrapping the walls of a white three-dimensional room"
+                  loading="lazy"
                   decoding="async"
-                  fetchpriority="high"
                 />
               </a>
             </div>
@@ -1237,17 +1370,16 @@
                   src="/images/homepage-featured/001.png"
                   width="1024"
                   height="529"
-                  alt="Bloom / Four Walls — still preview"
-                  loading="eager"
+                  alt="Bloom / Four Walls — soft blurred ovals of blue, purple, orange and green glowing on a white field"
+                  loading="lazy"
                   decoding="async"
-                  fetchpriority="high"
                 />
               </a>
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="bloom-caption-detail">Bloom / Four Walls — live embed when you open this page on the site (HTTPS)</span>
+                <span>Series · Bloom</span>
+                <span id="bloom-caption-detail">Bloom / Four Walls — a generative four-wall environment</span>
               </div>
             </div>
           </article>
@@ -1272,16 +1404,16 @@
                   src="/images/homepage-featured/002.png"
                   width="800"
                   height="600"
-                  alt="Light Art 023 — still preview"
-                  loading="eager"
+                  alt="Light Art 023 — a glowing white lattice of vertical and horizontal light bars filling a dark room, with a control panel at left"
+                  loading="lazy"
                   decoding="async"
                 />
               </a>
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="la023-caption-detail">Light Art 023 — live embed when you open this page on the site (HTTPS)</span>
+                <span>Light sculpture</span>
+                <span id="la023-caption-detail">Light Art 023 — modular rooms of light with an audio drift</span>
               </div>
             </div>
           </article>
@@ -1306,7 +1438,7 @@
                   src="/images/homepage-featured/003.png"
                   width="1600"
                   height="900"
-                  alt="Abstract technical drawing — elevation, still preview"
+                  alt="Abstract technical drawing — white line diagram on black with a ground line, small cubes, arrows, zigzags and the words BALANCE, STRUCTURE and MODULE"
                   loading="lazy"
                   decoding="async"
                 />
@@ -1314,8 +1446,8 @@
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="art03-caption-detail">Abstract technical drawing — live embed when you open this page on the site (HTTPS)</span>
+                <span>Drawing</span>
+                <span id="art03-caption-detail">Abstract technical drawing — elevation</span>
               </div>
             </div>
           </article>
@@ -1340,7 +1472,7 @@
                   src="/images/homepage-featured/004.png"
                   width="1600"
                   height="900"
-                  alt="Abstract technical drawing — studio, still preview"
+                  alt="Abstract technical drawing — white line diagram on black with cubes on a ground line, circles, arrows and the words PATHWAY, NODE, TENSION and CONNECTION"
                   loading="lazy"
                   decoding="async"
                 />
@@ -1348,8 +1480,8 @@
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="art04-caption-detail">Abstract technical drawing — live embed when you open this page on the site (HTTPS)</span>
+                <span>Drawing</span>
+                <span id="art04-caption-detail">Abstract technical drawing — studio</span>
               </div>
             </div>
           </article>
@@ -1374,7 +1506,7 @@
                   src="/images/homepage-featured/005.png"
                   width="1600"
                   height="900"
-                  alt="Window 93 — corner projection test, still preview"
+                  alt="Window 93 — a translucent cube with yellow, green, purple and cyan faces on a white ground"
                   loading="lazy"
                   decoding="async"
                 />
@@ -1382,8 +1514,8 @@
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="art05-caption-detail">Window 93 — live embed when you open this page on the site (HTTPS)</span>
+                <span>Projection study</span>
+                <span id="art05-caption-detail">Window 93 — corner projection test · October 2024</span>
               </div>
             </div>
           </article>
@@ -1408,7 +1540,7 @@
                   src="/images/homepage-featured/006.png"
                   width="1600"
                   height="900"
-                  alt="923 centered — soft gradient planes, still preview"
+                  alt="923 centered — overlapping translucent blue, violet and rose rectangles centered on a pale gradient square"
                   loading="lazy"
                   decoding="async"
                 />
@@ -1416,8 +1548,8 @@
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="art06-caption-detail">923 centered — live embed when you open this page on the site (HTTPS)</span>
+                <span>Centered</span>
+                <span id="art06-caption-detail">923 centered — breathing planes of soft gradient · April 26</span>
               </div>
             </div>
           </article>
@@ -1442,7 +1574,7 @@
                   src="/images/homepage-featured/007.png"
                   width="1600"
                   height="900"
-                  alt="Traveling Landscape — Emergent DNA (piano), still preview"
+                  alt="Traveling Landscape — Emergent DNA: translucent blue, pink, orange and yellow boxes receding through a flat magenta space"
                   loading="lazy"
                   decoding="async"
                 />
@@ -1450,8 +1582,8 @@
             </div>
             <div class="slide-caption">
               <div class="slide-caption-inner">
-                <span>Featured</span>
-                <span id="art07-caption-detail">Traveling Landscape — Emergent DNA — live embed when you open this page on the site (HTTPS)</span>
+                <span>Sound + space</span>
+                <span id="art07-caption-detail">Traveling Landscape — Emergent DNA, with piano</span>
               </div>
             </div>
           </article>
@@ -1478,17 +1610,28 @@
     <div>
       <h1 class="artist-name">Mark<br><em>Walhimer</em></h1>
 
+      <p class="artist-intro">I make artworks out of code that run live &mdash; on a screen, in a projection, or across the walls of a room. Each one grows from a single seed I call <strong>Machine DNA</strong>, and takes many bodies. <strong>The room is the art.</strong></p>
+
+      <div class="hero-offer" id="offer">
+        <p><strong>Acquire or commission.</strong> Limited hardware editions and site-specific works for institutions and private collections &mdash; direct from the studio, reply within 48 hours.</p>
+        <a class="inquire-btn" href="mailto:mark@walhimer.com?subject=Inquiry">Inquire</a>
+      </div>
+
       <div class="deploy" id="exhibitions">
         <div class="deploy-group">
-          <h2 class="deploy-label">Currently on view</h2>
+          <h2 class="deploy-label">Upcoming</h2>
           <div class="deploy-row">
-            <span class="deploy-work"><em>Technical Objects Exist</em> — Surrender Machine 77823</span>
-            <span class="deploy-where">ICA Miami · through 5 Oct 2026</span>
+            <span class="deploy-work"><a href="/miami-2026/"><em>Miami 2026</em></a> &mdash; Invisible Layer</span>
+            <span class="deploy-where">Miami · upcoming</span>
           </div>
         </div>
 
         <div class="deploy-group">
           <h2 class="deploy-label">Recent</h2>
+          <div class="deploy-row">
+            <span class="deploy-work"><em>Technical Objects Exist</em> — Surrender Machine 77823</span>
+            <span class="deploy-where">ICA Miami · 2026</span>
+          </div>
           <div class="deploy-row">
             <span class="deploy-work"><em>Miradas Tangentes</em></span>
             <span class="deploy-where">Madrid · 2026</span>
@@ -1506,18 +1649,19 @@
         <div class="deploy-group">
           <h2 class="deploy-label">Installations</h2>
           <div class="deploy-row">
-            <span class="deploy-work"><em>Bloom / Four Walls</em></span>
+            <span class="deploy-work"><a href="/installations/bloom-four-walls.html"><em>Bloom / Four Walls</em></a></span>
             <span class="deploy-where">Four-wall environment</span>
           </div>
           <div class="deploy-row">
-            <span class="deploy-work"><em>Living Commons</em></span>
+            <span class="deploy-work"><a href="/installations/living-commons.html"><em>Living Commons</em></a></span>
             <span class="deploy-where">Room-scale</span>
           </div>
         </div>
 
         <p class="deploy-note">
-          <a href="/installations/">All installations</a> ·
-          <a href="/bio/index.html">Full CV</a>
+          <a href="/installations/">Installations</a> ·
+          <a href="/bio/index.html">Full CV</a> ·
+          <a href="/guide/index.html">Guide</a>
         </p>
       </div>
     </div>
@@ -1528,84 +1672,30 @@
   </div>
 </section>
 
+<section class="series" id="series" aria-labelledby="series-heading">
+  <div class="series-inner">
+    <h2 class="series-label" id="series-heading">Series</h2>
+    <ul class="series-grid">
+      <li><a href="/sketches/surrender/"><span class="series-name">Surrender Machines</span><span class="series-desc">The early anchor: can a machine surrender for us?</span></a></li>
+      <li><a href="/sketches/invisible-layer/"><span class="series-name">Invisible Layer</span><span class="series-desc">Living pictures seen through one window.</span></a></li>
+      <li><a href="/sketches/digital-twin/"><span class="series-name">Witness Mirror</span><span class="series-desc">Proof-of-concept hub: face signals and Witness Mirror tests.</span></a></li>
+      <li><a href="/sketches/bloom/"><span class="series-name">Bloom</span><span class="series-desc">Bloom / Four Walls and the Bloom family.</span></a></li>
+      <li><a href="/miami-2026/"><span class="series-name">Miami 2026</span><span class="series-desc">Invisible Layer, upcoming.</span></a></li>
+      <li><a href="/marfa-2026/"><span class="series-name">Marfa 2026</span><span class="series-desc">Invisible Layer, October, with Centered and Artificial Flowers.</span></a></li>
+    </ul>
+    <p class="series-more">
+      <a href="/installations/">Installations</a>
+      <a href="/bio/index.html">Full CV</a>
+      <a href="/guide/index.html">Guide</a>
+    </p>
+  </div>
+</section>
+
 <section class="works" id="works">
   <div class="catalog-link-row-wrap">
     <div class="catalog-link-row">
       <span class="catalog-count" id="catalog-count">Full catalog — additional works and sketches</span>
       <a href="/sketches/index.html" class="catalog-link">View Full Catalog →</a>
-    </div>
-  </div>
-</section>
-
-<section class="practice" id="practice">
-  <div class="practice-inner reveal">
-    <h2 class="practice-label">Practice</h2>
-    <p class="practice-statement">"I use code and real-time systems as a lens for acceptance, control, and agency."</p>
-    <div class="practice-body">
-      <p><strong>Machine DNA</strong> — one seed, many bodies — as a way to think about acceptance, control, and agency.</p>
-      <p>Artwork series include <strong>Surrender Machines</strong>, <strong>Centered</strong>, <strong>Witness Mirror</strong>, and <strong>Artificial Flowers</strong>. The early anchor was Surrender Machines — the question of whether a machine could surrender for us. What started as a pun became a serious structure for thinking about acceptance: what part of life can be controlled, and what has to be accepted?</p>
-      <p>From abstract painting systems and geometric studies, the work evolved toward light-sculptural environments: cubes, rotating fields, color architecture. The shift was from producing static pictures to <strong>staging live behavior</strong>.</p>
-      <p>After beginning blockchain-based digital work in 2022, the practice moved from platform-bound outputs toward site-native, browser-native systems built and hosted directly — outside any platform's control. <strong>Moon Walking</strong> and <strong>Bloom / Four Walls</strong> continue the same inquiry. The goal is to build perceptual situations where viewers can feel the tension between control and release, and decide how they want to participate.</p>
-      <p>Working in p5.js, WebGL, and GLSL shaders. All works run live and generate in real time.</p>
-    </div>
-    <div class="practice-links">
-      <a href="/practice/index.html" class="practice-more">Full practice statement →</a>
-      <a href="/practice/artwork-pipeline.html" class="practice-more">Machine DNA artwork pipeline →</a>
-      <a href="/practice/index.html#loop-critique" class="practice-more">Critique question + recent work →</a>
-    </div>
-  </div>
-</section>
-
-<section class="bio" id="bio">
-  <div class="bio-inner reveal">
-    <div>
-      <h2 class="bio-label">Biography</h2>
-      <div class="bio-text">
-        <p>Mark Walhimer (b. 1964) is a new media, generative, and systems-based artist working in <a href="/guide/immersive-digital-art.html" style="border-bottom:1px solid rgba(0,0,0,.25);text-decoration:none;">digital installation art</a>. His practice uses real-time systems and generative code — <strong>Machine DNA</strong> — to build perceptual environments across series including Surrender Machines, Centered, Witness Mirror, and Artificial Flowers.</p>
-        <p>He began in the studios of <em>Judy Pfaff</em> (1985) and <em>Donald Lipski</em> (1987). His institutional work spans three continents — a career spent designing spaces that respond to the people who inhabit them, which feeds directly into a studio practice concerned with co-creation, emergence, and shared space.</p>
-        <p>Working in p5.js, WebGL, and GLSL shaders, he builds browser-based works that run live, generate in real time, and change with every viewing. Author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury).</p>
-      </div>
-    </div>
-    <div>
-      <h2 class="bio-label">Selected CV</h2>
-      <div class="cv-group">
-        <div class="cv-group-label">Exhibitions</div>
-        <div class="cv-row">
-          <span class="cv-item-name"><em>Miradas Tangentes</em></span>
-          <span class="cv-item-detail">Madrid · 2026</span>
-        </div>
-      </div>
-      <div class="cv-group">
-        <div class="cv-group-label">Formation</div>
-        <div class="cv-row">
-          <span class="cv-item-name">Studio of <em>Judy Pfaff</em></span>
-          <span class="cv-item-detail">1985</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Studio of <em>Donald Lipski</em></span>
-          <span class="cv-item-detail">1987</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Pratt Institute</span>
-          <span class="cv-item-detail">MFA · Industrial &amp; Exhibition Design</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Skidmore College</span>
-          <span class="cv-item-detail">BA · Studio Art</span>
-        </div>
-      </div>
-      <div class="cv-group">
-        <div class="cv-group-label">Honors &amp; Appointments</div>
-        <div class="cv-row">
-          <span class="cv-item-name"><em>Fulbright Specialist</em></span>
-          <span class="cv-item-detail">U.S. Department of State</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Smithsonian Institution</span>
-          <span class="cv-item-detail">Design Consultant</span>
-        </div>
-      </div>
-      <p class="bio-text" style="margin-top:24px;font-size:15px;"><a href="/bio/index.html">Full bio / CV →</a></p>
     </div>
   </div>
 </section>
@@ -1661,6 +1751,88 @@
       </ul>
     </div>
   </div>
+</section>
+
+<section class="practice" id="practice">
+  <div class="practice-inner reveal">
+    <h2 class="practice-label">Practice</h2>
+    <p class="practice-statement">"I use code and real-time systems as a lens for acceptance, control, and agency."</p>
+    <div class="practice-body">
+      <p><strong>Machine DNA</strong> — one seed, many bodies — as a way to think about acceptance, control, and agency.</p>
+      <p>Artwork series include <strong>Surrender Machines</strong>, <strong>Centered</strong>, <strong>Witness Mirror</strong>, and <strong>Artificial Flowers</strong>. The early anchor was Surrender Machines — the question of whether a machine could surrender for us. What started as a pun became a serious structure for thinking about acceptance: what part of life can be controlled, and what has to be accepted?</p>
+      <p>From abstract painting systems and geometric studies, the work evolved toward light-sculptural environments: cubes, rotating fields, color architecture. The shift was from producing static pictures to <strong>staging live behavior</strong>.</p>
+      <p>After beginning blockchain-based digital work in 2022, the practice moved from platform-bound outputs toward site-native, browser-native systems built and hosted directly — outside any platform's control. <strong>Moon Walking</strong> and <strong>Bloom / Four Walls</strong> continue the same inquiry. The goal is to build perceptual situations where viewers can feel the tension between control and release, and decide how they want to participate.</p>
+      <p>Working in p5.js, WebGL, and GLSL shaders. All works run live and generate in real time.</p>
+    </div>
+    <div class="practice-links">
+      <a href="/practice/index.html" class="practice-more">Full practice statement →</a>
+      <a href="/practice/artwork-pipeline.html" class="practice-more">Machine DNA artwork pipeline →</a>
+      <a href="/practice/index.html#loop-critique" class="practice-more">Critique question + recent work →</a>
+    </div>
+  </div>
+</section>
+
+<section class="bio" id="bio">
+  <div class="bio-inner reveal">
+    <div>
+      <h2 class="bio-label">Biography</h2>
+      <div class="bio-text">
+        <p>Mark Walhimer (b. 1964) is a new media, generative, and systems-based artist working in <a href="/guide/immersive-digital-art.html" style="border-bottom:1px solid rgba(0,0,0,.25);text-decoration:none;">digital installation art</a>. His practice uses real-time systems and generative code — <strong>Machine DNA</strong> — to build perceptual environments across series including Surrender Machines, Centered, Witness Mirror, and Artificial Flowers.</p>
+        <p>He began in the studios of <em>Judy Pfaff</em> (1985) and <em>Donald Lipski</em> (1987). His institutional work spans three continents — a career spent designing spaces that respond to the people who inhabit them, which feeds directly into a studio practice concerned with co-creation, emergence, and shared space.</p>
+        <p>Working in p5.js, WebGL, and GLSL shaders, he builds browser-based works that run live, generate in real time, and change with every viewing. Author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury).</p>
+      </div>
+    </div>
+    <div>
+      <h2 class="bio-label">Selected CV</h2>
+      <div class="cv-group">
+        <div class="cv-group-label">Exhibitions</div>
+        <div class="cv-row">
+          <span class="cv-item-name"><em>Technical Objects Exist</em> — Surrender Machine 77823</span>
+          <span class="cv-item-detail">ICA Miami · 2026</span>
+        </div>
+        <div class="cv-row">
+          <span class="cv-item-name"><em>Miradas Tangentes</em></span>
+          <span class="cv-item-detail">Madrid · 2026</span>
+        </div>
+      </div>
+      <div class="cv-group">
+        <div class="cv-group-label">Formation</div>
+        <div class="cv-row">
+          <span class="cv-item-name">Studio of <em>Judy Pfaff</em></span>
+          <span class="cv-item-detail">1985</span>
+        </div>
+        <div class="cv-row">
+          <span class="cv-item-name">Studio of <em>Donald Lipski</em></span>
+          <span class="cv-item-detail">1987</span>
+        </div>
+        <div class="cv-row">
+          <span class="cv-item-name">Pratt Institute</span>
+          <span class="cv-item-detail">MFA · Industrial &amp; Exhibition Design</span>
+        </div>
+        <div class="cv-row">
+          <span class="cv-item-name">Skidmore College</span>
+          <span class="cv-item-detail">BA · Studio Art</span>
+        </div>
+      </div>
+      <div class="cv-group">
+        <div class="cv-group-label">Honors &amp; Appointments</div>
+        <div class="cv-row">
+          <span class="cv-item-name"><em>Fulbright Specialist</em></span>
+          <span class="cv-item-detail">U.S. Department of State</span>
+        </div>
+        <div class="cv-row">
+          <span class="cv-item-name">Smithsonian Institution</span>
+          <span class="cv-item-detail">Design Consultant</span>
+        </div>
+      </div>
+      <p class="bio-text" style="margin-top:24px;font-size:15px;"><a href="/bio/index.html">Full bio / CV →</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="closing-cta" id="inquire" aria-label="Inquiries">
+  <p>Interested in acquiring or commissioning a work?</p>
+  <a class="inquire-btn" href="mailto:mark@walhimer.com?subject=Inquiry">Inquire</a>
 </section>
 
 <div class="consulting-note">
@@ -1731,65 +1903,31 @@
   var urls = [chutes77823Url, bloomUrl, la023Url, art03Url, art04Url, art05Url, art06Url, art07Url];
   var frameIds = ['chutes77823-embed-frame', 'bloom-embed-frame', 'la023-embed-frame', 'art03-embed-frame', 'art04-embed-frame', 'art05-embed-frame', 'art06-embed-frame', 'art07-embed-frame'];
 
-  var capChutes = document.getElementById('chutes77823-caption-detail');
-  if (capChutes) {
-    capChutes.textContent = live
-      ? 'Surrender Machine 77823 — Mark Walhimer, 2026 — live in carousel · curated by Doreen Rios'
-      : 'Surrender Machine 77823 — Mark Walhimer, 2026 — open over HTTPS on the live site for full embed';
+  /* Live WebGL starts only after the page has loaded and the browser is idle, so the
+     headline, intro, and offer paint first. Until then the still previews are shown. */
+  var embedsAllowed = false;
+  var pendingSlide = null;
+  function allowEmbeds() {
+    if (embedsAllowed) return;
+    embedsAllowed = true;
+    if (pendingSlide !== null) {
+      var p = pendingSlide;
+      pendingSlide = null;
+      window.__mwCarouselActivateEmbeds(p);
+    }
   }
-  var capChutesDesc = document.getElementById('chutes77823-caption-desc');
-  if (capChutesDesc && !live) {
-    capChutesDesc.textContent = 'A traversable Three.js volume driven by an invisible RGB map — spatial operators raymarched through a GPU voxel field. Open over HTTPS for the live embed.';
+  function scheduleEmbeds() {
+    var go = function () {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(allowEmbeds, { timeout: 3000 });
+      } else {
+        setTimeout(allowEmbeds, 1500);
+      }
+    };
+    if (document.readyState === 'complete') go();
+    else window.addEventListener('load', go, { once: true });
   }
-
-  var capBloom = document.getElementById('bloom-caption-detail');
-  if (capBloom) {
-    capBloom.textContent = live
-      ? 'Bloom / Four Walls — live in carousel'
-      : 'Bloom / Four Walls — still preview only · open over HTTPS on the live site for full embeds';
-  }
-
-  var capLa = document.getElementById('la023-caption-detail');
-  if (capLa) {
-    capLa.textContent = live
-      ? 'Light Art 023 — live in carousel'
-      : 'Light Art 023 — still preview only · open over HTTPS on the live site for full embeds';
-  }
-
-  var capArt03 = document.getElementById('art03-caption-detail');
-  if (capArt03) {
-    capArt03.textContent = live
-      ? 'Abstract technical drawing — live in carousel'
-      : 'Abstract technical drawing — still preview only · open over HTTPS on the live site for full embeds';
-  }
-
-  var capArt04 = document.getElementById('art04-caption-detail');
-  if (capArt04) {
-    capArt04.textContent = live
-      ? 'Abstract technical drawing (studio) — live in carousel'
-      : 'Abstract technical drawing (studio) — still preview only · open over HTTPS on the live site for full embeds';
-  }
-
-  var capArt05 = document.getElementById('art05-caption-detail');
-  if (capArt05) {
-    capArt05.textContent = live
-      ? 'Window 93 — live in carousel · Oct 17, 2024'
-      : 'Window 93 — still preview only · open over HTTPS on the live site for full embeds';
-  }
-
-  var capArt06 = document.getElementById('art06-caption-detail');
-  if (capArt06) {
-    capArt06.textContent = live
-      ? '923 centered — live in carousel · April 26'
-      : '923 centered — still preview only · open over HTTPS on the live site for full embeds';
-  }
-
-  var capArt07 = document.getElementById('art07-caption-detail');
-  if (capArt07) {
-    capArt07.textContent = live
-      ? 'Traveling Landscape — Emergent DNA (piano) — live in carousel'
-      : 'Traveling Landscape — Emergent DNA (piano) — still preview only · open over HTTPS on the live site for full embeds';
-  }
+  scheduleEmbeds();
 
   /* One live WebGL/embed at a time — loading all eight iframes at once crashes mobile Safari ("A problem repeatedly occurred"). */
   var embedActiveIndex = -1;
@@ -1807,8 +1945,10 @@
 
   window.__mwCarouselActivateEmbeds = function (slideIndex) {
     if (!live || document.documentElement.classList.contains('home-stills-only')) return;
-    var i = slideIndex | 0;
-    i = ((i % 8) + 8) % 8;
+    if (!embedsAllowed) { pendingSlide = slideIndex | 0; return; }
+    /* Slide 0 is the installation photograph (no embed); slides 1–8 map to the eight embeds. */
+    var i = (slideIndex | 0) - 1;
+    if (i >= 0) i = i % 8;
     if (i === embedActiveIndex) return;
     embedActiveIndex = i;
     resetEmbedReady();
