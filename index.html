@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <!--
-  mark-walhimer.com homepage — hybrid: rebrand IA/copy + live carousel embeds.
+  mark-walhimer.com homepage — built from the "Homepage — markwalhimer.com" design mockup
+  (dark, Instrument Serif / Inter / JetBrains Mono, accent #E9B44C). Static HTML, no runtime JS
+  for layout. The bloom figure in the hero is the mockup's own generator run once at seed 77823
+  and saved as plain SVG.
 -->
 <html lang="en">
 <head>
@@ -14,1826 +17,547 @@
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="color-scheme" content="light" />
-  <title>Mark Walhimer — New Media, Generative &amp; Systems-Based Artist</title>
-  <meta name="description" content="Mark Walhimer makes live, generative digital installations. Machine DNA: one seed of code, many bodies. The room is the art. Commissions and collections." />
-  <meta name="keywords" content="Mark Walhimer, new media artist, generative artist, systems-based artist, digital installation art, Machine DNA, Surrender Machines, Centered, Invisible Layer, Witness Mirror, Artificial Flowers, Bloom, generative installation, p5.js, WebGL, GLSL" />
-  <style>
-    /* DRAFT CANDIDATE ONLY — deployment map in the first screen */
-    .draft-banner {
-      background: #1c1d20; color: #fff; font-family: var(--mono, monospace);
-      font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
-      padding: 7px 20px; text-align: center;
-    }
-    /* Installation photograph as a carousel slide — contain, not cover, so the
-       gallery wall text and didactic panel are never cropped out. Those are the
-       part that proves the work was installed in an institution. */
-    .install-slide-link { display: block; width: 100%; height: 100%; }
-    .install-slide-img {
-      display: block; width: 100%; height: 100%;
-      object-fit: contain; background: #f4f2ef;
-    }
-    /* The photo letterboxes in a portrait slot, so the caption can land on the
-       light band where the standard transparent-to-dark gradient has nothing to
-       darken. Give this one slide a solid backing instead. */
-    .slide-caption.install-slide-caption { background: rgba(20, 18, 16, 0.9); }
-    /* Heading resets. The page previously had no h1 and a single stray h2, so the
-       section labels below become real headings. Element+class selectors are used
-       deliberately: this block sits above the main stylesheet, and a bare class
-       would lose to it on source order. */
-    h1.artist-name { margin: 0 0 8px; font-weight: 300; }
-    h2.deploy-label,
-    h2.practice-label,
-    h2.bio-label {
-      margin-top: 0;
-      font-weight: 400;
-      font-family: var(--mono, monospace);
-    }
-
-    .deploy { margin-top: 26px; }
-    .deploy-group { margin-bottom: 22px; }
-    .deploy-label {
-      font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
-      color: var(--muted, #6b6f76); margin-bottom: 9px;
-      padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,.1);
-    }
-    .deploy-row {
-      display: flex; justify-content: space-between; gap: 16px;
-      align-items: baseline; padding: 5px 0; font-size: 14px; line-height: 1.4;
-    }
-    .deploy-work { flex: 1 1 auto; }
-    .deploy-work em { font-style: italic; }
-    .deploy-work a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,.2); }
-    .deploy-work a:hover { border-color: var(--ink); }
-    .deploy-where {
-      flex: 0 0 auto; text-align: right; font-size: 12.5px;
-      color: var(--muted, #6b6f76); font-family: var(--mono, monospace);
-    }
-    .deploy-note {
-      margin-top: 18px; font-size: 13px; color: var(--muted, #6b6f76);
-    }
-    .deploy-note a { color: inherit; }
-    @media (max-width: 700px) {
-      .deploy-row { flex-direction: column; gap: 2px; }
-      .deploy-where { text-align: left; }
-    }
-  </style>
+  <meta name="color-scheme" content="dark" />
+  <title>Mark Walhimer — Generative Artist | Digital Installation Art &amp; Immersive Digital Art Commissions</title>
+  <meta name="description" content="Generative artist Mark Walhimer builds live digital installations — Surrender Machines, Invisible Layer, Bloom — for museums, lobbies, and private collections." />
   <link rel="canonical" href="https://mark-walhimer.com/" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Mark Walhimer — New Media, Generative &amp; Systems-Based Artist" />
-  <meta property="og:description" content="Live, generative digital installations. Machine DNA: one seed of code, many bodies. The room is the art." />
+  <meta property="og:title" content="Mark Walhimer — Generative Artist | Digital Installation Art &amp; Immersive Digital Art Commissions" />
+  <meta property="og:description" content="Generative artist Mark Walhimer builds live digital installations — Surrender Machines, Invisible Layer, Bloom — for museums, lobbies, and private collections." />
   <meta property="og:url" content="https://mark-walhimer.com/" />
   <meta property="og:site_name" content="Mark Walhimer" />
   <meta property="og:image" content="https://mark-walhimer.com/images/homepage-featured/001.png" />
-  <meta property="og:image:width" content="1024" />
-  <meta property="og:image:height" content="529" />
-  <meta property="og:image:alt" content="Bloom / Four Walls — soft colored forms drifting on a white field, still from the generative installation" />
+  <meta property="og:image:width" content="1920" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:alt" content="Bloom / Four Walls, live generative installation by Mark Walhimer: soft colored forms drifting on a white field" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@WalhimerArt" />
-  <meta name="twitter:title" content="Mark Walhimer — New Media, Generative &amp; Systems-Based Artist" />
-  <meta name="twitter:description" content="Live, generative digital installations. Machine DNA: one seed of code, many bodies. The room is the art." />
+  <meta name="twitter:title" content="Mark Walhimer — Generative Artist | Digital Installation Art &amp; Immersive Digital Art Commissions" />
+  <meta name="twitter:description" content="Generative artist Mark Walhimer builds live digital installations — Surrender Machines, Invisible Layer, Bloom — for museums, lobbies, and private collections." />
   <meta name="twitter:image" content="https://mark-walhimer.com/images/homepage-featured/001.png" />
-  <meta name="twitter:image:alt" content="Bloom / Four Walls — soft colored forms drifting on a white field, still from the generative installation" />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="twitter:image:alt" content="Bloom / Four Walls, live generative installation by Mark Walhimer: soft colored forms drifting on a white field" />
+  <meta name="theme-color" content="#0C0C0D" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"VisualArtist","name":"Mark Walhimer","url":"https://mark-walhimer.com/","description":"New media, generative, and systems-based artist working in digital installation art. Machine DNA: one seed of code, many bodies. The room is the art. Series: Surrender Machines, Centered, Invisible Layer, Witness Mirror, Artificial Flowers, Bloom.","email":"mark@walhimer.com","sameAs":["https://www.instagram.com/markwalhimer/","https://x.com/WalhimerArt"],"knowsAbout":["new media artist","generative artist","systems-based artist","digital installation art","Machine DNA","Surrender Machines","Centered","Invisible Layer","Witness Mirror","Artificial Flowers","Bloom","creative coding","WebGL","GLSL","p5.js"]}
+  {"@context":"https://schema.org","@type":"VisualArtist","name":"Mark Walhimer","url":"https://mark-walhimer.com/","description":"New media, generative, and systems-based artist working in digital installation art. Machine DNA: one seed of code, many bodies. The room is the art. Series: Surrender Machines, Centered, Invisible Layer, Witness Mirror, Artificial Flowers, Bloom.","email":"mark@walhimer.com","sameAs":["https://www.instagram.com/markwalhimer/","https://x.com/WalhimerArt"],"knowsAbout":["generative art","new media art","digital installation art","immersive digital art","Machine DNA","Surrender Machines","Centered","Invisible Layer","Witness Mirror","Artificial Flowers","Bloom","p5.js","WebGL","GLSL"]}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --white: #ffffff;
-      --off: #f8f7f5;
-      --pale: #f0ede8;
-      --rule: #e0dbd4;
-      --ink: #141210;
-      --mid: #6a6460;
-      --muted: #9a9590;
-      --serif: 'Cormorant Garamond', Georgia, serif;
-      --sans: 'DM Sans', sans-serif;
-      --mono: 'DM Mono', monospace;
+      --bg: #0C0C0D;
+      --panel: #121214;
+      --rule: #232326;
+      --dash: #3A3A3F;
+      --ink: #ECEAE4;
+      --body: #CFCDC6;
+      --muted: #A3A19A;
+      --accent: #E9B44C;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --mono: 'JetBrains Mono', monospace;
     }
+    *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .carousel-track { transition: none !important; }
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .artist-name, .artist-thesis, .acquire-block, .featured-caption { animation: none; }
-    }
-    body {
-      font-family: var(--sans);
-      background: var(--white);
-      color: var(--ink);
-      -webkit-font-smoothing: antialiased;
-      font-size: 15px;
-      line-height: 1.75;
-      min-height: 100vh;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    body { margin: 0; background: var(--bg); }
+    a { color: var(--ink); }
+    a:hover { color: #FFFFFF; }
+    a:focus-visible, video:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .page { background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; font-size: 17px; line-height: 1.6; min-height: 100vh; }
+    .wrap { max-width: 1280px; margin: 0 auto; }
+    .mono-label { margin: 0; font-family: var(--mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 400; }
+    .serif-h2 { margin: 0; font-family: var(--serif); font-weight: 400; }
 
-    /* NAV */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--rule);
-      padding: 0 48px;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-name {
-      font-family: var(--serif);
-      font-size: 17px;
-      font-weight: 300;
-      letter-spacing: 0.02em;
-      color: var(--ink);
-      text-decoration: none;
-    }
-    .nav-links {
-      display: flex;
-      gap: 28px;
-      margin-left: auto;
-      list-style: none;
-      align-items: center;
-    }
-    .nav-links a {
-      font-family: var(--mono);
-      font-size: 9.5px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--ink); }
-    .nav-acquire {
-      color: var(--ink) !important;
-      border-bottom: 1px solid var(--ink);
-      padding-bottom: 1px;
-    }
-    .nav-toggle {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 12px;
-      background: var(--white);
-      border: 1px solid var(--rule);
-      color: var(--ink);
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .nav-toggle svg { width: 20px; height: 14px; display: block; }
-    .nav-toggle .line { stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; fill: none; }
-    @media (max-width: 900px) {
-      nav { padding: 0 24px; flex-wrap: wrap; height: auto; min-height: 56px; }
-      .nav-toggle { display: flex; margin-left: auto; }
-      .nav-links {
-        display: none;
-        flex-basis: 100%;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0;
-        margin-left: 0;
-        border-top: 1px solid var(--rule);
-        padding: 8px 0 12px;
-      }
-      nav.nav-open .nav-links { display: flex; }
-      .nav-links a { padding: 14px 0; border-bottom: 1px solid var(--pale); }
-      .nav-links a:last-child { border-bottom: none; }
-    }
+    /* header */
+    header.top { padding: 24px 40px; display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule); }
+    .brand { font-family: var(--mono); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; color: var(--ink); }
+    nav.main { display: flex; flex-wrap: wrap; gap: 4px 28px; align-items: center; font-size: 15px; }
+    nav.main a { text-decoration: none; color: var(--muted); padding: 10px 0; }
+    nav.main a:hover { color: #FFFFFF; }
+    nav.main a.pill { color: var(--bg); background: var(--accent); padding: 10px 18px; border-radius: 999px; font-weight: 500; }
+    nav.main a.pill:hover { color: var(--bg); background: #F2C466; }
 
-    /* FEATURED — split hero: live carousel + identity */
-    .featured {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: max(560px, calc(100vh - 56px));
-      border-bottom: 1px solid var(--rule);
-    }
-    .featured-live {
-      position: relative;
-      overflow: hidden;
-      background: var(--pale);
-      border-right: 1px solid var(--rule);
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-    .featured-text {
-      padding: 40px 56px 36px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 24px;
-    }
-    .featured-live { min-height: 480px; }
-    /* Desktop: the text column can run taller than the window; keep the carousel,
-       with its controls, pinned to one screen while it scrolls. */
-    @media (min-width: 901px) {
-      .featured-live {
-        position: sticky;
-        top: 56px;
-        align-self: start;
-        height: calc(100vh - 56px);
-        min-height: 480px;
-        border-right: none;
-      }
-      .featured-text { border-left: 1px solid var(--rule); }
-    }
-    .artist-intro {
-      font-family: var(--serif);
-      font-weight: 300;
-      font-size: clamp(16px, 1.5vw, 19px);
-      line-height: 1.55;
-      color: var(--ink);
-      max-width: 520px;
-      margin: 14px 0 20px;
-      animation: fadeUp 0.7s 0.2s both;
-    }
-    .artist-intro strong { font-weight: 400; }
-    .hero-offer {
-      border-top: 1px solid var(--rule);
-      border-bottom: 1px solid var(--rule);
-      padding: 16px 0;
-      margin-bottom: 8px;
-      max-width: 520px;
-      animation: fadeUp 0.7s 0.3s both;
-    }
-    .hero-offer p {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      line-height: 1.5;
-      color: var(--mid);
-      margin-bottom: 14px;
-    }
-    .hero-offer p strong { color: var(--ink); font-weight: 400; }
-    a.inquire-btn {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 10.5px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--white);
-      background: var(--ink);
-      border: 1px solid var(--ink);
-      padding: 13px 26px;
-      transition: background 0.2s, color 0.2s;
-    }
-    a.inquire-btn:hover { background: var(--white); color: var(--ink); }
-    a.inquire-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-    .deploy { margin-top: 12px; }
-    .deploy-group { margin-bottom: 14px; }
-    .featured-eyebrow {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .artist-name {
-      font-family: var(--serif);
-      font-size: clamp(48px, 6vw, 80px);
-      font-weight: 300;
-      line-height: 1;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin-bottom: 8px;
-      animation: fadeUp 0.7s 0.1s both;
-    }
-    .artist-name em { font-style: italic; }
-    .artist-thesis {
-      font-family: var(--serif);
-      font-style: italic;
-      font-weight: 300;
-      font-size: clamp(16px, 1.8vw, 20px);
-      color: var(--mid);
-      line-height: 1.5;
-      max-width: 420px;
-      margin: 20px 0 36px;
-      border-left: 2px solid var(--rule);
-      padding-left: 20px;
-      animation: fadeUp 0.7s 0.2s both;
-    }
-    .acquire-block { animation: fadeUp 0.7s 0.3s both; }
-    .acquire-line {
-      font-family: var(--serif);
-      font-size: 17px;
-      font-weight: 300;
-      color: var(--ink);
-      line-height: 1.5;
-      margin-bottom: 14px;
-    }
-    .acquire-link {
-      font-family: var(--mono);
-      font-size: 9.5px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink);
-      border-bottom: 1px solid var(--ink);
-      padding-bottom: 2px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .acquire-link:hover { color: var(--mid); border-color: var(--mid); }
-    .featured-caption {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      line-height: 1.7;
-      animation: fadeUp 0.7s 0.4s both;
-    }
+    /* hero */
+    #top { padding: 72px 40px 56px; display: flex; flex-wrap: wrap; gap: 56px; align-items: center; }
+    .hero-text { flex: 1 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+    h1.name { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(64px, 8vw, 116px); line-height: 0.95; letter-spacing: -0.01em; }
+    .lede { margin: 0; font-family: var(--serif); font-size: clamp(24px, 2.4vw, 32px); line-height: 1.3; color: var(--ink); max-width: 34ch; }
+    .sub { margin: 0; color: var(--muted); max-width: 58ch; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 8px; }
+    a.btn { text-decoration: none; background: var(--accent); color: var(--bg); font-weight: 600; padding: 14px 24px; border-radius: 999px; font-size: 16px; }
+    a.btn:hover { color: var(--bg); background: #F2C466; }
+    a.btn.big { padding: 16px 32px; font-size: 17px; }
+    a.btn.ghost { background: transparent; border: 1px solid var(--dash); color: var(--ink); font-weight: 400; }
+    a.btn.ghost:hover { color: #FFFFFF; background: transparent; border-color: var(--muted); }
+    figure.hero-fig { flex: 1 1 460px; min-width: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    .hero-art { aspect-ratio: 1 / 1; background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+    .hero-art svg { display: block; width: 100%; height: 100%; }
+    figcaption.cap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--muted); }
 
-    /* Carousel (left panel) */
-    .carousel-shell {
-      flex: 1 1 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      position: relative;
-    }
-    .carousel-viewport {
-      flex: 1 1 0;
-      min-height: 0;
-      overflow: hidden;
-      position: relative;
-      background: #0a0a0a;
-    }
-    .carousel-track {
-      display: flex;
-      align-items: stretch;
-      height: 100%;
-      min-height: 100%;
-      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-      will-change: transform;
-    }
-    .carousel-slide {
-      flex: 0 0 auto;
-      align-self: stretch;
-      height: 100%;
-      min-height: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-    .slide-caption {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 12px 20px;
-      background: linear-gradient(transparent, rgba(20, 18, 16, 0.88));
-      pointer-events: none;
-    }
-    .slide-caption-inner {
-      font-family: var(--serif);
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--white);
-    }
-    .slide-caption-inner span {
-      display: block;
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .slide-caption-desc {
-      display: block;
-      margin-top: 6px;
-      font-size: 12px;
-      line-height: 1.55;
-      color: rgba(255, 255, 255, 0.88);
-      max-width: 52em;
-    }
-    .carousel-bar {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(16px, 4vw, 36px);
-      padding: 14px 16px;
-      background: var(--white);
-      border-top: 1px solid var(--rule);
-    }
-    .carousel-bar button {
-      font: inherit;
-      cursor: pointer;
-      border: 1px solid var(--rule);
-      background: var(--white);
-      color: var(--ink);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-    .carousel-bar button:hover { border-color: var(--ink); background: var(--off); }
-    .carousel-bar button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-    .carousel-bar button svg { width: 18px; height: 18px; }
-    .carousel-dots { display: flex; align-items: center; gap: 8px; }
-    .carousel-dots button {
-      width: 8px;
-      height: 8px;
-      padding: 0;
-      border-radius: 50%;
-      border: 1px solid var(--muted);
-      background: transparent;
-    }
-    .carousel-dots button[aria-current='true'] { background: var(--ink); border-color: var(--ink); }
-    .carousel-dots button:hover { border-color: var(--ink); }
-    a.carousel-open-full {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .bloom-slide-link {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      outline: none;
-      background: #0a0a0a;
-    }
-    .bloom-slide-link:focus-visible { outline: 2px solid var(--white); outline-offset: -2px; }
-    .bloom-slide-img, .chutes77823-slide-img, .carousel-still-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-    @media (max-width: 900px) {
-      .featured { grid-template-columns: 1fr; height: auto; min-height: auto; }
-      .featured-live {
-        min-height: min(52vh, 440px);
-        height: min(52vh, 440px);
-        border-right: none;
-        border-bottom: 1px solid var(--rule);
-      }
-      .featured-text { padding: 48px 24px; }
-      .carousel-viewport { height: 100%; }
-      .carousel-slide { height: 100% !important; min-height: 100% !important; }
-    }
-    @media (hover: none) and (pointer: coarse) and (min-width: 901px) {
-      .featured-live { min-height: min(52vh, 480px); }
-    }
+    /* acquire band */
+    #inquire { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--panel); scroll-margin-top: 0; }
+    #inquire .wrap { padding: 40px; display: flex; flex-wrap: wrap; gap: 24px 48px; align-items: center; justify-content: space-between; }
+    .band-copy { flex: 1 1 520px; min-width: 0; }
+    .band-copy h2 { margin: 0 0 8px; font-family: var(--serif); font-weight: 400; font-size: 40px; line-height: 1.1; }
+    .band-copy p { margin: 0; color: var(--muted); max-width: 62ch; }
 
-    /* WORKS */
-    .works { padding: 0; }
-    .works-head {
-      padding: 0 48px;
-      max-width: 1300px;
-      margin: 0 auto 64px;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-    }
-    .works-head h2 {
-      font-family: var(--serif);
-      font-size: clamp(28px, 3.5vw, 44px);
-      font-weight: 300;
-      color: var(--ink);
-      letter-spacing: -0.02em;
-    }
-    .works-head h2 em { font-style: italic; }
-    .works-head-note {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .works-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--rule);
-      border-top: 1px solid var(--rule);
-      border-bottom: 1px solid var(--rule);
-    }
-    .work-card { background: var(--white); display: flex; flex-direction: column; }
-    .work-card-image { aspect-ratio: 4/3; overflow: hidden; background: var(--pale); position: relative; }
-    .work-card-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.7s ease, filter 0.4s;
-      filter: saturate(0.9);
-    }
-    .work-card:hover .work-card-image img { transform: scale(1.04); filter: saturate(1.05); }
-    .work-card-body {
-      padding: 32px 36px 36px;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .work-card-title {
-      font-family: var(--serif);
-      font-size: clamp(22px, 2.5vw, 30px);
-      font-weight: 300;
-      color: var(--ink);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 10px;
-    }
-    .work-card-title em { font-style: italic; }
-    .work-card-meta {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-    .work-card-desc {
-      font-size: 14px;
-      color: var(--mid);
-      line-height: 1.8;
-      margin-bottom: 28px;
-      flex-grow: 1;
-    }
-    .work-card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 20px;
-      border-top: 1px solid var(--rule);
-    }
-    .work-edition { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--muted); }
-    .work-inquire {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink);
-      border-bottom: 1px solid var(--ink);
-      padding-bottom: 1px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .work-inquire:hover { color: var(--mid); border-color: var(--mid); }
-    .catalog-link-row-wrap { border-bottom: 1px solid var(--rule); }
-    .catalog-link-row {
-      padding: 24px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1300px;
-      margin: 0 auto;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .catalog-count {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .catalog-link {
-      font-family: var(--mono);
-      font-size: 9.5px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink);
-      border-bottom: 1px solid var(--ink);
-      padding-bottom: 1px;
-      transition: color 0.2s;
-    }
-    .catalog-link:hover { color: var(--mid); }
+    /* series */
+    #series { padding: 96px 40px 48px; }
+    .series-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 12px 32px; margin-bottom: 40px; }
+    .series-head h2 { font-size: 56px; line-height: 1; }
+    .series-head p { margin: 0; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+    .series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 40px 32px; }
+    .series-card { display: flex; flex-direction: column; gap: 14px; }
+    .s-media { display: block; aspect-ratio: 4 / 3; background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; position: relative; }
+    .s-media img, .s-media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .s-media.placeholder { border: 1px dashed var(--dash); display: flex; align-items: flex-end; padding: 16px; }
+    .s-media.placeholder span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .s-title { display: flex; gap: 12px; align-items: baseline; }
+    .s-num { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+    .s-title h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 32px; line-height: 1.1; }
+    .s-title h3 a { text-decoration: none; color: var(--ink); }
+    .s-title h3 a:hover { color: #FFFFFF; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 6px; }
+    .s-line { margin: 0; color: #CFCDC6; font-size: 16px; }
+    .s-tags { margin: 0; font-family: var(--mono); font-size: 12px; color: var(--muted); }
 
-    /* SERIES */
-    .series { padding: 56px 48px 48px; border-bottom: 1px solid var(--rule); }
-    .series-inner { max-width: 1300px; margin: 0 auto; }
-    .series-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      font-weight: 400;
-      color: var(--muted);
-      margin-bottom: 24px;
-    }
-    .series-grid {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--rule);
-      border: 1px solid var(--rule);
-    }
-    .series-grid a {
-      display: block;
-      height: 100%;
-      background: var(--white);
-      padding: 22px 24px;
-      text-decoration: none;
-      color: var(--ink);
-      transition: background 0.2s;
-    }
-    .series-grid a:hover { background: var(--off); }
-    .series-grid a:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-    .series-name {
-      display: block;
-      font-family: var(--serif);
-      font-size: 22px;
-      font-weight: 300;
-      letter-spacing: -0.01em;
-      line-height: 1.15;
-      margin-bottom: 6px;
-    }
-    .series-desc { display: block; font-size: 13px; line-height: 1.6; color: var(--mid); }
-    .series-more { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 24px; }
-    .series-more a {
-      font-family: var(--mono);
-      font-size: 9.5px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink);
-      border-bottom: 1px solid var(--ink);
-      padding-bottom: 2px;
-    }
-    .series-more a:hover { color: var(--mid); border-color: var(--mid); }
-    @media (max-width: 900px) {
-      .series { padding: 40px 24px; }
-      .series-grid { grid-template-columns: 1fr; }
-    }
+    /* practice + about */
+    #practice { padding: 96px 40px; display: flex; flex-wrap: wrap; gap: 48px 80px; }
+    .two-left { flex: 1 1 380px; min-width: 0; }
+    .two-right { flex: 1.3 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 20px; color: var(--body); }
+    .two-right p { margin: 0; }
+    #practice .mono-label { margin-bottom: 20px; }
+    blockquote.pull { margin: 0; font-family: var(--serif); font-size: clamp(32px, 3.4vw, 46px); line-height: 1.15; }
+    .pull-note { margin: 24px 0 0; font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--muted); }
+    .tech { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+    #about { border-top: 1px solid var(--rule); }
+    #about .wrap { padding: 96px 40px; display: flex; flex-wrap: wrap; gap: 48px 80px; }
+    #about .two-left { display: flex; flex-direction: column; gap: 20px; }
+    .portrait { display: block; aspect-ratio: 4 / 5; max-width: 360px; background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; position: relative; }
+    .portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .bio-lede { font-family: var(--serif); font-size: 28px; line-height: 1.3; color: var(--ink); }
 
-    /* CLOSING INQUIRY */
-    .closing-cta {
-      padding: 64px 48px;
-      text-align: center;
-      border-bottom: 1px solid var(--rule);
-    }
-    .closing-cta p {
-      font-family: var(--serif);
-      font-size: clamp(20px, 2.4vw, 28px);
-      font-weight: 300;
-      color: var(--ink);
-      margin-bottom: 24px;
-    }
-    @media (max-width: 900px) { .closing-cta { padding: 48px 24px; } }
+    /* exhibitions */
+    #cv { border-top: 1px solid var(--rule); }
+    #cv .wrap { padding: 96px 40px; }
+    #cv h2 { margin: 0 0 40px; font-size: 56px; line-height: 1; }
+    .upcoming { border: 1px solid var(--accent); border-radius: 4px; padding: 24px 28px; margin-bottom: 32px; display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: baseline; justify-content: space-between; }
+    .upcoming .mono-label { font-size: 12px; margin-bottom: 4px; }
+    .upcoming .u-title { margin: 0; font-family: var(--serif); font-size: 30px; line-height: 1.2; }
+    .upcoming .u-title a { text-decoration: none; }
+    .upcoming .u-when { margin: 0; font-family: var(--mono); font-size: 14px; color: var(--body); }
+    ul.cv { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+    ul.cv li { display: flex; flex-wrap: wrap; gap: 4px 32px; padding: 22px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+    .cv-date { flex: 0 0 220px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+    .cv-title { flex: 1 1 360px; min-width: 0; font-size: 18px; }
+    .cv-title a { text-decoration: none; border-bottom: 1px solid var(--dash); }
+    .cv-title a:hover { border-color: var(--accent); }
+    .cv-place { flex: 0 1 280px; color: var(--muted); font-size: 15px; }
 
-    /* PRACTICE */
-    .practice {
-      padding: 32px 48px 96px;
-      border-bottom: 1px solid var(--rule);
-      background: var(--off);
-    }
-    .practice-inner { max-width: 800px; margin: 0 auto; }
-    .practice-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
-    .practice-statement {
-      font-family: var(--serif);
-      font-size: clamp(20px, 2.5vw, 28px);
-      font-weight: 300;
-      font-style: italic;
-      color: var(--ink);
-      line-height: 1.5;
-      letter-spacing: -0.01em;
-      margin-bottom: 40px;
-    }
-    .practice-body { font-size: 15px; color: var(--mid); line-height: 1.9; }
-    .practice-body p { margin-bottom: 1.3em; }
-    .practice-body p:last-child { margin-bottom: 0; }
-    .practice-body strong { color: var(--ink); font-weight: 400; }
-    .practice-links { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 32px; }
-    .practice-more {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--muted);
-      border-bottom: 1px solid var(--rule);
-      padding-bottom: 2px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .practice-more:hover { color: var(--ink); border-color: var(--ink); }
+    /* closing + footer */
+    .closing { background: var(--panel); border-top: 1px solid var(--rule); }
+    .closing .wrap { padding: 96px 40px; display: flex; flex-direction: column; align-items: flex-start; gap: 24px; }
+    .closing h2 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(44px, 5vw, 72px); line-height: 1.05; max-width: 16ch; }
+    .closing p { margin: 0; color: var(--muted); max-width: 60ch; }
+    footer.foot { border-top: 1px solid var(--rule); }
+    footer.foot .wrap { padding: 48px 40px 56px; display: flex; flex-wrap: wrap; gap: 24px 64px; justify-content: space-between; }
+    footer.foot p { margin: 0; }
+    .foot-desc { flex: 1 1 520px; min-width: 0; color: var(--muted); font-size: 15px; max-width: 70ch; }
+    .foot-copy { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .foot-links { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 8px 28px; font-family: var(--mono); font-size: 12px; }
+    .foot-links a { color: var(--muted); text-decoration: none; padding: 6px 0; }
+    .foot-links a:hover { color: #FFFFFF; }
 
-    /* BIO */
-    .bio { padding: 96px 48px; border-bottom: 1px solid var(--rule); }
-    .bio-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
+    @media (max-width: 700px) {
+      header.top, #top, #series, #practice, #about .wrap, #cv .wrap, #inquire .wrap, .closing .wrap, footer.foot .wrap { padding-left: 20px; padding-right: 20px; }
+      #top { padding-top: 40px; }
+      #series, #practice, #about .wrap, #cv .wrap, .closing .wrap { padding-top: 64px; padding-bottom: 64px; }
+      .series-head h2, #cv h2 { font-size: 44px; }
+      .cv-date { flex-basis: 100%; }
     }
-    .bio-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 28px;
-    }
-    .bio-text {
-      font-family: var(--serif);
-      font-size: 18px;
-      font-weight: 300;
-      line-height: 1.7;
-      color: var(--ink);
-    }
-    .bio-text p { margin-bottom: 1.2em; }
-    .bio-text p:last-child { margin-bottom: 0; }
-    .bio-text em { font-style: italic; }
-    .bio-text a { color: inherit; }
-    .cv-group { margin-bottom: 36px; }
-    .cv-group-label {
-      font-family: var(--mono);
-      font-size: 8.5px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--rule);
-      margin-bottom: 16px;
-    }
-    .cv-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--pale);
-      gap: 16px;
-    }
-    .cv-row:last-child { border-bottom: none; }
-    .cv-item-name { font-family: var(--serif); font-size: 15px; font-weight: 300; color: var(--ink); }
-    .cv-item-name em { font-style: italic; }
-    .cv-item-name a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--rule); }
-    .cv-item-name a:hover { border-color: var(--ink); }
-    .cv-item-detail {
-      font-family: var(--mono);
-      font-size: 8.5px;
-      letter-spacing: 1px;
-      color: var(--muted);
-      text-align: right;
-      flex: 0 1 44%;
-    }
-
-    /* COMMISSION */
-    .commission {
-      padding: 96px 48px;
-      background: var(--off);
-      border-bottom: 1px solid var(--rule);
-    }
-    .commission-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-    }
-    .commission h2 {
-      font-family: var(--serif);
-      font-size: clamp(32px, 4vw, 52px);
-      font-weight: 300;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      color: var(--ink);
-      margin-bottom: 32px;
-    }
-    .commission h2 em { font-style: italic; }
-    .commission-body { font-size: 15px; color: var(--mid); line-height: 1.85; }
-    .commission-body p { margin-bottom: 1.2em; }
-    .commission-body p:last-child { margin-bottom: 0; }
-    .commission-contact { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--rule); }
-    .contact-line {
-      font-family: var(--serif);
-      font-size: 18px;
-      font-weight: 300;
-      color: var(--ink);
-      margin-bottom: 8px;
-    }
-    .contact-line a {
-      color: var(--ink);
-      text-decoration: none;
-      border-bottom: 1px solid var(--rule);
-      padding-bottom: 2px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-    .contact-line a:hover { color: var(--mid); border-color: var(--mid); }
-    .commission-types { list-style: none; display: flex; flex-direction: column; gap: 2px; }
-    .commission-type {
-      display: grid;
-      grid-template-columns: 88px 1fr;
-      gap: 20px;
-      align-items: start;
-      padding: 24px 0;
-      border-bottom: 1px solid var(--rule);
-    }
-    .commission-type:last-child { border-bottom: none; }
-    .ct-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-top: 3px;
-    }
-    .ct-title {
-      font-family: var(--serif);
-      font-size: 18px;
-      font-weight: 400;
-      color: var(--ink);
-      margin-bottom: 6px;
-      line-height: 1.2;
-    }
-    .ct-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
-
-    /* CONSULTING */
-    .consulting-note {
-      padding: 48px;
-      border-bottom: 1px solid var(--rule);
-      background: var(--white);
-    }
-    .consulting-note-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 32px;
-      flex-wrap: wrap;
-    }
-    .cn-text {
-      font-family: var(--serif);
-      font-size: 17px;
-      font-weight: 300;
-      color: var(--mid);
-      line-height: 1.6;
-    }
-    .cn-text strong { color: var(--ink); font-weight: 400; }
-    .cn-link {
-      flex-shrink: 0;
-      font-family: var(--mono);
-      font-size: 9.5px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--ink);
-      border-bottom: 1px solid var(--ink);
-      padding-bottom: 2px;
-      white-space: nowrap;
-      transition: color 0.2s;
-    }
-    .cn-link:hover { color: var(--mid); }
-
-    /* FOOTER */
-    footer {
-      padding: 36px 48px;
-      border-top: 1px solid var(--rule);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 20px;
-      background: var(--white);
-    }
-    .footer-name {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      color: var(--ink);
-      letter-spacing: 0.01em;
-    }
-    .footer-right { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
-    .footer-right a {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-    .footer-right a:hover { color: var(--ink); }
-    .footer-meta {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 1px;
-      color: var(--muted);
-      opacity: 0.75;
-    }
-
-    /* REVEAL */
-    .reveal {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    @media (max-width: 900px) {
-      .works-head { padding: 0 24px; flex-direction: column; gap: 12px; margin-bottom: 40px; }
-      .works-grid { grid-template-columns: 1fr; }
-      .catalog-link-row { padding: 24px; }
-      .practice { padding: 24px 24px 72px; }
-      .bio, .commission, .consulting-note { padding: 72px 24px; }
-      .bio-inner, .commission-inner { grid-template-columns: 1fr; gap: 48px; }
-      footer { flex-direction: column; align-items: flex-start; padding: 28px 24px; }
-    }
-    .bloom-slide-stack {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-    }
-    /* Slide 1 — Chutes / Surrender Machine · seed 77823 (Loop Art Critique 2026) */
-    .chutes77823-slide-stack {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-    }
-    .chutes77823-embed-wrap {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: #ffffff;
-    }
-    html.draft-bloom-live .chutes77823-embed-wrap {
-      display: block;
-    }
-    .chutes77823-embed {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-    .chutes77823-slide-link {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      outline: none;
-      background: #ffffff;
-    }
-    .chutes77823-slide-link:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-    /* Live embeds: still preview stays on top until iframe load (see __mwCarouselActivateEmbeds). */
-    html.draft-bloom-live [class$="-slide-stack"] [class$="-embed-wrap"] {
-      z-index: 1;
-    }
-    html.draft-bloom-live [class$="-slide-stack"] [class$="-static-fallback"],
-    html.draft-bloom-live [class$="-slide-stack"] [class$="-slide-link"] {
-      z-index: 2;
-    }
-    html.draft-bloom-live [class$="-slide-stack"].embed-ready [class$="-embed-wrap"] {
-      z-index: 3;
-    }
-    html.draft-bloom-live [class$="-slide-stack"].embed-ready [class$="-static-fallback"],
-    html.draft-bloom-live [class$="-slide-stack"].embed-ready [class$="-slide-link"] {
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .bloom-embed-wrap {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: #0a0a0a;
-    }
-    html.draft-bloom-live .bloom-embed-wrap {
-      display: block;
-    }
-    .bloom-embed {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-    /* Slide 3 — technical drawing + elevation (p5 draft) */
-    .art03-slide-stack {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-    }
-    .art03-embed-wrap {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: #1a1a1a;
-    }
-    html.draft-bloom-live .art03-embed-wrap {
-      display: block;
-    }
-    .art03-embed {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-    /* Slides 3–7 — PNG stills (see /images/homepage-featured/) */
-    .art03-static-fallback.carousel-still-wrap,
-    .art04-static-fallback.carousel-still-wrap {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      display: block;
-      overflow: hidden;
-    }
-    .carousel-still-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-    }
-    .art03-static-fallback.carousel-still-wrap,
-    .art04-static-fallback.carousel-still-wrap { background: #1a1a1a; }
-    /* Slide 4 — technical drawing (sidebar / studio build) */
-    .art04-slide-stack {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-    }
-    .art04-embed-wrap {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: #1a1a1a;
-    }
-    html.draft-bloom-live .art04-embed-wrap {
-      display: block;
-    }
-    .art04-embed {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-    /* iOS / touch stills: force previews visible even if draft-bloom-live state is wrong */
-    html.home-stills-only .bloom-embed-wrap,
-    html.home-stills-only .chutes77823-embed-wrap,
-    html.home-stills-only .art03-embed-wrap,
-    html.home-stills-only .art04-embed-wrap {
-      display: none !important;
-    }
-    html.home-stills-only .bloom-static-fallback,
-    html.home-stills-only .chutes77823-static-fallback {
-      display: block !important;
-    }
-    html.home-stills-only .art03-static-fallback,
-    html.home-stills-only .art04-static-fallback {
-      display: block !important;
-    }
-
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>
-  <script>
-  (function () {
-    try {
-      var q = window.location.search || '';
-      if (/[?&]static=1(?:&|$)/.test(q)) return;
-      var p = window.location.protocol;
-      var http = p === 'http:' || p === 'https:';
-      var forceLive = /[?&]live=1(?:&|$)/.test(q);
-      if (http || forceLive) {
-        document.documentElement.classList.add('draft-bloom-live');
-      }
-      /* iOS Safari: even one WebGL/heavy iframe often kills the tab ("A problem repeatedly occurred").
-         Use still previews; add ?live=1 to force embeds (may still crash). */
-      if (!forceLive) {
-        var ua = navigator.userAgent || '';
-        var platform = typeof navigator.platform === 'string' ? navigator.platform : '';
-        var iOS = /iP(ad|hone|od)/.test(ua)
-          || platform === 'iPhone' || platform === 'iPad' || platform === 'iPod'
-          || (platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        if (iOS) {
-          document.documentElement.classList.remove('draft-bloom-live');
-          document.documentElement.classList.add('home-stills-only');
-        }
-        /* Fallback: narrow touch UIs (some iPad browsers omit iPhone in UA; Android phones) */
-        if (!document.documentElement.classList.contains('home-stills-only')) {
-          try {
-            if (window.matchMedia('(max-width: 900px)').matches && window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
-              document.documentElement.classList.remove('draft-bloom-live');
-              document.documentElement.classList.add('home-stills-only');
-            }
-          } catch (e) {}
-        }
-      }
-    } catch (e) {}
-  })();
-  </script>
 </head>
 <body>
+<div class="page">
 
-<nav>
-  <a href="/" class="nav-name">Mark Walhimer</a>
-  <button type="button" class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav-links">
-    <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path class="line" d="M1 1h18M1 7h18M1 13h18"/></svg>
-  </button>
-  <div class="nav-links" id="site-nav-links">
-    <a href="/available/">Available</a>
-    <a href="/guide/index.html" class="series-nav">Screens, Code &amp; Museums</a>
-    <a href="/sketches/index.html">Catalog</a>
-    <a href="/contact/index.html" class="nav-acquire">Contact</a>
-  </div>
-</nav>
+<header class="top wrap">
+  <a href="#top" class="brand">Mark Walhimer Studio</a>
+  <nav class="main" aria-label="Main">
+    <a href="#series">Series</a>
+    <a href="#practice">Practice</a>
+    <a href="#about">About</a>
+    <a href="#cv">Exhibitions</a>
+    <a href="#inquire" class="pill">Inquire</a>
+  </nav>
+</header>
 
-<section class="featured" aria-label="Featured works and artist statement">
-  <div class="featured-live">
-
-    <div class="carousel-shell">
-      <div class="carousel-viewport" id="carousel-viewport">
-        <div class="carousel-track" id="carousel-track" role="list">
-          <!-- Slide 1: installation documentation — the work as shown at ICA Miami.
-               Placed first so the opening frame is the work installed in an
-               institution; the live embed of the same piece follows as slide 2. -->
-          <article class="carousel-slide" role="listitem" aria-label="Technical Objects Exist installed at ICA Miami">
-            <a
-              class="install-slide-link carousel-open-full"
-              href="/installations/"
-              aria-label="Open installations"
-            >
-              <img
-                class="install-slide-img"
-                src="/sketches/loop-art-critique-2026/assets/technical-objects-exist-installation.jpg"
-                width="917"
-                height="763"
-                alt="Surrender Machine 77823 installed in Technical Objects Exist at ICA Miami — screen on stand, plinth with headphones, didactic panel, and exhibition wall text"
-                loading="eager"
-                decoding="async"
-                fetchpriority="high"
-              />
-            </a>
-            <div class="slide-caption install-slide-caption">
-              <div class="slide-caption-inner">
-                <span>Installed · ICA Miami</span>
-                <span class="slide-caption-desc">Surrender Machine 77823 in <em>Technical Objects Exist</em> — Loop Art Critique + ICA Miami, curated by Doreen Rios · 2026</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Slide 2: Surrender Machine 77823 — Loop Art Critique · ICA Miami -->
-          <article class="carousel-slide" role="listitem" aria-label="Surrender Machine 77823 — Mark Walhimer, 2026">
-            <div class="chutes77823-slide-stack">
-              <div class="chutes77823-embed-wrap" id="chutes77823-embed-wrap">
-                <iframe
-                  class="chutes77823-embed"
-                  id="chutes77823-embed-frame"
-                  title="Chutes — living · dense machine · code art layer · seed 77823"
-                  allow="fullscreen"
-                ></iframe>
-              </div>
-              <a
-                class="chutes77823-slide-link chutes77823-static-fallback carousel-open-full"
-                href="/installation/surrender-machine-77823/"
-                aria-label="Open Surrender Machine 77823 (full page)"
-              >
-                <img
-                  class="chutes77823-slide-img"
-                  src="/images/homepage-featured/008.png"
-                  width="1024"
-                  height="522"
-                  alt="Surrender Machine 77823 — a corridor of pink, orange and yellow code text and distorted letterforms wrapping the walls of a white three-dimensional room"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </a>
-            </div>
-            <div class="slide-caption">
-              <div class="slide-caption-inner">
-                <span>Loop Art Critique · ICA Miami · Cohort #21</span>
-                <span id="chutes77823-caption-detail">Surrender Machine 77823 — Mark Walhimer, 2026 — curated by Doreen Rios</span>
-                <span class="slide-caption-desc" id="chutes77823-caption-desc">A traversable Three.js volume driven by an invisible RGB map — spatial operators raymarched through a GPU voxel field. Dense Ghost wireframe machine, code mural layer, and RGB soundscape; an eight-minute life cycle ends in surrender rebirth from seed 77823.</span>
-              </div>
-            </div>
-          </article>
-
-          <!-- Slide 2: live iframe over HTTPS; file:// shows still image -->
-          <article class="carousel-slide" role="listitem" aria-label="Bloom / Four Walls — featured">
-            <div class="bloom-slide-stack">
-              <div class="bloom-embed-wrap" id="bloom-embed-wrap">
-                <iframe
-                  class="bloom-embed"
-                  id="bloom-embed-frame"
-                  title="Bloom / Four Walls"
-                  allow="fullscreen"
-                ></iframe>
-              </div>
-              <a
-                class="bloom-slide-link bloom-static-fallback carousel-open-full"
-                href="/installations/bloom-four-walls-sketch.html"
-                aria-label="Open Bloom / Four Walls (full page)"
-              >
-                <img
-                  class="bloom-slide-img"
-                  src="/images/homepage-featured/001.png"
-                  width="1024"
-                  height="529"
-                  alt="Bloom / Four Walls — soft blurred ovals of blue, purple, orange and green glowing on a white field"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </a>
-            </div>
-            <div class="slide-caption">
-              <div class="slide-caption-inner">
-                <span>Series · Bloom</span>
-                <span id="bloom-caption-detail">Bloom / Four Walls — a generative four-wall environment</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="carousel-slide" role="listitem" aria-label="Abstract technical drawing — elevation">
-            <div class="art03-slide-stack">
-              <div class="art03-embed-wrap" id="art03-embed-wrap">
-                <iframe
-                  class="art03-embed"
-                  id="art03-embed-frame"
-                  title="Abstract technical drawing — elevation"
-                  allow="fullscreen"
-                ></iframe>
-              </div>
-              <a
-                class="art03-static-fallback carousel-still-wrap carousel-open-full"
-                href="/drafts/artwork-03-technical-drawing-elevation/index.html"
-                aria-label="Open abstract technical drawing — elevation (full page)"
-              >
-                <img
-                  class="carousel-still-img"
-                  src="/images/homepage-featured/003.png"
-                  width="1600"
-                  height="900"
-                  alt="Abstract technical drawing — white line diagram on black with a ground line, small cubes, arrows, zigzags and the words BALANCE, STRUCTURE and MODULE"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </a>
-            </div>
-            <div class="slide-caption">
-              <div class="slide-caption-inner">
-                <span>Drawing</span>
-                <span id="art03-caption-detail">Abstract technical drawing — elevation</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="carousel-slide" role="listitem" aria-label="Abstract technical drawing — studio">
-            <div class="art04-slide-stack">
-              <div class="art04-embed-wrap" id="art04-embed-wrap">
-                <iframe
-                  class="art04-embed"
-                  id="art04-embed-frame"
-                  title="Abstract technical drawing — studio"
-                  allow="fullscreen"
-                ></iframe>
-              </div>
-              <a
-                class="art04-static-fallback carousel-still-wrap carousel-open-full"
-                href="/drafts/artwork-04-technical-drawing/index.html"
-                aria-label="Open abstract technical drawing — studio (full page)"
-              >
-                <img
-                  class="carousel-still-img"
-                  src="/images/homepage-featured/004.png"
-                  width="1600"
-                  height="900"
-                  alt="Abstract technical drawing — white line diagram on black with cubes on a ground line, circles, arrows and the words PATHWAY, NODE, TENSION and CONNECTION"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </a>
-            </div>
-            <div class="slide-caption">
-              <div class="slide-caption-inner">
-                <span>Drawing</span>
-                <span id="art04-caption-detail">Abstract technical drawing — studio</span>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-
-      <div class="carousel-bar">
-        <button type="button" id="carousel-prev" aria-label="Previous artwork">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-            <path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Choose artwork"></div>
-        <button type="button" id="carousel-next" aria-label="Next artwork">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-            <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-      </div>
+<main>
+<section id="top" class="wrap" aria-label="Introduction">
+  <div class="hero-text">
+    <p class="mono-label">New Media · Generative · Systems-Based · Digital Installation</p>
+    <h1 class="name">Mark Walhimer</h1>
+    <p class="lede">I make artworks out of code that run live — on a screen, in a projection, or across the walls of a room. Each one grows from a single seed I call Machine DNA, and takes many bodies. <em>The room is the art.</em></p>
+    <p class="sub">I am a generative artist and digital installation artist. I build immersive digital art and digital art installations for museums, lobbies, public spaces, and private collections — works that generate in real time, in p5.js, WebGL, and GLSL, and change with every viewing.</p>
+    <div class="btn-row">
+      <a href="#inquire" class="btn">Acquire or commission</a>
+      <a href="#series" class="btn ghost">See the six series</a>
     </div>
   </div>
-  <div class="featured-text">
-    <div class="featured-eyebrow">New Media · Generative · Systems-Based · Digital Installation</div>
-    <div>
-      <h1 class="artist-name">Mark<br><em>Walhimer</em></h1>
-
-      <p class="artist-intro">I make artworks out of code that run live &mdash; on a screen, in a projection, or across the walls of a room. Each one grows from a single seed I call <strong>Machine DNA</strong>, and takes many bodies. <strong>The room is the art.</strong></p>
-
-      <div class="hero-offer" id="offer">
-        <p><strong>Acquire or commission.</strong> Limited hardware editions and site-specific works for institutions and private collections &mdash; direct from the studio, reply within 48 hours.</p>
-        <a class="inquire-btn" href="mailto:mark@walhimer.com?subject=Inquiry">Inquire</a>
-      </div>
-
-      <div class="deploy" id="exhibitions">
-        <div class="deploy-group">
-          <h2 class="deploy-label">Upcoming</h2>
-          <div class="deploy-row">
-            <span class="deploy-work"><a href="/miami-2026/"><em>Miami 2026</em></a> &mdash; Invisible Layer</span>
-            <span class="deploy-where">Miami · upcoming</span>
-          </div>
-        </div>
-
-        <div class="deploy-group">
-          <h2 class="deploy-label">Recent</h2>
-          <div class="deploy-row">
-            <span class="deploy-work"><em>Technical Objects Exist</em> — Surrender Machine 77823</span>
-            <span class="deploy-where">ICA Miami · 2026</span>
-          </div>
-          <div class="deploy-row">
-            <span class="deploy-work"><em>Miradas Tangentes</em></span>
-            <span class="deploy-where">Madrid · 2026</span>
-          </div>
-          <div class="deploy-row">
-            <span class="deploy-work"><em>The Wrong Biennale</em> — Eclipse</span>
-            <span class="deploy-where">Online · 2026</span>
-          </div>
-          <div class="deploy-row">
-            <span class="deploy-work"><em>Async Museum</em> — inaugural exhibition</span>
-            <span class="deploy-where">Online · 2026</span>
-          </div>
-        </div>
-
-        <div class="deploy-group">
-          <h2 class="deploy-label">Installations</h2>
-          <div class="deploy-row">
-            <span class="deploy-work"><a href="/installations/bloom-four-walls.html"><em>Bloom / Four Walls</em></a></span>
-            <span class="deploy-where">Four-wall environment</span>
-          </div>
-          <div class="deploy-row">
-            <span class="deploy-work"><a href="/installations/living-commons.html"><em>Living Commons</em></a></span>
-            <span class="deploy-where">Room-scale</span>
-          </div>
-        </div>
-
-        <p class="deploy-note">
-          <a href="/installations/">Installations</a> ·
-          <a href="/bio/index.html">Full CV</a> ·
-          <a href="/guide/index.html">Guide</a>
-        </p>
-      </div>
+  <figure class="hero-fig">
+    <div class="hero-art">
+      <svg viewBox="0 0 600 600" width="100%" height="100%" aria-hidden="true" focusable="false">
+<g>
+<circle cx="380.7" cy="192.7" r="13.9" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="380.7" cy="192.7" r="27.8" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="380.7" cy="192.7" r="41.7" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="380.7" cy="192.7" r="55.6" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="380.7" cy="192.7" r="69.5" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="380.7" cy="192.7" r="83.4" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="380.7" cy="192.7" r="4.6" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="324.4" cy="248.5" r="16.3" fill="none" stroke="#E9B44C" stroke-opacity="0.65" stroke-width="1.5"/>
+<circle cx="324.4" cy="248.5" r="32.5" fill="none" stroke="#ECEAE4" stroke-opacity="0.55" stroke-width="1"/>
+<circle cx="324.4" cy="248.5" r="48.8" fill="none" stroke="#E9B44C" stroke-opacity="0.45" stroke-width="1"/>
+<circle cx="324.4" cy="248.5" r="65.0" fill="none" stroke="#ECEAE4" stroke-opacity="0.35" stroke-width="1"/>
+<circle cx="324.4" cy="248.5" r="81.3" fill="none" stroke="#E9B44C" stroke-opacity="0.25" stroke-width="1"/>
+<circle cx="324.4" cy="248.5" r="4.5" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="172.5" cy="89.2" r="8.0" fill="none" stroke="#E9B44C" stroke-opacity="0.65" stroke-width="1.5"/>
+<circle cx="172.5" cy="89.2" r="16.0" fill="none" stroke="#ECEAE4" stroke-opacity="0.55" stroke-width="1"/>
+<circle cx="172.5" cy="89.2" r="24.0" fill="none" stroke="#E9B44C" stroke-opacity="0.45" stroke-width="1"/>
+<circle cx="172.5" cy="89.2" r="32.1" fill="none" stroke="#ECEAE4" stroke-opacity="0.35" stroke-width="1"/>
+<circle cx="172.5" cy="89.2" r="40.1" fill="none" stroke="#E9B44C" stroke-opacity="0.25" stroke-width="1"/>
+<circle cx="172.5" cy="89.2" r="4.3" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="278.3" cy="351.4" r="8.2" fill="none" stroke="#E9B44C" stroke-opacity="0.60" stroke-width="1.5"/>
+<circle cx="278.3" cy="351.4" r="16.5" fill="none" stroke="#ECEAE4" stroke-opacity="0.45" stroke-width="1"/>
+<circle cx="278.3" cy="351.4" r="24.7" fill="none" stroke="#E9B44C" stroke-opacity="0.30" stroke-width="1"/>
+<circle cx="278.3" cy="351.4" r="2.1" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="147.7" cy="334.9" r="9.1" fill="none" stroke="#E9B44C" stroke-opacity="0.65" stroke-width="1.5"/>
+<circle cx="147.7" cy="334.9" r="18.2" fill="none" stroke="#ECEAE4" stroke-opacity="0.55" stroke-width="1"/>
+<circle cx="147.7" cy="334.9" r="27.4" fill="none" stroke="#E9B44C" stroke-opacity="0.45" stroke-width="1"/>
+<circle cx="147.7" cy="334.9" r="36.5" fill="none" stroke="#ECEAE4" stroke-opacity="0.35" stroke-width="1"/>
+<circle cx="147.7" cy="334.9" r="45.6" fill="none" stroke="#E9B44C" stroke-opacity="0.25" stroke-width="1"/>
+<circle cx="147.7" cy="334.9" r="3.3" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="406.5" cy="513.9" r="6.2" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="406.5" cy="513.9" r="12.4" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="406.5" cy="513.9" r="18.6" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="406.5" cy="513.9" r="24.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="406.5" cy="513.9" r="30.9" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="406.5" cy="513.9" r="37.1" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="406.5" cy="513.9" r="2.7" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="78.2" cy="472.3" r="6.4" fill="none" stroke="#E9B44C" stroke-opacity="0.65" stroke-width="1.5"/>
+<circle cx="78.2" cy="472.3" r="12.9" fill="none" stroke="#ECEAE4" stroke-opacity="0.55" stroke-width="1"/>
+<circle cx="78.2" cy="472.3" r="19.3" fill="none" stroke="#E9B44C" stroke-opacity="0.45" stroke-width="1"/>
+<circle cx="78.2" cy="472.3" r="25.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.35" stroke-width="1"/>
+<circle cx="78.2" cy="472.3" r="32.1" fill="none" stroke="#E9B44C" stroke-opacity="0.25" stroke-width="1"/>
+<circle cx="78.2" cy="472.3" r="3.3" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="183.2" cy="161.2" r="12.4" fill="none" stroke="#E9B44C" stroke-opacity="0.65" stroke-width="1.5"/>
+<circle cx="183.2" cy="161.2" r="24.9" fill="none" stroke="#ECEAE4" stroke-opacity="0.55" stroke-width="1"/>
+<circle cx="183.2" cy="161.2" r="37.3" fill="none" stroke="#E9B44C" stroke-opacity="0.45" stroke-width="1"/>
+<circle cx="183.2" cy="161.2" r="49.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.35" stroke-width="1"/>
+<circle cx="183.2" cy="161.2" r="62.1" fill="none" stroke="#E9B44C" stroke-opacity="0.25" stroke-width="1"/>
+<circle cx="183.2" cy="161.2" r="4.4" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="473.7" cy="313.9" r="11.6" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="473.7" cy="313.9" r="23.3" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="473.7" cy="313.9" r="34.9" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="473.7" cy="313.9" r="46.6" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="473.7" cy="313.9" r="58.2" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="473.7" cy="313.9" r="69.8" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="473.7" cy="313.9" r="2.0" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="195.9" cy="545.6" r="19.1" fill="none" stroke="#E9B44C" stroke-opacity="0.63" stroke-width="1.5"/>
+<circle cx="195.9" cy="545.6" r="38.3" fill="none" stroke="#ECEAE4" stroke-opacity="0.51" stroke-width="1"/>
+<circle cx="195.9" cy="545.6" r="57.4" fill="none" stroke="#E9B44C" stroke-opacity="0.39" stroke-width="1"/>
+<circle cx="195.9" cy="545.6" r="76.6" fill="none" stroke="#ECEAE4" stroke-opacity="0.27" stroke-width="1"/>
+<circle cx="195.9" cy="545.6" r="3.0" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="153.4" cy="296.1" r="13.8" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="153.4" cy="296.1" r="27.5" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="153.4" cy="296.1" r="41.3" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="153.4" cy="296.1" r="55.1" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="153.4" cy="296.1" r="68.8" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="153.4" cy="296.1" r="82.6" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="153.4" cy="296.1" r="3.6" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="73.4" cy="212.1" r="9.2" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="73.4" cy="212.1" r="18.4" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="73.4" cy="212.1" r="27.7" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="73.4" cy="212.1" r="36.9" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="73.4" cy="212.1" r="46.1" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="73.4" cy="212.1" r="55.3" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="73.4" cy="212.1" r="2.9" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="463.7" cy="149.1" r="10.0" fill="none" stroke="#E9B44C" stroke-opacity="0.63" stroke-width="1.5"/>
+<circle cx="463.7" cy="149.1" r="20.0" fill="none" stroke="#ECEAE4" stroke-opacity="0.51" stroke-width="1"/>
+<circle cx="463.7" cy="149.1" r="30.0" fill="none" stroke="#E9B44C" stroke-opacity="0.39" stroke-width="1"/>
+<circle cx="463.7" cy="149.1" r="40.1" fill="none" stroke="#ECEAE4" stroke-opacity="0.27" stroke-width="1"/>
+<circle cx="463.7" cy="149.1" r="2.8" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="202.0" cy="505.1" r="7.4" fill="none" stroke="#E9B44C" stroke-opacity="0.63" stroke-width="1.5"/>
+<circle cx="202.0" cy="505.1" r="14.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.51" stroke-width="1"/>
+<circle cx="202.0" cy="505.1" r="22.1" fill="none" stroke="#E9B44C" stroke-opacity="0.39" stroke-width="1"/>
+<circle cx="202.0" cy="505.1" r="29.5" fill="none" stroke="#ECEAE4" stroke-opacity="0.27" stroke-width="1"/>
+<circle cx="202.0" cy="505.1" r="4.8" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="268.4" cy="81.2" r="6.9" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="268.4" cy="81.2" r="13.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="268.4" cy="81.2" r="20.6" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="268.4" cy="81.2" r="27.5" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="268.4" cy="81.2" r="34.4" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="268.4" cy="81.2" r="41.2" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="268.4" cy="81.2" r="4.2" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="425.5" cy="241.2" r="7.9" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="425.5" cy="241.2" r="15.8" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="425.5" cy="241.2" r="23.8" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="425.5" cy="241.2" r="31.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="425.5" cy="241.2" r="39.6" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="425.5" cy="241.2" r="47.5" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="425.5" cy="241.2" r="2.4" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="248.4" cy="199.0" r="14.0" fill="none" stroke="#E9B44C" stroke-opacity="0.63" stroke-width="1.5"/>
+<circle cx="248.4" cy="199.0" r="28.1" fill="none" stroke="#ECEAE4" stroke-opacity="0.51" stroke-width="1"/>
+<circle cx="248.4" cy="199.0" r="42.1" fill="none" stroke="#E9B44C" stroke-opacity="0.39" stroke-width="1"/>
+<circle cx="248.4" cy="199.0" r="56.2" fill="none" stroke="#ECEAE4" stroke-opacity="0.27" stroke-width="1"/>
+<circle cx="248.4" cy="199.0" r="2.1" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="247.0" cy="480.0" r="16.6" fill="none" stroke="#E9B44C" stroke-opacity="0.63" stroke-width="1.5"/>
+<circle cx="247.0" cy="480.0" r="33.2" fill="none" stroke="#ECEAE4" stroke-opacity="0.51" stroke-width="1"/>
+<circle cx="247.0" cy="480.0" r="49.8" fill="none" stroke="#E9B44C" stroke-opacity="0.39" stroke-width="1"/>
+<circle cx="247.0" cy="480.0" r="66.3" fill="none" stroke="#ECEAE4" stroke-opacity="0.27" stroke-width="1"/>
+<circle cx="247.0" cy="480.0" r="3.7" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="505.3" cy="435.0" r="12.3" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="505.3" cy="435.0" r="24.6" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="505.3" cy="435.0" r="36.9" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="505.3" cy="435.0" r="49.2" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="505.3" cy="435.0" r="61.5" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="505.3" cy="435.0" r="73.8" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="505.3" cy="435.0" r="4.7" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="353.1" cy="227.8" r="10.9" fill="none" stroke="#E9B44C" stroke-opacity="0.66" stroke-width="1.5"/>
+<circle cx="353.1" cy="227.8" r="21.9" fill="none" stroke="#ECEAE4" stroke-opacity="0.58" stroke-width="1"/>
+<circle cx="353.1" cy="227.8" r="32.8" fill="none" stroke="#E9B44C" stroke-opacity="0.49" stroke-width="1"/>
+<circle cx="353.1" cy="227.8" r="43.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.41" stroke-width="1"/>
+<circle cx="353.1" cy="227.8" r="54.6" fill="none" stroke="#E9B44C" stroke-opacity="0.32" stroke-width="1"/>
+<circle cx="353.1" cy="227.8" r="65.6" fill="none" stroke="#ECEAE4" stroke-opacity="0.24" stroke-width="1"/>
+<circle cx="353.1" cy="227.8" r="2.3" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="86.3" cy="217.3" r="17.3" fill="none" stroke="#E9B44C" stroke-opacity="0.63" stroke-width="1.5"/>
+<circle cx="86.3" cy="217.3" r="34.6" fill="none" stroke="#ECEAE4" stroke-opacity="0.51" stroke-width="1"/>
+<circle cx="86.3" cy="217.3" r="51.8" fill="none" stroke="#E9B44C" stroke-opacity="0.39" stroke-width="1"/>
+<circle cx="86.3" cy="217.3" r="69.1" fill="none" stroke="#ECEAE4" stroke-opacity="0.27" stroke-width="1"/>
+<circle cx="86.3" cy="217.3" r="2.2" fill="#E9B44C"/>
+</g>
+<g>
+<circle cx="62.7" cy="139.3" r="8.7" fill="none" stroke="#E9B44C" stroke-opacity="0.63" stroke-width="1.5"/>
+<circle cx="62.7" cy="139.3" r="17.3" fill="none" stroke="#ECEAE4" stroke-opacity="0.51" stroke-width="1"/>
+<circle cx="62.7" cy="139.3" r="26.0" fill="none" stroke="#E9B44C" stroke-opacity="0.39" stroke-width="1"/>
+<circle cx="62.7" cy="139.3" r="34.7" fill="none" stroke="#ECEAE4" stroke-opacity="0.27" stroke-width="1"/>
+<circle cx="62.7" cy="139.3" r="2.9" fill="#E9B44C"/>
+</g>
+      </svg>
     </div>
-    <div class="featured-caption">
-      Works run live and generate in real time · self-contained, no external dependencies<br>
-      p5.js · WebGL · GLSL shaders
+    <figcaption class="cap">
+      <span>Bloom / Four Walls — 22 blooms, one pentatonic note each</span>
+      <span>seed 77823</span>
+    </figcaption>
+  </figure>
+</section>
+
+<section id="inquire" aria-labelledby="inquire-h">
+  <div class="wrap">
+    <div class="band-copy">
+      <h2 id="inquire-h">Acquire or commission.</h2>
+      <p>Limited hardware editions and site-specific works for institutions and private collections — direct from the studio, reply within 48 hours.</p>
+    </div>
+    <a href="mailto:mark@walhimer.com?subject=Inquiry" class="btn big">Inquire</a>
+  </div>
+</section>
+
+<section id="series" class="wrap" aria-labelledby="series-h">
+  <div class="series-head">
+    <h2 id="series-h" class="serif-h2">Series</h2>
+    <p>06 bodies · one Machine DNA</p>
+  </div>
+  <div class="series-grid">
+    <article class="series-card">
+      <a class="s-media" href="/sketches/surrender/" tabindex="-1" aria-hidden="true">
+        <img src="/images/homepage-featured/008.png" width="1024" height="522" alt="" loading="lazy" decoding="async" />
+      </a>
+      <div class="s-title"><span class="s-num">01</span><h3><a href="/sketches/surrender/">Surrender Machines</a></h3></div>
+      <p class="s-line">The early anchor: can a machine surrender for us?</p>
+      <p class="s-tags">Room-scale · three.js · sound</p>
+    </article>
+    <article class="series-card">
+      <a class="s-media" href="/marfa-2026/" tabindex="-1" aria-hidden="true">
+        <img src="/images/homepage-featured/006.png" width="1920" height="1920" alt="" loading="lazy" decoding="async" />
+      </a>
+      <div class="s-title"><span class="s-num">02</span><h3><a href="/marfa-2026/">Centered</a></h3></div>
+      <p class="s-line">Breathing planes of soft gradient. The first 55-inch monitor work.</p>
+      <p class="s-tags">55-inch monitor</p>
+    </article>
+    <article class="series-card">
+      <a class="s-media" href="/sketches/invisible-layer/" tabindex="-1" aria-hidden="true">
+        <video id="il-preview" src="/available/media/invisible-layer-preview.mp4" muted loop playsinline preload="metadata" aria-hidden="true"></video>
+      </a>
+      <div class="s-title"><span class="s-num">03</span><h3><a href="/sketches/invisible-layer/">Invisible Layer</a></h3></div>
+      <p class="s-line">Living pictures seen through one window. A hidden motion map drives colour, sound, and volume on the GPU.</p>
+      <p class="s-tags">GPU · motion map · sound</p>
+    </article>
+    <article class="series-card">
+      <a class="s-media placeholder" href="/sketches/digital-twin/" tabindex="-1" aria-hidden="true"><span>[Still from Witness Mirror]</span></a>
+      <div class="s-title"><span class="s-num">04</span><h3><a href="/sketches/digital-twin/">Witness Mirror</a></h3></div>
+      <p class="s-line">A machine witness. Face signals, testimony, and a room that watches back.</p>
+      <p class="s-tags">Face signals · room</p>
+    </article>
+    <article class="series-card">
+      <a class="s-media placeholder" href="/sketches/bloom/" tabindex="-1" aria-hidden="true"><span>[Still from Artificial Flowers]</span></a>
+      <div class="s-title"><span class="s-num">05</span><h3><a href="/sketches/bloom/">Artificial Flowers</a></h3></div>
+      <p class="s-line">Seeded flowers, grown in code.</p>
+      <p class="s-tags">Plotter · screen</p>
+    </article>
+    <article class="series-card">
+      <a class="s-media" href="/sketches/bloom/" tabindex="-1" aria-hidden="true">
+        <img src="/images/homepage-featured/001.png" width="1920" height="720" alt="" loading="lazy" decoding="async" />
+      </a>
+      <div class="s-title"><span class="s-num">06</span><h3><a href="/sketches/bloom/">Bloom</a></h3></div>
+      <p class="s-line">Bloom / Four Walls and the Bloom family. A generative four-wall environment, 22 blooms, one pentatonic piano note each.</p>
+      <p class="s-tags">Four walls · 22 blooms · piano</p>
+    </article>
+  </div>
+</section>
+
+<section id="practice" class="wrap" aria-labelledby="practice-h">
+  <div class="two-left">
+    <h2 id="practice-h" class="mono-label">Practice</h2>
+    <blockquote class="pull">“I use code and real-time systems as a lens for acceptance, control, and agency.”</blockquote>
+    <p class="pull-note">Machine DNA — one seed, many bodies.</p>
+  </div>
+  <div class="two-right">
+    <p>Artwork series include Surrender Machines, Centered, Invisible Layer, Witness Mirror, Artificial Flowers, and Bloom. The early anchor was Surrender Machines — the question of whether a machine could surrender for us. What started as a pun became a serious structure for thinking about acceptance: what part of life can be controlled, and what has to be accepted?</p>
+    <p>From abstract painting systems and geometric studies, the work evolved toward light-sculptural environments: cubes, rotating fields, color architecture. The shift was from producing static pictures to staging live behavior — immersive digital art installations that a visitor walks into, not pictures on a wall.</p>
+    <p>After beginning blockchain-based digital work in 2022, the practice moved from platform-bound outputs toward site-native, browser-native systems built and hosted directly — outside any platform's control. Moon Walking and Bloom / Four Walls continue the same inquiry. The goal is to build perceptual situations where viewers can feel the tension between control and release, and decide how they want to participate.</p>
+    <p class="tech">p5.js · WebGL · GLSL shaders — all works run live and generate in real time.</p>
+  </div>
+</section>
+
+<section id="about" aria-labelledby="about-h">
+  <div class="wrap">
+    <div class="two-left">
+      <h2 id="about-h" class="mono-label">Biography</h2>
+      <a class="portrait" href="/installation/surrender-machine-77823/" aria-label="Surrender Machine 77823 — installation view">
+        <img src="/sketches/loop-art-critique-2026/assets/technical-objects-exist-installation.jpg" width="917" height="762" alt="Surrender Machine 77823 installed in Technical Objects Exist at ICA Miami — screen on a stand, plinth with headphones, and exhibition wall text" loading="lazy" decoding="async" />
+      </a>
+    </div>
+    <div class="two-right">
+      <p class="bio-lede">Mark Walhimer (b. 1964) is a new media, generative, and systems-based artist working in digital installation art.</p>
+      <p>His practice uses real-time systems and generative code — Machine DNA — to build perceptual environments across series including Surrender Machines, Centered, Invisible Layer, Witness Mirror, Artificial Flowers, and Bloom.</p>
+      <p>He began in the studios of Judy Pfaff (1985) and Donald Lipski (1987). His institutional work spans three continents — a career spent designing spaces that respond to the people who inhabit them, which feeds directly into a studio practice concerned with co-creation, emergence, and shared space. He is also Managing Partner of <a href="https://museumplanning.com">Museum Planning, LLC</a>, and author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury).</p>
+      <p>Working in p5.js, WebGL, and GLSL shaders, he builds browser-based works that run live, generate in real time, and change with every viewing.</p>
     </div>
   </div>
 </section>
 
-<section class="series" id="series" aria-labelledby="series-heading">
-  <div class="series-inner">
-    <h2 class="series-label" id="series-heading">Series</h2>
-    <ul class="series-grid">
-      <li><a href="/sketches/surrender/"><span class="series-name">Surrender Machines</span><span class="series-desc">The early anchor: can a machine surrender for us?</span></a></li>
-      <li><a href="/sketches/invisible-layer/"><span class="series-name">Invisible Layer</span><span class="series-desc">Living pictures seen through one window.</span></a></li>
-      <li><a href="/sketches/digital-twin/"><span class="series-name">Witness Mirror</span><span class="series-desc">Proof-of-concept hub: face signals and Witness Mirror tests.</span></a></li>
-      <li><a href="/sketches/bloom/"><span class="series-name">Bloom</span><span class="series-desc">Bloom / Four Walls and the Bloom family.</span></a></li>
-      <li><a href="/miami-2026/"><span class="series-name">Miami 2026</span><span class="series-desc">Invisible Layer, upcoming.</span></a></li>
-      <li><a href="/marfa-2026/"><span class="series-name">Marfa 2026</span><span class="series-desc">Invisible Layer, October, with Centered and Artificial Flowers.</span></a></li>
+<section id="cv" aria-labelledby="cv-h">
+  <div class="wrap">
+    <h2 id="cv-h" class="serif-h2">Selected exhibitions</h2>
+    <div class="upcoming">
+      <div>
+        <p class="mono-label">Upcoming</p>
+        <p class="u-title"><a href="/miami-2026/">Miami 2026 — Invisible Layer</a></p>
+      </div>
+      <p class="u-when">Miami · Nov 30 – Dec 6, 2026</p>
+    </div>
+    <ul class="cv">
+      <li>
+        <span class="cv-date">Aug 12, 2026</span>
+        <span class="cv-title"><a href="/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html">The Wrong Biennale — Eclipse</a></span>
+        <span class="cv-place">Online</span>
+      </li>
+      <li>
+        <span class="cv-date">Jun 11 – Oct 5, 2026</span>
+        <span class="cv-title"><a href="/installation/surrender-machine-77823/">Technical Objects Exist — Surrender Machine 77823</a></span>
+        <span class="cv-place">ICA Miami, Loop Art Critique</span>
+      </li>
+      <li>
+        <span class="cv-date">Feb 13, 2026</span>
+        <span class="cv-title"><a href="/sketches/miradas-tangentes-2026/index.html">Miradas Tangentes</a></span>
+        <span class="cv-place">Sala Siroco, Madrid</span>
+      </li>
+      <li>
+        <span class="cv-date">2026</span>
+        <span class="cv-title"><a href="/sketches/async-museums/index.html">Async Museum — Bloom / Release — Four Walls</a></span>
+        <span class="cv-place">Online</span>
+      </li>
     </ul>
-    <p class="series-more">
+  </div>
+</section>
+
+<section class="closing" aria-labelledby="closing-h">
+  <div class="wrap">
+    <h2 id="closing-h">Commission a digital art installation.</h2>
+    <p>For a museum, a lobby, a public space, or a private collection. Limited hardware editions and site-specific works, direct from the studio — reply within 48 hours.</p>
+    <a href="mailto:mark@walhimer.com?subject=Inquiry" class="btn big">Inquire</a>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-desc">New media, generative, and systems-based artist working in digital installation art. Machine DNA: one seed of code, many bodies. The room is the art. Series: Surrender Machines, Centered, Invisible Layer, Witness Mirror, Artificial Flowers, Bloom.</p>
+    <p class="foot-copy">© 2026 Mark Walhimer Studio</p>
+    <nav class="foot-links" aria-label="More">
       <a href="/installations/">Installations</a>
       <a href="/bio/index.html">Full CV</a>
       <a href="/guide/index.html">Guide</a>
-    </p>
+      <a href="/available/">Available</a>
+      <a href="/sketches/index.html">Catalog</a>
+      <a href="/contact/index.html">Contact</a>
+      <a href="https://www.instagram.com/markwalhimer/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://x.com/WalhimerArt" target="_blank" rel="noopener">X</a>
+      <a href="mailto:mark@walhimer.com">mark@walhimer.com</a>
+    </nav>
   </div>
-</section>
-
-<section class="works" id="works">
-  <div class="catalog-link-row-wrap">
-    <div class="catalog-link-row">
-      <span class="catalog-count" id="catalog-count">Full catalog — additional works and sketches</span>
-      <a href="/sketches/index.html" class="catalog-link">View Full Catalog →</a>
-    </div>
-  </div>
-</section>
-
-<section class="commission" id="commission">
-  <div class="commission-inner reveal">
-    <div>
-      <h2>Acquire /<br><em>Commission</em></h2>
-      <div class="commission-body">
-        <p>Works are available as limited hardware editions — custom-built systems that include the software, hardware, and installation documentation required for permanent display.</p>
-        <p>Site-specific commissions are available for institutional and architectural contexts. The artist is personally involved in every installation.</p>
-        <p>There is no gallery intermediary. Inquiries go directly to the studio and receive a response within 48 hours.</p>
-      </div>
-      <div class="commission-contact">
-        <p class="contact-line">
-          <a href="mailto:mark@walhimer.com?subject=Acquisition Inquiry">mark@walhimer.com</a>
-        </p>
-        <p class="contact-line" style="font-size:14px;color:var(--muted)">Response within 48 hours.</p>
-        <!-- DRAFT: Phase 0 instrumentation. Distinct subject lines so each inquiry
-             classifies itself on arrival — sender type and interest without asking. -->
-        <p class="contact-line" style="font-size:13px;line-height:1.9;margin-top:14px;">
-          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Private%20collection">Private collection</a><br>
-          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Institutional%20acquisition">Institutional acquisition</a><br>
-          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Site-specific%20commission">Site-specific commission</a><br>
-          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Civic%20or%20public%20art">Civic / public art program</a><br>
-          <a href="mailto:mark@walhimer.com?subject=Inquiry%20-%20Exhibition%20or%20curatorial">Exhibition / curatorial</a>
-        </p>
-      </div>
-    </div>
-    <div>
-      <ul class="commission-types">
-        <li class="commission-type">
-          <span class="ct-label">Private</span>
-          <div>
-            <div class="ct-title">Private Collection</div>
-            <div class="ct-desc">Limited hardware edition with artist certificate. Available for residential and private institutional display. Artist supervises installation for all room-scale works.</div>
-          </div>
-        </li>
-        <li class="commission-type">
-          <span class="ct-label">Institutional</span>
-          <div>
-            <div class="ct-title">Institutional Acquisition</div>
-            <div class="ct-desc">Museum, corporate, and university collections. Full installation and technical documentation provided. Ongoing software support included in acquisition agreement.</div>
-          </div>
-        </li>
-        <li class="commission-type">
-          <span class="ct-label">Commission</span>
-          <div>
-            <div class="ct-title">Site-Specific Commission</div>
-            <div class="ct-desc">New works developed for a specific architectural context, collection, or institution. Begin with a conversation about the site and the brief.</div>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<section class="practice" id="practice">
-  <div class="practice-inner reveal">
-    <h2 class="practice-label">Practice</h2>
-    <p class="practice-statement">"I use code and real-time systems as a lens for acceptance, control, and agency."</p>
-    <div class="practice-body">
-      <p><strong>Machine DNA</strong> — one seed, many bodies — as a way to think about acceptance, control, and agency.</p>
-      <p>Artwork series include <strong>Surrender Machines</strong>, <strong>Centered</strong>, <strong>Invisible Layer</strong>, <strong>Witness Mirror</strong>, <strong>Artificial Flowers</strong>, and <strong>Bloom</strong>. The early anchor was Surrender Machines — the question of whether a machine could surrender for us. What started as a pun became a serious structure for thinking about acceptance: what part of life can be controlled, and what has to be accepted?</p>
-      <p>From abstract painting systems and geometric studies, the work evolved toward light-sculptural environments: cubes, rotating fields, color architecture. The shift was from producing static pictures to <strong>staging live behavior</strong>.</p>
-      <p>After beginning blockchain-based digital work in 2022, the practice moved from platform-bound outputs toward site-native, browser-native systems built and hosted directly — outside any platform's control. <strong>Moon Walking</strong> and <strong>Bloom / Four Walls</strong> continue the same inquiry. The goal is to build perceptual situations where viewers can feel the tension between control and release, and decide how they want to participate.</p>
-      <p>Working in p5.js, WebGL, and GLSL shaders. All works run live and generate in real time.</p>
-    </div>
-    <div class="practice-links">
-      <a href="/practice/index.html" class="practice-more">Full practice statement →</a>
-      <a href="/practice/artwork-pipeline.html" class="practice-more">Machine DNA artwork pipeline →</a>
-      <a href="/practice/index.html#loop-critique" class="practice-more">Critique question + recent work →</a>
-    </div>
-  </div>
-</section>
-
-<section class="bio" id="bio">
-  <div class="bio-inner reveal">
-    <div>
-      <h2 class="bio-label">Biography</h2>
-      <div class="bio-text">
-        <p>Mark Walhimer (b. 1964) is a new media, generative, and systems-based artist working in <a href="/guide/immersive-digital-art.html" style="border-bottom:1px solid rgba(0,0,0,.25);text-decoration:none;">digital installation art</a>. His practice uses real-time systems and generative code — <strong>Machine DNA</strong> — to build perceptual environments across series including Surrender Machines, Centered, Invisible Layer, Witness Mirror, Artificial Flowers, and Bloom.</p>
-        <p>He began in the studios of <em>Judy Pfaff</em> (1985) and <em>Donald Lipski</em> (1987). His institutional work spans three continents — a career spent designing spaces that respond to the people who inhabit them, which feeds directly into a studio practice concerned with co-creation, emergence, and shared space.</p>
-        <p>Working in p5.js, WebGL, and GLSL shaders, he builds browser-based works that run live, generate in real time, and change with every viewing. Author of <em>Museums 101</em> and <em>Designing Museum Experiences</em> (Bloomsbury).</p>
-      </div>
-    </div>
-    <div>
-      <h2 class="bio-label">Selected CV</h2>
-      <div class="cv-group">
-        <div class="cv-group-label">Exhibitions</div>
-        <div class="cv-row">
-          <span class="cv-item-name"><a href="/sketches/loop-art-critique-2026/index.html"><em>Technical Objects Exist</em></a> — Surrender Machine 77823</span>
-          <span class="cv-item-detail">Loop Art Critique + ICA Miami · 11 Jun – 5 Oct 2026</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name"><a href="/sketches/the-wrong-biennale/the-wrong-eclipse-august-2026/index.html"><em>The Wrong Biennale</em></a> — Eclipse</span>
-          <span class="cv-item-detail">Online · 12 Aug 2026</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name"><a href="/sketches/async-museums/index.html"><em>Async Museum</em></a> — Bloom / Release — Four Walls</span>
-          <span class="cv-item-detail">Online · 2026</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name"><a href="/sketches/miradas-tangentes-2026/index.html"><em>Miradas Tangentes</em></a></span>
-          <span class="cv-item-detail">Sala Siroco, Madrid · 13 Feb 2026</span>
-        </div>
-      </div>
-      <div class="cv-group">
-        <div class="cv-group-label">Formation</div>
-        <div class="cv-row">
-          <span class="cv-item-name">Studio of <em>Judy Pfaff</em></span>
-          <span class="cv-item-detail">1985</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Studio of <em>Donald Lipski</em></span>
-          <span class="cv-item-detail">1987</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Pratt Institute</span>
-          <span class="cv-item-detail">MFA · Industrial &amp; Exhibition Design</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Skidmore College</span>
-          <span class="cv-item-detail">BA · Studio Art</span>
-        </div>
-      </div>
-      <div class="cv-group">
-        <div class="cv-group-label">Honors &amp; Appointments</div>
-        <div class="cv-row">
-          <span class="cv-item-name"><em>Fulbright Specialist</em></span>
-          <span class="cv-item-detail">U.S. Department of State</span>
-        </div>
-        <div class="cv-row">
-          <span class="cv-item-name">Smithsonian Institution</span>
-          <span class="cv-item-detail">Design Consultant</span>
-        </div>
-      </div>
-      <p class="bio-text" style="margin-top:24px;font-size:15px;"><a href="/bio/index.html">Full bio / CV →</a></p>
-    </div>
-  </div>
-</section>
-
-<section class="closing-cta" id="inquire" aria-label="Inquiries">
-  <p>Interested in acquiring or commissioning a work?</p>
-  <a class="inquire-btn" href="mailto:mark@walhimer.com?subject=Inquiry">Inquire</a>
-</section>
-
-<div class="consulting-note">
-  <div class="consulting-note-inner">
-    <p class="cn-text"><strong>Mark Walhimer</strong> is also Managing Partner of <a href="https://museumplanning.com">Museum Planning LLC</a>.</p>
-  </div>
-</div>
-
-<footer>
-  <div class="footer-name">Mark Walhimer</div>
-  <div class="footer-right">
-    <a href="mailto:mark@walhimer.com">mark@walhimer.com</a>
-    <a href="https://www.instagram.com/markwalhimer/" target="_blank" rel="noopener">Instagram</a>
-    <a href="https://x.com/WalhimerArt" target="_blank" rel="noopener">X</a>
-    <a href="/sketches/index.html">Catalog</a>
-    <a href="/contact/index.html">Contact</a>
-  </div>
-  <span class="footer-meta" id="archive-updated">Archive updated · All works self-contained</span>
 </footer>
 
+</div>
 <script>
-(function () {
-  var nav = document.querySelector('nav');
-  if (!nav) return;
-  var btn = nav.querySelector('.nav-toggle');
-  var panel = document.getElementById('site-nav-links');
-  if (!btn || !panel) return;
-  btn.addEventListener('click', function () {
-    var open = nav.classList.toggle('nav-open');
-    btn.setAttribute('aria-expanded', open);
-    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-  });
-  panel.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () {
-      nav.classList.remove('nav-open');
-      btn.setAttribute('aria-expanded', 'false');
-      btn.setAttribute('aria-label', 'Open menu');
-    });
-  });
-})();
-</script>
-<script>
-(function () {
-  var el = document.getElementById('archive-updated');
-  if (!el) return;
-  fetch('data/catalog.json')
-    .then(function (r) { return r.ok ? r.json() : null; })
-    .then(function (data) {
-      if (!data || !data.updated) return;
-      el.textContent = 'Archive updated ' + data.updated + ' · All works self-contained';
-    })
-    .catch(function () {});
-})();
-</script>
-<script>
-(function () {
-  var live = document.documentElement.classList.contains('draft-bloom-live');
-  /* Production paths from site root (see LAUNCH-homepage-checklist.md). */
-  var chutes77823Url = new URL('sketches/loop-snippets/raster-spektrum-study-combined-vol3d-living-copy-code.html', window.location.href).href;
-  var bloomUrl = new URL('installations/bloom-four-walls-sketch.html', window.location.href).href;
-  var art03Url = new URL('drafts/artwork-03-technical-drawing-elevation/index.html', window.location.href).href;
-  var art04Url = new URL('drafts/artwork-04-technical-drawing/index.html', window.location.href).href;
-  var urls = [chutes77823Url, bloomUrl, art03Url, art04Url];
-  var frameIds = ['chutes77823-embed-frame', 'bloom-embed-frame', 'art03-embed-frame', 'art04-embed-frame'];
-
-  /* Live WebGL starts only after the page has loaded and the browser is idle, so the
-     headline, intro, and offer paint first. Until then the still previews are shown. */
-  var embedsAllowed = false;
-  var pendingSlide = null;
-  function allowEmbeds() {
-    if (embedsAllowed) return;
-    embedsAllowed = true;
-    if (pendingSlide !== null) {
-      var p = pendingSlide;
-      pendingSlide = null;
-      window.__mwCarouselActivateEmbeds(p);
-    }
-  }
-  function scheduleEmbeds() {
-    var go = function () {
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(allowEmbeds, { timeout: 3000 });
-      } else {
-        setTimeout(allowEmbeds, 1500);
-      }
-    };
-    if (document.readyState === 'complete') go();
-    else window.addEventListener('load', go, { once: true });
-  }
-  scheduleEmbeds();
-
-  /* One live WebGL/embed at a time — loading all the iframes at once crashes mobile Safari ("A problem repeatedly occurred"). */
-  var embedActiveIndex = -1;
-  var embedPaintTimer = null;
-  var embedFailTimer = null;
-  var stackSel = '[class$="-slide-stack"]';
-
-  function resetEmbedReady() {
-    if (embedPaintTimer) { clearTimeout(embedPaintTimer); embedPaintTimer = null; }
-    if (embedFailTimer) { clearTimeout(embedFailTimer); embedFailTimer = null; }
-    document.querySelectorAll(stackSel + '.embed-ready').forEach(function (stack) {
-      stack.classList.remove('embed-ready');
-    });
-  }
-
-  window.__mwCarouselActivateEmbeds = function (slideIndex) {
-    if (!live || document.documentElement.classList.contains('home-stills-only')) return;
-    if (!embedsAllowed) { pendingSlide = slideIndex | 0; return; }
-    /* Slide 0 is the installation photograph (no embed); slides 1–4 map to the four embeds (frameIds order). */
-    var i = (slideIndex | 0) - 1;
-    if (i >= 0) i = i % frameIds.length;
-    if (i === embedActiveIndex) return;
-    embedActiveIndex = i;
-    resetEmbedReady();
-    for (var j = 0; j < frameIds.length; j++) {
-      var el = document.getElementById(frameIds[j]);
-      if (!el) continue;
-      el.onload = null;
-      el.onerror = null;
-      if (j === i) {
-        var stack = el.closest(stackSel);
-        var markReady = function () {
-          if (embedPaintTimer) clearTimeout(embedPaintTimer);
-          embedPaintTimer = setTimeout(function () {
-            if (stack) stack.classList.add('embed-ready');
-          }, 700);
-        };
-        el.onload = markReady;
-        el.onerror = function () { /* keep still preview visible */ };
-        el.setAttribute('src', urls[j]);
-      } else {
-        try {
-          el.src = 'about:blank';
-        } catch (e) {}
-      }
-    }
-  };
-})();
-</script>
-<script>
-(function () {
-  const track = document.getElementById('carousel-track');
-  const viewport = document.getElementById('carousel-viewport');
-  const prevBtn = document.getElementById('carousel-prev');
-  const nextBtn = document.getElementById('carousel-next');
-  const dotsRoot = document.getElementById('carousel-dots');
-  if (!track || !viewport || !prevBtn || !nextBtn || !dotsRoot) return;
-
-  const slides = track.querySelectorAll('.carousel-slide');
-  const total = slides.length;
-  let index = 0;
-
-  for (let i = 0; i < total; i++) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.setAttribute('role', 'tab');
-    b.setAttribute('aria-label', 'Artwork ' + (i + 1));
-    b.addEventListener('click', function () { goTo(i); });
-    dotsRoot.appendChild(b);
-  }
-  const dotButtons = dotsRoot.querySelectorAll('button');
-
-  function readViewportWidth() {
-    const rect = viewport.getBoundingClientRect();
-    let w = rect.width || viewport.offsetWidth || viewport.clientWidth;
-    if (!w || w < 2) {
-      w = window.innerWidth || document.documentElement.clientWidth || 0;
-    }
-    return Math.max(1, w);
-  }
-
-  function measure() {
-    const w = readViewportWidth();
-    slides.forEach(function (el) {
-      el.style.width = w + 'px';
-      el.style.flexBasis = w + 'px';
-    });
-  }
-
-  function syncDots() {
-    dotButtons.forEach(function (d, i) {
-      d.setAttribute('aria-current', i === index ? 'true' : 'false');
-      d.setAttribute('tabindex', i === index ? '0' : '-1');
-    });
-  }
-
-  function goTo(i) {
-    index = ((i % total) + total) % total;
-    const w = readViewportWidth();
-    track.style.transform = 'translateX(' + -index * w + 'px)';
-    syncDots();
-    if (typeof window.__mwCarouselActivateEmbeds === 'function') {
-      window.__mwCarouselActivateEmbeds(index);
-    }
-  }
-
-  prevBtn.addEventListener('click', function () { goTo(index - 1); });
-  nextBtn.addEventListener('click', function () { goTo(index + 1); });
-
-  let resizeTimer;
-  function layoutCarousel() {
-    measure();
-    goTo(index);
-  }
-
-  layoutCarousel();
-  requestAnimationFrame(function () {
-    layoutCarousel();
-    requestAnimationFrame(layoutCarousel);
-  });
-  setTimeout(layoutCarousel, 50);
-  setTimeout(layoutCarousel, 250);
-
-  window.addEventListener('load', layoutCarousel);
-  window.addEventListener('resize', function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(layoutCarousel, 80);
-  });
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(layoutCarousel, 50);
-    });
-  }
-
-  window.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowLeft') goTo(index - 1);
-    else if (e.key === 'ArrowRight') goTo(index + 1);
-  });
-})();
-</script>
-<script>
-(function () {
-  var reveals = document.querySelectorAll('.reveal');
-  if (!reveals.length || !('IntersectionObserver' in window)) {
-    reveals.forEach(function (el) { el.classList.add('visible'); });
-    return;
-  }
-  var obs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  reveals.forEach(function (el) { obs.observe(el); });
-})();
+  /* Invisible Layer card: play the muted preview unless the visitor prefers reduced motion. */
+  (function () {
+    var v = document.getElementById('il-preview');
+    if (!v) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    var p = v.play && v.play();
+    if (p && p.catch) p.catch(function () {});
+  })();
 </script>
 </body>
 </html>
