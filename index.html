@@ -54,7 +54,7 @@
     .lead { color:var(--muted); max-width:56ch; font-size:1.05rem; }
     .card { background:#fff; border:1px solid var(--line); display:grid; grid-template-columns:1fr 1fr; }
     .card img { width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; background:#e9e7e0; display:block; }
-    .card div { padding:1.75rem; display:flex; flex-direction:column; gap:.5rem; }
+    .card video { width:100%; height:auto; aspect-ratio:16/9; background:#e9e7e0; display:block; }    .card div { padding:1.75rem; display:flex; flex-direction:column; gap:.5rem; }
     @media (max-width:700px) { .card { grid-template-columns:1fr; } }
     .card h3 { font-size:1.4rem; font-weight:500; }
     .meta { font-size:.85rem; color:var(--muted); }
@@ -95,7 +95,9 @@
     <section id="works">
       <h2>Available now · Marfa Art Blocks Weekend</h2>
       <article class="card">
-        <img src="img/artificial-flowers-study-04.webp" alt="Artificial Flowers Study 04, royal blue pen-plotter drawing on cotton paper by Mark Walhimer" width="800" height="800">
+        <a href="/marfa-2026/" aria-label="Marfa 2026 by Mark Walhimer, live generative artwork. Open the live page." style="align-self:center">
+          <video src="/available/media/marfa-2026-preview.mp4" width="1280" height="720" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+        </a>
         <div>
           <p class="meta">Plotter Drawing</p>
           <h3>Artificial Flowers — Study 04</h3>
