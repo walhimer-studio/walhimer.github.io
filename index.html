@@ -52,7 +52,9 @@
     h2 { font-size:1.4rem; font-weight:500; margin-bottom:1.25rem; }
     section { padding:3rem 0; border-top:1px solid var(--line); }
     .lead { color:var(--muted); max-width:56ch; font-size:1.05rem; }
-    .card { background:#fff; border:1px solid var(--line); display:grid; grid-template-columns:1fr 1fr; }
+    .card { position:relative; background:#fff; border:1px solid var(--line); display:grid; grid-template-columns:1fr 1fr; }
+    .card-link { position:absolute; inset:0; z-index:1; }
+    .card .buy .btn { position:relative; z-index:2; }
     .card img { width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; background:#e9e7e0; display:block; }
     #marfa-live { display:block; width:100%; height:auto; aspect-ratio:1/1; background:#fff; }
     @media (min-width:701px) { .card.live { grid-template-columns:1.6fr 1fr; } }
@@ -97,6 +99,7 @@
     <section id="works">
       <h2>Available now · Marfa Art Blocks Weekend</h2>
       <article class="card live">
+        <a class="card-link" href="/marfa-2026/" aria-label="Marfa 2026 — open the live page"></a>
         <canvas id="marfa-live" width="2160" height="2160" role="img" aria-label="Marfa 2026, card 1 — live generative pen-line artwork by Mark Walhimer"></canvas>
         <div>
           <p class="meta">Plotter Drawing</p>
