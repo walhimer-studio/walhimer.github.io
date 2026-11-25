@@ -6,6 +6,16 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://mark-walhimer.com/marfa-2026/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://mark-walhimer.com/miami-2026/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
     <loc>https://mark-walhimer.com/available/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
